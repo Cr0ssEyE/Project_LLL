@@ -97,10 +97,6 @@
 		{
 			"Name": "WmfMedia",
 			"Enabled": false
-		},
-		{
-			"Name": "VRM4U",
-			"Enabled": true
 		}
 	]
 }
