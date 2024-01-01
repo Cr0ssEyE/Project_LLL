@@ -22,14 +22,19 @@ public:
 protected:
 	UFUNCTION(BlueprintCallable)
 	void ObjectGenerateCheckBoxEvent(bool value);
+	
 	UFUNCTION(BlueprintCallable)
 	void ObjectActivateCheckBoxEvent(bool value);
+	
 	UFUNCTION(BlueprintCallable)
 	void ObjectDestroyCheckBoxEvent(bool value);
+	
 	UFUNCTION(BlueprintCallable)
 	void ObjectHitCheckBoxEvent(bool value);
+	
 	UFUNCTION(BlueprintCallable)
 	void ObjectCollisionCheckBoxEvent(bool value);
+	
 	UFUNCTION(BlueprintCallable)
 	void ObjectTrapActivateButtonEvent();
 	

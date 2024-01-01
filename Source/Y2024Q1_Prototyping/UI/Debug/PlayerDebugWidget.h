@@ -22,18 +22,25 @@ public:
 protected:
 	UFUNCTION(BlueprintCallable)
 	void PlayerMovementCheckBoxEvent(bool value);
+	
 	UFUNCTION(BlueprintCallable)
 	void PlayerEvadeCheckBoxEvent(bool value);
+	
 	UFUNCTION(BlueprintCallable)
 	void PlayerSkillCheckBoxEvent(bool value);
+	
 	UFUNCTION(BlueprintCallable)
 	void PlayerHitCheckBoxEvent(bool value);
+	
 	UFUNCTION(BlueprintCallable)
 	void PlayerAttackCheckBoxEvent(bool value);
+	
 	UFUNCTION(BlueprintCallable)
 	void PlayerCollisionCheckBoxEvent(bool value);
+	
 	UFUNCTION(BlueprintCallable)
 	void PlayerFillHealthButtonEvent();
+	
 	UFUNCTION(BlueprintCallable)
 	void PlayerCoolDownResetButtonEvent();
 	
