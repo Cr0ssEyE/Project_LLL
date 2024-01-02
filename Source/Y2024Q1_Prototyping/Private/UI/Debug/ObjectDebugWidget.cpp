@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Y2024Q1_Prototyping/UI/Debug/ObjectDebugWidget.h"
+#include "Y2024Q1_Prototyping/Public/UI/Debug/ObjectDebugWidget.h"
 
-#include "Y2024Q1_Prototyping/Game/ProtoGameInstance.h"
+#include "Y2024Q1_Prototyping/Public/Game/ProtoGameInstance.h"
 
 void UObjectDebugWidget::NativeConstruct()
 {
