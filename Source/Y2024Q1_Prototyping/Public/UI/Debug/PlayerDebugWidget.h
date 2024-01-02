@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/Button.h"
-#include "Components/CheckBox.h"
 #include "PlayerDebugWidget.generated.h"
 
+class UButton;
+class UCheckBox;
 /**
  * 
  */

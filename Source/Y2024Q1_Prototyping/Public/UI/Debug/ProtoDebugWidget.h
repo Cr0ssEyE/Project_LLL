@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MonsterDebugWidget.h"
-#include "ObjectDebugWidget.h"
-#include "PlayerDebugWidget.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/Button.h"
-#include "Components/CheckBox.h"
-#include "Components/WidgetSwitcher.h"
 #include "ProtoDebugWidget.generated.h"
+
+class UButton;
+class UObjectDebugWidget;
+class UMonsterDebugWidget;
+class UPlayerDebugWidget;
+class UWidgetSwitcher;
 
 /**
  * 

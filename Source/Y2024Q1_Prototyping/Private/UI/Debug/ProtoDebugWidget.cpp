@@ -1,7 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Y2024Q1_Prototyping/Public/UI/Debug/ProtoDebugWidget.h"
+#include "UI/Debug/ProtoDebugWidget.h"
+#include "Components/Button.h"
+#include "Components/WidgetSwitcher.h"
 
 void UProtoDebugWidget::NativeConstruct()
 {

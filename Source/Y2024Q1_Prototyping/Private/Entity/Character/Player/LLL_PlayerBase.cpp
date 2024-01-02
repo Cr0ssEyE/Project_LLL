@@ -3,3 +3,124 @@
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "DataAsset/LLL_PlayerBaseDataAsset.h"
+#include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
+#include "Game/ProtoGameInstance.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Util/LLLConstructorHelper.h"
+
+ALLL_PlayerBase::ALLL_PlayerBase()
+{
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	
+	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(TEXT("/Script/Y2024Q1_Prototyping.LLL_PlayerBaseDataAsset'/Game/7-Player-View-Movement/Assets/PlayerBaseDataAsset.PlayerBaseDataAsset'"), EAssertionLevel::Check);
+	
+	if(IsValid(PlayerBaseDataAsset))
+	{
+		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->PlayerCollisionSize.Y, PlayerBaseDataAsset->PlayerCollisionSize.X);
+		
+		GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->PlayerBaseMesh);
+		GetMesh()->SetAnimInstanceClass(PlayerBaseDataAsset->PlayerAnimBlueprint);
+		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->PlayerCollisionSize.X));
+		
+		Camera->SetFieldOfView(PlayerBaseDataAsset->CameraFOV);
+		Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+		Camera->bUsePawnControlRotation = false;
+		
+		SpringArm->TargetArmLength = PlayerBaseDataAsset->SpringArmLength;
+		SpringArm->SetRelativeRotation(FRotator(PlayerBaseDataAsset->SpringArmAngle, 0.f, 0.f));
+		SpringArm->bDoCollisionTest = false;
+		SpringArm->bUsePawnControlRotation = false;
+		SpringArm->bInheritPitch = false;
+		SpringArm->bInheritYaw = false;
+		SpringArm->bInheritRoll = false;
+		SpringArm->SetupAttachment(RootComponent);
+	}
+}
+
+void ALLL_PlayerBase::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
+void ALLL_PlayerBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerCollisionDebug())
+		{
+			GetCapsuleComponent()->SetHiddenInGame(false);
+		}
+		else
+		{
+			GetCapsuleComponent()->SetHiddenInGame(true);
+		}
+	}
+#endif
+}
+
+void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	
+	const APlayerController* PlayerController = CastChecked<APlayerController>(GetController());
+	UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	SubSystem->ClearAllMappings();
+	SubSystem->AddMappingContext(PlayerBaseDataAsset->PlayerInputMappingContext, 0);
+	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
+	
+	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
+}
+
+void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
+{
+	FVector2d MoveInputValue = Value.Get<FVector2D>();
+	float MovementVectorSizeSquared = MoveInputValue.SquaredLength();
+	if (MovementVectorSizeSquared > 1.0f)
+	{
+		MoveInputValue.Normalize();
+	}
+	
+	FVector MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
+	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
+	AddMovementInput(MoveDirection, 1.f);
+}
+
+void ALLL_PlayerBase::EvadeAction(const FInputActionValue& Value)
+{
+	
+}
+
+void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
+{
+	
+}
+
+void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value)
+{
+	
+}
+
+void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
+{
+	
+}
+
+void ALLL_PlayerBase::InventoryAction(const FInputActionValue& Value)
+{
+	
+}
+
+void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
+{
+	
+}

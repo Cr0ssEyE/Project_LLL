@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/CheckBox.h"
 #include "MonsterDebugWidget.generated.h"
+
+class UCheckBox;
 
 /**
  * 
