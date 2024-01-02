@@ -27,7 +27,7 @@
 *.lib
 
 # Executables
-# *.exe
+*.exe
 *.out
 *.app
 *.ipa
@@ -74,5 +74,4 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 *.exp
-
 .idea
