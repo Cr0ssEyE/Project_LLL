@@ -38,38 +38,47 @@ private:
 	// 입력 액션
 private:
 	void MoveAction(const FInputActionValue& Value);
-	void EvadeAction(const FInputActionValue& Value);
+	void DashAction(const FInputActionValue& Value);
 	void AttackAction(const FInputActionValue& Value);
 	void SkillAction(const FInputActionValue& Value);
 	void InteractAction(const FInputActionValue& Value);
 	void InventoryAction(const FInputActionValue& Value);
 	void PauseAction(const FInputActionValue& Value);
 
-	// 초기 데이터
+	// 데이터 에셋
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerBaseDataAsset> PlayerBaseDataAsset;
-	/*
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UInputAction> MoveInputAction;
 
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UInputAction> EvadeInputAction;
+	// 이동 관련 변수
+private:
+	UPROPERTY(VisibleDefaultsOnly)
+	float MoveSpeed;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	float AccelerateSpeed;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	float DashSpeed;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	float GroundFriction;
+
+	// 돌진 관련 함수
+private:
+	void CheckDashInvincibilityTime();
+
+	// 돌진 관련 변수
+private:
+	UPROPERTY(VisibleDefaultsOnly)
+	uint32 DashCount;
 	
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UInputAction> AttackInputAction;
+	UPROPERTY(VisibleDefaultsOnly)
+	float DashElapsedTime;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+	float DashInvincibleTime;
 
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UInputAction> SkillInputAction;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UInputAction> InteractionInputAction;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UInputAction> InventoryInputAction;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UInputAction> PauseInputAction;
-	*/
+	uint32 bIsInvincibleOnDashing : 1;
 	
 };

@@ -28,6 +28,19 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "플레이어 캐릭터 충돌 사이즈(높이, 반지름)")
 	FVector2D PlayerCollisionSize;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "플레이어 기본 이동속도")
+	float PlayerBaseMoveSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "플레이어 기본 가속도")
+	float PlayerBaseAccelerateSpeed;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "플레이어 기본 돌진속도")
+	float PlayerBaseDashSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "플레이어 방향전환 속도")
+	float PlayerBaseGroundFriction;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV")
@@ -46,8 +59,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "이동 입력 키")
 	TObjectPtr<UInputAction> MoveInputAction;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "회피 입력 키")
-	TObjectPtr<UInputAction> EvadeInputAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "돌진 입력 키")
+	TObjectPtr<UInputAction> DashInputAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "기본 공격 입력 키")
 	TObjectPtr<UInputAction> AttackInputAction;

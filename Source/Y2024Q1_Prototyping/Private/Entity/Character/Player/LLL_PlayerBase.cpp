@@ -10,7 +10,9 @@
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Game/ProtoGameInstance.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
@@ -22,12 +24,22 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	
 	if(IsValid(PlayerBaseDataAsset))
 	{
+		DashSpeed = PlayerBaseDataAsset->PlayerBaseDashSpeed;
+		
 		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->PlayerCollisionSize.Y, PlayerBaseDataAsset->PlayerCollisionSize.X);
 		
 		GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->PlayerBaseMesh);
 		GetMesh()->SetAnimInstanceClass(PlayerBaseDataAsset->PlayerAnimBlueprint);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->PlayerCollisionSize.X));
+
+		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = PlayerBaseDataAsset->PlayerBaseMoveSpeed;
+		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = PlayerBaseDataAsset->PlayerBaseAccelerateSpeed;
+		GetCharacterMovement()->GroundFriction = GroundFriction = PlayerBaseDataAsset->PlayerBaseGroundFriction;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		bUseControllerRotationYaw = false;
+		bUseControllerRotationPitch = false;
+		bUseControllerRotationRoll = false;
 		
 		Camera->SetFieldOfView(PlayerBaseDataAsset->CameraFOV);
 		Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
@@ -79,6 +91,8 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	
 	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
+	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction);
+	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction);
 }
 
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
@@ -93,16 +107,58 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	FVector MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	AddMovementInput(MoveDirection, 1.f);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerMovementDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("플레이어 캐릭터 방향 X: %f, Y: %f"), MoveDirection.X, MoveDirection.Y));
+		}
+	}
+#endif
 }
 
-void ALLL_PlayerBase::EvadeAction(const FInputActionValue& Value)
+void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 {
-	
+	LaunchCharacter(GetActorForwardVector() * (DashSpeed * 1000.f), true, true);
 }
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 {
+	const APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	FVector MouseWorldLocation;
+	FVector MouseWorldDirection;
+	PlayerController->DeprojectMousePositionToWorld(MouseWorldLocation, MouseWorldDirection);
 	
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+	
+	bool bResult = GetWorld()->LineTraceSingleByChannel(
+			HitResult,
+			MouseWorldLocation,
+			MouseWorldLocation + MouseWorldDirection * 10000.f,
+			ECC_Visibility
+		);
+	
+	if(bResult)
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerAttackDebug())
+			{
+				DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
+				DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10.f, FColor::Red, false, 3.f);
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("마우스 월드 좌표: %f, %f, %f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z));
+			}
+		}
+#endif
+		
+		FVector AttackDirection = (HitResult.ImpactPoint - GetActorLocation()).GetSafeNormal();
+		AttackDirection.Z = 0.f;
+		SetActorRotation(AttackDirection.Rotation());
+	}
 }
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value)
@@ -124,3 +180,9 @@ void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
 {
 	
 }
+
+void ALLL_PlayerBase::CheckDashInvincibilityTime()
+{
+	
+}
+
