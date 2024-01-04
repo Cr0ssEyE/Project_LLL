@@ -50,7 +50,7 @@ protected:
 	uint32 CharacterMoveSpeed;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 bIsDead : 1;
+	uint8 bIsDead : 1;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수

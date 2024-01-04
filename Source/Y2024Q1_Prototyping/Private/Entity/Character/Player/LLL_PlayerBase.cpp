@@ -22,7 +22,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	
 	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(TEXT("/Script/Y2024Q1_Prototyping.LLL_PlayerBaseDataAsset'/Game/7-Player-View-Movement/Assets/PlayerBaseDataAsset.PlayerBaseDataAsset'"), EAssertionLevel::Check);
 	
-	if(IsValid(PlayerBaseDataAsset))
+	if (IsValid(PlayerBaseDataAsset))
 	{
 		DashSpeed = PlayerBaseDataAsset->PlayerBaseDashSpeed;
 		
@@ -69,7 +69,7 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerCollisionDebug())
+		if (ProtoGameInstance->CheckPlayerCollisionDebug())
 		{
 			GetCapsuleComponent()->SetHiddenInGame(false);
 		}
@@ -87,12 +87,12 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	// 무적 또는 데미지 처리 무시는 해당 구문에서 추가
-	if(bIsInvincibleOnDashing)
+	if (bIsInvincibleOnDashing)
 	{
 		return 0;
 	}
 
-	if(CharacterHealthAmount <= 0)
+	if (CharacterHealthAmount <= 0)
 	{
 		Dead();
 	}
@@ -131,7 +131,7 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerMovementDebug())
+		if (ProtoGameInstance->CheckPlayerMovementDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("플레이어 캐릭터 방향 X: %f, Y: %f"), MoveDirection.X, MoveDirection.Y));
 		}
@@ -154,7 +154,7 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
-	if(bool bResult = GetWorld()->LineTraceSingleByChannel(
+	if (bool bResult = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
 		MouseWorldLocation,
 		MouseWorldLocation + MouseWorldDirection * 10000.f,
@@ -162,9 +162,9 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 	))
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if(ProtoGameInstance->CheckPlayerAttackDebug())
+			if (ProtoGameInstance->CheckPlayerAttackDebug())
 			{
 				DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
 				DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10.f, FColor::Red, false, 3.f);

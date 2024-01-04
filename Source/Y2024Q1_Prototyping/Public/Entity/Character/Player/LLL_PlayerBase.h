@@ -80,6 +80,6 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 	float DashInvincibleTime;
 
+	UPROPERTY(VisibleDefaultsOnly)
 	uint32 bIsInvincibleOnDashing : 1;
-	
 };

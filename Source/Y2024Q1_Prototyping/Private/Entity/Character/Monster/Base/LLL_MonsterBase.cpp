@@ -20,7 +20,25 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-bool ALLL_MonsterBase::DeadAnimationIsEnd()
+float ALLL_MonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	return true;
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (CharacterHealthAmount <= 0)
+	{
+		Dead();
+	}
+	else
+	{
+		Stun();
+	}
+	
+	return 0;
+}
+
+void ALLL_MonsterBase::Stun()
+{
+	// Todo: 스턴 애니메이션 재생
+	
+	bIsStun = true;
 }
