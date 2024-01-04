@@ -5,6 +5,7 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Entity/Character/Monster/LLL_MonsterBase.h"
 
 ULLL_DetectPlayer_BTService::ULLL_DetectPlayer_BTService()
@@ -34,7 +35,7 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 			APawn* Pawn = Cast<APawn>(OverlapResult.GetActor());
 			if (Pawn && Pawn->GetController()->IsPlayerController())
 			{
-				OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("PlayerBase"), Pawn);
+				OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, Pawn);
 				DrawDebugSphere(GetWorld(), Center, 400, 16, FColor::Green, false, 0.2f);
 
 				DrawDebugPoint(GetWorld(), Pawn->GetActorLocation(), 10.0f, FColor::Green, false, 0.2f);
@@ -44,6 +45,6 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		}
 	}
 
-	OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("PlayerBase"), nullptr);
+	OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, nullptr);
 	DrawDebugSphere(GetWorld(), Center, 400, 16, FColor::Red, false, 0.2f);
 }

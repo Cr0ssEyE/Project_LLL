@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Entity/Character/Monster/LLL_MonsterBase.h"
 
 ULLL_FindPatrolPos_BTTaskNode::ULLL_FindPatrolPos_BTTaskNode()
@@ -28,7 +29,7 @@ EBTNodeResult::Type ULLL_FindPatrolPos_BTTaskNode::ExecuteTask(UBehaviorTreeComp
 	FNavLocation PatrolPos;
 	if (NavSystem->GetRandomPointInNavigableRadius(MonsterBase->GetActorLocation(), 400, PatrolPos))
 	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("PatrolPos"), PatrolPos.Location);
+		OwnerComp.GetBlackboardComponent()->SetValueAsVector(BBKEY_PATROL_POS, PatrolPos.Location);
 		return EBTNodeResult::Succeeded;
 	}
 	
