@@ -16,17 +16,22 @@ class Y2024Q1_PROTOTYPING_API ALLL_InteractiveObject : public ALLL_ObjectBase, p
 public:	
 	// Sets default values for this actor's properties
 	ALLL_InteractiveObject();
-
+	
+	virtual void Tick(float DeltaTime) override;
+	virtual void InteractiveEvent() override;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UBoxComponent> InteractOnlyCollisionBox;
-	
+
+	UPROPERTY()
+	uint8 bIsEnabled : 1;
+
+	UPROPERTY()
+	uint8 bIsOnceEventOnly : 1;
 };

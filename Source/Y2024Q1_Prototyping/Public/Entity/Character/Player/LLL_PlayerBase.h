@@ -7,6 +7,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ALLL_InteractiveObject;
 class ULLL_PlayerUIManager;
 class USpringArmComponent;
 class UCameraComponent;
@@ -21,6 +22,7 @@ class Y2024Q1_PROTOTYPING_API ALLL_PlayerBase : public ALLL_BaseCharacter
 {
 	GENERATED_BODY()
 
+	// 기본 상속 가상함수
 public:
 	ALLL_PlayerBase();
 
@@ -32,6 +34,9 @@ public:
 	// 외부 접근용
 public:
 	FORCEINLINE ULLL_PlayerBaseDataAsset* GetPlayerDataAsset() const { return PlayerBaseDataAsset; }
+	
+	void AddInteractableObject(ALLL_InteractiveObject* Object);
+	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
 	
 	// 카메라
 private:
@@ -52,12 +57,12 @@ private:
 	void AttackAction(const FInputActionValue& Value);
 	void SkillAction(const FInputActionValue& Value);
 	void InteractAction(const FInputActionValue& Value);
+	void InteractiveTargetChangeAction(const FInputActionValue& Value);
 	void InventoryAction(const FInputActionValue& Value);
 	void PauseAction(const FInputActionValue& Value);
 
 	void CharacterRotateToCursor();
-	void TraceInteractiveObject();
-	
+
 	// 데이터 에셋
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -110,10 +115,10 @@ private:
 	// 상호작용 관련 변수
 private:
 	UPROPERTY()
-	TArray<AActor*> InteractiveObjects;
+	TArray<ALLL_InteractiveObject*> InteractiveObjects;
 
 	UPROPERTY()
-	uint32 SelectedInteractiveObjectNum;
+	int SelectedInteractiveObjectNum;
 
 	UPROPERTY()
 	uint32 InteractionRange;

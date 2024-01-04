@@ -6,6 +6,7 @@
 #include "LLL_CharacterBaseDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;
 class ULLL_GamePauseWidget;
@@ -30,11 +31,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "일시정지 UI")
 	TSubclassOf<ULLL_GamePauseWidget> PauseWidgetClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스테이터스 UI")
-	TSubclassOf<ULLL_PlayerStatusWidget> StatusWidgetClass;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "인벤토리 UI")
 	TSubclassOf<ULLL_InventoryWidget> InventoryWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "상호작용 정보 UI")
+	TSubclassOf<ULLL_InteractionWidget> InteractionWidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스테이터스 UI")
+	TSubclassOf<ULLL_PlayerStatusWidget> StatusWidgetClass;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "플레이어 기본 이동속도")
@@ -97,6 +101,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "상호작용 입력 키")
 	TObjectPtr<UInputAction> InteractionInputAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "상호작용 대상 전환 키")
+	TObjectPtr<UInputAction> InteractiveTargetChangeInputAction;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "인벤토리 입력 키")
 	TObjectPtr<UInputAction> InventoryInputAction;
 

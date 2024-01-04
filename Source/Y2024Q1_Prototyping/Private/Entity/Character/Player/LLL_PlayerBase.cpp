@@ -10,6 +10,7 @@
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -90,7 +91,6 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 		}
 	}
 #endif
-
 	
 }
 
@@ -123,8 +123,42 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction);
 	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction);
 	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
+	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->InteractiveTargetChangeInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractiveTargetChangeAction);
 	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
 	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->PauseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::PauseAction);
+}
+
+void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
+{
+	InteractiveObjects.Emplace(Object);
+	PlayerUIManager->EnableInteractionWidget();
+}
+
+void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject)
+{
+	if(!InteractiveObjects.IsEmpty())
+	{
+		for(const auto InteractiveObject : InteractiveObjects)
+		{
+			if(RemoveObject == InteractiveObject)
+			{
+				InteractiveObjects.Remove(RemoveObject);
+				if(InteractiveObjects.IsEmpty())
+				{
+					PlayerUIManager->DisableInteractionWidget();
+					SelectedInteractiveObjectNum = 0;
+				}
+				else if(SelectedInteractiveObjectNum >= InteractiveObjects.Num())
+				{
+					while (SelectedInteractiveObjectNum < InteractiveObjects.Num())
+					{
+						SelectedInteractiveObjectNum--;
+					}
+					PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum]);
+				}
+			}
+		}
+	}
 }
 
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
@@ -212,7 +246,28 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
 {
+	if(!InteractiveObjects.Num())
+	{
+		return;
+	}
+	InteractiveObjects[SelectedInteractiveObjectNum]->InteractiveEvent();
+}
+
+void ALLL_PlayerBase::InteractiveTargetChangeAction(const FInputActionValue& Value)
+{
+	if(!InteractiveObjects.Num())
+	{
+		return;
+	}
 	
+	if(SelectedInteractiveObjectNum < InteractiveObjects.Num())
+	{
+		SelectedInteractiveObjectNum++;
+		if(SelectedInteractiveObjectNum == InteractiveObjects.Num())
+		{
+			SelectedInteractiveObjectNum = 0;
+		}
+	}
 }
 
 void ALLL_PlayerBase::InventoryAction(const FInputActionValue& Value)
@@ -259,11 +314,6 @@ void ALLL_PlayerBase::CharacterRotateToCursor()
 		ViewDirection.Z = 0.f;
 		SetActorRotation(ViewDirection.Rotation());
 	}
-}
-
-void ALLL_PlayerBase::TraceInteractiveObject()
-{
-	
 }
 
 void ALLL_PlayerBase::CheckDashElapsedTime()

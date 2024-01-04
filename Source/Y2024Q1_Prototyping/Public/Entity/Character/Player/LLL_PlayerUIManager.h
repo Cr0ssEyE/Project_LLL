@@ -7,6 +7,8 @@
 #include "LLL_PlayerUIManager.generated.h"
 
 
+class ALLL_InteractiveObject;
+class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;
 class ULLL_GamePauseWidget;
@@ -28,9 +30,12 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void TogglePauseWidget();
-	void ToggleInventoryWidget();
-	void UpdateStatusWidget();
+	void TogglePauseWidget() const;
+	void ToggleInventoryWidget() const;
+	void EnableInteractionWidget() const;
+	void DisableInteractionWidget() const;
+	void UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject);
+	void UpdateStatusWidget() const;
 
 	UFUNCTION(BlueprintCallable)
 	void SetAllWidgetVisibility(const bool Visible);
@@ -49,9 +54,14 @@ protected:
 	TObjectPtr<ULLL_InventoryWidget> InventoryWidget;
 
 	UPROPERTY(VisibleAnywhere)
+	TSubclassOf<ULLL_InteractionWidget> InteractionWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_InteractionWidget> InteractionWidget;
+	
+	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<ULLL_PlayerStatusWidget> PlayerStatusWidgetClass;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_PlayerStatusWidget> PlayerStatusWidget;
-	
 };

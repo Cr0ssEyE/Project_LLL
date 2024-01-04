@@ -4,6 +4,7 @@
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 
 #include "Components/BoxComponent.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 
 // Sets default values
 ALLL_InteractiveObject::ALLL_InteractiveObject()
@@ -23,10 +24,25 @@ void ALLL_InteractiveObject::BeginPlay()
 
 }
 
+void ALLL_InteractiveObject::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+	if(ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor))
+	{
+		PlayerCharacter->AddInteractableObject(this);
+	}
+}
+
 // Called every frame
 void ALLL_InteractiveObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
+
+void ALLL_InteractiveObject::InteractiveEvent()
+{
+	
+}
+
 

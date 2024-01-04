@@ -22,4 +22,6 @@ class Y2024Q1_PROTOTYPING_API ILLL_InteractiveEntityInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	virtual void InteractiveEvent() = 0;
+	
 };

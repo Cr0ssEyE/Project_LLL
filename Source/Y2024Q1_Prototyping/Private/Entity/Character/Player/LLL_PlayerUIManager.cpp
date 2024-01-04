@@ -5,7 +5,9 @@
 
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/Player/LLL_InteractionWidget.h"
 #include "UI/Player/LLL_InventoryWidget.h"
 #include "UI/Player/LLL_PlayerStatusWidget.h"
 #include "UI/System/LLL_GamePauseWidget.h"
@@ -19,6 +21,7 @@ ULLL_PlayerUIManager::ULLL_PlayerUIManager()
 
 	PauseWidget = CreateDefaultSubobject<ULLL_GamePauseWidget>(TEXT("PauseWidget"));
 	InventoryWidget = CreateDefaultSubobject<ULLL_InventoryWidget>(TEXT("InventoryWidget"));
+	InteractionWidget = CreateDefaultSubobject<ULLL_InteractionWidget>(TEXT("InteractionWidget"));
 	PlayerStatusWidget = CreateDefaultSubobject<ULLL_PlayerStatusWidget>(TEXT("StatusWidget"));
 }
 
@@ -31,6 +34,7 @@ void ULLL_PlayerUIManager::BeginPlay()
 	const ULLL_PlayerBaseDataAsset* PlayerBaseDataAsset = CastChecked<ALLL_PlayerBase>(GetOwner())->GetPlayerDataAsset();
 	PauseWidgetClass = PlayerBaseDataAsset->PauseWidgetClass;
 	InventoryWidgetClass = PlayerBaseDataAsset->InventoryWidgetClass;
+	InteractionWidgetClass = PlayerBaseDataAsset->InteractionWidgetClass;
 	PlayerStatusWidgetClass = PlayerBaseDataAsset->StatusWidgetClass;
 	
 	if(IsValid(PauseWidgetClass))
@@ -48,6 +52,13 @@ void ULLL_PlayerUIManager::BeginPlay()
 		InventoryWidget->SetIsEnabled(false);
 	}
 
+	if(IsValid(InteractionWidgetClass))
+	{
+		InteractionWidget = CastChecked<ULLL_InteractionWidget>(CreateWidget(GetWorld(), InteractionWidgetClass));
+		InteractionWidget->AddToViewport();
+		InteractionWidget->SetIsEnabled(false);
+	}
+	
 	if(IsValid(PlayerStatusWidgetClass))
 	{
 		PlayerStatusWidget = CastChecked<ULLL_PlayerStatusWidget>(CreateWidget(GetWorld(), PlayerStatusWidgetClass));
@@ -62,7 +73,7 @@ void ULLL_PlayerUIManager::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void ULLL_PlayerUIManager::TogglePauseWidget()
+void ULLL_PlayerUIManager::TogglePauseWidget() const
 {
 	if(PauseWidget->GetIsEnabled())
 	{
@@ -78,7 +89,7 @@ void ULLL_PlayerUIManager::TogglePauseWidget()
 	}
 }
 
-void ULLL_PlayerUIManager::ToggleInventoryWidget()
+void ULLL_PlayerUIManager::ToggleInventoryWidget() const
 {
 	//TODO: 애니메이션 처리 여부 생각하기
 	if(!InventoryWidget->IsPlayingAnimation())
@@ -96,9 +107,29 @@ void ULLL_PlayerUIManager::ToggleInventoryWidget()
 	}
 }
 
-void ULLL_PlayerUIManager::UpdateStatusWidget()
+void ULLL_PlayerUIManager::EnableInteractionWidget() const
+{
+	if(!InteractionWidget->GetIsEnabled())
+	{
+		InteractionWidget->PlayVisibleAnimation();
+		InteractionWidget->SetIsEnabled(true);
+	}
+}
+
+void ULLL_PlayerUIManager::DisableInteractionWidget() const
+{
+	InteractionWidget->PlayHideAnimation();
+	InteractionWidget->SetIsEnabled(false);
+}
+
+void ULLL_PlayerUIManager::UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject) const
 {
 	
+}
+
+void ULLL_PlayerUIManager::UpdateStatusWidget() const
+{
+	// TODO: 체력 시스템 구현하고 만들기
 }
 
 void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible)
