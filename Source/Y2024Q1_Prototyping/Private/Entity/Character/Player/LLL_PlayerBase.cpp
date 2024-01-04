@@ -139,6 +139,11 @@ void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
 {
 	InteractiveObjects.Emplace(Object);
 	PlayerUIManager->EnableInteractionWidget();
+	if(InteractiveObjects.Num() == 1)
+	{
+		SelectedInteractiveObjectNum = 0;
+	}
+	PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
 }
 
 void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject)
@@ -157,15 +162,20 @@ void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObj
 				}
 				else if(SelectedInteractiveObjectNum >= InteractiveObjects.Num())
 				{
-					while (SelectedInteractiveObjectNum < InteractiveObjects.Num())
+					while (SelectedInteractiveObjectNum >= InteractiveObjects.Num())
 					{
 						SelectedInteractiveObjectNum--;
 					}
-					PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum]);
 				}
+				break;
 			}
 		}
+		if(!InteractiveObjects.IsEmpty())
+		{
+			PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
+		}
 	}
+	
 }
 
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
@@ -267,14 +277,13 @@ void ALLL_PlayerBase::InteractiveTargetChangeAction(const FInputActionValue& Val
 		return;
 	}
 	
-	if(SelectedInteractiveObjectNum < InteractiveObjects.Num())
+	SelectedInteractiveObjectNum++;
+	if(SelectedInteractiveObjectNum == InteractiveObjects.Num())
 	{
-		SelectedInteractiveObjectNum++;
-		if(SelectedInteractiveObjectNum == InteractiveObjects.Num())
-		{
-			SelectedInteractiveObjectNum = 0;
-		}
+		SelectedInteractiveObjectNum = 0;
 	}
+	PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
+	
 }
 
 void ALLL_PlayerBase::InventoryAction(const FInputActionValue& Value)

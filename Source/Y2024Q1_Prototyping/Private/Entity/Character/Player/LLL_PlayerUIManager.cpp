@@ -122,9 +122,10 @@ void ULLL_PlayerUIManager::DisableInteractionWidget() const
 	InteractionWidget->SetIsEnabled(false);
 }
 
-void ULLL_PlayerUIManager::UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject) const
+void ULLL_PlayerUIManager::UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject, int Num) const
 {
-	
+	InteractionWidget->RenderNextInteractionPanel(static_cast<bool>(Num));
+	InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
 }
 
 void ULLL_PlayerUIManager::UpdateStatusWidget() const

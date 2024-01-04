@@ -34,7 +34,7 @@ public:
 	void ToggleInventoryWidget() const;
 	void EnableInteractionWidget() const;
 	void DisableInteractionWidget() const;
-	void UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject) const;
+	void UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject, int Num) const;
 	void UpdateStatusWidget() const;
 
 	UFUNCTION(BlueprintCallable)

@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/CanvasPanel.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "LLL_InteractionWidget.generated.h"
 
+class UCanvasPanel;
 class UImage;
 class UTextBlock;
 /**
@@ -25,6 +27,7 @@ public:
 	FORCEINLINE void PlayHideAnimation() { PlayAnimation(HideWidget); }
 	FORCEINLINE void SetInfoText(const FString& Text) const { InfoTextBlock->SetText(FText::FromString(Text)); }
 	FORCEINLINE void SetInfoImageIcon(UTexture2D* Icon) const { InfoImageIcon->SetBrushFromTexture(Icon); }
+	FORCEINLINE void RenderNextInteractionPanel(const bool Value) const { ChangeInteractionPanel->SetRenderOpacity(Value); }
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
@@ -32,6 +35,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UImage> InfoImageIcon;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UCanvasPanel> ChangeInteractionPanel;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> VisibleWidget;
