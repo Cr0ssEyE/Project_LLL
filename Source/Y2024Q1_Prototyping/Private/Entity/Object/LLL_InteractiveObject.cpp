@@ -33,6 +33,15 @@ void ALLL_InteractiveObject::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
+void ALLL_InteractiveObject::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorEndOverlap(OtherActor);
+	if(ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor))
+	{
+		PlayerCharacter->RemoveInteractableObject(this);
+	}
+}
+
 // Called every frame
 void ALLL_InteractiveObject::Tick(float DeltaTime)
 {
@@ -42,7 +51,7 @@ void ALLL_InteractiveObject::Tick(float DeltaTime)
 
 void ALLL_InteractiveObject::InteractiveEvent()
 {
-	
+	SetActorLocation(GetActorLocation() + FMath::VRand() * FMath::RandRange(-2, 2));
 }
 
 
