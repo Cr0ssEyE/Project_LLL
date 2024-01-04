@@ -14,11 +14,6 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
 	if (UseBlackboard(MonsterDataAsset->MonsterBaseBlackBoard, BlackboardComponent))
 	{
-		if (!RunBehaviorTree(MonsterDataAsset->MonsterBaseBehaviorTree))
-		{
-#if (WITH_EDITOR || BUILD_DEVELOPMENT)
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("MonsterBaseAIController couldn't run behavior tree!")));
-#endif
-		}
+		check(RunBehaviorTree(MonsterDataAsset->MonsterBaseBehaviorTree));
 	}
 }

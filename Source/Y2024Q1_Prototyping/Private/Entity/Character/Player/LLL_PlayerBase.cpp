@@ -66,7 +66,7 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckPlayerCollisionDebug())
 		{
@@ -98,18 +98,18 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 {
 	FVector2d MoveInputValue = Value.Get<FVector2D>();
-	float MovementVectorSizeSquared = MoveInputValue.SquaredLength();
+	const float MovementVectorSizeSquared = MoveInputValue.SquaredLength();
 	if (MovementVectorSizeSquared > 1.0f)
 	{
 		MoveInputValue.Normalize();
 	}
-	
-	FVector MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
+
+	const FVector MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	AddMovementInput(MoveDirection, 1.f);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckPlayerMovementDebug())
 		{
@@ -133,15 +133,13 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 	
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
-	
-	bool bResult = GetWorld()->LineTraceSingleByChannel(
-			HitResult,
-			MouseWorldLocation,
-			MouseWorldLocation + MouseWorldDirection * 10000.f,
-			ECC_Visibility
-		);
-	
-	if(bResult)
+
+	if(bool bResult = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		MouseWorldLocation,
+		MouseWorldLocation + MouseWorldDirection * 10000.f,
+		ECC_Visibility
+	))
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
