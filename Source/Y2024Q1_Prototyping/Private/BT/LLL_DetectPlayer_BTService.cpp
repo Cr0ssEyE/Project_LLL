@@ -35,7 +35,7 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 			if (Pawn && Pawn->GetController()->IsPlayerController())
 			{
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("PlayerBase"), Pawn);
-				DrawDebugSphere(GetWorld(), Center, 1000, 16, FColor::Green, false, 0.2f);
+				DrawDebugSphere(GetWorld(), Center + MonsterBase->GetActorForwardVector() * 500, 500, 16, FColor::Green, false, 0.2f);
 
 				DrawDebugPoint(GetWorld(), Pawn->GetActorLocation(), 10.0f, FColor::Green, false, 0.2f);
 				DrawDebugLine(GetWorld(), MonsterBase->GetActorLocation(), Pawn->GetActorLocation(), FColor::Green, false, 0.27f);
@@ -45,5 +45,5 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	}
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("PlayerBase"), nullptr);
-	DrawDebugSphere(GetWorld(), Center, 1000, 16, FColor::Red, false, 0.2f);
+	DrawDebugSphere(GetWorld(), Center + MonsterBase->GetActorForwardVector() * 500, 500, 16, FColor::Red, false, 0.2f);
 }
