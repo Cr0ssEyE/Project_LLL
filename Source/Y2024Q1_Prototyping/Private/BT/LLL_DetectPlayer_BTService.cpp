@@ -19,9 +19,9 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 
 	const ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 
-	const FVector Center = MonsterBase->GetActorLocation() + MonsterBase->GetActorForwardVector() * 500;
+	const FVector Center = MonsterBase->GetActorLocation();
 	const FQuat Rot = FQuat::Identity;
-	FCollisionShape Shape = FCollisionShape::MakeSphere(500);
+	FCollisionShape Shape = FCollisionShape::MakeSphere(400);
 
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams CollisionQueryParam(SCENE_QUERY_STAT(Detect), false, MonsterBase);
@@ -35,7 +35,7 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 			if (Pawn && Pawn->GetController()->IsPlayerController())
 			{
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("PlayerBase"), Pawn);
-				DrawDebugSphere(GetWorld(), Center + MonsterBase->GetActorForwardVector() * 500, 500, 16, FColor::Green, false, 0.2f);
+				DrawDebugSphere(GetWorld(), Center, 400, 16, FColor::Green, false, 0.2f);
 
 				DrawDebugPoint(GetWorld(), Pawn->GetActorLocation(), 10.0f, FColor::Green, false, 0.2f);
 				DrawDebugLine(GetWorld(), MonsterBase->GetActorLocation(), Pawn->GetActorLocation(), FColor::Green, false, 0.27f);
@@ -45,5 +45,5 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	}
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("PlayerBase"), nullptr);
-	DrawDebugSphere(GetWorld(), Center + MonsterBase->GetActorForwardVector() * 500, 500, 16, FColor::Red, false, 0.2f);
+	DrawDebugSphere(GetWorld(), Center, 400, 16, FColor::Red, false, 0.2f);
 }
