@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LLL_CharacterBaseDataAsset.h"
 #include "Engine/DataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
@@ -14,18 +15,12 @@ class ULLL_PlayerAnimInstance;
  * 
  */
 UCLASS()
-class Y2024Q1_PROTOTYPING_API ULLL_PlayerBaseDataAsset : public UDataAsset
+class Y2024Q1_PROTOTYPING_API ULLL_PlayerBaseDataAsset : public ULLL_CharacterBaseDataAsset
 {
 	GENERATED_BODY()
 
 	// 캐릭터 기본 설정
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "플레이어 캐릭터 메시")
-	TObjectPtr<USkeletalMesh> PlayerBaseMesh;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "플레이어 캐릭터 애님 블루프린트")
-	TSubclassOf<ULLL_PlayerAnimInstance> PlayerAnimBlueprint;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "플레이어 캐릭터 충돌 사이즈(높이, 반지름)")
 	FVector2D PlayerCollisionSize;
 
@@ -40,6 +35,9 @@ public:
 	float PlayerBaseDashSpeed;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "플레이어 방향전환 속도")
+	float PlayerBaseTurnSpeed;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "플레이어 지면 마찰력")
 	float PlayerBaseGroundFriction;
 	
 public:

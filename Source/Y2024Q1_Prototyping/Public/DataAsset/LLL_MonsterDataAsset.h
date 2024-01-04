@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LLL_CharacterBaseDataAsset.h"
 #include "Engine/DataAsset.h"
 #include "LLL_MonsterDataAsset.generated.h"
 
@@ -12,7 +13,7 @@ class UBlackboardData;
  * 
  */
 UCLASS()
-class Y2024Q1_PROTOTYPING_API ULLL_MonsterDataAsset : public UDataAsset
+class Y2024Q1_PROTOTYPING_API ULLL_MonsterDataAsset : public ULLL_CharacterBaseDataAsset
 {
 	GENERATED_BODY()
 

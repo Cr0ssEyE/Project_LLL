@@ -28,8 +28,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		
 		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->PlayerCollisionSize.Y, PlayerBaseDataAsset->PlayerCollisionSize.X);
 		
-		GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->PlayerBaseMesh);
-		GetMesh()->SetAnimInstanceClass(PlayerBaseDataAsset->PlayerAnimBlueprint);
+		GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->CharacterBaseMesh);
+		GetMesh()->SetAnimInstanceClass(PlayerBaseDataAsset->CharacterAnimBlueprint);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->PlayerCollisionSize.X));
 
@@ -37,6 +37,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = PlayerBaseDataAsset->PlayerBaseAccelerateSpeed;
 		GetCharacterMovement()->GroundFriction = GroundFriction = PlayerBaseDataAsset->PlayerBaseGroundFriction;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, PlayerBaseDataAsset->PlayerBaseTurnSpeed * 360.f);
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationRoll = false;
@@ -78,6 +79,20 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 		}
 	}
 #endif
+}
+
+float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	// 무적 또는 데미지 처리 무시는 해당 구문에서 추가
+	if(bIsInvincibleOnDashing)
+	{
+		return 0;
+	}
+	
+	return 0;
 }
 
 void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
