@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "LLL_CharacterBaseDataAsset.h"
-#include "Engine/DataAsset.h"
 #include "LLL_MonsterDataAsset.generated.h"
 
 class UBehaviorTree;

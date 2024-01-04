@@ -29,14 +29,14 @@ public:
 	// 플레이어 디버그 변수 Getter / Setter
 public:
 	FORCEINLINE void SetPlayerMovementDebug(bool value) { bPlayerMovementDebug = value; }
-	FORCEINLINE void SetPlayerEvadeDebug(bool value) { bPlayerEvadeDebug = value; }
+	FORCEINLINE void SetPlayerDashDebug(bool value) { bPlayerDashDebug = value; }
 	FORCEINLINE void SetPlayerSkillDebug(bool value) { bPlayerSkillDebug = value; }
 	FORCEINLINE void SetPlayerHitCheckDebug(bool value) { bPlayerHitCheckDebug = value; }
 	FORCEINLINE void SetPlayerAttackDebug(bool value) { bPlayerAttackDebug = value; }
 	FORCEINLINE void SetPlayerCollisionDebug(bool value) { bPlayerCollisionDebug = value; }
 	
 	FORCEINLINE bool CheckPlayerMovementDebug() const { return bPlayerMovementDebug; }
-	FORCEINLINE bool CheckPlayerEvadeDebug() const { return bPlayerEvadeDebug; }
+	FORCEINLINE bool CheckPlayerDashDebug() const { return bPlayerDashDebug; }
 	FORCEINLINE bool CheckPlayerSkillDebug() const { return bPlayerSkillDebug; }
 	FORCEINLINE bool CheckPlayerHitDebug() const { return bPlayerHitCheckDebug; }
 	FORCEINLINE bool CheckPlayerAttackDebug() const { return bPlayerAttackDebug; }
@@ -70,35 +70,35 @@ public:
 	
 	// 플레이어 디버그 변수
 protected:
-	uint32 bPlayerMovementDebug : 1;
+	uint8 bPlayerMovementDebug : 1;
 
-	uint32 bPlayerEvadeDebug : 1;
+	uint8 bPlayerDashDebug : 1;
 
-	uint32 bPlayerSkillDebug : 1;
+	uint8 bPlayerSkillDebug : 1;
 
-	uint32 bPlayerHitCheckDebug : 1;
+	uint8 bPlayerHitCheckDebug : 1;
 
-	uint32 bPlayerAttackDebug : 1;
+	uint8 bPlayerAttackDebug : 1;
 
-	uint32 bPlayerCollisionDebug : 1;
+	uint8 bPlayerCollisionDebug : 1;
 	
 	// 몬스터 디버그 변수
 protected:
-	uint32 bMonsterHitCheckDebug : 1;
+	uint8 bMonsterHitCheckDebug : 1;
 
-	uint32 bMonsterAttackDebug : 1;
+	uint8 bMonsterAttackDebug : 1;
 
-	uint32 bMonsterCollisionDebug : 1;
+	uint8 bMonsterCollisionDebug : 1;
 
 	// 오브젝트 디버그 변수
 protected:
-	uint32 bObjectGenerateDebug : 1;
+	uint8 bObjectGenerateDebug : 1;
 
-	uint32 bObjectActivateDebug : 1;
+	uint8 bObjectActivateDebug : 1;
 
-	uint32 bObjectDestroyDebug : 1;
+	uint8 bObjectDestroyDebug : 1;
 
-	uint32 bObjectHitCheckDebug : 1;
+	uint8 bObjectHitCheckDebug : 1;
 
-	uint32 bObjectCollisionDebug : 1;
+	uint8 bObjectCollisionDebug : 1;
 };

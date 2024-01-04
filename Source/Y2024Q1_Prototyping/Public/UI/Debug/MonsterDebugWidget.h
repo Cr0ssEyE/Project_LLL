@@ -22,26 +22,26 @@ public:
 protected:
 	UFUNCTION(BlueprintCallable)
 	void MonsterAIDisableCheckBoxEvent(bool value);
-	
+
 	UFUNCTION(BlueprintCallable)
 	void MonsterHitCheckCheckBoxEvent(bool value);
-	
+
 	UFUNCTION(BlueprintCallable)
 	void MonsterAttackCheckBoxEvent(bool value);
-	
+
 	UFUNCTION(BlueprintCallable)
 	void MonsterCollisionCheckBoxEvent(bool value);
-	
+
 protected:
-	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite, meta=(BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UCheckBox> MonsterAIDisableCheckBox;
 
-	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite, meta=(BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UCheckBox> MonsterHitCheckBox;
 
-	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite, meta=(BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UCheckBox> MonsterAttackCheckBox;
 
-	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite, meta=(BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UCheckBox> MonsterCollisionCheckBox;
 };
