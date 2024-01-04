@@ -22,13 +22,10 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 
 	const FVector Center = MonsterBase->GetActorLocation();
 	const FQuat Rot = FQuat::Identity;
-	FCollisionShape Shape = FCollisionShape::MakeSphere(400);
+	const FCollisionShape Shape = FCollisionShape::MakeSphere(400);
 
 	TArray<FOverlapResult> OverlapResults;
-	FCollisionQueryParams CollisionQueryParam(SCENE_QUERY_STAT(Detect), false, MonsterBase);
-	bool bResult = GetWorld()->OverlapMultiByProfile(OverlapResults, Center, Rot, TEXT("Monster"), Shape, CollisionQueryParam);
-
-	if (bResult)
+	if (GetWorld()->OverlapMultiByProfile(OverlapResults, Center, Rot, TEXT("Monster"), Shape))
 	{
 		for (FOverlapResult const& OverlapResult : OverlapResults)
 		{
