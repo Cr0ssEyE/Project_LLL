@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
+#include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -21,6 +22,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	
 	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(TEXT("/Script/Y2024Q1_Prototyping.LLL_PlayerBaseDataAsset'/Game/7-Player-View-Movement/Assets/PlayerBaseDataAsset.PlayerBaseDataAsset'"), EAssertionLevel::Check);
+
+	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	
 	if (IsValid(PlayerBaseDataAsset))
 	{
@@ -37,7 +40,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = PlayerBaseDataAsset->PlayerBaseAccelerateSpeed;
 		GetCharacterMovement()->GroundFriction = GroundFriction = PlayerBaseDataAsset->PlayerBaseGroundFriction;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, PlayerBaseDataAsset->PlayerBaseTurnSpeed * 360.f);
+		GetCharacterMovement()->RotationRate = FRotator(0.f, PlayerBaseDataAsset->PlayerBaseTurnSpeed * 360.f, 0.f);
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationRoll = false;
@@ -54,6 +57,12 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		SpringArm->bInheritYaw = false;
 		SpringArm->bInheritRoll = false;
 		SpringArm->SetupAttachment(RootComponent);
+
+		MaxDashCount = PlayerBaseDataAsset->DashBaseCount;
+		DashInputCheckTime = PlayerBaseDataAsset->DashInputCheckTime;
+		DashCoolDownSeconds = PlayerBaseDataAsset->DashBaseCoolDownSeconds;
+		DashInvincibleTime = PlayerBaseDataAsset->DashBaseInvincibleTime;
+		
 	}
 }
 
@@ -113,6 +122,10 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
 	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction);
 	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction);
+	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction);
+	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
+	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
+	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->PauseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::PauseAction);
 }
 
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
@@ -123,8 +136,8 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	{
 		MoveInputValue.Normalize();
 	}
-
-	const FVector MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
+	
+	MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	AddMovementInput(MoveDirection, 1.f);
 
@@ -141,10 +154,73 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 {
-	LaunchCharacter(GetActorForwardVector() * (DashSpeed * 1000.f), true, true);
+	if(DashDisabledTime > 0 && CurrentDashCount >= MaxDashCount)
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerDashDebug())
+			{
+				if(CurrentDashCount >= MaxDashCount)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 횟수 사용 후 입력. 현재 사용 횟수|최대 사용 횟수 : %d, %d"), CurrentDashCount, MaxDashCount));
+				}
+				else if(DashDisabledTime > 0)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 대기시간 도중 입력. 현재 남은 대기시간 : %f"), DashCoolDownSeconds - DashDisabledTime));
+				}
+			}
+		}
+#endif
+		return;
+	}
+	
+	CurrentDashCount++;
+	DashElapsedTime = 0;
+	DashDisabledTime = 0;
+	
+	LaunchCharacter(MoveDirection * (DashSpeed * 1000.f), true, true);
+	
+	bIsInvincibleOnDashing = true;
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashInvincibilityTime);
+	
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerDashDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 입력. 현재 사용 횟수|최대 사용 횟수 : %d, %d"), CurrentDashCount, MaxDashCount));
+		}
+	}
+#endif
 }
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
+{
+	CharacterRotateToCursor();
+}
+
+void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value)
+{
+	
+}
+
+void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
+{
+	
+}
+
+void ALLL_PlayerBase::InventoryAction(const FInputActionValue& Value)
+{
+	PlayerUIManager->ToggleInventoryWidget();
+}
+
+void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
+{
+	PlayerUIManager->TogglePauseWidget();
+}
+
+void ALLL_PlayerBase::CharacterRotateToCursor()
 {
 	const APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	FVector MouseWorldLocation;
@@ -164,7 +240,7 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckPlayerAttackDebug())
+			if(ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
 			{
 				DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
 				DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10.f, FColor::Red, false, 3.f);
@@ -173,34 +249,57 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 		}
 #endif
 		
-		FVector AttackDirection = (HitResult.ImpactPoint - GetActorLocation()).GetSafeNormal();
-		AttackDirection.Z = 0.f;
-		SetActorRotation(AttackDirection.Rotation());
+		FVector ViewDirection = (HitResult.ImpactPoint - GetActorLocation()).GetSafeNormal();
+		ViewDirection.Z = 0.f;
+		SetActorRotation(ViewDirection.Rotation());
 	}
-}
-
-void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value)
-{
-	
-}
-
-void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
-{
-	
-}
-
-void ALLL_PlayerBase::InventoryAction(const FInputActionValue& Value)
-{
-	
-}
-
-void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
-{
-	
 }
 
 void ALLL_PlayerBase::CheckDashInvincibilityTime()
 {
-	
+	DashElapsedTime += GetWorld()->DeltaTimeSeconds;
+	if(DashElapsedTime >= DashInvincibleTime && bIsInvincibleOnDashing)
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerDashDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 무적시간 종료")));
+			}
+		}
+#endif
+
+		bIsInvincibleOnDashing = false;
+	}
+
+	if(DashElapsedTime >= DashInputCheckTime)
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerDashDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 연속사용 입력대기 종료")));
+			}
+		}
+#endif
+		
+		CurrentDashCount = 0;
+		GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashDelay);
+		return;
+	}
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashInvincibilityTime);
+}
+
+void ALLL_PlayerBase::CheckDashDelay()
+{
+	DashDisabledTime += GetWorld()->DeltaTimeSeconds;
+	if(DashDisabledTime >= DashCoolDownSeconds)
+	{
+		DashDisabledTime = 0.f;
+		return;
+	}
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashDelay);
 }
 

@@ -7,6 +7,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ULLL_PlayerUIManager;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
@@ -28,6 +29,10 @@ public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	// 외부 접근용
+public:
+	FORCEINLINE ULLL_PlayerBaseDataAsset* GetPlayerDataAsset() const { return PlayerBaseDataAsset; }
+	
 	// 카메라
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -35,8 +40,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<USpringArmComponent> SpringArm;
+
+private:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_PlayerUIManager> PlayerUIManager;
 	
-	// 입력 액션
+	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);
 	void DashAction(const FInputActionValue& Value);
@@ -46,6 +55,8 @@ private:
 	void InventoryAction(const FInputActionValue& Value);
 	void PauseAction(const FInputActionValue& Value);
 
+	void CharacterRotateToCursor();
+	
 	// 데이터 에셋
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -53,33 +64,49 @@ private:
 
 	// 이동 관련 변수
 private:
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY()
 	float MoveSpeed;
 
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY()
 	float AccelerateSpeed;
 
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY()
 	float DashSpeed;
 
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY()
 	float GroundFriction;
 
+	UPROPERTY()
+	FVector MoveDirection;
+	
 	// 돌진 관련 함수
 private:
 	void CheckDashInvincibilityTime();
-
+	void CheckDashDelay();
+	
 	// 돌진 관련 변수
 private:
 	UPROPERTY(VisibleDefaultsOnly)
-	uint32 DashCount;
+	uint32 MaxDashCount;
+
+	UPROPERTY()
+	uint32 CurrentDashCount;
+
+	UPROPERTY()
+	float DashInputCheckTime;
 	
-	UPROPERTY(VisibleDefaultsOnly)
-	float DashElapsedTime;
-	
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY()
+	float DashCoolDownSeconds;
+
+	UPROPERTY()
 	float DashInvincibleTime;
 
-	UPROPERTY(VisibleDefaultsOnly)
-	uint32 bIsInvincibleOnDashing : 1;
+	UPROPERTY()
+	float DashDisabledTime;
+	
+	UPROPERTY()
+	float DashElapsedTime;
+
+	uint8 bIsInvincibleOnDashing : 1;
+	
 };
