@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -30,6 +31,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		DashSpeed = PlayerBaseDataAsset->PlayerBaseDashSpeed;
 		
 		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->PlayerCollisionSize.Y, PlayerBaseDataAsset->PlayerCollisionSize.X);
+		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 		
 		GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->CharacterBaseMesh);
 		GetMesh()->SetAnimInstanceClass(PlayerBaseDataAsset->CharacterAnimBlueprint);

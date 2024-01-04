@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/LLL_MonsterBase.h"
 
 ULLL_DetectPlayer_BTService::ULLL_DetectPlayer_BTService()
@@ -25,7 +26,7 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	const FCollisionShape Shape = FCollisionShape::MakeSphere(400);
 
 	TArray<FOverlapResult> OverlapResults;
-	if (GetWorld()->OverlapMultiByProfile(OverlapResults, Center, Rot, TEXT("Monster"), Shape))
+	if (GetWorld()->OverlapMultiByChannel(OverlapResults, Center, Rot, ECC_PLAYER_ONLY, Shape))
 	{
 		for (FOverlapResult const& OverlapResult : OverlapResults)
 		{
