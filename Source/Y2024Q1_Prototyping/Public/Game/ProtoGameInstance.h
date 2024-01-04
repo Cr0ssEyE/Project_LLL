@@ -34,6 +34,7 @@ public:
 	FORCEINLINE void SetPlayerHitCheckDebug(bool value) { bPlayerHitCheckDebug = value; }
 	FORCEINLINE void SetPlayerAttackDebug(bool value) { bPlayerAttackDebug = value; }
 	FORCEINLINE void SetPlayerCollisionDebug(bool value) { bPlayerCollisionDebug = value; }
+	FORCEINLINE void SetPlayerInteractionDebug(bool value) { bPlayerInteractionDebug = value; }
 	
 	FORCEINLINE bool CheckPlayerMovementDebug() const { return bPlayerMovementDebug; }
 	FORCEINLINE bool CheckPlayerDashDebug() const { return bPlayerDashDebug; }
@@ -41,6 +42,7 @@ public:
 	FORCEINLINE bool CheckPlayerHitDebug() const { return bPlayerHitCheckDebug; }
 	FORCEINLINE bool CheckPlayerAttackDebug() const { return bPlayerAttackDebug; }
 	FORCEINLINE bool CheckPlayerCollisionDebug() const { return bPlayerCollisionDebug; }
+	FORCEINLINE bool CheckPlayerInteractionDebug() const { return bPlayerInteractionDebug; }
 	
 	// 몬스터 디버그 변수 Getter / Setter
 public:
@@ -81,6 +83,8 @@ protected:
 	uint8 bPlayerAttackDebug : 1;
 
 	uint8 bPlayerCollisionDebug : 1;
+
+	uint8 bPlayerInteractionDebug : 1;
 	
 	// 몬스터 디버그 변수
 protected:

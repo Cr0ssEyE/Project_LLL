@@ -74,6 +74,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "돌진 기본 무적 시간")
 	float DashBaseInvincibleTime;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "상호작용 거리")
+	float InteractionRange;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "키 입력 매핑 IMC")

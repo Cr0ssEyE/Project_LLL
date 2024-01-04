@@ -41,6 +41,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		GetCharacterMovement()->GroundFriction = GroundFriction = PlayerBaseDataAsset->PlayerBaseGroundFriction;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->RotationRate = FRotator(0.f, PlayerBaseDataAsset->PlayerBaseTurnSpeed * 360.f, 0.f);
+		GetCharacterMovement()->FallingLateralFriction = 3.0f;
+		
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationRoll = false;
@@ -88,6 +90,8 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 		}
 	}
 #endif
+
+	
 }
 
 float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -149,7 +153,7 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 {
-	if(DashDisabledTime > 0 && CurrentDashCount >= MaxDashCount)
+	if(DashDisabledTime > 0 || CurrentDashCount >= MaxDashCount)
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -177,7 +181,11 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 	LaunchCharacter(MoveDirection * (DashSpeed * 1000.f), true, true);
 	
 	bIsInvincibleOnDashing = true;
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashInvincibilityTime);
+	if(GetWorldTimerManager().IsTimerActive(DashStateCheckTimerHandle))
+	{
+		GetWorldTimerManager().ClearTimer(DashStateCheckTimerHandle);
+	}
+	GetWorldTimerManager().SetTimer(DashStateCheckTimerHandle, this, &ALLL_PlayerBase::CheckDashElapsedTime, 0.01f, true);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -193,11 +201,13 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 {
 	CharacterRotateToCursor();
+	// TODO: 공격 처리용 가상 함수 만들어서 붙이기
 }
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value)
 {
-	
+	CharacterRotateToCursor();
+	// TODO: 스킬 처리용 가상 함수 만들어서 붙이기
 }
 
 void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
@@ -251,7 +261,12 @@ void ALLL_PlayerBase::CharacterRotateToCursor()
 	}
 }
 
-void ALLL_PlayerBase::CheckDashInvincibilityTime()
+void ALLL_PlayerBase::TraceInteractiveObject()
+{
+	
+}
+
+void ALLL_PlayerBase::CheckDashElapsedTime()
 {
 	DashElapsedTime += GetWorld()->DeltaTimeSeconds;
 	if(DashElapsedTime >= DashInvincibleTime && bIsInvincibleOnDashing)
@@ -283,16 +298,25 @@ void ALLL_PlayerBase::CheckDashInvincibilityTime()
 		
 		CurrentDashCount = 0;
 		GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashDelay);
-		return;
+		GetWorldTimerManager().ClearTimer(DashStateCheckTimerHandle);
 	}
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashInvincibilityTime);
 }
 
 void ALLL_PlayerBase::CheckDashDelay()
 {
 	DashDisabledTime += GetWorld()->DeltaTimeSeconds;
-	if(DashDisabledTime >= DashCoolDownSeconds)
+	if(DashDisabledTime >= DashCoolDownSeconds || bIsInvincibleOnDashing)
 	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerDashDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 재사용 대기시간 종료")));
+			}
+		}
+#endif
+		
 		DashDisabledTime = 0.f;
 		return;
 	}

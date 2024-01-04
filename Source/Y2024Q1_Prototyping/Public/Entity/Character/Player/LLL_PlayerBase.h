@@ -56,6 +56,7 @@ private:
 	void PauseAction(const FInputActionValue& Value);
 
 	void CharacterRotateToCursor();
+	void TraceInteractiveObject();
 	
 	// 데이터 에셋
 private:
@@ -81,32 +82,40 @@ private:
 	
 	// 돌진 관련 함수
 private:
-	void CheckDashInvincibilityTime();
+	void CheckDashElapsedTime();
 	void CheckDashDelay();
 	
 	// 돌진 관련 변수
 private:
+	FTimerHandle DashStateCheckTimerHandle;
+
 	UPROPERTY(VisibleDefaultsOnly)
 	uint32 MaxDashCount;
 
 	UPROPERTY()
 	uint32 CurrentDashCount;
-
-	UPROPERTY()
+	
 	float DashInputCheckTime;
 	
-	UPROPERTY()
 	float DashCoolDownSeconds;
-
-	UPROPERTY()
+	
 	float DashInvincibleTime;
-
-	UPROPERTY()
+	
 	float DashDisabledTime;
 	
-	UPROPERTY()
 	float DashElapsedTime;
 
 	uint8 bIsInvincibleOnDashing : 1;
+
+	// 상호작용 관련 변수
+private:
+	UPROPERTY()
+	TArray<AActor*> InteractiveObjects;
+
+	UPROPERTY()
+	uint32 SelectedInteractiveObjectNum;
+
+	UPROPERTY()
+	uint32 InteractionRange;
 	
 };

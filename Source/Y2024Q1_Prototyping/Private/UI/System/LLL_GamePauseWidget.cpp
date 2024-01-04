@@ -4,6 +4,7 @@
 #include "UI/System/LLL_GamePauseWidget.h"
 
 #include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
 
 void ULLL_GamePauseWidget::NativeConstruct()
 {
@@ -17,6 +18,7 @@ void ULLL_GamePauseWidget::ResumeButtonEvent()
 {
 	SetVisibility(ESlateVisibility::Hidden);
 	SetIsEnabled(false);
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
 void ULLL_GamePauseWidget::SettingButtonEvent()

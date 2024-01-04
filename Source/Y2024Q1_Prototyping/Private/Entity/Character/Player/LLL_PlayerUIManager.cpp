@@ -36,6 +36,9 @@ void ULLL_PlayerUIManager::BeginPlay()
 	if(IsValid(PauseWidgetClass))
 	{
 		PauseWidget = CastChecked<ULLL_GamePauseWidget>(CreateWidget(GetWorld(), PauseWidgetClass));
+		PauseWidget->AddToViewport();
+		PauseWidget->SetVisibility(ESlateVisibility::Hidden);
+		PauseWidget->SetIsEnabled(false);
 	}
 
 	if(IsValid(InventoryWidgetClass))
@@ -61,14 +64,16 @@ void ULLL_PlayerUIManager::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void ULLL_PlayerUIManager::TogglePauseWidget()
 {
-	if(PauseWidget->IsInViewport())
+	if(PauseWidget->GetIsEnabled())
 	{
-		PauseWidget->RemoveFromParent();
+		PauseWidget->SetVisibility(ESlateVisibility::Hidden);
+		PauseWidget->SetIsEnabled(false);
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 	}
 	else
 	{
-		PauseWidget->AddToViewport();
+		PauseWidget->SetVisibility(ESlateVisibility::Visible);
+		PauseWidget->SetIsEnabled(true);
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), SMALL_NUMBER);
 	}
 }
