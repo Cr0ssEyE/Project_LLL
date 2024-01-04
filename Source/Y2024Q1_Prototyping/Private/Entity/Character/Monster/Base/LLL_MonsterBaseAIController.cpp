@@ -1,9 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "Entity/Character/Monster/LLL_MonsterBaseAIController.h"
+
 #include "DataAsset/LLL_MonsterDataAsset.h"
 
-#include "Entity/Character/Monster/LLL_MonsterBaseAIController.h"
+ALLL_MonsterBaseAIController::ALLL_MonsterBaseAIController()
+{
+	static ConstructorHelpers::FObjectFinder<ULLL_MonsterDataAsset> DA_Monster(TEXT("/Script/Y2024Q1_Prototyping.LLL_MonsterDataAsset'/Game/DataAsset/DA_Monster.DA_Monster'"));
+	if (DA_Monster.Succeeded())
+	{
+		MonsterDataAsset = DA_Monster.Object;
+	}
+}
 
 void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 {
@@ -13,6 +22,8 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	check(MonsterDataAsset);
 	UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
 	
-	UseBlackboard(MonsterDataAsset->MonsterBaseBlackBoard, BlackboardComponent);
-	RunBehaviorTree(MonsterDataAsset->MonsterBaseBehaviorTree);
+	if (UseBlackboard(MonsterDataAsset->MonsterBaseBlackBoard, BlackboardComponent))
+	{
+		check(RunBehaviorTree(MonsterDataAsset->MonsterBaseBehaviorTree));
+	}
 }
