@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -26,11 +27,12 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	
-	if(IsValid(PlayerBaseDataAsset))
+	if (IsValid(PlayerBaseDataAsset))
 	{
 		DashSpeed = PlayerBaseDataAsset->PlayerBaseDashSpeed;
 		
 		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->PlayerCollisionSize.Y, PlayerBaseDataAsset->PlayerCollisionSize.X);
+		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 		
 		GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->CharacterBaseMesh);
 		GetMesh()->SetAnimInstanceClass(PlayerBaseDataAsset->CharacterAnimBlueprint);
@@ -79,9 +81,9 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerCollisionDebug())
+		if (ProtoGameInstance->CheckPlayerCollisionDebug())
 		{
 			GetCapsuleComponent()->SetHiddenInGame(false);
 		}
@@ -100,9 +102,14 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	// 무적 또는 데미지 처리 무시는 해당 구문에서 추가
-	if(bIsInvincibleOnDashing)
+	if (bIsInvincibleOnDashing)
 	{
 		return 0;
+	}
+
+	if (CharacterHealthAmount <= 0)
+	{
+		Dead();
 	}
 	
 	return 0;
@@ -164,7 +171,7 @@ void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObj
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 {
 	FVector2d MoveInputValue = Value.Get<FVector2D>();
-	float MovementVectorSizeSquared = MoveInputValue.SquaredLength();
+	const float MovementVectorSizeSquared = MoveInputValue.SquaredLength();
 	if (MovementVectorSizeSquared > 1.0f)
 	{
 		MoveInputValue.Normalize();
@@ -175,9 +182,9 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	AddMovementInput(MoveDirection, 1.f);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerMovementDebug())
+		if (ProtoGameInstance->CheckPlayerMovementDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("플레이어 캐릭터 방향 X: %f, Y: %f"), MoveDirection.X, MoveDirection.Y));
 		}
@@ -289,17 +296,16 @@ void ALLL_PlayerBase::CharacterRotateToCursor()
 	
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
-	
-	bool bResult = GetWorld()->LineTraceSingleByChannel(
-			HitResult,
-			MouseWorldLocation,
-			MouseWorldLocation + MouseWorldDirection * 10000.f,
-			ECC_Visibility
-		);
-	if(bResult)
+
+	if (bool bResult = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		MouseWorldLocation,
+		MouseWorldLocation + MouseWorldDirection * 10000.f,
+		ECC_Visibility
+	))
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if(ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
 			{

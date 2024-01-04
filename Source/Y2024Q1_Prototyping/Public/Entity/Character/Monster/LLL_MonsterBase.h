@@ -18,7 +18,14 @@ class Y2024Q1_PROTOTYPING_API ALLL_MonsterBase : public ALLL_BaseCharacter
 public:
 	ALLL_MonsterBase();
 
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	
+	void Stun();
+
 protected:
-	UPROPERTY()
+	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterDataAsset> MonsterDataAsset;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+	uint8 bIsStun : 1;
 };
