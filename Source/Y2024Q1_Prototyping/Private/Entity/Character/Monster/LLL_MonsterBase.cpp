@@ -20,11 +20,6 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-void ALLL_MonsterBase::SetDead()
-{
-	bIsDead = true;
-}
-
 bool ALLL_MonsterBase::DeadAnimationIsEnd()
 {
 	return true;
