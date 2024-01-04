@@ -8,6 +8,7 @@
 // Object Channel
 #define ECC_PLAYER ECC_GameTraceChannel11
 #define ECC_ENEMY ECC_GameTraceChannel12
+#define ECC_GIMMICK ECC_EngineTraceChannel3
 
 // Trace Channel
 #define ECC_PLAYER_ONLY ECC_GameTraceChannel11
@@ -17,3 +18,4 @@
 #define CP_STATIC_ONLY TEXT("IgnoreOnlyPawn")
 #define CP_PLAYER TEXT("Player")
 #define CP_MONSTER TEXT("Monster")
+#define CP_INTERACTION TEXT("Interaction")

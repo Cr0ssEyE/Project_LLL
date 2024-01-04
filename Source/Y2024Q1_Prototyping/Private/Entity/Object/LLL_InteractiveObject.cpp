@@ -4,7 +4,9 @@
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 
 #include "Components/BoxComponent.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/ProtoGameInstance.h"
 
 // Sets default values
 ALLL_InteractiveObject::ALLL_InteractiveObject()
@@ -14,6 +16,7 @@ ALLL_InteractiveObject::ALLL_InteractiveObject()
 
 	InteractOnlyCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Ineractive Collision"));
 	InteractOnlyCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	InteractOnlyCollisionBox->SetCollisionProfileName(CP_INTERACTION);
 	InteractOnlyCollisionBox->SetupAttachment(RootComponent);
 }
 
@@ -51,7 +54,15 @@ void ALLL_InteractiveObject::Tick(float DeltaTime)
 
 void ALLL_InteractiveObject::InteractiveEvent()
 {
-	SetActorLocation(GetActorLocation() + FMath::VRand() * FMath::RandRange(-2, 2));
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckObjectActivateDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("오브젝트 상호작용 실행")));
+		}
+	}
+#endif
 }
 
 

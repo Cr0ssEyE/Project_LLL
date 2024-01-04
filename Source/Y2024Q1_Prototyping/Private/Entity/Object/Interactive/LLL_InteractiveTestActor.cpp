@@ -28,6 +28,7 @@ void ALLL_InteractiveTestActor::Tick(float DeltaTime)
 
 void ALLL_InteractiveTestActor::InteractiveEvent()
 {
+	Super::InteractiveEvent();
 	
 }
 
