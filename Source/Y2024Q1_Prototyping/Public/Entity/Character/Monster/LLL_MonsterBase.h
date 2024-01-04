@@ -18,6 +18,9 @@ class Y2024Q1_PROTOTYPING_API ALLL_MonsterBase : public ALLL_BaseCharacter
 public:
 	ALLL_MonsterBase();
 
+	void SetDead();
+	bool DeadAnimationIsEnd();
+
 protected:
 	UPROPERTY()
 	TObjectPtr<const ULLL_MonsterDataAsset> MonsterDataAsset;

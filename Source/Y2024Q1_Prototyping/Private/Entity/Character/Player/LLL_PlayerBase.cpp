@@ -91,6 +91,11 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	{
 		return 0;
 	}
+
+	if(CharacterHealthAmount <= 0)
+	{
+		Dead();
+	}
 	
 	return 0;
 }

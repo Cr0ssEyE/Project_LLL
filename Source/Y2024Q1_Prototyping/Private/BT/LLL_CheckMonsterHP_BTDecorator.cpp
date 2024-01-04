@@ -16,7 +16,12 @@ bool ULLL_CheckMonsterHP_BTDecorator::CalculateRawConditionValue(UBehaviorTreeCo
 	Super::CalculateRawConditionValue(OwnerComp, NodeMemory);
 
 	check(OwnerComp.GetAIOwner())
-	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
+	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 
-	
+	if (Monster->CheckCharacterHealth() <= 0)
+	{
+		return true;
+	}
+
+	return false;
 }

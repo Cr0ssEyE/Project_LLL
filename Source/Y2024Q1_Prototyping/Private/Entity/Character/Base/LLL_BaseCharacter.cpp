@@ -18,17 +18,6 @@ void ALLL_BaseCharacter::BeginPlay()
 	
 }
 
-float ALLL_BaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
-{
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	if(CharacterHealthAmount <= 0)
-	{
-		bIsDead = true;
-	}
-	return 0;
-}
-
 // Called every frame
 void ALLL_BaseCharacter::Tick(float DeltaTime)
 {
@@ -43,3 +32,8 @@ void ALLL_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 }
 
+void ALLL_BaseCharacter::Dead()
+{
+	CharacterHealthAmount = 0;
+	bIsDead = true;
+}
