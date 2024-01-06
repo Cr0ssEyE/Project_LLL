@@ -52,6 +52,20 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
 
+	// 이동 관련 변수
+protected:
+	UPROPERTY()
+	float MoveSpeed;
+
+	UPROPERTY()
+	float AccelerateSpeed;
+
+	UPROPERTY()
+	float GroundFriction;
+
+	UPROPERTY()
+	FVector MoveDirection;
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수
 public:

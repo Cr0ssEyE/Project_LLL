@@ -71,19 +71,7 @@ private:
 	// 이동 관련 변수
 private:
 	UPROPERTY()
-	float MoveSpeed;
-
-	UPROPERTY()
-	float AccelerateSpeed;
-
-	UPROPERTY()
 	float DashSpeed;
-
-	UPROPERTY()
-	float GroundFriction;
-
-	UPROPERTY()
-	FVector MoveDirection;
 	
 	// 돌진 관련 함수
 private:
