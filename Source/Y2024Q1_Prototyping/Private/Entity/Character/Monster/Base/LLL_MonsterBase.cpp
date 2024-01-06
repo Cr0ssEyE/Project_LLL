@@ -63,3 +63,18 @@ void ALLL_MonsterBase::Stun()
 	
 	bIsStun = true;
 }
+
+void ALLL_MonsterBase::Attack()
+{
+	// Todo: 공격 애니메이션 재생
+
+	bAttackAnimationIsPlaying = true;
+
+	// Todo: 아래의 함수를 애님인스턴스에 델리데이트로 연결
+	AttackAnimationEndHandle();
+}
+
+void ALLL_MonsterBase::AttackAnimationEndHandle()
+{
+	bAttackAnimationIsPlaying = false;
+}

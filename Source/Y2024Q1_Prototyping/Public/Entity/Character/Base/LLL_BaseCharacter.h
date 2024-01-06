@@ -28,7 +28,7 @@ public:
 
 	// 캐릭터 상태 설정
 public:
-	void Dead();
+	virtual void Dead();
 
 	// 상태 체크용 변수
 public:

@@ -23,7 +23,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	
-	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(TEXT("/Script/Y2024Q1_Prototyping.LLL_PlayerBaseDataAsset'/Game/7-Player-View-Movement/Assets/PlayerBaseDataAsset.PlayerBaseDataAsset'"), EAssertionLevel::Check);
+	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(TEXT("/Script/Y2024Q1_Prototyping.LLL_PlayerBaseDataAsset'/Game/Characters/Player/PlayerBaseDataAsset.PlayerBaseDataAsset'"), EAssertionLevel::Check);
 
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	
@@ -67,7 +67,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		DashInputCheckTime = PlayerBaseDataAsset->DashInputCheckTime;
 		DashCoolDownSeconds = PlayerBaseDataAsset->DashBaseCoolDownSeconds;
 		DashInvincibleTime = PlayerBaseDataAsset->DashBaseInvincibleTime;
-		
 	}
 }
 
@@ -176,6 +175,11 @@ void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObj
 		}
 	}
 	
+}
+
+void ALLL_PlayerBase::Attack()
+{
+	// Todo: 공격 애니메이션 재생
 }
 
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)

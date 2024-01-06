@@ -37,6 +37,9 @@ public:
 	
 	void AddInteractableObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
+
+public:
+	void Attack();
 	
 	// 카메라
 private:

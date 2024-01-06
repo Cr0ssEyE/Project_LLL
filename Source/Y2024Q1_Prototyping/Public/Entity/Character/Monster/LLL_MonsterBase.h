@@ -21,6 +21,12 @@ public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 	void Stun();
+	
+	FORCEINLINE bool AttackAnimationIsPlaying() const { return bAttackAnimationIsPlaying; }
+
+public:
+	void Attack();
+	void AttackAnimationEndHandle();
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -28,4 +34,7 @@ protected:
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	uint8 bIsStun : 1;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	uint8 bAttackAnimationIsPlaying : 1;
 };
