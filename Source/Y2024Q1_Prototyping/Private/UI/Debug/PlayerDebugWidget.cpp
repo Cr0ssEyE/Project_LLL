@@ -1,14 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Y2024Q1_Prototyping/Public/UI/Debug/PlayerDebugWidget.h"
-#include "Y2024Q1_Prototyping/Public/Game/ProtoGameInstance.h"
+#include "UI/Debug/PlayerDebugWidget.h"
+
+#include "Components/Button.h"
+#include "Components/CheckBox.h"
+#include "Game/ProtoGameInstance.h"
 
 void UPlayerDebugWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	PlayerMovementCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerMovementCheckBoxEvent);
-	PlayerEvadeCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerEvadeCheckBoxEvent);
+	PlayerDashCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerDashCheckBoxEvent);
 	PlayerSkillCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerSkillCheckBoxEvent);
 	
 	PlayerHitCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerHitCheckBoxEvent);
@@ -24,9 +27,9 @@ void UPlayerDebugWidget::PlayerMovementCheckBoxEvent(bool value)
 	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerMovementDebug(PlayerMovementCheckBox->IsChecked());
 }
 
-void UPlayerDebugWidget::PlayerEvadeCheckBoxEvent(bool value)
+void UPlayerDebugWidget::PlayerDashCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerEvadeDebug(PlayerEvadeCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerDashDebug(PlayerDashCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerSkillCheckBoxEvent(bool value)

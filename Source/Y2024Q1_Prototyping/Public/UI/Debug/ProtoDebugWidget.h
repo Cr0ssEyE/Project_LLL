@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MonsterDebugWidget.h"
-#include "ObjectDebugWidget.h"
-#include "PlayerDebugWidget.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/Button.h"
-#include "Components/CheckBox.h"
-#include "Components/WidgetSwitcher.h"
 #include "ProtoDebugWidget.generated.h"
+
+class UButton;
+class UObjectDebugWidget;
+class UMonsterDebugWidget;
+class UPlayerDebugWidget;
+class UWidgetSwitcher;
 
 /**
  * 
@@ -27,10 +27,10 @@ UCLASS()
 class Y2024Q1_PROTOTYPING_API UProtoDebugWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
 	virtual void NativeConstruct() override;
-	
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	void EnablePlayerDebugWidget();
@@ -40,17 +40,17 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void EnableObjectDebugWidget();
-	
+
 	UFUNCTION(BlueprintCallable)
 	void ToggleWidget();
-	
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UWidgetSwitcher> DebugWidgetSwitcher;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UPlayerDebugWidget> PlayerDebugWidget;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UMonsterDebugWidget> MonsterDebugWidget;
 
@@ -63,8 +63,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> MonsterDebugButton;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> ObjectDebugButton;
-	
 };
