@@ -32,9 +32,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "몬스터 지면 마찰력")
 	float MonsterBaseGroundFriction;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Base", DisplayName = "몬스터 블랙보드")
+	UPROPERTY(EditDefaultsOnly, Category = "Monster", DisplayName = "몬스터 블랙보드")
 	TObjectPtr<UBlackboardData> MonsterBaseBlackBoard;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Rabbit", DisplayName = "몬스터 행동트리")
+	UPROPERTY(EditDefaultsOnly, Category = "Monster", DisplayName = "몬스터 행동트리")
 	TObjectPtr<UBehaviorTree> MonsterBaseBehaviorTree;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Monster", DisplayName = "감지 거리")
+	float DetectDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Monster", DisplayName = "시야각")
+	float FieldOfView;
 };

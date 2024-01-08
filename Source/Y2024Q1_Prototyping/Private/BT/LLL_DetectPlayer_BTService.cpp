@@ -22,8 +22,8 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 
 	ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 
-	const float DetectDistance = 700.0f;
-	const float FieldOfView = 90.0f;
+	const float DetectDistance = MonsterBase->GetDetectDistance();
+	const float FieldOfView = MonsterBase->GetFieldOfView();
 	
 	const FVector Center = MonsterBase->GetActorLocation();
 	const FVector Direction = MonsterBase->GetActorForwardVector();

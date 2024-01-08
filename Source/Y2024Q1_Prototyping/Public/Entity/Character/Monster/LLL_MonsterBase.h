@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataAsset/LLL_MonsterDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_MonsterBase.generated.h"
 
@@ -21,6 +22,9 @@ public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 	void Stun();
+	
+	FORCEINLINE float GetDetectDistance() const { return MonsterDataAsset->DetectDistance; }
+	FORCEINLINE float GetFieldOfView() const { return MonsterDataAsset->FieldOfView; }
 	
 	FORCEINLINE bool AttackAnimationIsPlaying() const { return bAttackAnimationIsPlaying; }
 

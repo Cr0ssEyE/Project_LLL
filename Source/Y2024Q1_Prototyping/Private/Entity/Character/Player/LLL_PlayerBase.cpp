@@ -23,7 +23,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	
-	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(TEXT("/Script/Y2024Q1_Prototyping.LLL_PlayerBaseDataAsset'/Game/Characters/Player/PlayerBaseDataAsset.PlayerBaseDataAsset'"), EAssertionLevel::Check);
+	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(TEXT("/Script/Y2024Q1_Prototyping.LLL_PlayerBaseDataAsset'/Game/DataAsset/DA_Player.DA_Player'"), EAssertionLevel::Check);
 
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	
