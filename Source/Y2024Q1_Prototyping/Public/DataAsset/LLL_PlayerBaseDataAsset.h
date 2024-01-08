@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LLL_CharacterBaseDataAsset.h"
+#include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
 class ULLL_InteractionWidget;

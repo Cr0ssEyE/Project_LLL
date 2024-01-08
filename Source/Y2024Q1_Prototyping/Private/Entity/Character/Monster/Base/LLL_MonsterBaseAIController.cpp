@@ -3,11 +3,11 @@
 
 #include "Entity/Character/Monster/LLL_MonsterBaseAIController.h"
 
-#include "DataAsset/LLL_MonsterDataAsset.h"
+#include "DataAsset/LLL_MonsterBaseDataAsset.h"
 
 ALLL_MonsterBaseAIController::ALLL_MonsterBaseAIController()
 {
-	static ConstructorHelpers::FObjectFinder<ULLL_MonsterDataAsset> DA_Monster(TEXT("/Script/Y2024Q1_Prototyping.LLL_MonsterDataAsset'/Game/DataAsset/DA_Monster.DA_Monster'"));
+	static ConstructorHelpers::FObjectFinder<ULLL_MonsterBaseDataAsset> DA_Monster(TEXT("/Script/Y2024Q1_Prototyping.LLL_MonsterDataAsset'/Game/DataAsset/DA_Monster.DA_Monster'"));
 	if (DA_Monster.Succeeded())
 	{
 		MonsterDataAsset = DA_Monster.Object;

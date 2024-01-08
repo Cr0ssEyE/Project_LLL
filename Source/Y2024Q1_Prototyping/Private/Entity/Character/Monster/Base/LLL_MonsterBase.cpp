@@ -5,14 +5,15 @@
 
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
-#include "DataAsset/LLL_MonsterDataAsset.h"
+#include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Monster/LLL_MonsterBaseAIController.h"
+#include "Entity/Character/Monster/LLL_MonsterBaseAnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
 	// 몬스터 데이터 에셋 할당
-	static ConstructorHelpers::FObjectFinder<ULLL_MonsterDataAsset> DA_Monster(TEXT("/Script/Y2024Q1_Prototyping.LLL_MonsterDataAsset'/Game/DataAsset/DA_Monster.DA_Monster'"));
+	static ConstructorHelpers::FObjectFinder<ULLL_MonsterBaseDataAsset> DA_Monster(TEXT("/Script/Y2024Q1_Prototyping.LLL_MonsterBaseDataAsset'/Game/DataAsset/DA_Monster.DA_Monster'"));
 	if (DA_Monster.Succeeded())
 	{
 		MonsterDataAsset = DA_Monster.Object;
@@ -41,6 +42,17 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
+void ALLL_MonsterBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+	if (MonsterBaseAnimInstance)
+	{
+		AttackAnimationEndHandle = MonsterBaseAnimInstance->AttackAnimationEndDelegate.AddUObject(this, &ALLL_MonsterBase::AttackAnimationEnd);
+	}
+}
+
 float ALLL_MonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -57,24 +69,33 @@ float ALLL_MonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	return 0;
 }
 
+void ALLL_MonsterBase::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	MonsterBaseAnimInstance->AttackAnimationEndDelegate.Remove(AttackAnimationEndHandle);
+}
+
 void ALLL_MonsterBase::Stun()
 {
 	// Todo: 스턴 애니메이션 재생
 	
-	bIsStun = true;
+	bStunAnimationIsPlaying = true;
 }
 
 void ALLL_MonsterBase::Attack()
 {
-	// Todo: 공격 애니메이션 재생
+	MonsterBaseAnimInstance->PlayAttackAnimation();
 
 	bAttackAnimationIsPlaying = true;
-
-	// Todo: 아래의 함수를 애님인스턴스에 델리데이트로 연결
-	AttackAnimationEndHandle();
 }
 
-void ALLL_MonsterBase::AttackAnimationEndHandle()
+void ALLL_MonsterBase::DamageToPlayer()
+{
+	// Todo: 플레이어에게 데미지 구현
+}
+
+void ALLL_MonsterBase::AttackAnimationEnd()
 {
 	bAttackAnimationIsPlaying = false;
 }

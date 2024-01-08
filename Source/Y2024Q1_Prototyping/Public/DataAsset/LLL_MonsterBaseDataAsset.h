@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LLL_CharacterBaseDataAsset.h"
-#include "LLL_MonsterDataAsset.generated.h"
+#include "LLL_BaseCharacterDataAsset.h"
+#include "LLL_MonsterBaseDataAsset.generated.h"
 
 class UBehaviorTree;
 class UBlackboardData;
@@ -12,7 +12,7 @@ class UBlackboardData;
  * 
  */
 UCLASS()
-class Y2024Q1_PROTOTYPING_API ULLL_MonsterDataAsset : public ULLL_CharacterBaseDataAsset
+class Y2024Q1_PROTOTYPING_API ULLL_MonsterBaseDataAsset : public ULLL_CharacterBaseDataAsset
 {
 	GENERATED_BODY()
 
@@ -32,15 +32,18 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "몬스터 지면 마찰력")
 	float MonsterBaseGroundFriction;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Monster", DisplayName = "몬스터 블랙보드")
+	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "몬스터 블랙보드")
 	TObjectPtr<UBlackboardData> MonsterBaseBlackBoard;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Monster", DisplayName = "몬스터 행동트리")
+	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "몬스터 행동트리")
 	TObjectPtr<UBehaviorTree> MonsterBaseBehaviorTree;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Monster", DisplayName = "감지 거리")
+	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "감지 거리")
 	float DetectDistance;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Monster", DisplayName = "시야각")
+	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "시야각")
 	float FieldOfView;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation", DisplayName = "공격 애니메이션 몽타주")
+	TObjectPtr<UAnimMontage> AttackAnimationMontage;
 };

@@ -6,7 +6,7 @@
 #include "AIController.h"
 #include "LLL_MonsterBaseAIController.generated.h"
 
-class ULLL_MonsterDataAsset;
+class ULLL_MonsterBaseDataAsset;
 /**
  * 
  */
@@ -22,5 +22,5 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_MonsterDataAsset> MonsterDataAsset;
+	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterDataAsset;
 };

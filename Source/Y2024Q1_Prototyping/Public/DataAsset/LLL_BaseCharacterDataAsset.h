@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "LLL_CharacterBaseDataAsset.generated.h"
+#include "LLL_BaseCharacterDataAsset.generated.h"
 
 /**
  * 
