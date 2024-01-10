@@ -24,6 +24,9 @@ class Y2024Q1_PROTOTYPING_API ULLL_PlayerBaseDataAsset : public ULLL_CharacterBa
 
 	// 캐릭터 기본 설정
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "플레이어 캐릭터 공격 애님 몽타주")
+	TObjectPtr<UAnimMontage> AttackAnimMontage;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "플레이어 캐릭터 충돌 사이즈(높이, 반지름)")
 	FVector2D PlayerCollisionSize;
 

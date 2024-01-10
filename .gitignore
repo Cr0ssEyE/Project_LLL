@@ -75,3 +75,9 @@ Plugins/*/Intermediate/*
 DerivedDataCache/*
 *.exp
 .idea
+Binaries/Win64/D3D12/D3D12Core.dll
+Binaries/Win64/D3D12/d3d12SDKLayers.dll
+Binaries/Win64/OpenImageDenoise.dll
+Binaries/Win64/tbb.dll
+Binaries/Win64/tbb12.dll
+Binaries/Win64/tbbmalloc.dll

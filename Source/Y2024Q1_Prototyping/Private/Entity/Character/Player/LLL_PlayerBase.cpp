@@ -2,12 +2,12 @@
 
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -23,7 +23,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	
-	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(TEXT("/Script/Y2024Q1_Prototyping.LLL_PlayerBaseDataAsset'/Game/7-Player-View-Movement/Assets/PlayerBaseDataAsset.PlayerBaseDataAsset'"), EAssertionLevel::Check);
+	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	
@@ -33,9 +33,12 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		
 		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->PlayerCollisionSize.Y, PlayerBaseDataAsset->PlayerCollisionSize.X);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
-		
-		GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->CharacterBaseMesh);
-		GetMesh()->SetAnimInstanceClass(PlayerBaseDataAsset->CharacterAnimBlueprint);
+
+		if(IsValid(PlayerBaseDataAsset->CharacterBaseMesh))
+		{
+			GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->CharacterBaseMesh);
+		}
+		GetMesh()->SetAnimInstanceClass(FLLLConstructorHelper::FindAndGetClass<ULLL_PlayerAnimInstance>(PATH_PLAYER_ABP, EAssertionLevel::Check));
 		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->PlayerCollisionSize.X));
 
@@ -74,7 +77,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
