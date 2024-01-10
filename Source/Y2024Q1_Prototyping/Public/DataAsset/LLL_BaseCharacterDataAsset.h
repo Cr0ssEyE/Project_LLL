@@ -15,20 +15,23 @@ class Y2024Q1_PROTOTYPING_API ULLL_CharacterBaseDataAsset : public UDataAsset
 	GENERATED_BODY()
 	// 캐릭터 기본 모델링 관련
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 메시")
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "메시")
 	TObjectPtr<USkeletalMesh> CharacterBaseMesh;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "애님 블루프린트")
+	TObjectPtr<UAnimBlueprintGeneratedClass> CharacterAnimBlueprint;
+
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "캐릭터 기본 체력")
+	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 체력")
 	uint32 CharacterBaseHealthAmount;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "캐릭터 기본 보호막")
+	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 보호막")
 	uint32 CharacterBaseShieldAmount;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "캐릭터 기본 공격력")
+	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 공격력")
 	uint32 CharacterBaseOffensePower; 
 
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "캐릭터 기본 이동속도")
+	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 이동속도")
 	uint32 CharacterBaseMoveSpeed;
 	
 };

@@ -38,7 +38,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		{
 			GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->CharacterBaseMesh);
 		}
-		GetMesh()->SetAnimInstanceClass(FLLLConstructorHelper::FindAndGetClass<ULLL_PlayerAnimInstance>(PATH_PLAYER_ABP, EAssertionLevel::Check));
+		//GetMesh()->SetAnimInstanceClass(FLLLConstructorHelper::FindAndGetClass<ULLL_PlayerAnimInstance>(PATH_PLAYER_ABP, EAssertionLevel::Check));
+		GetMesh()->SetAnimInstanceClass(PlayerBaseDataAsset->CharacterAnimBlueprint);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->PlayerCollisionSize.X));
 
