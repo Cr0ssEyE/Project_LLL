@@ -18,10 +18,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 메시")
 	TObjectPtr<USkeletalMesh> CharacterBaseMesh;
 
-	// 각 몬스터 별 캐스팅이 필요한 경우 불러올 때 각 클래스 내에 변수 만들어서 받아놓기
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 애님 블루프린트")
-	TSubclassOf<UAnimInstance> CharacterAnimBlueprint;
-
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "캐릭터 기본 체력")
 	uint32 CharacterBaseHealthAmount;

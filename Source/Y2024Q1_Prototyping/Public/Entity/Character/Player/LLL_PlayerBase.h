@@ -7,6 +7,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ULLL_PlayerAnimInstance;
 class ALLL_InteractiveObject;
 class ULLL_PlayerUIManager;
 class USpringArmComponent;
@@ -49,7 +50,11 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<USpringArmComponent> SpringArm;
 
-private:
+	// 플레이어 관련 내부 객체
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_PlayerAnimInstance> PlayerAnimInstance;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerUIManager> PlayerUIManager;
 	
@@ -103,6 +108,9 @@ private:
 
 	uint8 bIsInvincibleOnDashing : 1;
 
+	// 공격 관련 함수
+protected:
+	
 	// 상호작용 관련 변수
 private:
 	UPROPERTY()
