@@ -278,7 +278,7 @@ void ALLL_PlayerBase::InteractiveTargetChangeAction(const FInputActionValue& Val
 	}
 	
 	SelectedInteractiveObjectNum++;
-	if(SelectedInteractiveObjectNum == InteractiveObjects.Num())
+	if(SelectedInteractiveObjectNum >= InteractiveObjects.Num())
 	{
 		SelectedInteractiveObjectNum = 0;
 	}

@@ -13,5 +13,8 @@ UCLASS()
 class Y2024Q1_PROTOTYPING_API ULLL_PlayerAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
+
+public:
+	ULLL_PlayerAnimInstance();
 	
 };
