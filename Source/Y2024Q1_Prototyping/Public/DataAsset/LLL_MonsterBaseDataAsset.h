@@ -17,26 +17,11 @@ class Y2024Q1_PROTOTYPING_API ULLL_MonsterBaseDataAsset : public ULLL_CharacterB
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 충돌 사이즈(높이, 반지름)")
-	FVector2D MonsterCollisionSize;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "기본 이동속도")
-	float MonsterBaseMoveSpeed;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "기본 가속도")
-	float MonsterBaseAccelerateSpeed;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "방향전환 속도")
-	float MonsterBaseTurnSpeed;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "지면 마찰력")
-	float MonsterBaseGroundFriction;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "블랙보드")
-	TObjectPtr<UBlackboardData> MonsterBaseBlackBoard;
+	TObjectPtr<UBlackboardData> BlackBoard;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "행동트리")
-	TObjectPtr<UBehaviorTree> MonsterBaseBehaviorTree;
+	TObjectPtr<UBehaviorTree> BehaviorTree;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "감지 거리")
 	float DetectDistance;

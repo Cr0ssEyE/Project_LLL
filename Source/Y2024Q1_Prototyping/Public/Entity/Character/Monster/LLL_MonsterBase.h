@@ -20,8 +20,8 @@ class Y2024Q1_PROTOTYPING_API ALLL_MonsterBase : public ALLL_BaseCharacter
 public:
 	ALLL_MonsterBase();
 	
-	FORCEINLINE float GetDetectDistance() const { return MonsterDataAsset->DetectDistance; }
-	FORCEINLINE float GetFieldOfView() const { return MonsterDataAsset->FieldOfView; }
+	FORCEINLINE float GetDetectDistance() const { return MonsterBaseDataAsset->DetectDistance; }
+	FORCEINLINE float GetFieldOfView() const { return MonsterBaseDataAsset->FieldOfView; }
 	FORCEINLINE bool AttackAnimationIsPlaying() const { return bAttackAnimationIsPlaying; }
 
 protected:
@@ -44,7 +44,7 @@ private:
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterDataAsset;
+	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_MonsterBaseAnimInstance> MonsterBaseAnimInstance;

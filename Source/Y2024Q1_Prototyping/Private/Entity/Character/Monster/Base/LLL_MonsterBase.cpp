@@ -16,24 +16,29 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	static ConstructorHelpers::FObjectFinder<ULLL_MonsterBaseDataAsset> DA_Monster(TEXT("/Script/Y2024Q1_Prototyping.LLL_MonsterBaseDataAsset'/Game/DataAsset/DA_Monster.DA_Monster'"));
 	if (DA_Monster.Succeeded())
 	{
-		MonsterDataAsset = DA_Monster.Object;
+		MonsterBaseDataAsset = DA_Monster.Object;
 	}
 
-	if (IsValid(MonsterDataAsset))
+	if (IsValid(MonsterBaseDataAsset))
 	{
-		GetCapsuleComponent()->SetCapsuleSize(MonsterDataAsset->MonsterCollisionSize.Y, MonsterDataAsset->MonsterCollisionSize.X);
+		GetCapsuleComponent()->SetCapsuleSize(MonsterBaseDataAsset->CollisionSize.Y, MonsterBaseDataAsset->CollisionSize.X);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 		
-		GetMesh()->SetSkeletalMesh(MonsterDataAsset->CharacterBaseMesh);
-		GetMesh()->SetAnimInstanceClass(MonsterDataAsset->CharacterAnimBlueprint);
+		GetMesh()->SetSkeletalMesh(MonsterBaseDataAsset->CharacterBaseMesh);
+		
+		if (UClass* AnimBlueprint = MonsterBaseDataAsset->CharacterAnimInstance.LoadSynchronous())
+		{
+			GetMesh()->SetAnimInstanceClass(AnimBlueprint);
+		}
+		
 		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -MonsterDataAsset->MonsterCollisionSize.X));
+		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -MonsterBaseDataAsset->CollisionSize.X));
 
-		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = MonsterDataAsset->MonsterBaseMoveSpeed;
-		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = MonsterDataAsset->MonsterBaseAccelerateSpeed;
-		GetCharacterMovement()->GroundFriction = GroundFriction = MonsterDataAsset->MonsterBaseGroundFriction;
+		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = MonsterBaseDataAsset->MoveSpeed;
+		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = MonsterBaseDataAsset->AccelerateSpeed;
+		GetCharacterMovement()->GroundFriction = GroundFriction = MonsterBaseDataAsset->GroundFriction;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->RotationRate = FRotator(0.f, MonsterDataAsset->MonsterBaseTurnSpeed * 360.f, 0.f);
+		GetCharacterMovement()->RotationRate = FRotator(0.f, MonsterBaseDataAsset->TurnSpeed * 360.f, 0.f);
 		GetCharacterMovement()->FallingLateralFriction = 3.0f;
 	}
 
@@ -73,7 +78,7 @@ void ALLL_MonsterBase::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	MonsterBaseAnimInstance->AttackAnimationEndDelegate.Remove(AttackAnimationEndHandle);
+	//MonsterBaseAnimInstance->AttackAnimationEndDelegate.Remove(AttackAnimationEndHandle);
 }
 
 void ALLL_MonsterBase::Stun()

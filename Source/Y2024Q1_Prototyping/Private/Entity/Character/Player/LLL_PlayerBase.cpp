@@ -29,25 +29,29 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	
 	if (IsValid(PlayerBaseDataAsset))
 	{
-		DashSpeed = PlayerBaseDataAsset->PlayerBaseDashSpeed;
+		DashSpeed = PlayerBaseDataAsset->DashSpeed;
 		
-		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->PlayerCollisionSize.Y, PlayerBaseDataAsset->PlayerCollisionSize.X);
+		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->CollisionSize.Y, PlayerBaseDataAsset->CollisionSize.X);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 
 		if(IsValid(PlayerBaseDataAsset->CharacterBaseMesh))
 		{
 			GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->CharacterBaseMesh);
 		}
-		//GetMesh()->SetAnimInstanceClass(FLLLConstructorHelper::FindAndGetClass<ULLL_PlayerAnimInstance>(PATH_PLAYER_ABP, EAssertionLevel::Check));
-		GetMesh()->SetAnimInstanceClass(PlayerBaseDataAsset->CharacterAnimBlueprint);
-		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->PlayerCollisionSize.X));
 
-		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = PlayerBaseDataAsset->PlayerBaseMoveSpeed;
-		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = PlayerBaseDataAsset->PlayerBaseAccelerateSpeed;
-		GetCharacterMovement()->GroundFriction = GroundFriction = PlayerBaseDataAsset->PlayerBaseGroundFriction;
+		if (UClass* AnimBlueprint = PlayerBaseDataAsset->CharacterAnimInstance.LoadSynchronous())
+		{
+			GetMesh()->SetAnimInstanceClass(AnimBlueprint);
+		}
+		
+		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->CollisionSize.X));
+
+		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = PlayerBaseDataAsset->MoveSpeed;
+		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = PlayerBaseDataAsset->AccelerateSpeed;
+		GetCharacterMovement()->GroundFriction = GroundFriction = PlayerBaseDataAsset->GroundFriction;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->RotationRate = FRotator(0.f, PlayerBaseDataAsset->PlayerBaseTurnSpeed * 360.f, 0.f);
+		GetCharacterMovement()->RotationRate = FRotator(0.f, PlayerBaseDataAsset->TurnSpeed * 360.f, 0.f);
 		GetCharacterMovement()->FallingLateralFriction = 3.0f;
 		
 		bUseControllerRotationYaw = false;

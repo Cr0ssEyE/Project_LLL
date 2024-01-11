@@ -22,8 +22,8 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	check(MonsterDataAsset);
 	UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
 	
-	if (UseBlackboard(MonsterDataAsset->MonsterBaseBlackBoard, BlackboardComponent))
+	if (UseBlackboard(MonsterDataAsset->BlackBoard, BlackboardComponent))
 	{
-		check(RunBehaviorTree(MonsterDataAsset->MonsterBaseBehaviorTree));
+		check(RunBehaviorTree(MonsterDataAsset->BehaviorTree));
 	}
 }
