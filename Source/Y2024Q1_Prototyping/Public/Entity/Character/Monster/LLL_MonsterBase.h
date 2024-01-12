@@ -22,6 +22,8 @@ public:
 	
 	FORCEINLINE float GetDetectDistance() const { return MonsterBaseDataAsset->DetectDistance; }
 	FORCEINLINE float GetFieldOfView() const { return MonsterBaseDataAsset->FieldOfView; }
+	FORCEINLINE float GetAttackDistance() const { return MonsterBaseDataAsset->AttackDistance; }
+	
 	FORCEINLINE bool AttackAnimationIsPlaying() const { return bAttackAnimationIsPlaying; }
 
 protected:
@@ -30,6 +32,8 @@ protected:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void BeginDestroy() override;
 
+	virtual void Dead() override;
+
 public:
 	void Stun();
 	void Attack();
@@ -37,7 +41,7 @@ public:
 	void DamageToPlayer();
 	
 private:
-	FDelegateHandle AttackAnimationEndHandle;
+	//FDelegateHandle AttackAnimationEndHandle;
 	
 	UFUNCTION()
 	void AttackAnimationEnd();

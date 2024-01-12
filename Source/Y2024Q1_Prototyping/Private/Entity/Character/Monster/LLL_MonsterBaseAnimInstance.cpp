@@ -31,7 +31,7 @@ void ULLL_MonsterBaseAnimInstance::PlayAttackAnimation()
 		return;
 	}
 
-	Montage_Play(MonsterDataAsset->AttackAnimationMontage);
+	Montage_Play(MonsterDataAsset->AttackAnimMontage);
 	
 	bAttackAnimationIsPlaying = true;
 }
@@ -46,7 +46,7 @@ void ULLL_MonsterBaseAnimInstance::AnimNotify_Hit()
 
 void ULLL_MonsterBaseAnimInstance::MontageEnd(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (Montage == MonsterDataAsset->AttackAnimationMontage)
+	if (Montage == MonsterDataAsset->AttackAnimMontage)
 	{
 		bAttackAnimationIsPlaying = false;
 		AttackAnimationEndDelegate.Broadcast();

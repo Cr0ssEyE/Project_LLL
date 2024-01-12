@@ -3,6 +3,7 @@
 
 #include "Entity/Character/Monster/LLL_MonsterBase.h"
 
+#include "BrainComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
@@ -24,9 +25,9 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 		GetCapsuleComponent()->SetCapsuleSize(MonsterBaseDataAsset->CollisionSize.Y, MonsterBaseDataAsset->CollisionSize.X);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 		
-		GetMesh()->SetSkeletalMesh(MonsterBaseDataAsset->CharacterBaseMesh);
+		GetMesh()->SetSkeletalMesh(MonsterBaseDataAsset->SkeletalMesh);
 		
-		if (UClass* AnimBlueprint = MonsterBaseDataAsset->CharacterAnimInstance.LoadSynchronous())
+		if (UClass* AnimBlueprint = MonsterBaseDataAsset->AnimInstance.LoadSynchronous())
 		{
 			GetMesh()->SetAnimInstanceClass(AnimBlueprint);
 		}
@@ -40,6 +41,10 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->RotationRate = FRotator(0.f, MonsterBaseDataAsset->TurnSpeed * 360.f, 0.f);
 		GetCharacterMovement()->FallingLateralFriction = 3.0f;
+
+		Health = MonsterBaseDataAsset->Health;
+		ShieldAmount = MonsterBaseDataAsset->ShieldAmount;
+		OffensePower = MonsterBaseDataAsset->OffensePower;
 	}
 
 	// AI Controller 할당
@@ -54,7 +59,7 @@ void ALLL_MonsterBase::PostInitializeComponents()
 	MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
 	if (MonsterBaseAnimInstance)
 	{
-		AttackAnimationEndHandle = MonsterBaseAnimInstance->AttackAnimationEndDelegate.AddUObject(this, &ALLL_MonsterBase::AttackAnimationEnd);
+		/*AttackAnimationEndHandle = */MonsterBaseAnimInstance->AttackAnimationEndDelegate.AddUObject(this, &ALLL_MonsterBase::AttackAnimationEnd);
 	}
 }
 
@@ -62,7 +67,7 @@ float ALLL_MonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (CharacterHealthAmount <= 0)
+	if (Health <= 0)
 	{
 		Dead();
 	}
@@ -79,6 +84,15 @@ void ALLL_MonsterBase::BeginDestroy()
 	Super::BeginDestroy();
 
 	//MonsterBaseAnimInstance->AttackAnimationEndDelegate.Remove(AttackAnimationEndHandle);
+}
+
+void ALLL_MonsterBase::Dead()
+{
+	Super::Dead();
+
+	ALLL_MonsterBaseAIController* MonsterBaseAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
+	MonsterBaseAIController->StopMovement();
+	MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
 }
 
 void ALLL_MonsterBase::Stun()

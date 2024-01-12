@@ -28,7 +28,4 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "시야각")
 	float FieldOfView;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Animation", DisplayName = "공격 애니메이션 몽타주")
-	TObjectPtr<UAnimMontage> AttackAnimationMontage;
 };

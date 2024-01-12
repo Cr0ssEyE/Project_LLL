@@ -22,9 +22,9 @@ bool ULLL_PlayerIsInRange_BTDecorator::CalculateRawConditionValue(UBehaviorTreeC
 	const ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
 
-	float Distance = MonsterBase->GetDistanceTo(PlayerBase);
+	const float Distance = MonsterBase->GetDistanceTo(PlayerBase);
 
-	if (Distance <= 100)
+	if (Distance <= MonsterBase->GetAttackDistance())
 	{
 		return true;
 	}

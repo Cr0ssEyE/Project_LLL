@@ -34,12 +34,12 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->CollisionSize.Y, PlayerBaseDataAsset->CollisionSize.X);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 
-		if(IsValid(PlayerBaseDataAsset->CharacterBaseMesh))
+		if(IsValid(PlayerBaseDataAsset->SkeletalMesh))
 		{
-			GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->CharacterBaseMesh);
+			GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->SkeletalMesh);
 		}
 
-		if (UClass* AnimBlueprint = PlayerBaseDataAsset->CharacterAnimInstance.LoadSynchronous())
+		if (UClass* AnimBlueprint = PlayerBaseDataAsset->AnimInstance.LoadSynchronous())
 		{
 			GetMesh()->SetAnimInstanceClass(AnimBlueprint);
 		}
@@ -75,6 +75,10 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		DashInputCheckTime = PlayerBaseDataAsset->DashInputCheckTime;
 		DashCoolDownSeconds = PlayerBaseDataAsset->DashBaseCoolDownSeconds;
 		DashInvincibleTime = PlayerBaseDataAsset->DashBaseInvincibleTime;
+
+		Health = PlayerBaseDataAsset->Health;
+		ShieldAmount = PlayerBaseDataAsset->ShieldAmount;
+		OffensePower = PlayerBaseDataAsset->OffensePower;
 	}
 }
 
@@ -114,7 +118,7 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 		return 0;
 	}
 
-	if (CharacterHealthAmount <= 0)
+	if (Health <= 0)
 	{
 		Dead();
 	}

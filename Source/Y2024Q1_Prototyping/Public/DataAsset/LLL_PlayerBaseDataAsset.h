@@ -21,12 +21,6 @@ UCLASS()
 class Y2024Q1_PROTOTYPING_API ULLL_PlayerBaseDataAsset : public ULLL_CharacterBaseDataAsset
 {
 	GENERATED_BODY()
-
-	// 캐릭터 기본 설정
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 공격 애님 몽타주")
-	TObjectPtr<UAnimMontage> AttackAnimMontage;
-
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "일시정지 UI")
 	TSubclassOf<ULLL_GamePauseWidget> PauseWidgetClass;

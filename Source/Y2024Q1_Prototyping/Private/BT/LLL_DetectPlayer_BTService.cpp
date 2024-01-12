@@ -13,7 +13,8 @@
 ULLL_DetectPlayer_BTService::ULLL_DetectPlayer_BTService()
 {
 	NodeName = TEXT("Detect Player");
-	Interval = 0.5f;
+	Interval = 0.3f;
+	RandomDeviation = 0.1f;
 }
 
 void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -42,9 +43,9 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 				if (IsPlayerInFieldOfView(MonsterBase, PlayerBase, FieldOfView) && LineOfSightToPlayer(MonsterBase, PlayerBase))
 				{
 					OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, PlayerBase);
-					DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Green, false, 0.27f);
+					DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Green, false, 0.1f);
 
-					DrawDebugPoint(GetWorld(), PlayerBase->GetActorLocation(), 10.0f, FColor::Green, false, 0.2f);
+					DrawDebugPoint(GetWorld(), PlayerBase->GetActorLocation(), 10.0f, FColor::Green, false, 0.1f);
 					return;
 				}
 			}
@@ -52,7 +53,7 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	}
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, nullptr);
-	DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Red, false, 0.27f);
+	DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Red, false, 0.1f);
 }
 
 bool ULLL_DetectPlayer_BTService::IsPlayerInFieldOfView(const ALLL_MonsterBase* MonsterBase, const ALLL_PlayerBase* PlayerBase, float FieldOfView)
@@ -86,11 +87,11 @@ bool ULLL_DetectPlayer_BTService::LineOfSightToPlayer(ALLL_MonsterBase* MonsterB
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams))
 	{
 		// 플레이어가 가려져 있음
-		DrawDebugLine(GetWorld(), MonsterBase->GetActorLocation(), PlayerBase->GetActorLocation(), FColor::Red, false, 0.27f);
+		DrawDebugLine(GetWorld(), MonsterBase->GetActorLocation(), PlayerBase->GetActorLocation(), FColor::Red, false, 0.1f);
 		return false;
 	}
 
 	// 플레이어가 가려져 있지 않음
-	DrawDebugLine(GetWorld(), MonsterBase->GetActorLocation(), PlayerBase->GetActorLocation(), FColor::Green, false, 0.27f);
+	DrawDebugLine(GetWorld(), MonsterBase->GetActorLocation(), PlayerBase->GetActorLocation(), FColor::Green, false, 0.1f);
 	return true;
 }
