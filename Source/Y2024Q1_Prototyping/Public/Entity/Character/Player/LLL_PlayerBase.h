@@ -39,9 +39,6 @@ public:
 	void AddInteractableObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
 
-public:
-	void Attack();
-	
 	// 카메라
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -80,6 +77,30 @@ private:
 private:
 	UPROPERTY()
 	float DashSpeed;
+
+	// 공격 관련 함수
+private:
+	FORCEINLINE void SetAttackHitCheckState(bool Value) { bIsAttackHitCheckOnGoing = Value; }
+	void SetAttackComboCheckState(bool Value);
+
+	virtual void AttackSequence();
+	virtual void AttackHitCheck();
+	
+	// 공격 관련 변수
+private:
+	UPROPERTY()
+	TArray<AActor*> DamagedActors;
+
+	uint32 CurrentComboAction;
+
+	// 임시 변수
+	uint32 MaxComboAction;
+	
+	uint8 bCheckAttackComboActionInput : 1;
+
+	uint8 bIsAttackHitCheckOnGoing : 1;
+
+	uint8 bIsAttackActionOnGoing : 1;
 	
 	// 돌진 관련 함수
 private:
@@ -107,9 +128,6 @@ private:
 	float DashElapsedTime;
 
 	uint8 bIsInvincibleOnDashing : 1;
-
-	// 공격 관련 함수
-protected:
 	
 	// 상호작용 관련 변수
 private:

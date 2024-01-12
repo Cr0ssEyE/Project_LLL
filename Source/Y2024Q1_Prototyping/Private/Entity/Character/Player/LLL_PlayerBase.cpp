@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_MonatgeSectionName.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -76,12 +77,19 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		DashCoolDownSeconds = PlayerBaseDataAsset->DashBaseCoolDownSeconds;
 		DashInvincibleTime = PlayerBaseDataAsset->DashBaseInvincibleTime;
 	}
+
+	MaxComboAction = 2;
 }
 
 void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	if(PlayerAnimInstance)
+	{
+		PlayerAnimInstance->AttackComboCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackComboCheckState);
+		PlayerAnimInstance->AttackHitCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackHitCheckState);
+	}
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -182,16 +190,15 @@ void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObj
 			PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
 		}
 	}
-	
-}
-
-void ALLL_PlayerBase::Attack()
-{
-	// Todo: 공격 애니메이션 재생
 }
 
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 {
+	if(bIsAttackActionOnGoing)
+	{
+		return;
+	}
+	
 	FVector2d MoveInputValue = Value.Get<FVector2D>();
 	const float MovementVectorSizeSquared = MoveInputValue.SquaredLength();
 	if (MovementVectorSizeSquared > 1.0f)
@@ -263,8 +270,31 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 {
+	if(bIsAttackActionOnGoing)
+	{
+		if(bCheckAttackComboActionInput)
+		{
+			if(CurrentComboAction >= MaxComboAction)
+			{
+				return;
+			}
+			CurrentComboAction++;
+		}
+		else
+		{
+			CurrentComboAction = 0;
+		}
+	}
+	else
+	{
+		if(!bIsAttackHitCheckOnGoing)
+		{
+			return;
+		}
+		CurrentComboAction = 0;
+	}
 	CharacterRotateToCursor();
-	// TODO: 공격 처리용 가상 함수 만들어서 붙이기
+	AttackSequence();
 }
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value)
@@ -341,6 +371,33 @@ void ALLL_PlayerBase::CharacterRotateToCursor()
 		ViewDirection.Z = 0.f;
 		SetActorRotation(ViewDirection.Rotation());
 	}
+}
+
+void ALLL_PlayerBase::SetAttackComboCheckState(bool Value)
+{
+	bCheckAttackComboActionInput = Value;
+	if(!bCheckAttackComboActionInput)
+	{
+		bIsAttackActionOnGoing = false;
+	}
+}
+
+void ALLL_PlayerBase::AttackSequence()
+{
+	bIsAttackActionOnGoing = true;
+	RootComponent->ComponentVelocity = FVector::ZeroVector;
+	PlayerAnimInstance->Montage_Play(PlayerBaseDataAsset->AttackAnimMontage);
+	PlayerAnimInstance->Montage_JumpToSection(*FString(SECTION_ATTACK).Append(FString::FromInt(CurrentComboAction)));
+}
+
+void ALLL_PlayerBase::AttackHitCheck()
+{
+	if(!bIsAttackHitCheckOnGoing)
+	{
+		return;
+	}
+	
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::AttackHitCheck);
 }
 
 void ALLL_PlayerBase::CheckDashElapsedTime()
