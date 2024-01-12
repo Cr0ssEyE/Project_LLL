@@ -78,7 +78,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		DashInvincibleTime = PlayerBaseDataAsset->DashBaseInvincibleTime;
 	}
 
-	MaxComboAction = 2;
+	MaxComboActionCount = 2;
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -194,11 +194,6 @@ void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObj
 
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 {
-	if(bIsAttackActionOnGoing)
-	{
-		return;
-	}
-	
 	FVector2d MoveInputValue = Value.Get<FVector2D>();
 	const float MovementVectorSizeSquared = MoveInputValue.SquaredLength();
 	if (MovementVectorSizeSquared > 1.0f)
@@ -207,6 +202,17 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	}
 	
 	MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
+
+	if(bIsAttackActionOnGoing)
+	{
+		return;
+	}
+	if(GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+	{
+		GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
+		ClearStateWhenMotionCanceled();
+	}
+	
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	AddMovementInput(MoveDirection, 1.f);
 
@@ -223,7 +229,7 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 {
-	if(DashDisabledTime > 0 || CurrentDashCount >= MaxDashCount)
+	if(DashDisabledTime > 0 || CurrentDashCount >= MaxDashCount || bIsAttackHitCheckOnGoing)
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -243,6 +249,8 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 #endif
 		return;
 	}
+	
+	ClearStateWhenMotionCanceled();
 	
 	CurrentDashCount++;
 	DashElapsedTime = 0;
@@ -272,26 +280,21 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 {
 	if(bIsAttackActionOnGoing)
 	{
-		if(bCheckAttackComboActionInput)
-		{
-			if(CurrentComboAction >= MaxComboAction)
-			{
-				return;
-			}
-			CurrentComboAction++;
-		}
-		else
-		{
-			CurrentComboAction = 0;
-		}
-	}
-	else
-	{
-		if(!bIsAttackHitCheckOnGoing)
+		if(bIsAttackHitCheckOnGoing || !bCheckAttackComboActionInput)
 		{
 			return;
 		}
-		CurrentComboAction = 0;
+		
+		CurrentComboActionCount++;
+		if(CurrentComboActionCount > MaxComboActionCount)
+		{
+			CurrentComboActionCount = 0;
+		}
+		bCheckAttackComboActionInput = false;
+	}
+	else
+	{
+		CurrentComboActionCount = 0;
 	}
 	CharacterRotateToCursor();
 	AttackSequence();
@@ -387,7 +390,7 @@ void ALLL_PlayerBase::AttackSequence()
 	bIsAttackActionOnGoing = true;
 	RootComponent->ComponentVelocity = FVector::ZeroVector;
 	PlayerAnimInstance->Montage_Play(PlayerBaseDataAsset->AttackAnimMontage);
-	PlayerAnimInstance->Montage_JumpToSection(*FString(SECTION_ATTACK).Append(FString::FromInt(CurrentComboAction)));
+	PlayerAnimInstance->Montage_JumpToSection(*FString(SECTION_ATTACK).Append(FString::FromInt(CurrentComboActionCount)));
 }
 
 void ALLL_PlayerBase::AttackHitCheck()
@@ -455,5 +458,13 @@ void ALLL_PlayerBase::CheckDashDelay()
 		return;
 	}
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashDelay);
+}
+
+void ALLL_PlayerBase::ClearStateWhenMotionCanceled()
+{
+	bIsAttackActionOnGoing = false;
+	bIsAttackHitCheckOnGoing = false;
+	bCheckAttackComboActionInput = false;
+	bIsInvincibleOnDashing = false;
 }
 

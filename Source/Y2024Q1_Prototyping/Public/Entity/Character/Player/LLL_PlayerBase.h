@@ -91,10 +91,10 @@ private:
 	UPROPERTY()
 	TArray<AActor*> DamagedActors;
 
-	uint32 CurrentComboAction;
+	uint32 CurrentComboActionCount;
 
 	// 임시 변수
-	uint32 MaxComboAction;
+	uint32 MaxComboActionCount;
 	
 	uint8 bCheckAttackComboActionInput : 1;
 
@@ -139,5 +139,9 @@ private:
 
 	UPROPERTY()
 	uint32 InteractionRange;
+
+	// 모션 캔슬시 사용 목적 변수
+private:
+	void ClearStateWhenMotionCanceled();
 	
 };
