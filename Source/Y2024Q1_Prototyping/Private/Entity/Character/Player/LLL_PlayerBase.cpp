@@ -22,11 +22,9 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	
-	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
-
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
-	
+
+	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	if (IsValid(PlayerBaseDataAsset))
 	{
 		DashSpeed = PlayerBaseDataAsset->DashSpeed;
@@ -34,18 +32,15 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->CollisionSize.Y, PlayerBaseDataAsset->CollisionSize.X);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 
-		if(IsValid(PlayerBaseDataAsset->SkeletalMesh))
-		{
-			GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->SkeletalMesh);
-		}
+		GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->SkeletalMesh);
+		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->CollisionSize.X));
 
-		if (UClass* AnimBlueprint = PlayerBaseDataAsset->AnimInstance.LoadSynchronous())
+		UClass* AnimBlueprint = PlayerBaseDataAsset->AnimInstance.LoadSynchronous();
+		if (IsValid(AnimBlueprint))
 		{
 			GetMesh()->SetAnimInstanceClass(AnimBlueprint);
 		}
-		
-		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->CollisionSize.X));
 
 		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = PlayerBaseDataAsset->MoveSpeed;
 		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = PlayerBaseDataAsset->AccelerateSpeed;
@@ -85,6 +80,14 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	//PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
+}
+
+void ALLL_PlayerBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
 	PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
 }
 

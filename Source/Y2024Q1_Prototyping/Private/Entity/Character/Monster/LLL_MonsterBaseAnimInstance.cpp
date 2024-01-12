@@ -3,52 +3,26 @@
 
 #include "Entity/Character/Monster/LLL_MonsterBaseAnimInstance.h"
 
+#include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Monster/LLL_MonsterBase.h"
+#include "Util/LLLConstructorHelper.h"
 
 ULLL_MonsterBaseAnimInstance::ULLL_MonsterBaseAnimInstance()
 {
-	static ConstructorHelpers::FObjectFinder<ULLL_MonsterBaseDataAsset> DA_Monster(TEXT("/Script/Y2024Q1_Prototyping.LLL_MonsterBaseDataAsset'/Game/DataAsset/DA_Monster.DA_Monster'"));
-	if (DA_Monster.Succeeded())
-	{
-		MonsterDataAsset = DA_Monster.Object;
-	}
-
-	bAttackAnimationIsPlaying = false;
-}
-
-void ULLL_MonsterBaseAnimInstance::NativeInitializeAnimation()
-{
-	Super::NativeInitializeAnimation();
-
-	OnMontageEnded.AddDynamic(this, &ULLL_MonsterBaseAnimInstance::MontageEnd);
+	MonsterBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MonsterBaseDataAsset>(PATH_MONSTER_DATA, EAssertionLevel::Check);
 }
 
 void ULLL_MonsterBaseAnimInstance::PlayAttackAnimation()
 {
-	if (bAttackAnimationIsPlaying)
-	{
-		return;
-	}
-
-	Montage_Play(MonsterDataAsset->AttackAnimMontage);
-	
-	bAttackAnimationIsPlaying = true;
+	Montage_Play(MonsterBaseDataAsset->AttackAnimMontage);
 }
 
 void ULLL_MonsterBaseAnimInstance::AnimNotify_Hit()
 {
-	if (ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(TryGetPawnOwner()))
+	ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(TryGetPawnOwner());
+	if (IsValid(MonsterBase))
 	{
 		MonsterBase->DamageToPlayer();
-	}
-}
-
-void ULLL_MonsterBaseAnimInstance::MontageEnd(UAnimMontage* Montage, bool bInterrupted)
-{
-	if (Montage == MonsterDataAsset->AttackAnimMontage)
-	{
-		bAttackAnimationIsPlaying = false;
-		AttackAnimationEndDelegate.Broadcast();
 	}
 }

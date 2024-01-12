@@ -19,19 +19,19 @@ EBTNodeResult::Type ULLL_FindPatrolPos_BTTaskNode::ExecuteTask(UBehaviorTreeComp
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	const ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-
-	const UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(MonsterBase->GetWorld());
-	if (!NavSystem)
+	if (IsValid(MonsterBase))
 	{
-		return EBTNodeResult::Failed;
+		const UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(MonsterBase->GetWorld());
+		if (IsValid(NavSystem))
+		{
+			FNavLocation PatrolPos;
+			if (NavSystem->GetRandomPointInNavigableRadius(MonsterBase->GetActorLocation(), 400, PatrolPos))
+			{
+				OwnerComp.GetBlackboardComponent()->SetValueAsVector(BBKEY_PATROL_POS, PatrolPos.Location);
+				return EBTNodeResult::Succeeded;
+			}
+		}
 	}
 
-	FNavLocation PatrolPos;
-	if (NavSystem->GetRandomPointInNavigableRadius(MonsterBase->GetActorLocation(), 400, PatrolPos))
-	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsVector(BBKEY_PATROL_POS, PatrolPos.Location);
-		return EBTNodeResult::Succeeded;
-	}
-	
 	return EBTNodeResult::Failed;
 }

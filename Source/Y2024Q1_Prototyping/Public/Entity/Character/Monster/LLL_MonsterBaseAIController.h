@@ -22,5 +22,5 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterDataAsset;
+	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 };

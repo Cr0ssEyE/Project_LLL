@@ -22,38 +22,40 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
 	ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-
-	const float DetectDistance = MonsterBase->GetDetectDistance();
-	const float FieldOfView = MonsterBase->GetFieldOfView();
-	
-	const FVector Center = MonsterBase->GetActorLocation();
-	const FVector Direction = MonsterBase->GetActorForwardVector();
-	const float HalfFieldOfViewRadian = FMath::DegreesToRadians(FieldOfView / 2.0f);
-	const FQuat Rot = FQuat::Identity;
-	const FCollisionShape Shape = FCollisionShape::MakeSphere(DetectDistance);
-
-	TArray<FOverlapResult> OverlapResults;
-	if (GetWorld()->OverlapMultiByChannel(OverlapResults, Center, Rot, ECC_PLAYER_ONLY, Shape))
+	if (IsValid(MonsterBase))
 	{
-		for (FOverlapResult const& OverlapResult : OverlapResults)
-		{
-			ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OverlapResult.GetActor());
-			if (PlayerBase && PlayerBase->GetController()->IsPlayerController())
-			{
-				if (IsPlayerInFieldOfView(MonsterBase, PlayerBase, FieldOfView) && LineOfSightToPlayer(MonsterBase, PlayerBase))
-				{
-					OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, PlayerBase);
-					DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Green, false, 0.1f);
+		const float DetectDistance = MonsterBase->GetDetectDistance();
+		const float FieldOfView = MonsterBase->GetFieldOfView();
+	
+		const FVector Center = MonsterBase->GetActorLocation();
+		const FVector Direction = MonsterBase->GetActorForwardVector();
+		const float HalfFieldOfViewRadian = FMath::DegreesToRadians(FieldOfView / 2.0f);
+		const FQuat Rot = FQuat::Identity;
+		const FCollisionShape Shape = FCollisionShape::MakeSphere(DetectDistance);
 
-					DrawDebugPoint(GetWorld(), PlayerBase->GetActorLocation(), 10.0f, FColor::Green, false, 0.1f);
-					return;
+		TArray<FOverlapResult> OverlapResults;
+		if (GetWorld()->OverlapMultiByChannel(OverlapResults, Center, Rot, ECC_PLAYER_ONLY, Shape))
+		{
+			for (FOverlapResult const& OverlapResult : OverlapResults)
+			{
+				ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OverlapResult.GetActor());
+				if (IsValid(PlayerBase) && PlayerBase->GetController()->IsPlayerController())
+				{
+					if (IsPlayerInFieldOfView(MonsterBase, PlayerBase, FieldOfView) && LineOfSightToPlayer(MonsterBase, PlayerBase))
+					{
+						OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, PlayerBase);
+						DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Green, false, 0.1f);
+
+						DrawDebugPoint(GetWorld(), PlayerBase->GetActorLocation(), 10.0f, FColor::Green, false, 0.1f);
+						return;
+					}
 				}
 			}
 		}
-	}
 
-	OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, nullptr);
-	DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Red, false, 0.1f);
+		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, nullptr);
+		DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Red, false, 0.1f);
+	}
 }
 
 bool ULLL_DetectPlayer_BTService::IsPlayerInFieldOfView(const ALLL_MonsterBase* MonsterBase, const ALLL_PlayerBase* PlayerBase, float FieldOfView)
