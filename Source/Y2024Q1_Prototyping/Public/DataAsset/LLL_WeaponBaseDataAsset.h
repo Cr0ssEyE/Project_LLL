@@ -4,19 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "LLL_PlayerWeaponDataAsset.generated.h"
+#include "LLL_WeaponBaseDataAsset.generated.h"
 
 USTRUCT()
 struct FWeaponActionProperties
 {
 	GENERATED_BODY()
+public:
 	FWeaponActionProperties()
 	{
 		ActionDamageValue = 0;
 		ActionHitBoxSize = FVector::ZeroVector;
 		ActionKnockBackValue = 0;
 	}
-	
+
+public:
 	UPROPERTY(EditDefaultsOnly, DisplayName ="공격력 배율")
 	float ActionDamageValue;
 
@@ -30,7 +32,7 @@ struct FWeaponActionProperties
  * 
  */
 UCLASS()
-class Y2024Q1_PROTOTYPING_API ULLL_PlayerWeaponDataAsset : public UDataAsset
+class Y2024Q1_PROTOTYPING_API ULLL_WeaponBaseDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 
@@ -46,7 +48,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Attack", DisplayName = "무기 기본 공격력")
 	float WeaponBaseDamage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Attack", DisplayName = "무기 연속 액션 횟수")
+	UPROPERTY(EditDefaultsOnly, Category = "Attack", DisplayName = "무기 연속 공격 액션 횟수")
 	uint32 WeaponAttackActionCount;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Attack", DisplayName = "무기 액션 별 공격 설정 값")
