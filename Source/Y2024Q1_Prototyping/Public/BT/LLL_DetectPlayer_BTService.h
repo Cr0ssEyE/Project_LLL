@@ -6,6 +6,8 @@
 #include "BehaviorTree/BTService.h"
 #include "LLL_DetectPlayer_BTService.generated.h"
 
+class ALLL_MonsterBase;
+class ALLL_PlayerBase;
 /**
  * 
  */
@@ -19,4 +21,8 @@ public:
 
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
+private:
+	static bool IsPlayerInFieldOfView(const ALLL_MonsterBase* MonsterBase, const ALLL_PlayerBase* PlayerBase, float FieldOfView);
+	bool LineOfSightToPlayer(ALLL_MonsterBase* MonsterBase, ALLL_PlayerBase* PlayerBase) const;
 };

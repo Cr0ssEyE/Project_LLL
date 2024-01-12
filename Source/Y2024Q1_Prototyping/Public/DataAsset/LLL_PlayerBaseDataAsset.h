@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LLL_CharacterBaseDataAsset.h"
+#include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
 class ULLL_InteractionWidget;
@@ -21,12 +21,6 @@ UCLASS()
 class Y2024Q1_PROTOTYPING_API ULLL_PlayerBaseDataAsset : public ULLL_CharacterBaseDataAsset
 {
 	GENERATED_BODY()
-
-	// 캐릭터 기본 설정
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "플레이어 캐릭터 충돌 사이즈(높이, 반지름)")
-	FVector2D PlayerCollisionSize;
-
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "일시정지 UI")
 	TSubclassOf<ULLL_GamePauseWidget> PauseWidgetClass;
@@ -41,20 +35,8 @@ public:
 	TSubclassOf<ULLL_PlayerStatusWidget> StatusWidgetClass;
 	
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "플레이어 기본 이동속도")
-	float PlayerBaseMoveSpeed;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "플레이어 기본 가속도")
-	float PlayerBaseAccelerateSpeed;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "플레이어 기본 돌진속도")
-	float PlayerBaseDashSpeed;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "플레이어 방향전환 속도")
-	float PlayerBaseTurnSpeed;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "플레이어 지면 마찰력")
-	float PlayerBaseGroundFriction;
+	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "기본 돌진속도")
+	float DashSpeed;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV")

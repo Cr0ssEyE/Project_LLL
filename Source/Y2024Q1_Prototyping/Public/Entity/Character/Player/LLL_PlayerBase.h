@@ -7,6 +7,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ULLL_PlayerAnimInstance;
 class ALLL_InteractiveObject;
 class ULLL_PlayerUIManager;
 class USpringArmComponent;
@@ -27,6 +28,7 @@ public:
 	ALLL_PlayerBase();
 
 	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -37,6 +39,9 @@ public:
 	
 	void AddInteractableObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
+
+public:
+	void Attack();
 	
 	// 카메라
 private:
@@ -46,7 +51,11 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<USpringArmComponent> SpringArm;
 
-private:
+	// 플레이어 관련 내부 객체
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_PlayerAnimInstance> PlayerAnimInstance;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerUIManager> PlayerUIManager;
 	
@@ -71,19 +80,7 @@ private:
 	// 이동 관련 변수
 private:
 	UPROPERTY()
-	float MoveSpeed;
-
-	UPROPERTY()
-	float AccelerateSpeed;
-
-	UPROPERTY()
 	float DashSpeed;
-
-	UPROPERTY()
-	float GroundFriction;
-
-	UPROPERTY()
-	FVector MoveDirection;
 	
 	// 돌진 관련 함수
 private:
@@ -112,6 +109,9 @@ private:
 
 	uint8 bIsInvincibleOnDashing : 1;
 
+	// 공격 관련 함수
+protected:
+	
 	// 상호작용 관련 변수
 private:
 	UPROPERTY()

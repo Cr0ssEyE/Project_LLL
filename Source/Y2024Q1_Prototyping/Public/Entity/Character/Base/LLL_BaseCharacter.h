@@ -28,29 +28,40 @@ public:
 
 	// 캐릭터 상태 설정
 public:
-	void Dead();
+	virtual void Dead();
 
 	// 상태 체크용 변수
 public:
 	FORCEINLINE bool CheckCharacterIsDead() { return bIsDead; }
-	FORCEINLINE uint32 CheckCharacterHealth() { return CharacterHealthAmount; }
+	FORCEINLINE uint32 CheckCharacterHealth() { return Health; }
 	
 	// 캐릭터 공용 변수
 protected:
 	UPROPERTY(VisibleAnywhere)
-	uint32 CharacterHealthAmount;
+	uint32 Health;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 CharacterShieldAmount;
+	uint32 ShieldAmount;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 CharacterOffensePower;
-
-	UPROPERTY(VisibleAnywhere)
-	uint32 CharacterMoveSpeed;
+	uint32 OffensePower;
 
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
+
+	// 이동 관련 변수
+protected:
+	UPROPERTY()
+	float MoveSpeed;
+
+	UPROPERTY()
+	float AccelerateSpeed;
+
+	UPROPERTY()
+	float GroundFriction;
+
+	UPROPERTY()
+	FVector MoveDirection;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수

@@ -2,12 +2,12 @@
 
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -22,28 +22,31 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	
-	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(TEXT("/Script/Y2024Q1_Prototyping.LLL_PlayerBaseDataAsset'/Game/7-Player-View-Movement/Assets/PlayerBaseDataAsset.PlayerBaseDataAsset'"), EAssertionLevel::Check);
-
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
-	
+
+	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	if (IsValid(PlayerBaseDataAsset))
 	{
-		DashSpeed = PlayerBaseDataAsset->PlayerBaseDashSpeed;
+		DashSpeed = PlayerBaseDataAsset->DashSpeed;
 		
-		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->PlayerCollisionSize.Y, PlayerBaseDataAsset->PlayerCollisionSize.X);
+		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->CollisionSize.Y, PlayerBaseDataAsset->CollisionSize.X);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
-		
-		GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->CharacterBaseMesh);
-		GetMesh()->SetAnimInstanceClass(PlayerBaseDataAsset->CharacterAnimBlueprint);
-		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->PlayerCollisionSize.X));
 
-		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = PlayerBaseDataAsset->PlayerBaseMoveSpeed;
-		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = PlayerBaseDataAsset->PlayerBaseAccelerateSpeed;
-		GetCharacterMovement()->GroundFriction = GroundFriction = PlayerBaseDataAsset->PlayerBaseGroundFriction;
+		GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->SkeletalMesh);
+		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->CollisionSize.X));
+
+		UClass* AnimBlueprint = PlayerBaseDataAsset->AnimInstance.LoadSynchronous();
+		if (IsValid(AnimBlueprint))
+		{
+			GetMesh()->SetAnimInstanceClass(AnimBlueprint);
+		}
+
+		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = PlayerBaseDataAsset->MoveSpeed;
+		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = PlayerBaseDataAsset->AccelerateSpeed;
+		GetCharacterMovement()->GroundFriction = GroundFriction = PlayerBaseDataAsset->GroundFriction;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->RotationRate = FRotator(0.f, PlayerBaseDataAsset->PlayerBaseTurnSpeed * 360.f, 0.f);
+		GetCharacterMovement()->RotationRate = FRotator(0.f, PlayerBaseDataAsset->TurnSpeed * 360.f, 0.f);
 		GetCharacterMovement()->FallingLateralFriction = 3.0f;
 		
 		bUseControllerRotationYaw = false;
@@ -67,7 +70,10 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		DashInputCheckTime = PlayerBaseDataAsset->DashInputCheckTime;
 		DashCoolDownSeconds = PlayerBaseDataAsset->DashBaseCoolDownSeconds;
 		DashInvincibleTime = PlayerBaseDataAsset->DashBaseInvincibleTime;
-		
+
+		Health = PlayerBaseDataAsset->Health;
+		ShieldAmount = PlayerBaseDataAsset->ShieldAmount;
+		OffensePower = PlayerBaseDataAsset->OffensePower;
 	}
 }
 
@@ -75,6 +81,14 @@ void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
+}
+
+void ALLL_PlayerBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -107,7 +121,7 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 		return 0;
 	}
 
-	if (CharacterHealthAmount <= 0)
+	if (Health <= 0)
 	{
 		Dead();
 	}
@@ -176,6 +190,11 @@ void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObj
 		}
 	}
 	
+}
+
+void ALLL_PlayerBase::Attack()
+{
+	// Todo: 공격 애니메이션 재생
 }
 
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
@@ -278,7 +297,7 @@ void ALLL_PlayerBase::InteractiveTargetChangeAction(const FInputActionValue& Val
 	}
 	
 	SelectedInteractiveObjectNum++;
-	if(SelectedInteractiveObjectNum == InteractiveObjects.Num())
+	if(SelectedInteractiveObjectNum >= InteractiveObjects.Num())
 	{
 		SelectedInteractiveObjectNum = 0;
 	}

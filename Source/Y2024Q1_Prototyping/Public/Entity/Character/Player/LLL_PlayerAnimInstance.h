@@ -6,6 +6,9 @@
 #include "Animation/AnimInstance.h"
 #include "LLL_PlayerAnimInstance.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FAttackHitCheckDelegate, bool)
+DECLARE_MULTICAST_DELEGATE(FAttackComboCheckDelegate)
+
 /**
  * 
  */
@@ -13,5 +16,21 @@ UCLASS()
 class Y2024Q1_PROTOTYPING_API ULLL_PlayerAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
+
+public:
+	ULLL_PlayerAnimInstance();
+
+	FAttackHitCheckDelegate AttackHitCheckDelegate;
+	FAttackComboCheckDelegate AttackComboCheckDelegate;
+	
+private:
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void AnimNotify_AttackHitCheckStart() { AttackHitCheckDelegate.Broadcast(true); }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void AnimNotify_AttackHitCheckEnd() { AttackHitCheckDelegate.Broadcast(false); }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void AnimNotify_AttackComboCheckEnd() { AttackComboCheckDelegate.Broadcast(); }
 	
 };

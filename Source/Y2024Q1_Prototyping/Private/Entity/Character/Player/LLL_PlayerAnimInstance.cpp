@@ -3,3 +3,7 @@
 
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 
+ULLL_PlayerAnimInstance::ULLL_PlayerAnimInstance()
+{
+	
+}
