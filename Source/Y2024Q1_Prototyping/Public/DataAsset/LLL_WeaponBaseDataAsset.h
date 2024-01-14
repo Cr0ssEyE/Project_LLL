@@ -48,7 +48,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Attack", DisplayName = "무기 기본 공격력")
 	float WeaponBaseDamage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Attack", DisplayName = "무기 연속 공격 액션 횟수")
+	UPROPERTY(EditDefaultsOnly, Category = "Attack", DisplayName = "무기 연속 공격 액션 횟수	")
 	uint32 WeaponAttackActionCount;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Attack", DisplayName = "무기 액션 별 공격 설정 값")

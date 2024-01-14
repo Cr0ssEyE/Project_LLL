@@ -8,7 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FAttackHitCheckDelegate, bool)
 DECLARE_MULTICAST_DELEGATE_OneParam(FAttackComboCheckDelegate, bool)
-
+DECLARE_MULTICAST_DELEGATE(FDeadMotionEndedDelegate)
 /**
  * 
  */
@@ -22,7 +22,7 @@ public:
 
 	FAttackHitCheckDelegate AttackHitCheckDelegate;
 	FAttackComboCheckDelegate AttackComboCheckDelegate;
-	
+	FDeadMotionEndedDelegate DeadMotionEndedDelegate;
 private:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AnimNotify_AttackHitCheckStart() { AttackHitCheckDelegate.Broadcast(true); }
@@ -35,4 +35,7 @@ private:
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AnimNotify_AttackComboCheckEnd() { AttackComboCheckDelegate.Broadcast(false); }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void AnimNotify_DeadMotionEnded() { DeadMotionEndedDelegate.Broadcast(); }
 };

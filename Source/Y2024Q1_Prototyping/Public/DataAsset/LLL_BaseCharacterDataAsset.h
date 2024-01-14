@@ -47,4 +47,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 공격력")
 	uint32 CharacterBaseOffensePower;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 이동속도 배율")
+	uint32 CharacterBaseMoveSpeed;
 };

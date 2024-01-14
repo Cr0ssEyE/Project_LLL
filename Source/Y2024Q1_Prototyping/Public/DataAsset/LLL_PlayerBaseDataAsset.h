@@ -27,6 +27,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 공격 애님 몽타주")
 	TObjectPtr<UAnimMontage> AttackAnimMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
+	TObjectPtr<UAnimMontage> DeadAnimMontage;
+	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "일시정지 UI")
 	TSubclassOf<ULLL_GamePauseWidget> PauseWidgetClass;

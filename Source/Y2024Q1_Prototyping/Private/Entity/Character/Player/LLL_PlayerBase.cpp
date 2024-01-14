@@ -72,12 +72,20 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		SpringArm->bInheritRoll = false;
 		SpringArm->SetupAttachment(RootComponent);
 
+		CharacterMaxHealthAmount = PlayerBaseDataAsset->CharacterBaseHealthAmount;
+		CharacterCurrentHealthAmount = CharacterMaxHealthAmount;
+		CharacterMaxShieldAmount = PlayerBaseDataAsset->CharacterBaseShieldAmount;
+		CharacterCurrentShieldAmount = CharacterMaxShieldAmount;
+		CharacterOffensePower = PlayerBaseDataAsset->CharacterBaseOffensePower;
+		CharacterMoveSpeed = PlayerBaseDataAsset->CharacterBaseMoveSpeed;
+		
 		MaxDashCount = PlayerBaseDataAsset->DashBaseCount;
 		DashInputCheckTime = PlayerBaseDataAsset->DashInputCheckTime;
 		DashCoolDownSeconds = PlayerBaseDataAsset->DashBaseCoolDownSeconds;
 		DashInvincibleTime = PlayerBaseDataAsset->DashBaseInvincibleTime;
 	}
 
+	// 테스트용
 	MaxComboActionCount = 2;
 }
 
@@ -90,6 +98,7 @@ void ALLL_PlayerBase::BeginPlay()
 		PlayerAnimInstance->AttackComboCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackComboCheckState);
 		PlayerAnimInstance->AttackHitCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackHitCheckState);
 	}
+	PlayerUIManager->UpdateStatusWidget(CharacterMaxHealthAmount, CharacterCurrentHealthAmount, CharacterMaxShieldAmount, CharacterCurrentShieldAmount);
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -121,12 +130,19 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	{
 		return 0;
 	}
-
-	if (CharacterHealthAmount <= 0)
+	if(CharacterCurrentShieldAmount > 0)
+	{
+		CharacterCurrentShieldAmount -= DamageAmount;
+	}
+	else
+	{
+		CharacterCurrentHealthAmount -= DamageAmount;
+	}
+	if (CharacterCurrentHealthAmount <= 0)
 	{
 		Dead();
 	}
-	
+	PlayerUIManager->UpdateStatusWidget(CharacterMaxHealthAmount, CharacterCurrentHealthAmount, CharacterMaxShieldAmount, CharacterCurrentShieldAmount);
 	return 0;
 }
 
@@ -466,5 +482,20 @@ void ALLL_PlayerBase::ClearStateWhenMotionCanceled()
 	bIsAttackHitCheckOnGoing = false;
 	bCheckAttackComboActionInput = false;
 	bIsInvincibleOnDashing = false;
+}
+
+void ALLL_PlayerBase::Dead()
+{
+	Super::Dead();
+	if(IsValid(PlayerBaseDataAsset->DeadAnimMontage))
+	{
+		PlayerAnimInstance->Montage_Play(PlayerBaseDataAsset->DeadAnimMontage);
+	}
+}
+
+void ALLL_PlayerBase::DeadMontageEndEvent(UAnimMontage* Montage, bool Value)
+{
+	PlayerAnimInstance->Montage_Pause();
+	// TODO: 화면 페이드, 결과창 출력 등등
 }
 
