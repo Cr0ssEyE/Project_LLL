@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Entity/Character/Monster/LLL_MonsterBaseAnimInstance.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
-#include "Entity/Character/Monster/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Util/LLLConstructorHelper.h"
 
 ULLL_MonsterBaseAnimInstance::ULLL_MonsterBaseAnimInstance()

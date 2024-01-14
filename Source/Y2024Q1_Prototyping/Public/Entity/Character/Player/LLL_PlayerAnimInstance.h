@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Entity/Character/Base/LLL_BaseCharacterAnimInstance.h"
 #include "LLL_PlayerAnimInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FAttackHitCheckDelegate, bool)
@@ -13,7 +14,7 @@ DECLARE_MULTICAST_DELEGATE(FAttackComboCheckDelegate)
  * 
  */
 UCLASS()
-class Y2024Q1_PROTOTYPING_API ULLL_PlayerAnimInstance : public UAnimInstance
+class Y2024Q1_PROTOTYPING_API ULLL_PlayerAnimInstance : public ULLL_BaseCharacterAnimInstance
 {
 	GENERATED_BODY()
 

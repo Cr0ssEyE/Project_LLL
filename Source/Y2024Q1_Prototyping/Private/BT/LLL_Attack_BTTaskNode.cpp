@@ -4,7 +4,8 @@
 #include "BT/LLL_Attack_BTTaskNode.h"
 
 #include "AIController.h"
-#include "Entity/Character/Monster/LLL_MonsterBase.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 
 ULLL_Attack_BTTaskNode::ULLL_Attack_BTTaskNode()
 {

@@ -7,7 +7,7 @@
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
-#include "Entity/Character/Monster/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 
 ULLL_FindPatrolPos_BTTaskNode::ULLL_FindPatrolPos_BTTaskNode()
 {

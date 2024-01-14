@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Entity/Character/Monster/LLL_MonsterBaseAIController.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"

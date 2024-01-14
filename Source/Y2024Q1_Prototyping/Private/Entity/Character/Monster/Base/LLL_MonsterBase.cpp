@@ -1,15 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Entity/Character/Monster/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 
 #include "BrainComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
-#include "Entity/Character/Monster/LLL_MonsterBaseAIController.h"
-#include "Entity/Character/Monster/LLL_MonsterBaseAnimInstance.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Util/LLLConstructorHelper.h"
 
