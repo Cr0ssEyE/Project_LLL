@@ -17,7 +17,10 @@ EBTNodeResult::Type ULLL_Attack_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-	MonsterBase->Attack();
+	if (IsValid(MonsterBase) && !MonsterBase->AttackAnimationIsPlaying())
+	{
+		MonsterBase->Attack();
+	}
 
 	return EBTNodeResult::InProgress;
 }
@@ -26,9 +29,8 @@ void ULLL_Attack_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	const ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-
-	if (!MonsterBase->AttackAnimationIsPlaying())
+	ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
+	if (IsValid(MonsterBase) && !MonsterBase->AttackAnimationIsPlaying())
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}

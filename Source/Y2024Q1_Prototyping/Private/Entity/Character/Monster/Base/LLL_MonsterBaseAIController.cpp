@@ -3,15 +3,13 @@
 
 #include "Entity/Character/Monster/LLL_MonsterBaseAIController.h"
 
+#include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
+#include "Util/LLLConstructorHelper.h"
 
 ALLL_MonsterBaseAIController::ALLL_MonsterBaseAIController()
 {
-	static ConstructorHelpers::FObjectFinder<ULLL_MonsterBaseDataAsset> DA_Monster(TEXT("/Script/Y2024Q1_Prototyping.LLL_MonsterDataAsset'/Game/DataAsset/DA_Monster.DA_Monster'"));
-	if (DA_Monster.Succeeded())
-	{
-		MonsterDataAsset = DA_Monster.Object;
-	}
+	MonsterBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MonsterBaseDataAsset>(PATH_MONSTER_DATA, EAssertionLevel::Check);
 }
 
 void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
@@ -19,11 +17,9 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	// 블랙보드와 행동트리 할당
-	check(MonsterDataAsset);
 	UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
-	
-	if (UseBlackboard(MonsterDataAsset->BlackBoard, BlackboardComponent))
+	if (UseBlackboard(MonsterBaseDataAsset->BlackBoard, BlackboardComponent))
 	{
-		check(RunBehaviorTree(MonsterDataAsset->BehaviorTree));
+		check(RunBehaviorTree(MonsterBaseDataAsset->BehaviorTree));
 	}
 }

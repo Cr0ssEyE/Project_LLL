@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LLL_MonsterBaseAnimInstance.h"
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_MonsterBase.generated.h"
@@ -22,25 +23,22 @@ public:
 	
 	FORCEINLINE float GetDetectDistance() const { return MonsterBaseDataAsset->DetectDistance; }
 	FORCEINLINE float GetFieldOfView() const { return MonsterBaseDataAsset->FieldOfView; }
-	FORCEINLINE bool AttackAnimationIsPlaying() const { return bAttackAnimationIsPlaying; }
+	FORCEINLINE float GetAttackDistance() const { return MonsterBaseDataAsset->AttackDistance; }
+	
+	FORCEINLINE bool AttackAnimationIsPlaying();
 
 protected:
 	virtual void PostInitializeComponents() override;
 	
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void BeginDestroy() override;
+
+	virtual void Dead() override;
 
 public:
 	void Stun();
 	void Attack();
 
 	void DamageToPlayer();
-	
-private:
-	FDelegateHandle AttackAnimationEndHandle;
-	
-	UFUNCTION()
-	void AttackAnimationEnd();
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -48,10 +46,4 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_MonsterBaseAnimInstance> MonsterBaseAnimInstance;
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	uint8 bStunAnimationIsPlaying : 1;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	uint8 bAttackAnimationIsPlaying : 1;
 };

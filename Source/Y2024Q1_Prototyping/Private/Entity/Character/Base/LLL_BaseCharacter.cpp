@@ -41,6 +41,6 @@ void ALLL_BaseCharacter::Dead()
 
 	// Todo: 사망 애니메이션 재생
 	
-	CharacterCurrentHealthAmount = 0;
+	CurrentHealthAmount = 0;
 	bIsDead = true;
 }

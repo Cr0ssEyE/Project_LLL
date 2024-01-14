@@ -25,13 +25,11 @@ class Y2024Q1_PROTOTYPING_API ULLL_PlayerBaseDataAsset : public ULLL_CharacterBa
 
 	// 캐릭터 기본 설정
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 공격 애님 몽타주")
-	TObjectPtr<UAnimMontage> AttackAnimMontage;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
 	TObjectPtr<UAnimMontage> DeadAnimMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 기본 무기 데이터")
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "SubData", DisplayName = "캐릭터 기본 무기 데이터")
 	TObjectPtr<ULLL_WeaponBaseDataAsset> DefaultWeaponBaseDataAsset;
 	
 public:

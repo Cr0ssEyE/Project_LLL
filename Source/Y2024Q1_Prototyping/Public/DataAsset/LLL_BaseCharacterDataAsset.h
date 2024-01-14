@@ -16,15 +16,21 @@ class Y2024Q1_PROTOTYPING_API ULLL_CharacterBaseDataAsset : public UDataAsset
 	
 	// 캐릭터 기본 모델링 관련
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "메시")
-	TObjectPtr<USkeletalMesh> CharacterBaseMesh;
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "메시", meta=(DisplayPriority=1))
+	TObjectPtr<USkeletalMesh> SkeletalMesh;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "애님 블루프린트", meta=(DisplayPriority=1))
+	TSoftClassPtr<UAnimInstance> AnimInstance;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 충돌 사이즈(높이, 반지름)")
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "공격 애님 몽타주")
+	TObjectPtr<UAnimMontage> AttackAnimMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "사망 애니메이션")
+	TObjectPtr<UAnimationAsset> DeadAnimation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "충돌 사이즈(높이, 반지름)", meta=(DisplayPriority=1))
 	FVector2D CollisionSize;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "애님 블루프린트")
-	TSoftClassPtr<UAnimInstance> CharacterAnimInstance;
-
+	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "기본 이동속도")
 	float MoveSpeed;
@@ -40,14 +46,14 @@ public:
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 체력")
-	uint32 CharacterBaseHealthAmount;
+	uint32 Health;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 보호막")
-	uint32 CharacterBaseShieldAmount;
+	uint32 ShieldAmount;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 공격력")
-	uint32 CharacterBaseOffensePower;
+	uint32 OffensePower;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 이동속도 배율")
-	uint32 CharacterBaseMoveSpeed;
+	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 공격 거리")
+	float AttackDistance;
 };

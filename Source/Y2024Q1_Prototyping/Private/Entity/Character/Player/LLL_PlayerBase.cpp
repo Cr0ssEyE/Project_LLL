@@ -25,12 +25,10 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	
-	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
-
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	PlayerWeaponComponent = CreateDefaultSubobject<ULLL_PlayerWeaponComponent>(TEXT("PlayerWeaponComponent"));
-	
+
+	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	if (IsValid(PlayerBaseDataAsset))
 	{
 		DashSpeed = PlayerBaseDataAsset->DashSpeed;
@@ -38,18 +36,15 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->CollisionSize.Y, PlayerBaseDataAsset->CollisionSize.X);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 
-		if(IsValid(PlayerBaseDataAsset->CharacterBaseMesh))
-		{
-			GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->CharacterBaseMesh);
-		}
+		GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->SkeletalMesh);
+		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->CollisionSize.X));
 
-		if (UClass* AnimBlueprint = PlayerBaseDataAsset->CharacterAnimInstance.LoadSynchronous())
+		UClass* AnimBlueprint = PlayerBaseDataAsset->AnimInstance.LoadSynchronous();
+		if (IsValid(AnimBlueprint))
 		{
 			GetMesh()->SetAnimInstanceClass(AnimBlueprint);
 		}
-		
-		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->CollisionSize.X));
 
 		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = PlayerBaseDataAsset->MoveSpeed;
 		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = PlayerBaseDataAsset->AccelerateSpeed;
@@ -75,12 +70,11 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		SpringArm->bInheritRoll = false;
 		SpringArm->SetupAttachment(RootComponent);
 
-		CharacterMaxHealthAmount = PlayerBaseDataAsset->CharacterBaseHealthAmount;
-		CharacterCurrentHealthAmount = CharacterMaxHealthAmount;
-		CharacterMaxShieldAmount = PlayerBaseDataAsset->CharacterBaseShieldAmount;
-		CharacterCurrentShieldAmount = CharacterMaxShieldAmount;
-		CharacterOffensePower = PlayerBaseDataAsset->CharacterBaseOffensePower;
-		CharacterMoveSpeed = PlayerBaseDataAsset->CharacterBaseMoveSpeed;
+		MaxHealthAmount = PlayerBaseDataAsset->Health;
+		CurrentHealthAmount = MaxHealthAmount;
+		MaxShieldAmount = PlayerBaseDataAsset->ShieldAmount;
+		CurrentShieldAmount = MaxShieldAmount;
+		OffensePower = PlayerBaseDataAsset->OffensePower;
 		
 		MaxDashCount = PlayerBaseDataAsset->DashBaseCount;
 		DashInputCheckTime = PlayerBaseDataAsset->DashInputCheckTime;
@@ -103,6 +97,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
+
 	PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	if(PlayerAnimInstance)
 	{
@@ -110,7 +105,7 @@ void ALLL_PlayerBase::BeginPlay()
 		PlayerAnimInstance->AttackHitCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackHitCheckState);
 		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DeadMontageEndEvent);
 	}
-	PlayerUIManager->UpdateStatusWidget(CharacterMaxHealthAmount, CharacterCurrentHealthAmount, CharacterMaxShieldAmount, CharacterCurrentShieldAmount);
+	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -142,27 +137,27 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	{
 		return 0;
 	}
-	if(CharacterCurrentShieldAmount > 0)
+	if(CurrentShieldAmount > 0)
 	{
-		CharacterCurrentShieldAmount -= DamageAmount;
-		if(CharacterCurrentShieldAmount < 0)
+		CurrentShieldAmount -= DamageAmount;
+		if(CurrentShieldAmount < 0)
 		{
-			CharacterCurrentShieldAmount = 0;
+			CurrentShieldAmount = 0;
 		}
 	}
 	else
 	{
-		CharacterCurrentHealthAmount -= DamageAmount;
-		if(CharacterCurrentHealthAmount < 0)
+		CurrentHealthAmount -= DamageAmount;
+		if(CurrentHealthAmount < 0)
 		{
-			CharacterCurrentHealthAmount = 0;
+			CurrentHealthAmount = 0;
 		}
 	}
-	if (CharacterCurrentHealthAmount <= 0)
+	if (CurrentHealthAmount <= 0)
 	{
 		Dead();
 	}
-	PlayerUIManager->UpdateStatusWidget(CharacterMaxHealthAmount, CharacterCurrentHealthAmount, CharacterMaxShieldAmount, CharacterCurrentShieldAmount);
+	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
 	return 0;
 }
 
