@@ -6,6 +6,7 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+class ULLL_WeaponBaseDataAsset;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;
@@ -29,6 +30,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
 	TObjectPtr<UAnimMontage> DeadAnimMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 기본 무기 데이터")
+	TObjectPtr<ULLL_WeaponBaseDataAsset> DefaultWeaponBaseDataAsset;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "일시정지 UI")

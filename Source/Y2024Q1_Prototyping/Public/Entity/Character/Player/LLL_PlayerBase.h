@@ -7,6 +7,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ULLL_PlayerWeaponComponent;
 class ULLL_PlayerAnimInstance;
 class ALLL_InteractiveObject;
 class ULLL_PlayerUIManager;
@@ -54,7 +55,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerUIManager> PlayerUIManager;
-	
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_PlayerWeaponComponent> PlayerWeaponComponent;
 	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);
@@ -80,17 +83,12 @@ private:
 
 	// 공격 관련 함수
 private:
-	FORCEINLINE void SetAttackHitCheckState(bool Value) { bIsAttackHitCheckOnGoing = Value; }
 	void SetAttackComboCheckState(bool Value);
-
-	virtual void AttackSequence();
-	virtual void AttackHitCheck();
+	void SetAttackHitCheckState(bool Value);
+	void AttackSequence();
 	
 	// 공격 관련 변수
 private:
-	UPROPERTY()
-	TArray<AActor*> DamagedActors;
-
 	uint32 CurrentComboActionCount;
 
 	// 임시 변수

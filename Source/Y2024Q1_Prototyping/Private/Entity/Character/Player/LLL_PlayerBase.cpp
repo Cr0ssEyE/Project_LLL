@@ -10,8 +10,10 @@
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_MonatgeSectionName.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
+#include "DataAsset/LLL_WeaponBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "Entity/Character/Player/LLL_PlayerWeaponComponent.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -27,6 +29,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
+	PlayerWeaponComponent = CreateDefaultSubobject<ULLL_PlayerWeaponComponent>(TEXT("PlayerWeaponComponent"));
 	
 	if (IsValid(PlayerBaseDataAsset))
 	{
@@ -83,10 +86,18 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		DashInputCheckTime = PlayerBaseDataAsset->DashInputCheckTime;
 		DashCoolDownSeconds = PlayerBaseDataAsset->DashBaseCoolDownSeconds;
 		DashInvincibleTime = PlayerBaseDataAsset->DashBaseInvincibleTime;
+		
+		if(PlayerBaseDataAsset->DefaultWeaponBaseDataAsset)
+		{
+			PlayerWeaponComponent->SetupWeaponInfo(PlayerBaseDataAsset->DefaultWeaponBaseDataAsset);
+			MaxComboActionCount = PlayerBaseDataAsset->DefaultWeaponBaseDataAsset->WeaponAttackActionCount;
+		}
+		else
+		{
+			// 테스트용
+			MaxComboActionCount = 3;
+		}
 	}
-
-	// 테스트용
-	MaxComboActionCount = 2;
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -302,7 +313,7 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 		}
 		
 		CurrentComboActionCount++;
-		if(CurrentComboActionCount > MaxComboActionCount)
+		if(CurrentComboActionCount >= MaxComboActionCount)
 		{
 			CurrentComboActionCount = 0;
 		}
@@ -398,6 +409,20 @@ void ALLL_PlayerBase::SetAttackComboCheckState(bool Value)
 	if(!bCheckAttackComboActionInput)
 	{
 		bIsAttackActionOnGoing = false;
+		PlayerWeaponComponent->StopMeleeWeaponHitCheck();
+	}
+}
+
+void ALLL_PlayerBase::SetAttackHitCheckState(bool Value)
+{
+	bIsAttackHitCheckOnGoing = Value;
+	if(bIsAttackHitCheckOnGoing)
+	{
+		PlayerWeaponComponent->StartMeleeWeaponHitCheck(CurrentComboActionCount);
+	}
+	else
+	{
+		PlayerWeaponComponent->StopMeleeWeaponHitCheck();
 	}
 }
 
@@ -407,16 +432,6 @@ void ALLL_PlayerBase::AttackSequence()
 	RootComponent->ComponentVelocity = FVector::ZeroVector;
 	PlayerAnimInstance->Montage_Play(PlayerBaseDataAsset->AttackAnimMontage);
 	PlayerAnimInstance->Montage_JumpToSection(*FString(SECTION_ATTACK).Append(FString::FromInt(CurrentComboActionCount)));
-}
-
-void ALLL_PlayerBase::AttackHitCheck()
-{
-	if(!bIsAttackHitCheckOnGoing)
-	{
-		return;
-	}
-	
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::AttackHitCheck);
 }
 
 void ALLL_PlayerBase::CheckDashElapsedTime()
@@ -482,6 +497,8 @@ void ALLL_PlayerBase::ClearStateWhenMotionCanceled()
 	bIsAttackHitCheckOnGoing = false;
 	bCheckAttackComboActionInput = false;
 	bIsInvincibleOnDashing = false;
+
+	SetAttackHitCheckState(false);
 }
 
 void ALLL_PlayerBase::Dead()
@@ -496,6 +513,7 @@ void ALLL_PlayerBase::Dead()
 void ALLL_PlayerBase::DeadMontageEndEvent(UAnimMontage* Montage, bool Value)
 {
 	PlayerAnimInstance->Montage_Pause();
-	// TODO: 화면 페이드, 결과창 출력 등등
+	// TODO: 화면 페이드, 결과창 출력 등등. 임시로 Destroy 처리
+	Destroy();
 }
 

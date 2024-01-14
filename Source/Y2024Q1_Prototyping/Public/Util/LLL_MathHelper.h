@@ -1,0 +1,17 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+
+class Y2024Q1_PROTOTYPING_API FLLL_MathHelper
+{
+public:
+	static uint32 CalculatePlayerWeaponDamage(uint32 CharacterOffensePower, uint32 WeaponOffensePower, float WeaponActionOffenseMultiply)
+	{
+		const uint32 CalculateResult = (CharacterOffensePower + WeaponOffensePower) * WeaponActionOffenseMultiply;
+		return CalculateResult;
+	}
+private:
+	
+};
