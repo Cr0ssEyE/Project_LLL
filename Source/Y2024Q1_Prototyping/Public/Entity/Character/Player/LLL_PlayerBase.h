@@ -138,14 +138,14 @@ private:
 	UPROPERTY()
 	uint32 InteractionRange;
 
-	// 사망 관련 변수
+	// 사망 관련 함수
 protected:
 	virtual void Dead() override;
 
 private:
-	void DeadMontageEndEvent(UAnimMontage* Montage, bool Value);
+	void DeadMontageEndEvent();
 	
-	// 모션 캔슬시 사용 목적 변수
+	// 모션 캔슬시 사용 목적 함수
 private:
 	void ClearStateWhenMotionCanceled();
 	

@@ -41,13 +41,13 @@ protected:
 	uint32 CharacterMaxHealthAmount;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 CharacterCurrentHealthAmount;
+	int32 CharacterCurrentHealthAmount;
 	
 	UPROPERTY(VisibleAnywhere)
 	uint32 CharacterMaxShieldAmount;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 CharacterCurrentShieldAmount;
+	int32 CharacterCurrentShieldAmount;
 	
 	UPROPERTY(VisibleAnywhere)
 	uint32 CharacterOffensePower;

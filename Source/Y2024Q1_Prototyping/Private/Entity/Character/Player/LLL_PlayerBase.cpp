@@ -108,6 +108,7 @@ void ALLL_PlayerBase::BeginPlay()
 	{
 		PlayerAnimInstance->AttackComboCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackComboCheckState);
 		PlayerAnimInstance->AttackHitCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackHitCheckState);
+		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DeadMontageEndEvent);
 	}
 	PlayerUIManager->UpdateStatusWidget(CharacterMaxHealthAmount, CharacterCurrentHealthAmount, CharacterMaxShieldAmount, CharacterCurrentShieldAmount);
 }
@@ -144,10 +145,18 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	if(CharacterCurrentShieldAmount > 0)
 	{
 		CharacterCurrentShieldAmount -= DamageAmount;
+		if(CharacterCurrentShieldAmount < 0)
+		{
+			CharacterCurrentShieldAmount = 0;
+		}
 	}
 	else
 	{
 		CharacterCurrentHealthAmount -= DamageAmount;
+		if(CharacterCurrentHealthAmount < 0)
+		{
+			CharacterCurrentHealthAmount = 0;
+		}
 	}
 	if (CharacterCurrentHealthAmount <= 0)
 	{
@@ -508,11 +517,11 @@ void ALLL_PlayerBase::Dead()
 	{
 		PlayerAnimInstance->Montage_Play(PlayerBaseDataAsset->DeadAnimMontage);
 	}
+	DisableInput(Cast<APlayerController>(GetController()));
 }
 
-void ALLL_PlayerBase::DeadMontageEndEvent(UAnimMontage* Montage, bool Value)
+void ALLL_PlayerBase::DeadMontageEndEvent()
 {
-	PlayerAnimInstance->Montage_Pause();
 	// TODO: 화면 페이드, 결과창 출력 등등. 임시로 Destroy 처리
 	Destroy();
 }
