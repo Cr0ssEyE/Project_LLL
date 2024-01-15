@@ -12,6 +12,12 @@ public:
 		const uint32 CalculateResult = (CharacterOffensePower + WeaponOffensePower) * WeaponActionOffenseMultiply;
 		return CalculateResult;
 	}
+
+	static FVector CalculateComponentFrontPoint(USceneComponent* Component, float Multiply)
+	{
+		const FVector CalculateResult = Component->GetComponentLocation() + Multiply * Component->GetForwardVector();
+		return CalculateResult;
+	}
 private:
 	
 };

@@ -81,7 +81,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		DashCoolDownSeconds = PlayerBaseDataAsset->DashBaseCoolDownSeconds;
 		DashInvincibleTime = PlayerBaseDataAsset->DashBaseInvincibleTime;
 		
-		if(PlayerBaseDataAsset->DefaultWeaponBaseDataAsset)
+		if(IsValid(PlayerBaseDataAsset->DefaultWeaponBaseDataAsset))
 		{
 			PlayerWeaponComponent->SetupWeaponInfo(PlayerBaseDataAsset->DefaultWeaponBaseDataAsset);
 			MaxComboActionCount = PlayerBaseDataAsset->DefaultWeaponBaseDataAsset->WeaponAttackActionCount;
@@ -97,9 +97,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
-	if(PlayerAnimInstance)
+	
+	if(IsValid(PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance())))
 	{
 		PlayerAnimInstance->AttackComboCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackComboCheckState);
 		PlayerAnimInstance->AttackHitCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackHitCheckState);
@@ -151,11 +150,9 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 		if(CurrentHealthAmount < 0)
 		{
 			CurrentHealthAmount = 0;
+			// TODO: 목숨 같은거 생기면 사이에 추가하기
+			Dead();
 		}
-	}
-	if (CurrentHealthAmount <= 0)
-	{
-		Dead();
 	}
 	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
 	return 0;
@@ -423,10 +420,30 @@ void ALLL_PlayerBase::SetAttackHitCheckState(bool Value)
 	if(bIsAttackHitCheckOnGoing)
 	{
 		PlayerWeaponComponent->StartMeleeWeaponHitCheck(CurrentComboActionCount);
+		
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("근접 공격 피격 체크 시작")));
+			}
+		}
+#endif
 	}
 	else
 	{
 		PlayerWeaponComponent->StopMeleeWeaponHitCheck();
+		
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerDashDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("근접 공격 피격 체크 종료")));
+			}
+		}
+#endif
 	}
 }
 
