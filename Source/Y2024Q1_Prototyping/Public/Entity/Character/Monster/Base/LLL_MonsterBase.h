@@ -3,13 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LLL_MonsterBaseAnimInstance.h"
-#include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_MonsterBase.generated.h"
 
-class ULLL_MonsterBaseAnimInstance;
-class ULLL_MonsterBaseDataAsset;
 /**
  * 
  */
@@ -21,29 +17,24 @@ class Y2024Q1_PROTOTYPING_API ALLL_MonsterBase : public ALLL_BaseCharacter
 public:
 	ALLL_MonsterBase();
 	
-	FORCEINLINE float GetDetectDistance() const { return MonsterBaseDataAsset->DetectDistance; }
-	FORCEINLINE float GetFieldOfView() const { return MonsterBaseDataAsset->FieldOfView; }
-	FORCEINLINE float GetAttackDistance() const { return MonsterBaseDataAsset->AttackDistance; }
-	
-	FORCEINLINE bool AttackAnimationIsPlaying();
+	FORCEINLINE float GetDetectDistance() const { return DetectDistance; }
+	FORCEINLINE float GetFieldOfView() const { return FieldOfView; }
 
 protected:
-	virtual void PostInitializeComponents() override;
-	
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	virtual void Dead() override;
-
+	
 public:
-	void Stun();
-	void Attack();
+	virtual void Attack() override;
+	virtual bool AttackAnimationIsPlaying() { return false; }
 
-	void DamageToPlayer();
+	void Stun();
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
+	float DetectDistance;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<ULLL_MonsterBaseAnimInstance> MonsterBaseAnimInstance;
+	float FieldOfView;
 };

@@ -7,7 +7,6 @@
 #include "Entity/Character/Base/LLL_BaseCharacterAnimInstance.h"
 #include "LLL_MonsterBaseAnimInstance.generated.h"
 
-class ULLL_MonsterBaseDataAsset;
 /**
  * 
  */
@@ -17,13 +16,5 @@ class Y2024Q1_PROTOTYPING_API ULLL_MonsterBaseAnimInstance : public ULLL_BaseCha
 	GENERATED_BODY()
 
 public:
-	ULLL_MonsterBaseAnimInstance();
-
-	void PlayAttackAnimation();
-
-protected:
-	void AnimNotify_Hit();
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
+	virtual void PlayAttackAnimation() {}
 };

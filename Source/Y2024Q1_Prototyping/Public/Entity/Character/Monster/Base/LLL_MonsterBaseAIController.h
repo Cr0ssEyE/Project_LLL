@@ -6,7 +6,6 @@
 #include "AIController.h"
 #include "LLL_MonsterBaseAIController.generated.h"
 
-class ULLL_MonsterBaseDataAsset;
 /**
  * 
  */
@@ -15,12 +14,4 @@ class Y2024Q1_PROTOTYPING_API ALLL_MonsterBaseAIController : public AAIControlle
 {
 	GENERATED_BODY()
 
-public:
-	ALLL_MonsterBaseAIController();
-
-protected:
-	virtual void OnPossess(APawn* InPawn) override;
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 };

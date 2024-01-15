@@ -26,9 +26,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	void DelayedDestroy(float Time);
+
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UBoxComponent> CollisionBox;
+
+private:
+	void DestroyTimerCallback();
 };

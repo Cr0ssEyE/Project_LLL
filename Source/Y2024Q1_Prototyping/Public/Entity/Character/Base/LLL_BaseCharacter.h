@@ -15,6 +15,8 @@ public:
 	// Sets default values for this character's properties
 	ALLL_BaseCharacter();
 
+	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -28,6 +30,7 @@ public:
 
 	// 캐릭터 상태 설정
 public:
+	virtual void Attack() {}
 	virtual void Dead();
 
 	// 상태 체크용 변수
@@ -45,6 +48,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	uint32 OffensePower;
+	
+	UPROPERTY(VisibleAnywhere)
+	float AttackDistance;
 
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;

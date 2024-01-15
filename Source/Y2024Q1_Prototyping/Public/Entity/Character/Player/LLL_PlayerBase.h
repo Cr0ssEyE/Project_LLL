@@ -41,7 +41,7 @@ public:
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
 
 public:
-	void Attack();
+	virtual void Attack() override;
 	
 	// 카메라
 private:

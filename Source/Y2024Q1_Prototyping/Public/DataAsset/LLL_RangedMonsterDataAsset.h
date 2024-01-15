@@ -13,5 +13,8 @@ UCLASS()
 class Y2024Q1_PROTOTYPING_API ULLL_RangedMonsterDataAsset : public ULLL_MonsterBaseDataAsset
 {
 	GENERATED_BODY()
-	
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 예측률")
+	float PredictionRate;
 };
