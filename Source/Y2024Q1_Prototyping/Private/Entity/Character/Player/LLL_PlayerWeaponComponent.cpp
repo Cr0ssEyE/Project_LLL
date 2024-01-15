@@ -2,8 +2,6 @@
 
 
 #include "Entity/Character/Player/LLL_PlayerWeaponComponent.h"
-
-#include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "DataAsset/LLL_WeaponBaseDataAsset.h"
 #include "Engine/DamageEvents.h"
@@ -48,11 +46,11 @@ void ULLL_PlayerWeaponComponent::StopMeleeWeaponHitCheck()
 void ULLL_PlayerWeaponComponent::MeleeWeaponHitCheck()
 {
 	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
-	if(!OwnerCharacter)
+	if(!IsValid(OwnerCharacter))
 	{
 		return;
 	}
-
+	
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params(NAME_None, false, OwnerCharacter);
 	if(!DamagedActors.IsEmpty())
@@ -60,12 +58,13 @@ void ULLL_PlayerWeaponComponent::MeleeWeaponHitCheck()
 		Params.AddIgnoredActors(DamagedActors);
 	}
 
-	FVector HitCheckLocation = OwnerCharacter->GetCapsuleComponent()->GetComponentLocation() + AttackActionProperties[CurrentAttackActionCount].ActionHitBoxLocation * OwnerCharacter->GetActorForwardVector();
+	float FrontLocation = AttackActionProperties[CurrentAttackActionCount].ActionHitBoxLocation;
+	FVector HitBoxLocation = FLLL_MathHelper::CalculateComponentFrontPoint(OwnerCharacter->GetRootComponent(), FrontLocation);
 	
 	bool HitEntity = GetWorld()->SweepMultiByChannel(
 		HitResults,
-		HitCheckLocation,
-		HitCheckLocation,
+		HitBoxLocation,
+		HitBoxLocation,
 		FQuat::Identity,
 		ECC_ENEMY_ONLY,
 		FCollisionShape::MakeBox(AttackActionProperties[CurrentAttackActionCount].ActionHitBoxSize),
@@ -76,7 +75,7 @@ void ULLL_PlayerWeaponComponent::MeleeWeaponHitCheck()
 	{
 		if (ProtoGameInstance->CheckPlayerAttackDebug())
 		{
-			DrawDebugBox(GetWorld(), HitCheckLocation, AttackActionProperties[CurrentAttackActionCount].ActionHitBoxSize, FColor::Red, false, 0.1f);
+			DrawDebugBox(GetWorld(), HitBoxLocation, AttackActionProperties[CurrentAttackActionCount].ActionHitBoxSize, FColor::Red, false, 0.5f);
 		}
 	}
 #endif
@@ -89,7 +88,8 @@ void ULLL_PlayerWeaponComponent::MeleeWeaponHitCheck()
 			AActor* HitActor = HitResult.GetActor();
 			DamagedActors.Add(HitActor);
 
-			uint32 DamageResult = FLLL_MathHelper::CalculatePlayerWeaponDamage(1, Damage, AttackActionProperties[CurrentAttackActionCount].ActionDamageMultiplyValue);
+			float DamageMultiply = AttackActionProperties[CurrentAttackActionCount].ActionDamageMultiplyValue;
+			uint32 DamageResult = FLLL_MathHelper::CalculatePlayerWeaponDamage(1, Damage, DamageMultiply);
 			HitActor->TakeDamage(DamageResult, DamageEvent, OwnerCharacter->GetController(), OwnerCharacter);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
