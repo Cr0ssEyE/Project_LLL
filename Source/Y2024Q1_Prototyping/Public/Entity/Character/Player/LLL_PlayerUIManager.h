@@ -35,7 +35,7 @@ public:
 	void EnableInteractionWidget() const;
 	void DisableInteractionWidget() const;
 	void UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject, int Num) const;
-	void UpdateStatusWidget() const;
+	void UpdateStatusWidget(int MaxHealth, int CurrentHealth, int MaxShield, int CurrentShield) const;
 
 	UFUNCTION(BlueprintCallable)
 	void SetAllWidgetVisibility(const bool Visible);

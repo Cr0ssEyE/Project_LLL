@@ -8,9 +8,12 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_MonatgeSectionName.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
+#include "DataAsset/LLL_WeaponBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "Entity/Character/Player/LLL_PlayerWeaponComponent.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -23,6 +26,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
+	PlayerWeaponComponent = CreateDefaultSubobject<ULLL_PlayerWeaponComponent>(TEXT("PlayerWeaponComponent"));
 
 	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	if (IsValid(PlayerBaseDataAsset))
@@ -66,14 +70,27 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		SpringArm->bInheritRoll = false;
 		SpringArm->SetupAttachment(RootComponent);
 
+		MaxHealthAmount = PlayerBaseDataAsset->Health;
+		CurrentHealthAmount = MaxHealthAmount;
+		MaxShieldAmount = PlayerBaseDataAsset->ShieldAmount;
+		CurrentShieldAmount = MaxShieldAmount;
+		OffensePower = PlayerBaseDataAsset->OffensePower;
+		
 		MaxDashCount = PlayerBaseDataAsset->DashBaseCount;
 		DashInputCheckTime = PlayerBaseDataAsset->DashInputCheckTime;
 		DashCoolDownSeconds = PlayerBaseDataAsset->DashBaseCoolDownSeconds;
 		DashInvincibleTime = PlayerBaseDataAsset->DashBaseInvincibleTime;
-
-		Health = PlayerBaseDataAsset->Health;
-		ShieldAmount = PlayerBaseDataAsset->ShieldAmount;
-		OffensePower = PlayerBaseDataAsset->OffensePower;
+		
+		if(IsValid(PlayerBaseDataAsset->DefaultWeaponBaseDataAsset))
+		{
+			PlayerWeaponComponent->SetupWeaponInfo(PlayerBaseDataAsset->DefaultWeaponBaseDataAsset);
+			MaxComboActionCount = PlayerBaseDataAsset->DefaultWeaponBaseDataAsset->WeaponAttackActionCount;
+		}
+		else
+		{
+			// 테스트용
+			MaxComboActionCount = 3;
+		}
 	}
 }
 
@@ -81,14 +98,13 @@ void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
-}
-
-void ALLL_PlayerBase::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	if(IsValid(PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance())))
+	{
+		PlayerAnimInstance->AttackComboCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackComboCheckState);
+		PlayerAnimInstance->AttackHitCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackHitCheckState);
+		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DeadMontageEndEvent);
+	}
+	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -120,12 +136,25 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	{
 		return 0;
 	}
-
-	if (Health <= 0)
+	if(CurrentShieldAmount > 0)
 	{
-		Dead();
+		CurrentShieldAmount -= DamageAmount;
+		if(CurrentShieldAmount < 0)
+		{
+			CurrentShieldAmount = 0;
+		}
 	}
-	
+	else
+	{
+		CurrentHealthAmount -= DamageAmount;
+		if(CurrentHealthAmount < 0)
+		{
+			CurrentHealthAmount = 0;
+			// TODO: 목숨 같은거 생기면 사이에 추가하기
+			Dead();
+		}
+	}
+	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
 	return 0;
 }
 
@@ -189,12 +218,6 @@ void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObj
 			PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
 		}
 	}
-	
-}
-
-void ALLL_PlayerBase::Attack()
-{
-	// Todo: 공격 애니메이션 재생
 }
 
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
@@ -207,6 +230,17 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	}
 	
 	MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
+
+	if(bIsAttackActionOnGoing)
+	{
+		return;
+	}
+	if(GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+	{
+		GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
+		ClearStateWhenMotionCanceled();
+	}
+	
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	AddMovementInput(MoveDirection, 1.f);
 
@@ -223,7 +257,7 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 {
-	if(DashDisabledTime > 0 || CurrentDashCount >= MaxDashCount)
+	if(DashDisabledTime > 0 || CurrentDashCount >= MaxDashCount || bIsAttackHitCheckOnGoing)
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -243,6 +277,8 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 #endif
 		return;
 	}
+	
+	ClearStateWhenMotionCanceled();
 	
 	CurrentDashCount++;
 	DashElapsedTime = 0;
@@ -270,8 +306,26 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 {
+	if(bIsAttackActionOnGoing)
+	{
+		if(bIsAttackHitCheckOnGoing || !bCheckAttackComboActionInput)
+		{
+			return;
+		}
+		
+		CurrentComboActionCount++;
+		if(CurrentComboActionCount >= MaxComboActionCount)
+		{
+			CurrentComboActionCount = 0;
+		}
+		bCheckAttackComboActionInput = false;
+	}
+	else
+	{
+		CurrentComboActionCount = 0;
+	}
 	CharacterRotateToCursor();
-	// TODO: 공격 처리용 가상 함수 만들어서 붙이기
+	AttackSequence();
 }
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value)
@@ -350,6 +404,57 @@ void ALLL_PlayerBase::CharacterRotateToCursor()
 	}
 }
 
+void ALLL_PlayerBase::SetAttackComboCheckState(bool Value)
+{
+	bCheckAttackComboActionInput = Value;
+	if(!bCheckAttackComboActionInput)
+	{
+		bIsAttackActionOnGoing = false;
+		PlayerWeaponComponent->StopMeleeWeaponHitCheck();
+	}
+}
+
+void ALLL_PlayerBase::SetAttackHitCheckState(bool Value)
+{
+	bIsAttackHitCheckOnGoing = Value;
+	if(bIsAttackHitCheckOnGoing)
+	{
+		PlayerWeaponComponent->StartMeleeWeaponHitCheck(CurrentComboActionCount);
+		
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("근접 공격 피격 체크 시작")));
+			}
+		}
+#endif
+	}
+	else
+	{
+		PlayerWeaponComponent->StopMeleeWeaponHitCheck();
+		
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerDashDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("근접 공격 피격 체크 종료")));
+			}
+		}
+#endif
+	}
+}
+
+void ALLL_PlayerBase::AttackSequence()
+{
+	bIsAttackActionOnGoing = true;
+	RootComponent->ComponentVelocity = FVector::ZeroVector;
+	PlayerAnimInstance->Montage_Play(PlayerBaseDataAsset->AttackAnimMontage);
+	PlayerAnimInstance->Montage_JumpToSection(*FString(SECTION_ATTACK).Append(FString::FromInt(CurrentComboActionCount)));
+}
+
 void ALLL_PlayerBase::CheckDashElapsedTime()
 {
 	DashElapsedTime += GetWorld()->DeltaTimeSeconds;
@@ -405,5 +510,31 @@ void ALLL_PlayerBase::CheckDashDelay()
 		return;
 	}
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashDelay);
+}
+
+void ALLL_PlayerBase::ClearStateWhenMotionCanceled()
+{
+	bIsAttackActionOnGoing = false;
+	bIsAttackHitCheckOnGoing = false;
+	bCheckAttackComboActionInput = false;
+	bIsInvincibleOnDashing = false;
+
+	SetAttackHitCheckState(false);
+}
+
+void ALLL_PlayerBase::Dead()
+{
+	Super::Dead();
+	if(IsValid(PlayerBaseDataAsset->DeadAnimMontage))
+	{
+		PlayerAnimInstance->Montage_Play(PlayerBaseDataAsset->DeadAnimMontage);
+	}
+	DisableInput(Cast<APlayerController>(GetController()));
+}
+
+void ALLL_PlayerBase::DeadMontageEndEvent()
+{
+	// TODO: 화면 페이드, 결과창 출력 등등. 임시로 Destroy 처리
+	Destroy();
 }
 

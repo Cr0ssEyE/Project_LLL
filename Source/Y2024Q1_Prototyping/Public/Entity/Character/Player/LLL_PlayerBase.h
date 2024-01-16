@@ -7,6 +7,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ULLL_PlayerWeaponComponent;
 class ULLL_PlayerAnimInstance;
 class ALLL_InteractiveObject;
 class ULLL_PlayerUIManager;
@@ -26,9 +27,8 @@ class Y2024Q1_PROTOTYPING_API ALLL_PlayerBase : public ALLL_BaseCharacter
 	// 기본 상속 가상함수
 public:
 	ALLL_PlayerBase();
-
+	
 	virtual void BeginPlay() override;
-	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -40,9 +40,6 @@ public:
 	void AddInteractableObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
 
-public:
-	void Attack();
-	
 	// 카메라
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -58,7 +55,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerUIManager> PlayerUIManager;
-	
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_PlayerWeaponComponent> PlayerWeaponComponent;
 	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);
@@ -81,6 +80,25 @@ private:
 private:
 	UPROPERTY()
 	float DashSpeed;
+
+	// 공격 관련 함수
+private:
+	void SetAttackComboCheckState(bool Value);
+	void SetAttackHitCheckState(bool Value);
+	void AttackSequence();
+	
+	// 공격 관련 변수
+private:
+	uint32 CurrentComboActionCount;
+
+	// 임시 변수
+	uint32 MaxComboActionCount;
+	
+	uint8 bCheckAttackComboActionInput : 1;
+
+	uint8 bIsAttackHitCheckOnGoing : 1;
+
+	uint8 bIsAttackActionOnGoing : 1;
 	
 	// 돌진 관련 함수
 private:
@@ -108,9 +126,6 @@ private:
 	float DashElapsedTime;
 
 	uint8 bIsInvincibleOnDashing : 1;
-
-	// 공격 관련 함수
-protected:
 	
 	// 상호작용 관련 변수
 private:
@@ -122,5 +137,16 @@ private:
 
 	UPROPERTY()
 	uint32 InteractionRange;
+
+	// 사망 관련 함수
+protected:
+	virtual void Dead() override;
+
+private:
+	void DeadMontageEndEvent();
+	
+	// 모션 캔슬시 사용 목적 함수
+private:
+	void ClearStateWhenMotionCanceled();
 	
 };

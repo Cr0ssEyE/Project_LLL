@@ -39,8 +39,10 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 		GetCharacterMovement()->RotationRate = FRotator(0.f, MonsterBaseDataAsset->TurnSpeed * 360.f, 0.f);
 		GetCharacterMovement()->FallingLateralFriction = 3.0f;
 
-		Health = MonsterBaseDataAsset->Health;
-		ShieldAmount = MonsterBaseDataAsset->ShieldAmount;
+		MaxHealthAmount = MonsterBaseDataAsset->Health;
+		CurrentHealthAmount = MaxHealthAmount;
+		MaxShieldAmount = MonsterBaseDataAsset->ShieldAmount;
+		CurrentShieldAmount = MaxShieldAmount;
 		OffensePower = MonsterBaseDataAsset->OffensePower;
 	}
 
@@ -65,7 +67,7 @@ float ALLL_MonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (Health <= 0)
+	if (CurrentHealthAmount <= 0)
 	{
 		Dead();
 	}

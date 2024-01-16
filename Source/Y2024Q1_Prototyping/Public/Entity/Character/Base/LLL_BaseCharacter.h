@@ -33,19 +33,25 @@ public:
 	// 상태 체크용 변수
 public:
 	FORCEINLINE bool CheckCharacterIsDead() { return bIsDead; }
-	FORCEINLINE uint32 CheckCharacterHealth() { return Health; }
+	FORCEINLINE uint32 CheckCharacterHealth() { return CurrentHealthAmount; }
 	
 	// 캐릭터 공용 변수
 protected:
 	UPROPERTY(VisibleAnywhere)
-	uint32 Health;
+	uint32 MaxHealthAmount;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 ShieldAmount;
+	int32 CurrentHealthAmount;
+	
+	UPROPERTY(VisibleAnywhere)
+	uint32 MaxShieldAmount;
 
+	UPROPERTY(VisibleAnywhere)
+	int32 CurrentShieldAmount;
+	
 	UPROPERTY(VisibleAnywhere)
 	uint32 OffensePower;
-
+	
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
 
