@@ -23,7 +23,4 @@ public:
 protected:
 	UFUNCTION()
 	void AnimNotify_Release();
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_RangedMonsterDataAsset> RangedMonsterDataAsset;
 };

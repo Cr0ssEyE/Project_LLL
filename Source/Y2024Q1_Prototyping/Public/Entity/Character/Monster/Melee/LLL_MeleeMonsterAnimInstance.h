@@ -23,7 +23,4 @@ public:
 protected:
 	UFUNCTION()
 	void AnimNotify_Hit();
-
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_MeleeMonsterDataAsset> MeleeMonsterDataAsset;
 };

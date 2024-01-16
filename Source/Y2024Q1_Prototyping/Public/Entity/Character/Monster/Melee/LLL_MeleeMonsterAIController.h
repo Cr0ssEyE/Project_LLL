@@ -17,10 +17,4 @@ class Y2024Q1_PROTOTYPING_API ALLL_MeleeMonsterAIController : public ALLL_Monste
 	
 public:
 	ALLL_MeleeMonsterAIController();
-
-protected:
-	virtual void OnPossess(APawn* InPawn) override;
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_MeleeMonsterDataAsset> MeleeMonsterDataAsset;
 };

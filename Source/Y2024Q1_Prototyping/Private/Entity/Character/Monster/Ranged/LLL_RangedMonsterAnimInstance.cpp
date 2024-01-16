@@ -10,12 +10,12 @@
 
 ULLL_RangedMonsterAnimInstance::ULLL_RangedMonsterAnimInstance()
 {
-	RangedMonsterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RangedMonsterDataAsset>(PATH_RANGED_MONSTER_DATA, EAssertionLevel::Check);
+	MonsterBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RangedMonsterDataAsset>(PATH_RANGED_MONSTER_DATA, EAssertionLevel::Check);
 }
 
 void ULLL_RangedMonsterAnimInstance::PlayAttackAnimation()
 {
-	Montage_Play(RangedMonsterDataAsset->AttackAnimMontage);
+	Montage_Play(MonsterBaseDataAsset->AttackAnimMontage);
 }
 
 void ULLL_RangedMonsterAnimInstance::AnimNotify_Release()

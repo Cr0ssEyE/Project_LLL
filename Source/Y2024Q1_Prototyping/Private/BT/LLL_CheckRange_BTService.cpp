@@ -20,13 +20,13 @@ void ULLL_CheckRange_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
+	const ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
 	if (IsValid(MonsterBase) && IsValid(PlayerBase))
 	{
 		const float Distance = MonsterBase->GetDistanceTo(PlayerBase);
 
-		if (Distance <= MonsterBase->GetAttackDistance())
+		if (!PlayerBase->CheckCharacterIsDead() && Distance <= MonsterBase->GetAttackDistance())
 		{
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_RANGE, true);
 			return;

@@ -9,17 +9,5 @@
 
 ALLL_MeleeMonsterAIController::ALLL_MeleeMonsterAIController()
 {
-	MeleeMonsterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MeleeMonsterDataAsset>(PATH_MELEE_MONSTER_DATA, EAssertionLevel::Check);
-}
-
-void ALLL_MeleeMonsterAIController::OnPossess(APawn* InPawn)
-{
-	Super::OnPossess(InPawn);
-
-	// 블랙보드와 행동트리 할당
-	UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
-	if (UseBlackboard(MeleeMonsterDataAsset->BlackBoard, BlackboardComponent))
-	{
-		check(RunBehaviorTree(MeleeMonsterDataAsset->BehaviorTree));
-	}
+	MonsterBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MeleeMonsterDataAsset>(PATH_MELEE_MONSTER_DATA, EAssertionLevel::Check);
 }

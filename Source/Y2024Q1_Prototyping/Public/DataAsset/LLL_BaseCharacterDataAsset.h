@@ -38,12 +38,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "기본 가속도")
 	float AccelerateSpeed;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "방향전환 속도")
-	float TurnSpeed;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "지면 마찰력")
 	float GroundFriction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "방향전환 속도")
+	float TurnSpeed;
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 체력")

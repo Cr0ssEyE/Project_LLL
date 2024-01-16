@@ -17,10 +17,4 @@ class Y2024Q1_PROTOTYPING_API ALLL_RangedMonsterAIController : public ALLL_Monst
 	
 public:
 	ALLL_RangedMonsterAIController();
-
-protected:
-	virtual void OnPossess(APawn* InPawn) override;
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_RangedMonsterDataAsset> RangedMonsterDataAsset;
 };

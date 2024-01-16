@@ -9,12 +9,12 @@
 
 ULLL_MeleeMonsterAnimInstance::ULLL_MeleeMonsterAnimInstance()
 {
-	MeleeMonsterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MeleeMonsterDataAsset>(PATH_MELEE_MONSTER_DATA, EAssertionLevel::Check);
+	MonsterBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MeleeMonsterDataAsset>(PATH_MELEE_MONSTER_DATA, EAssertionLevel::Check);
 }
 
 void ULLL_MeleeMonsterAnimInstance::PlayAttackAnimation()
 {
-	Montage_Play(MeleeMonsterDataAsset->AttackAnimMontage);
+	Montage_Play(MonsterBaseDataAsset->AttackAnimMontage);
 }
 
 void ULLL_MeleeMonsterAnimInstance::AnimNotify_Hit()

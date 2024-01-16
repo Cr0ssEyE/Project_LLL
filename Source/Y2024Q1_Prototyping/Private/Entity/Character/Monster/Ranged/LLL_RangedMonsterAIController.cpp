@@ -9,17 +9,5 @@
 
 ALLL_RangedMonsterAIController::ALLL_RangedMonsterAIController()
 {
-	RangedMonsterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RangedMonsterDataAsset>(PATH_RANGED_MONSTER_DATA, EAssertionLevel::Check);
-}
-
-void ALLL_RangedMonsterAIController::OnPossess(APawn* InPawn)
-{
-	Super::OnPossess(InPawn);
-
-	// 블랙보드와 행동트리 할당
-	UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
-	if (UseBlackboard(RangedMonsterDataAsset->BlackBoard, BlackboardComponent))
-	{
-		check(RunBehaviorTree(RangedMonsterDataAsset->BehaviorTree));
-	}
+	MonsterBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RangedMonsterDataAsset>(PATH_RANGED_MONSTER_DATA, EAssertionLevel::Check);
 }
