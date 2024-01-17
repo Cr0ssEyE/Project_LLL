@@ -25,7 +25,7 @@ void ULLL_CheckRange_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 	if (IsValid(MonsterBase) && IsValid(PlayerBase))
 	{
 		const float Distance = MonsterBase->GetDistanceTo(PlayerBase);
-
+		
 		if (!PlayerBase->CheckCharacterIsDead() && Distance <= MonsterBase->GetAttackDistance())
 		{
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_RANGE, true);

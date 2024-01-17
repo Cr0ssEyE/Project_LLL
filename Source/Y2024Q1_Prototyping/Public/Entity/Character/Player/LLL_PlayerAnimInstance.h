@@ -8,8 +8,8 @@
 #include "LLL_PlayerAnimInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FAttackHitCheckDelegate, bool)
-DECLARE_MULTICAST_DELEGATE(FAttackComboCheckDelegate)
-
+DECLARE_MULTICAST_DELEGATE_OneParam(FAttackComboCheckDelegate, bool)
+DECLARE_MULTICAST_DELEGATE(FDeadMotionEndedDelegate)
 /**
  * 
  */
@@ -23,7 +23,7 @@ public:
 
 	FAttackHitCheckDelegate AttackHitCheckDelegate;
 	FAttackComboCheckDelegate AttackComboCheckDelegate;
-	
+	FDeadMotionEndedDelegate DeadMotionEndedDelegate;
 private:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AnimNotify_AttackHitCheckStart() { AttackHitCheckDelegate.Broadcast(true); }
@@ -32,6 +32,11 @@ private:
 	FORCEINLINE void AnimNotify_AttackHitCheckEnd() { AttackHitCheckDelegate.Broadcast(false); }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_AttackComboCheckEnd() { AttackComboCheckDelegate.Broadcast(); }
+	FORCEINLINE void AnimNotify_AttackComboCheckStart() { AttackComboCheckDelegate.Broadcast(true); }
 	
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void AnimNotify_AttackComboCheckEnd() { AttackComboCheckDelegate.Broadcast(false); }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void AnimNotify_DeadMotionEnded() { DeadMotionEndedDelegate.Broadcast(); }
 };

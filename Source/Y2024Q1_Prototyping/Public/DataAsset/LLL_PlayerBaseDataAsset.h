@@ -6,6 +6,7 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+class ULLL_WeaponBaseDataAsset;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;
@@ -21,6 +22,16 @@ UCLASS()
 class Y2024Q1_PROTOTYPING_API ULLL_PlayerBaseDataAsset : public ULLL_CharacterBaseDataAsset
 {
 	GENERATED_BODY()
+
+	// 캐릭터 기본 설정
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
+	TObjectPtr<UAnimMontage> DeadAnimMontage;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "SubData", DisplayName = "캐릭터 기본 무기 데이터")
+	TObjectPtr<ULLL_WeaponBaseDataAsset> DefaultWeaponBaseDataAsset;
+	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "일시정지 UI")
 	TSubclassOf<ULLL_GamePauseWidget> PauseWidgetClass;

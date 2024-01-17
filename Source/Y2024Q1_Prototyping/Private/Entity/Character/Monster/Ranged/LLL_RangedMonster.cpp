@@ -35,8 +35,10 @@ ALLL_RangedMonster::ALLL_RangedMonster()
 		GetCharacterMovement()->GroundFriction = GroundFriction = RangedMonsterDataAsset->GroundFriction;
 		GetCharacterMovement()->RotationRate = FRotator(0.f, RangedMonsterDataAsset->TurnSpeed * 360.f, 0.f);
 
-		Health = RangedMonsterDataAsset->Health;
-		ShieldAmount = RangedMonsterDataAsset->ShieldAmount;
+		MaxHealthAmount = RangedMonsterDataAsset->Health;
+		CurrentHealthAmount = MaxHealthAmount;
+		MaxShieldAmount = RangedMonsterDataAsset->ShieldAmount;
+		CurrentShieldAmount = MaxShieldAmount;
 		OffensePower = RangedMonsterDataAsset->OffensePower;
 		AttackDistance = RangedMonsterDataAsset->AttackDistance;
 

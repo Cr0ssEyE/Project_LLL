@@ -33,8 +33,10 @@ ALLL_MeleeMonster::ALLL_MeleeMonster()
 		GetCharacterMovement()->GroundFriction = GroundFriction = MeleeMonsterDataAsset->GroundFriction;
 		GetCharacterMovement()->RotationRate = FRotator(0.f, MeleeMonsterDataAsset->TurnSpeed * 360.f, 0.f);
 
-		Health = MeleeMonsterDataAsset->Health;
-		ShieldAmount = MeleeMonsterDataAsset->ShieldAmount;
+		MaxHealthAmount = MeleeMonsterDataAsset->Health;
+		CurrentHealthAmount = MaxHealthAmount;
+		MaxShieldAmount = MeleeMonsterDataAsset->ShieldAmount;
+		CurrentShieldAmount = MaxShieldAmount;
 		OffensePower = MeleeMonsterDataAsset->OffensePower;
 		AttackDistance = MeleeMonsterDataAsset->AttackDistance;
 

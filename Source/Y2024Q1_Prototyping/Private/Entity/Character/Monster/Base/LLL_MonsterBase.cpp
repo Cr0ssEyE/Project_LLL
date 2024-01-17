@@ -26,7 +26,7 @@ float ALLL_MonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (Health <= 0)
+	if (CurrentHealthAmount <= 0)
 	{
 		Dead();
 	}

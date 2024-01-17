@@ -128,9 +128,10 @@ void ULLL_PlayerUIManager::UpdateInteractionWidget(ALLL_InteractiveObject* Curre
 	InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
 }
 
-void ULLL_PlayerUIManager::UpdateStatusWidget() const
+void ULLL_PlayerUIManager::UpdateStatusWidget(int MaxHealth, int CurrentHealth, int MaxShield, int CurrentShield) const
 {
 	// TODO: 체력 시스템 구현하고 만들기
+	PlayerStatusWidget->UpdateWidgetView(MaxHealth, CurrentHealth, MaxShield, CurrentShield);
 }
 
 void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible)
