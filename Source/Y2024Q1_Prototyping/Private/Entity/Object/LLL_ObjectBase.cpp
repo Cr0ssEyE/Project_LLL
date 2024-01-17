@@ -35,3 +35,16 @@ void ALLL_ObjectBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ALLL_ObjectBase::DelayedDestroy(float Time)
+{
+	FTimerHandle DestroyTimerHandle;
+	FTimerDelegate DestroyTimerDelegate;
+	DestroyTimerDelegate.BindUObject(this, &ALLL_ObjectBase::DestroyTimerCallback);
+	GetWorldTimerManager().SetTimer(DestroyTimerHandle, DestroyTimerDelegate, Time, false);
+}
+
+void ALLL_ObjectBase::DestroyTimerCallback()
+{
+	Destroy();
+}
+

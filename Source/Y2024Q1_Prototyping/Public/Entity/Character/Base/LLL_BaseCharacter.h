@@ -15,6 +15,9 @@ public:
 	// Sets default values for this character's properties
 	ALLL_BaseCharacter();
 
+	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
+	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -28,12 +31,13 @@ public:
 
 	// 캐릭터 상태 설정
 public:
+	virtual void Attack() {}
 	virtual void Dead();
 
 	// 상태 체크용 변수
 public:
-	FORCEINLINE bool CheckCharacterIsDead() { return bIsDead; }
-	FORCEINLINE uint32 CheckCharacterHealth() { return CurrentHealthAmount; }
+	FORCEINLINE bool CheckCharacterIsDead() const { return bIsDead; }
+	FORCEINLINE uint32 CheckCharacterHealth() const { return CurrentHealthAmount; }
 	
 	// 캐릭터 공용 변수
 protected:
@@ -53,6 +57,9 @@ protected:
 	uint32 OffensePower;
 	
 	UPROPERTY(VisibleAnywhere)
+	float AttackDistance;
+
+	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
 
 	// 이동 관련 변수
@@ -65,6 +72,9 @@ protected:
 
 	UPROPERTY()
 	float GroundFriction;
+
+	UPROPERTY()
+	float TurnSpeed;
 
 	UPROPERTY()
 	FVector MoveDirection;

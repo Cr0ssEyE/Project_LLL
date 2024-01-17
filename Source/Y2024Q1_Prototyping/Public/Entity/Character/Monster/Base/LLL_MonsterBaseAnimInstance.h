@@ -3,24 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AIController.h"
-#include "LLL_MonsterBaseAIController.generated.h"
+#include "Animation/AnimInstance.h"
+#include "Entity/Character/Base/LLL_BaseCharacterAnimInstance.h"
+#include "LLL_MonsterBaseAnimInstance.generated.h"
 
 class ULLL_MonsterBaseDataAsset;
 /**
  * 
  */
 UCLASS()
-class Y2024Q1_PROTOTYPING_API ALLL_MonsterBaseAIController : public AAIController
+class Y2024Q1_PROTOTYPING_API ULLL_MonsterBaseAnimInstance : public ULLL_BaseCharacterAnimInstance
 {
 	GENERATED_BODY()
 
 public:
-	ALLL_MonsterBaseAIController();
+	virtual void PlayAttackAnimation() {}
 
 protected:
-	virtual void OnPossess(APawn* InPawn) override;
-	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 };

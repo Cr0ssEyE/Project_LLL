@@ -5,7 +5,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "DataAsset/LLL_WeaponBaseDataAsset.h"
 #include "Engine/DamageEvents.h"
-#include "Entity/Character/Monster/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/Character.h"
 #include "Util/LLL_MathHelper.h"
