@@ -12,7 +12,7 @@ class UBlackboardData;
  * 
  */
 UCLASS()
-class Y2024Q1_PROTOTYPING_API ULLL_MonsterBaseDataAsset : public ULLL_CharacterBaseDataAsset
+class Y2024Q1_PROTOTYPING_API ULLL_MonsterBaseDataAsset : public ULLL_BaseCharacterDataAsset
 {
 	GENERATED_BODY()
 

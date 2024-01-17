@@ -8,14 +8,9 @@
 #include "Entity/Character/Monster/Ranged/LLL_RangedMonster.h"
 #include "Util/LLLConstructorHelper.h"
 
-ULLL_RangedMonsterAnimInstance::ULLL_RangedMonsterAnimInstance()
-{
-	MonsterBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RangedMonsterDataAsset>(PATH_RANGED_MONSTER_DATA, EAssertionLevel::Check);
-}
-
 void ULLL_RangedMonsterAnimInstance::PlayAttackAnimation()
 {
-	Montage_Play(MonsterBaseDataAsset->AttackAnimMontage);
+	Montage_Play(CharacterDataAsset->AttackAnimMontage);
 }
 
 void ULLL_RangedMonsterAnimInstance::AnimNotify_Release()

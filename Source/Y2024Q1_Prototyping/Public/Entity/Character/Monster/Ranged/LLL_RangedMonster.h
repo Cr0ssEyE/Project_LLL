@@ -19,6 +19,10 @@ class Y2024Q1_PROTOTYPING_API ALLL_RangedMonster : public ALLL_MonsterBase
 public:
 	ALLL_RangedMonster();
 
+protected:
+	virtual void BeginPlay() override;
+	
+public:
 	virtual bool AttackAnimationIsPlaying() override;
 
 	void ThrowToPlayer();

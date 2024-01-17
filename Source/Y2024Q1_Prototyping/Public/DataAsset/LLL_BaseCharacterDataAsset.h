@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class Y2024Q1_PROTOTYPING_API ULLL_CharacterBaseDataAsset : public UDataAsset
+class Y2024Q1_PROTOTYPING_API ULLL_BaseCharacterDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 	
@@ -25,9 +25,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "공격 애님 몽타주")
 	TObjectPtr<UAnimMontage> AttackAnimMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "사망 애니메이션")
-	TObjectPtr<UAnimationAsset> DeadAnimation;
-
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
+	TObjectPtr<UAnimMontage> DeadAnimMontage;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "충돌 사이즈(높이, 반지름)", meta=(DisplayPriority=1))
 	FVector2D CollisionSize;
 	

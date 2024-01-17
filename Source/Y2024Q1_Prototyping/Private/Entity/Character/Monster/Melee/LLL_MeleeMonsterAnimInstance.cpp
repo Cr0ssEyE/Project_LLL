@@ -7,14 +7,9 @@
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
 #include "Util/LLLConstructorHelper.h"
 
-ULLL_MeleeMonsterAnimInstance::ULLL_MeleeMonsterAnimInstance()
-{
-	MonsterBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MeleeMonsterDataAsset>(PATH_MELEE_MONSTER_DATA, EAssertionLevel::Check);
-}
-
 void ULLL_MeleeMonsterAnimInstance::PlayAttackAnimation()
 {
-	Montage_Play(MonsterBaseDataAsset->AttackAnimMontage);
+	Montage_Play(CharacterDataAsset->AttackAnimMontage);
 }
 
 void ULLL_MeleeMonsterAnimInstance::AnimNotify_Hit()

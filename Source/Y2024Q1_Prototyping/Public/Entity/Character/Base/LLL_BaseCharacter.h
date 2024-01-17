@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LLL_BaseCharacterAnimInstance.h"
+#include "DataAsset/LLL_BaseCharacterDataAsset.h"
 #include "GameFramework/Character.h"
 #include "LLL_BaseCharacter.generated.h"
 
@@ -14,7 +16,8 @@ class Y2024Q1_PROTOTYPING_API ALLL_BaseCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ALLL_BaseCharacter();
-
+	
+	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
 	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
 
@@ -78,6 +81,13 @@ protected:
 
 	UPROPERTY()
 	FVector MoveDirection;
+
+protected:
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<const ULLL_BaseCharacterDataAsset> CharacterDataAsset;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_BaseCharacterAnimInstance> CharacterAnimInstance;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수

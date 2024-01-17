@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
+#include "LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
@@ -35,8 +36,6 @@ public:
 
 	// 외부 접근용
 public:
-	FORCEINLINE ULLL_PlayerBaseDataAsset* GetPlayerDataAsset() const { return PlayerBaseDataAsset; }
-	
 	void AddInteractableObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
 
@@ -74,7 +73,7 @@ private:
 	// 데이터 에셋
 private:
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerBaseDataAsset> PlayerBaseDataAsset;
+	TObjectPtr<ULLL_PlayerBaseDataAsset> PlayerDataAsset;
 
 	// 이동 관련 변수
 private:

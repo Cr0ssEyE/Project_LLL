@@ -16,8 +16,6 @@ class Y2024Q1_PROTOTYPING_API ULLL_RangedMonsterAnimInstance : public ULLL_Monst
 	GENERATED_BODY()
 
 public:
-	ULLL_RangedMonsterAnimInstance();
-	
 	virtual void PlayAttackAnimation() override;
 
 protected:

@@ -14,11 +14,6 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 {
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 	
-	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-	
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->FallingLateralFriction = 3.0f;
-	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
