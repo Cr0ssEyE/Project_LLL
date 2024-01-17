@@ -30,7 +30,7 @@ void ALLL_RangedMonster::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(IsValid(CharacterAnimInstance))
+	if(IsValid(CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance())))
 	{
 		CharacterAnimInstance->SetDataAsset(CharacterDataAsset);
 	}

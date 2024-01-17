@@ -8,6 +8,7 @@
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/ProtoGameInstance.h"
 
 ULLL_CheckRange_BTService::ULLL_CheckRange_BTService()
 {
@@ -25,6 +26,16 @@ void ULLL_CheckRange_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 	if (IsValid(MonsterBase) && IsValid(PlayerBase))
 	{
 		const float Distance = MonsterBase->GetDistanceTo(PlayerBase);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("플레이어 캐릭터 거리 : %f"), Distance));
+			}
+		}
+#endif
 		
 		if (!PlayerBase->CheckCharacterIsDead() && Distance <= MonsterBase->GetAttackDistance())
 		{

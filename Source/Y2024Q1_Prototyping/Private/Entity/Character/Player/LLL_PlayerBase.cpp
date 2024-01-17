@@ -73,7 +73,11 @@ void ALLL_PlayerBase::BeginPlay()
 	
 	if(IsValid(PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance())))
 	{
-		CharacterAnimInstance->SetDataAsset(CharacterDataAsset);
+		if(!IsValid(CharacterAnimInstance))
+		{
+			CharacterAnimInstance = PlayerAnimInstance;
+		}
+		PlayerAnimInstance->SetDataAsset(CharacterDataAsset);
 		PlayerAnimInstance->AttackComboCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackComboCheckState);
 		PlayerAnimInstance->AttackHitCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackHitCheckState);
 		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DeadMontageEndEvent);

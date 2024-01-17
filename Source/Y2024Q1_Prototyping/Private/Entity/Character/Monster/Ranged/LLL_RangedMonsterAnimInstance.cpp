@@ -10,7 +10,10 @@
 
 void ULLL_RangedMonsterAnimInstance::PlayAttackAnimation()
 {
-	Montage_Play(CharacterDataAsset->AttackAnimMontage);
+	if (IsValid(CharacterDataAsset))
+	{
+		Montage_Play(CharacterDataAsset->AttackAnimMontage);
+	}
 }
 
 void ULLL_RangedMonsterAnimInstance::AnimNotify_Release()

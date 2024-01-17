@@ -13,18 +13,56 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	bIsDead = false;
 
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	bIsSpawned = false;
+#endif
+	
+}
+
+void ALLL_BaseCharacter::PostLoad()
+{
+	Super::PostLoad();
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	SetDefaultInformation();
+#endif
+}
+
+void ALLL_BaseCharacter::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	SetDefaultInformation();
+#endif
+}
+
+void ALLL_BaseCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	SetDefaultInformation();
+}
+
+void ALLL_BaseCharacter::SetDefaultInformation()
+{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(bIsSpawned)
+	{
+		return;
+	}
+#endif
+	
 	if (IsValid(CharacterDataAsset))
 	{
 		GetCapsuleComponent()->SetCapsuleSize(CharacterDataAsset->CollisionSize.Y, CharacterDataAsset->CollisionSize.X);
 
 		GetMesh()->SetSkeletalMesh(CharacterDataAsset->SkeletalMesh);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -CharacterDataAsset->CollisionSize.X));
+		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -CharacterDataAsset->CollisionSize.X));
 
 		UClass* AnimBlueprint = CharacterDataAsset->AnimInstance.LoadSynchronous();
 		if (IsValid(AnimBlueprint))
 		{
 			GetMesh()->SetAnimInstanceClass(AnimBlueprint);
+			CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 		}
 
 		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = CharacterDataAsset->MoveSpeed;
@@ -43,6 +81,11 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 		MaxShieldAmount = CharacterDataAsset->ShieldAmount;
 		CurrentShieldAmount = MaxShieldAmount;
 		OffensePower = CharacterDataAsset->OffensePower;
+		AttackDistance = CharacterDataAsset->AttackDistance;
+		
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		bIsSpawned = true;
+#endif
 	}
 }
 

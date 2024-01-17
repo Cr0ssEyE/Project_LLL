@@ -22,6 +22,10 @@ public:
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
 
 protected:
+	virtual void PostLoad() override;
+	virtual void OnConstruction(const FTransform& Transform) override;
+	virtual void PostInitializeComponents() override;
+	virtual void SetDefaultInformation();
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
@@ -96,6 +100,6 @@ public:
 	
 	// 디버그용 변수
 public:
-
+	uint8 bIsSpawned : 1;
 #endif
 };
