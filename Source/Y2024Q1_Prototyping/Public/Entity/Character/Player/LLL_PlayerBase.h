@@ -57,6 +57,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerWeaponComponent> PlayerWeaponComponent;
+	
 	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);
@@ -137,9 +138,10 @@ private:
 	UPROPERTY()
 	uint32 InteractionRange;
 
-	// 사망 관련 함수
+	// 상태 관련 함수
 protected:
 	virtual void Dead() override;
+	virtual void Attack() override;
 
 private:
 	void DeadMontageEndEvent();

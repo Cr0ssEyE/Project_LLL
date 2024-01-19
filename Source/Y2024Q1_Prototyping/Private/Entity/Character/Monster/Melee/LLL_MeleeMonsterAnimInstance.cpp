@@ -3,14 +3,7 @@
 
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonsterAnimInstance.h"
 
-#include "Constant/LLL_FilePath.h"
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
-#include "Util/LLLConstructorHelper.h"
-
-void ULLL_MeleeMonsterAnimInstance::PlayAttackAnimation()
-{
-	Montage_Play(CharacterDataAsset->AttackAnimMontage);
-}
 
 void ULLL_MeleeMonsterAnimInstance::AnimNotify_Hit()
 {

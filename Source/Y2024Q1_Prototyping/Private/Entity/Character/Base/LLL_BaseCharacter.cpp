@@ -117,8 +117,21 @@ void ALLL_BaseCharacter::Dead()
 		return;
 	}
 
-	// Todo: 사망 애니메이션 재생
+	CharacterAnimInstance->PlayDeadAnimation();
 	
 	CurrentHealthAmount = 0;
 	bIsDead = true;
+}
+
+void ALLL_BaseCharacter::DelayedDestroy(float Time)
+{
+	FTimerHandle DestroyTimerHandle;
+	FTimerDelegate DestroyTimerDelegate;
+	DestroyTimerDelegate.BindUObject(this, &ALLL_BaseCharacter::DestroyTimerCallback);
+	GetWorldTimerManager().SetTimer(DestroyTimerHandle, DestroyTimerDelegate, Time, false);
+}
+
+void ALLL_BaseCharacter::DestroyTimerCallback()
+{
+	Destroy();
 }

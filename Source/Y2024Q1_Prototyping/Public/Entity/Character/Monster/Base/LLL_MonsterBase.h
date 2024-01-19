@@ -29,7 +29,7 @@ public:
 	virtual void Attack() override;
 	virtual bool AttackAnimationIsPlaying() { return false; }
 
-	void Stun();
+	void Damaged();
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)

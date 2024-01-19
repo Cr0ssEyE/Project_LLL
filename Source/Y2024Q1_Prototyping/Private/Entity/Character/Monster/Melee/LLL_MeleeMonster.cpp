@@ -3,8 +3,10 @@
 
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
 
+#include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_MeleeMonsterDataAsset.h"
+#include "Engine/DamageEvents.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonsterAIController.h"
 #include "Util/LLLConstructorHelper.h"
@@ -48,5 +50,28 @@ bool ALLL_MeleeMonster::AttackAnimationIsPlaying()
 
 void ALLL_MeleeMonster::DamageToPlayer()
 {
-	// Todo: 플레이어에게 데미지 구현
+	float AttackRadius = 50.0f;
+	
+	FHitResult HitResult;
+	const FVector Start = GetActorLocation();
+	const FVector End = Start + GetActorForwardVector() * AttackDistance;
+	const FQuat Rot = FQuat::Identity;
+	FCollisionShape Shape = FCollisionShape::MakeSphere(AttackRadius);
+	const bool bSweepResult = GetWorld()->SweepSingleByChannel(HitResult, Start, End, Rot, ECC_PLAYER_ONLY, Shape);
+	
+	if (bSweepResult)
+	{
+		if (AActor* TargetActor = HitResult.GetActor())
+		{
+			float AttackDamage = CharacterDataAsset->OffensePower;
+			FDamageEvent DamageEvent;
+			TargetActor->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
+		}
+	}
+
+	const FVector Center = Start + (End - Start) * 0.5f;
+	const float HalfHeight = AttackDistance * 0.5f;
+	const FQuat CapsuleRotate = FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat();
+	const FColor DrawColor = bSweepResult ? FColor::Green : FColor::Red;
+	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRotate, DrawColor, false, 1.f);
 }

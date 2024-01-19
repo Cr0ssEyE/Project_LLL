@@ -24,6 +24,7 @@ public:
 	FAttackHitCheckDelegate AttackHitCheckDelegate;
 	FAttackComboCheckDelegate AttackComboCheckDelegate;
 	FDeadMotionEndedDelegate DeadMotionEndedDelegate;
+	
 private:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AnimNotify_AttackHitCheckStart() { AttackHitCheckDelegate.Broadcast(true); }

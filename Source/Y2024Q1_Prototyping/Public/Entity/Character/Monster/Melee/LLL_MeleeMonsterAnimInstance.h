@@ -15,9 +15,6 @@ class Y2024Q1_PROTOTYPING_API ULLL_MeleeMonsterAnimInstance : public ULLL_Monste
 {
 	GENERATED_BODY()
 	
-public:
-	virtual void PlayAttackAnimation() override;
-
 protected:
 	UFUNCTION()
 	void AnimNotify_Hit();

@@ -12,8 +12,8 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 	if (IsValid(BaseMesh))
 	{
 		BaseMesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
-		BaseMesh->SetCollisionProfileName(CP_INTERACTION);
-		CollisionBox->SetCollisionProfileName(CP_INTERACTION);
+		BaseMesh->SetCollisionObjectType(ECC_PLAYER_ONLY);
+		CollisionBox->SetCollisionObjectType(ECC_PLAYER_ONLY);
 	}
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));

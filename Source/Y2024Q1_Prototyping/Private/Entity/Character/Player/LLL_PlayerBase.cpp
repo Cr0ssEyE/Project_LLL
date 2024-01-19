@@ -285,26 +285,7 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 {
-	if(bIsAttackActionOnGoing)
-	{
-		if(bIsAttackHitCheckOnGoing || !bCheckAttackComboActionInput)
-		{
-			return;
-		}
-		
-		CurrentComboActionCount++;
-		if(CurrentComboActionCount >= MaxComboActionCount)
-		{
-			CurrentComboActionCount = 0;
-		}
-		bCheckAttackComboActionInput = false;
-	}
-	else
-	{
-		CurrentComboActionCount = 0;
-	}
-	CharacterRotateToCursor();
-	AttackSequence();
+	Attack();
 }
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value)
@@ -504,11 +485,34 @@ void ALLL_PlayerBase::ClearStateWhenMotionCanceled()
 void ALLL_PlayerBase::Dead()
 {
 	Super::Dead();
-	if(IsValid(CharacterDataAsset->DeadAnimMontage))
-	{
-		CharacterAnimInstance->Montage_Play(CharacterDataAsset->DeadAnimMontage);
-	}
+	
 	DisableInput(Cast<APlayerController>(GetController()));
+}
+
+void ALLL_PlayerBase::Attack()
+{
+	Super::Attack();
+
+	if(bIsAttackActionOnGoing)
+	{
+		if(bIsAttackHitCheckOnGoing || !bCheckAttackComboActionInput)
+		{
+			return;
+		}
+		
+		CurrentComboActionCount++;
+		if(CurrentComboActionCount >= MaxComboActionCount)
+		{
+			CurrentComboActionCount = 0;
+		}
+		bCheckAttackComboActionInput = false;
+	}
+	else
+	{
+		CurrentComboActionCount = 0;
+	}
+	CharacterRotateToCursor();
+	AttackSequence();
 }
 
 void ALLL_PlayerBase::DeadMontageEndEvent()

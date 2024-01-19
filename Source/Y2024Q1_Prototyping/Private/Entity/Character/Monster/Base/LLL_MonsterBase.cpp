@@ -27,7 +27,7 @@ float ALLL_MonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	}
 	else
 	{
-		Stun();
+		Damaged();
 	}
 	
 	return 0;
@@ -43,6 +43,8 @@ void ALLL_MonsterBase::Dead()
 		MonsterBaseAIController->StopMovement();
 		MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
 	}
+
+	DelayedDestroy(2.0f);
 }
 
 void ALLL_MonsterBase::Attack()
@@ -56,7 +58,7 @@ void ALLL_MonsterBase::Attack()
 	}
 }
 
-void ALLL_MonsterBase::Stun()
+void ALLL_MonsterBase::Damaged()
 {
-	// Todo: 스턴 애니메이션 재생
+	// Todo: 피격 애니메이션 재생
 }

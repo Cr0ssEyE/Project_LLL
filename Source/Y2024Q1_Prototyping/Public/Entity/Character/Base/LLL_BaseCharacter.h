@@ -87,11 +87,16 @@ protected:
 	FVector MoveDirection;
 
 protected:
+	void DelayedDestroy(float Time);
+	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BaseCharacterDataAsset> CharacterDataAsset;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_BaseCharacterAnimInstance> CharacterAnimInstance;
+
+private:
+	void DestroyTimerCallback();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수

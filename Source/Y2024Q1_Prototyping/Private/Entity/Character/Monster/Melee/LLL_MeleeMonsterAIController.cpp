@@ -9,5 +9,5 @@
 
 ALLL_MeleeMonsterAIController::ALLL_MeleeMonsterAIController()
 {
-	MonsterBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MeleeMonsterDataAsset>(PATH_MELEE_MONSTER_DATA, EAssertionLevel::Check);
+	MonsterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MeleeMonsterDataAsset>(PATH_MELEE_MONSTER_DATA, EAssertionLevel::Check);
 }

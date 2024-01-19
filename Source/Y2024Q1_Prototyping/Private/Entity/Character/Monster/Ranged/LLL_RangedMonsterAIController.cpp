@@ -9,5 +9,5 @@
 
 ALLL_RangedMonsterAIController::ALLL_RangedMonsterAIController()
 {
-	MonsterBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RangedMonsterDataAsset>(PATH_RANGED_MONSTER_DATA, EAssertionLevel::Check);
+	MonsterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RangedMonsterDataAsset>(PATH_RANGED_MONSTER_DATA, EAssertionLevel::Check);
 }
