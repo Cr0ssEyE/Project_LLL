@@ -75,10 +75,6 @@ void ALLL_PlayerBase::BeginPlay()
 	
 	if(IsValid(PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance())))
 	{
-		if(!IsValid(CharacterAnimInstance))
-		{
-			CharacterAnimInstance = PlayerAnimInstance;
-		}
 		PlayerAnimInstance->SetDataAsset(CharacterDataAsset);
 		PlayerAnimInstance->AttackComboCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackComboCheckState);
 		PlayerAnimInstance->AttackHitCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackHitCheckState);
