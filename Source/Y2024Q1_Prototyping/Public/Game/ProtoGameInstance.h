@@ -6,13 +6,13 @@
 #include "Engine/GameInstance.h"
 #include "ProtoGameInstance.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FMonsterDisableAIDelegate)
-DECLARE_MULTICAST_DELEGATE(FObjectTrapActivateDelegate)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMonsterDisableAIDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FObjectTrapActivateDelegate);
 
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class Y2024Q1_PROTOTYPING_API UProtoGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
@@ -22,8 +22,10 @@ public:
 
 	// 디버그용 델리게이트
 public:
+	UPROPERTY(BlueprintCallable)
 	FMonsterDisableAIDelegate MonsterDisableAIDelegate;
-	
+
+	UPROPERTY(BlueprintCallable)
 	FObjectTrapActivateDelegate ObjectTrapActivateDelegate;
 	
 	// 플레이어 디버그 변수 Getter / Setter
@@ -35,13 +37,26 @@ public:
 	FORCEINLINE void SetPlayerAttackDebug(bool value) { bPlayerAttackDebug = value; }
 	FORCEINLINE void SetPlayerCollisionDebug(bool value) { bPlayerCollisionDebug = value; }
 	FORCEINLINE void SetPlayerInteractionDebug(bool value) { bPlayerInteractionDebug = value; }
-	
+
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerMovementDebug() const { return bPlayerMovementDebug; }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerDashDebug() const { return bPlayerDashDebug; }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerSkillDebug() const { return bPlayerSkillDebug; }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerHitDebug() const { return bPlayerHitCheckDebug; }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerAttackDebug() const { return bPlayerAttackDebug; }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerCollisionDebug() const { return bPlayerCollisionDebug; }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerInteractionDebug() const { return bPlayerInteractionDebug; }
 	
 	// 몬스터 디버그 변수 Getter / Setter
@@ -50,9 +65,17 @@ public:
 	FORCEINLINE void SetMonsterAttackDebug(bool value) { bMonsterAttackDebug = value; }
 	FORCEINLINE void SetMonsterCollisionDebug(bool value) { bMonsterCollisionDebug = value; }
 
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void BroadcastDisableAI() const { MonsterDisableAIDelegate.Broadcast(); }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckMonsterHitCheckDebug() const { return bMonsterHitCheckDebug; }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckMonsterAttackDebug() const { return bMonsterAttackDebug; }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckMonsterCollisionDebug() const { return bMonsterCollisionDebug; }
 	
 	// 오브젝트 디버그 변수 Getter / Setter
@@ -63,11 +86,22 @@ public:
 	FORCEINLINE void SetObjectHitCheckDebug(bool value) { bObjectHitCheckDebug = value; }
 	FORCEINLINE void SetObjectCollisionDebug(bool value) { bObjectCollisionDebug = value; }
 
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void BroadcastObjectTrapActivate() const { ObjectTrapActivateDelegate.Broadcast(); }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckObjectGenerateDebug() const { return bMonsterHitCheckDebug; }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckObjectActivateDebug() const { return bObjectActivateDebug; }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckObjectDestroyDebug() const { return bObjectDestroyDebug; }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckObjectHitCheckDebug() const { return bObjectHitCheckDebug; }
+	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckObjectCollisionDebug() const { return bObjectCollisionDebug; }
 	
 	// 플레이어 디버그 변수

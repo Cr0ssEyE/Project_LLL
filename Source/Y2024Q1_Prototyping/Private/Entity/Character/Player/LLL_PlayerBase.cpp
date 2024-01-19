@@ -259,7 +259,8 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 	CurrentDashCount++;
 	DashElapsedTime = 0;
 	DashDisabledTime = 0;
-	
+
+	GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
 	LaunchCharacter(MoveDirection * (DashSpeed * 1000.f), true, true);
 	
 	bIsInvincibleOnDashing = true;
@@ -426,7 +427,7 @@ void ALLL_PlayerBase::CheckDashElapsedTime()
 			}
 		}
 #endif
-
+		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 		bIsInvincibleOnDashing = false;
 	}
 
