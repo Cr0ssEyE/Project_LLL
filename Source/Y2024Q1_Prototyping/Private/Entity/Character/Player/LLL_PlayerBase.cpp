@@ -211,10 +211,10 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	{
 		return;
 	}
-	if(GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+ 	if(GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
 	{
 		GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
-		ClearStateWhenMotionCanceled();
+		ClearState();
 	}
 	
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
@@ -254,7 +254,7 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 		return;
 	}
 	
-	ClearStateWhenMotionCanceled();
+	ClearState();
 	
 	CurrentDashCount++;
 	DashElapsedTime = 0;
@@ -364,9 +364,9 @@ void ALLL_PlayerBase::CharacterRotateToCursor()
 void ALLL_PlayerBase::SetAttackComboCheckState(bool Value)
 {
 	bCheckAttackComboActionInput = Value;
-	if(!bCheckAttackComboActionInput)
+ 	if(!bCheckAttackComboActionInput)
 	{
-		bIsAttackActionOnGoing = false;
+ 		ClearState();
 		PlayerWeaponComponent->StopMeleeWeaponHitCheck();
 	}
 }
@@ -410,29 +410,6 @@ void ALLL_PlayerBase::AttackSequence()
 	RootComponent->ComponentVelocity = FVector::ZeroVector;
 	CharacterAnimInstance->Montage_Play(CharacterDataAsset->AttackAnimMontage);
 	CharacterAnimInstance->Montage_JumpToSection(*FString(SECTION_ATTACK).Append(FString::FromInt(CurrentComboActionCount)));
-
-	FHitResult HitResult;
-	const FVector Start = GetActorLocation();
-	const FVector End = Start + GetActorForwardVector() * AttackDistance;
-	const FQuat Rot = FQuat::Identity;
-	FCollisionShape Shape = FCollisionShape::MakeSphere(CharacterDataAsset->AttackRadius);
-	const bool bSweepResult = GetWorld()->SweepSingleByChannel(HitResult, Start, End, Rot, ECC_ENEMY_ONLY, Shape);
-	
-	if (bSweepResult)
-	{
-		ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitResult.GetActor());
-		if (IsValid(Monster))
-		{
-			FDamageEvent DamageEvent;
-			Monster->TakeDamage(OffensePower, DamageEvent, GetController(), this);
-		}
-	}
-
-	const FVector Center = Start + (End - Start) * 0.5f;
-	const float HalfHeight = AttackDistance * 0.5f;
-	const FQuat CapsuleRotate = FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat();
-	const FColor DrawColor = bSweepResult ? FColor::Green : FColor::Red;
-	DrawDebugCapsule(GetWorld(), Center, HalfHeight, CharacterDataAsset->AttackRadius, CapsuleRotate, DrawColor, false, 1.f);
 }
 
 void ALLL_PlayerBase::CheckDashElapsedTime()
@@ -492,7 +469,7 @@ void ALLL_PlayerBase::CheckDashDelay()
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashDelay);
 }
 
-void ALLL_PlayerBase::ClearStateWhenMotionCanceled()
+void ALLL_PlayerBase::ClearState()
 {
 	bIsAttackActionOnGoing = false;
 	bIsAttackHitCheckOnGoing = false;

@@ -30,4 +30,7 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AnimNotify_AttackComboCheckStart() { AttackComboCheckDelegate.Broadcast(true); }
+	
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void AnimNotify_AttackComboCheckEnd() { AttackComboCheckDelegate.Broadcast(false); }
 };

@@ -6,8 +6,8 @@
 #include "DataAsset/LLL_WeaponBaseDataAsset.h"
 #include "Engine/DamageEvents.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
-#include "GameFramework/Character.h"
 #include "Util/LLL_MathHelper.h"
 
 
@@ -18,7 +18,9 @@ ULLL_PlayerWeaponComponent::ULLL_PlayerWeaponComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	Damage = 0;
+	MaxAttackActionCount = 0;
+	CurrentAttackActionCount = 0;
 	bIsHitCheckOnGoing = false;
 }
 
@@ -45,7 +47,7 @@ void ULLL_PlayerWeaponComponent::StopMeleeWeaponHitCheck()
 
 void ULLL_PlayerWeaponComponent::MeleeWeaponHitCheck()
 {
-	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
+	ALLL_PlayerBase* OwnerCharacter = Cast<ALLL_PlayerBase>(GetOwner());
 	if(!IsValid(OwnerCharacter))
 	{
 		return;
@@ -82,14 +84,15 @@ void ULLL_PlayerWeaponComponent::MeleeWeaponHitCheck()
 	
 	if(HitEntity)
 	{
-		FDamageEvent DamageEvent;
 		for (auto HitResult : HitResults)
 		{
+			FPointDamageEvent DamageEvent;
+			DamageEvent.HitInfo = HitResult;
 			AActor* HitActor = HitResult.GetActor();
 			DamagedActors.Add(HitActor);
-
+			
 			float DamageMultiply = AttackActionProperties[CurrentAttackActionCount].ActionDamageMultiplyValue;
-			uint32 DamageResult = FLLL_MathHelper::CalculatePlayerWeaponDamage(1, Damage, DamageMultiply);
+			uint32 DamageResult = FLLL_MathHelper::CalculatePlayerWeaponDamage(OwnerCharacter->GetOffencePower(), Damage, DamageMultiply);
 			HitActor->TakeDamage(DamageResult, DamageEvent, OwnerCharacter->GetController(), OwnerCharacter);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -105,6 +108,7 @@ void ULLL_PlayerWeaponComponent::MeleeWeaponHitCheck()
 			if(ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitActor))
 			{
 				//TODO: 넉백 구현하기
+				
 			}
 		}
 	}

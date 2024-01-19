@@ -144,6 +144,6 @@ protected:
 	
 	// 모션 캔슬시 사용 목적 함수
 private:
-	void ClearStateWhenMotionCanceled();
+	void ClearState();
 	
 };
