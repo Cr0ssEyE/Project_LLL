@@ -8,6 +8,7 @@
 #include "Engine/DamageEvents.h"
 #include "Entity/Character/Monster/Ranged/LLL_RangedMonster.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 ALLL_ThrownObject::ALLL_ThrownObject()
@@ -52,7 +53,16 @@ void ALLL_ThrownObject::HandleHit(UPrimitiveComponent* HitComponent, AActor* Oth
 			const float OffencePower = RangedMonster->GetOffencePower();
 			const FDamageEvent DamageEvent;
 			Player->TakeDamage(OffencePower, DamageEvent, RangedMonster->GetController(), RangedMonster);
-			
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+			{
+				if (ProtoGameInstance->CheckMonsterAttackDebug())
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("투사체와 플레이어 충돌")));
+				}
+			}
+#endif
 			Destroy();
 		}
 	}

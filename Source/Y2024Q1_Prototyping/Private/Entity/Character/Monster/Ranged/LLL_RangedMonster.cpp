@@ -9,6 +9,7 @@
 #include "Entity/Character/Monster/Ranged/LLL_RangedMonsterAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_ThrownObject.h"
+#include "Game/ProtoGameInstance.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_RangedMonster::ALLL_RangedMonster()
@@ -54,5 +55,15 @@ void ALLL_RangedMonster::ThrowToPlayer()
 	
 		ThrownObject->SetActorLocationAndRotation(StartLocation, PredictedRotation);
 		ThrownObject->Throw(this);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				DrawDebugLine(GetWorld(), StartLocation, PredictedLocation, FColor::Red, false, 1.f);
+			}
+		}
+#endif
 	}
 }

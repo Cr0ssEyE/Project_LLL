@@ -10,6 +10,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonsterAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/ProtoGameInstance.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_MeleeMonster::ALLL_MeleeMonster()
@@ -56,9 +57,17 @@ void ALLL_MeleeMonster::DamageToPlayer()
 		}
 	}
 
-	const FVector Center = Start + (End - Start) * 0.5f;
-	const float HalfHeight = AttackDistance * 0.5f;
-	const FQuat CapsuleRotate = FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat();
-	const FColor DrawColor = bSweepResult ? FColor::Green : FColor::Red;
-	DrawDebugCapsule(GetWorld(), Center, HalfHeight, CharacterDataAsset->AttackRadius, CapsuleRotate, DrawColor, false, 1.f);
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckMonsterAttackDebug())
+		{
+			const FVector Center = Start + (End - Start) * 0.5f;
+			const float HalfHeight = AttackDistance * 0.5f;
+			const FQuat CapsuleRotate = FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat();
+			const FColor DrawColor = bSweepResult ? FColor::Green : FColor::Red;
+			DrawDebugCapsule(GetWorld(), Center, HalfHeight, CharacterDataAsset->AttackRadius, CapsuleRotate, DrawColor, false, 1.f);
+		}
+	}
+#endif
 }
