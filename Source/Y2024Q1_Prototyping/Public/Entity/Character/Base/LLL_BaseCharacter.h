@@ -18,8 +18,9 @@ public:
 	ALLL_BaseCharacter();
 	
 	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
-	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
+	FORCEINLINE float GetOffencePower() const { return OffensePower; }
+	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
 
 protected:
 	virtual void PostLoad() override;
@@ -87,8 +88,6 @@ protected:
 	FVector MoveDirection;
 
 protected:
-	void DelayedDestroy(float Time);
-	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BaseCharacterDataAsset> CharacterDataAsset;
 
@@ -96,7 +95,7 @@ protected:
 	TObjectPtr<ULLL_BaseCharacterAnimInstance> CharacterAnimInstance;
 
 private:
-	void DestroyTimerCallback();
+	void DeadMontageEndEvent();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수

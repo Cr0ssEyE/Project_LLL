@@ -9,7 +9,6 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FAttackHitCheckDelegate, bool)
 DECLARE_MULTICAST_DELEGATE_OneParam(FAttackComboCheckDelegate, bool)
-DECLARE_MULTICAST_DELEGATE(FDeadMotionEndedDelegate)
 /**
  * 
  */
@@ -19,11 +18,8 @@ class Y2024Q1_PROTOTYPING_API ULLL_PlayerAnimInstance : public ULLL_BaseCharacte
 	GENERATED_BODY()
 
 public:
-	ULLL_PlayerAnimInstance();
-
 	FAttackHitCheckDelegate AttackHitCheckDelegate;
 	FAttackComboCheckDelegate AttackComboCheckDelegate;
-	FDeadMotionEndedDelegate DeadMotionEndedDelegate;
 	
 private:
 	UFUNCTION(BlueprintCallable)
@@ -34,10 +30,4 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AnimNotify_AttackComboCheckStart() { AttackComboCheckDelegate.Broadcast(true); }
-	
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_AttackComboCheckEnd() { AttackComboCheckDelegate.Broadcast(false); }
-
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_DeadMotionEnded() { DeadMotionEndedDelegate.Broadcast(); }
 };

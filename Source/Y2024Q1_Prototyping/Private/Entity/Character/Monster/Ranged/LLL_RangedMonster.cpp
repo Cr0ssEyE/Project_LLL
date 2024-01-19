@@ -36,18 +36,6 @@ void ALLL_RangedMonster::BeginPlay()
 	}
 }
 
-bool ALLL_RangedMonster::AttackAnimationIsPlaying()
-{
-	Super::AttackAnimationIsPlaying();
-
-	if (IsValid(CharacterAnimInstance))
-	{
-		return CharacterAnimInstance->Montage_IsPlaying(CharacterDataAsset->AttackAnimMontage);
-	}
-
-	return false;
-}
-
 void ALLL_RangedMonster::ThrowToPlayer()
 {
 	ALLL_ThrownObject* ThrownObject = GetWorld()->SpawnActor<ALLL_ThrownObject>();

@@ -93,7 +93,11 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 void ALLL_BaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (IsValid(CharacterAnimInstance))
+	{
+		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
+	}
 }
 
 // Called every frame
@@ -123,15 +127,8 @@ void ALLL_BaseCharacter::Dead()
 	bIsDead = true;
 }
 
-void ALLL_BaseCharacter::DelayedDestroy(float Time)
+void ALLL_BaseCharacter::DeadMontageEndEvent()
 {
-	FTimerHandle DestroyTimerHandle;
-	FTimerDelegate DestroyTimerDelegate;
-	DestroyTimerDelegate.BindUObject(this, &ALLL_BaseCharacter::DestroyTimerCallback);
-	GetWorldTimerManager().SetTimer(DestroyTimerHandle, DestroyTimerDelegate, Time, false);
-}
-
-void ALLL_BaseCharacter::DestroyTimerCallback()
-{
+	// TODO: 화면 페이드, 결과창 출력 등등. 임시로 Destroy 처리
 	Destroy();
 }

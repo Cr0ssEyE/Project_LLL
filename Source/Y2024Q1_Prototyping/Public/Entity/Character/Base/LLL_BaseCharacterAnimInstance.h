@@ -9,6 +9,8 @@
 
 class ALLL_BaseCharacter;
 class UCharacterMovementComponent;
+
+DECLARE_MULTICAST_DELEGATE(FDeadMotionEndedDelegate)
 /**
  * 
  */
@@ -24,10 +26,15 @@ public:
 
 	void PlayDeadAnimation();
 
+	FDeadMotionEndedDelegate DeadMotionEndedDelegate;
+
 protected:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void AnimNotify_DeadMotionEnded() { DeadMotionEndedDelegate.Broadcast(); }
+	
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	uint8 bIsIdle : 1;
 

@@ -23,8 +23,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual bool AttackAnimationIsPlaying() override;
-	
 	void DamageToPlayer();
 	
 protected:

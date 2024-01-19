@@ -21,13 +21,26 @@ float ALLL_MonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (CurrentHealthAmount <= 0)
+	if(CurrentShieldAmount > 0)
 	{
-		Dead();
+		CurrentShieldAmount -= DamageAmount;
+		if(CurrentShieldAmount <= 0)
+		{
+			CurrentShieldAmount = 0;
+		}
 	}
 	else
 	{
-		Damaged();
+		CurrentHealthAmount -= DamageAmount;
+		if(CurrentHealthAmount <= 0)
+		{
+			CurrentHealthAmount = 0;
+			Dead();
+		}
+		else
+		{
+			Damaged();
+		}
 	}
 	
 	return 0;
@@ -43,8 +56,6 @@ void ALLL_MonsterBase::Dead()
 		MonsterBaseAIController->StopMovement();
 		MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
 	}
-
-	DelayedDestroy(2.0f);
 }
 
 void ALLL_MonsterBase::Attack()
@@ -56,6 +67,16 @@ void ALLL_MonsterBase::Attack()
 	{
 		MonsterBaseAnimInstance->PlayAttackAnimation();
 	}
+}
+
+bool ALLL_MonsterBase::AttackAnimationIsPlaying()
+{
+	if (IsValid(CharacterAnimInstance))
+	{
+		return CharacterAnimInstance->Montage_IsPlaying(CharacterDataAsset->AttackAnimMontage);
+	}
+
+	return false;
 }
 
 void ALLL_MonsterBase::Damaged()

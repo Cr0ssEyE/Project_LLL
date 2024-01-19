@@ -16,7 +16,6 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 class ULLL_PlayerBaseDataAsset;
-
 /**
  * 
  */
@@ -142,9 +141,6 @@ private:
 protected:
 	virtual void Dead() override;
 	virtual void Attack() override;
-
-private:
-	void DeadMontageEndEvent();
 	
 	// 모션 캔슬시 사용 목적 함수
 private:

@@ -9,6 +9,7 @@
 #include "Engine/DamageEvents.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonsterAIController.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_MeleeMonster::ALLL_MeleeMonster()
@@ -36,36 +37,22 @@ void ALLL_MeleeMonster::BeginPlay()
 	}
 }
 
-bool ALLL_MeleeMonster::AttackAnimationIsPlaying()
-{
-	Super::AttackAnimationIsPlaying();
-
-	if (IsValid(CharacterAnimInstance))
-	{
-		return CharacterAnimInstance->Montage_IsPlaying(CharacterDataAsset->AttackAnimMontage);
-	}
-
-	return false;
-}
-
 void ALLL_MeleeMonster::DamageToPlayer()
 {
-	float AttackRadius = 50.0f;
-	
 	FHitResult HitResult;
 	const FVector Start = GetActorLocation();
 	const FVector End = Start + GetActorForwardVector() * AttackDistance;
 	const FQuat Rot = FQuat::Identity;
-	FCollisionShape Shape = FCollisionShape::MakeSphere(AttackRadius);
+	FCollisionShape Shape = FCollisionShape::MakeSphere(CharacterDataAsset->AttackRadius);
 	const bool bSweepResult = GetWorld()->SweepSingleByChannel(HitResult, Start, End, Rot, ECC_PLAYER_ONLY, Shape);
 	
 	if (bSweepResult)
 	{
-		if (AActor* TargetActor = HitResult.GetActor())
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(HitResult.GetActor());
+		if (IsValid(Player))
 		{
-			float AttackDamage = CharacterDataAsset->OffensePower;
 			FDamageEvent DamageEvent;
-			TargetActor->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
+			Player->TakeDamage(OffensePower, DamageEvent, GetController(), this);
 		}
 	}
 
@@ -73,5 +60,5 @@ void ALLL_MeleeMonster::DamageToPlayer()
 	const float HalfHeight = AttackDistance * 0.5f;
 	const FQuat CapsuleRotate = FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat();
 	const FColor DrawColor = bSweepResult ? FColor::Green : FColor::Red;
-	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRotate, DrawColor, false, 1.f);
+	DrawDebugCapsule(GetWorld(), Center, HalfHeight, CharacterDataAsset->AttackRadius, CapsuleRotate, DrawColor, false, 1.f);
 }

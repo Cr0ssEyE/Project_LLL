@@ -5,6 +5,9 @@
 
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Engine/DamageEvents.h"
+#include "Entity/Character/Monster/Ranged/LLL_RangedMonster.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 ALLL_ThrownObject::ALLL_ThrownObject()
@@ -31,9 +34,26 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 void ALLL_ThrownObject::Throw(AActor* NewOwner)
 {
 	SetOwner(NewOwner);
+
+	BaseMesh->OnComponentHit.AddDynamic(this, &ALLL_ThrownObject::HandleHit);
 	
 	ProjectileMovement->Activate();
 	ProjectileMovement->Velocity = GetActorForwardVector() * Speed;
 
 	DelayedDestroy(3.0f);
+}
+
+void ALLL_ThrownObject::HandleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OtherActor))
+	{
+		if (ALLL_RangedMonster* RangedMonster = Cast<ALLL_RangedMonster>(GetOwner()))
+		{
+			const float OffencePower = RangedMonster->GetOffencePower();
+			const FDamageEvent DamageEvent;
+			Player->TakeDamage(OffencePower, DamageEvent, RangedMonster->GetController(), RangedMonster);
+			
+			Destroy();
+		}
+	}
 }

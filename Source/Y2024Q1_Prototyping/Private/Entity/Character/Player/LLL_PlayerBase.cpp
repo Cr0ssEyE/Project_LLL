@@ -11,6 +11,8 @@
 #include "Constant/LLL_MonatgeSectionName.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "DataAsset/LLL_WeaponBaseDataAsset.h"
+#include "Engine/DamageEvents.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerWeaponComponent.h"
@@ -80,7 +82,6 @@ void ALLL_PlayerBase::BeginPlay()
 		PlayerAnimInstance->SetDataAsset(CharacterDataAsset);
 		PlayerAnimInstance->AttackComboCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackComboCheckState);
 		PlayerAnimInstance->AttackHitCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackHitCheckState);
-		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DeadMontageEndEvent);
 	}
 	
 	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
@@ -118,7 +119,7 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	if(CurrentShieldAmount > 0)
 	{
 		CurrentShieldAmount -= DamageAmount;
-		if(CurrentShieldAmount < 0)
+		if(CurrentShieldAmount <= 0)
 		{
 			CurrentShieldAmount = 0;
 		}
@@ -126,7 +127,7 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	else
 	{
 		CurrentHealthAmount -= DamageAmount;
-		if(CurrentHealthAmount < 0)
+		if(CurrentHealthAmount <= 0)
 		{
 			CurrentHealthAmount = 0;
 			// TODO: 목숨 같은거 생기면 사이에 추가하기
@@ -413,6 +414,29 @@ void ALLL_PlayerBase::AttackSequence()
 	RootComponent->ComponentVelocity = FVector::ZeroVector;
 	CharacterAnimInstance->Montage_Play(CharacterDataAsset->AttackAnimMontage);
 	CharacterAnimInstance->Montage_JumpToSection(*FString(SECTION_ATTACK).Append(FString::FromInt(CurrentComboActionCount)));
+
+	FHitResult HitResult;
+	const FVector Start = GetActorLocation();
+	const FVector End = Start + GetActorForwardVector() * AttackDistance;
+	const FQuat Rot = FQuat::Identity;
+	FCollisionShape Shape = FCollisionShape::MakeSphere(CharacterDataAsset->AttackRadius);
+	const bool bSweepResult = GetWorld()->SweepSingleByChannel(HitResult, Start, End, Rot, ECC_ENEMY_ONLY, Shape);
+	
+	if (bSweepResult)
+	{
+		ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitResult.GetActor());
+		if (IsValid(Monster))
+		{
+			FDamageEvent DamageEvent;
+			Monster->TakeDamage(OffensePower, DamageEvent, GetController(), this);
+		}
+	}
+
+	const FVector Center = Start + (End - Start) * 0.5f;
+	const float HalfHeight = AttackDistance * 0.5f;
+	const FQuat CapsuleRotate = FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat();
+	const FColor DrawColor = bSweepResult ? FColor::Green : FColor::Red;
+	DrawDebugCapsule(GetWorld(), Center, HalfHeight, CharacterDataAsset->AttackRadius, CapsuleRotate, DrawColor, false, 1.f);
 }
 
 void ALLL_PlayerBase::CheckDashElapsedTime()
@@ -514,10 +538,3 @@ void ALLL_PlayerBase::Attack()
 	CharacterRotateToCursor();
 	AttackSequence();
 }
-
-void ALLL_PlayerBase::DeadMontageEndEvent()
-{
-	// TODO: 화면 페이드, 결과창 출력 등등. 임시로 Destroy 처리
-	Destroy();
-}
-
