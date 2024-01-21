@@ -94,8 +94,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_BaseCharacterAnimInstance> CharacterAnimInstance;
 
-private:
-	void DeadMontageEndEvent();
+protected:
+	virtual void DeadMontageEndEvent();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수

@@ -487,6 +487,12 @@ void ALLL_PlayerBase::Dead()
 	DisableInput(Cast<APlayerController>(GetController()));
 }
 
+void ALLL_PlayerBase::DeadMontageEndEvent()
+{
+	// Super::DeadMontageEndEvent();
+	PlayerUIManager->TogglePauseWidget();
+}
+
 void ALLL_PlayerBase::Attack()
 {
 	Super::Attack();

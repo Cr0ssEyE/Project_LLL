@@ -140,6 +140,7 @@ private:
 	// 상태 관련 함수
 protected:
 	virtual void Dead() override;
+	virtual void DeadMontageEndEvent() override;
 	virtual void Attack() override;
 	
 	// 모션 캔슬시 사용 목적 함수
