@@ -22,11 +22,10 @@ public:
 	
 	void Throw(AActor* NewOwner);
 
-private:
-	UFUNCTION()
-	void HandleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+protected:
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
-	UPROPERTY(VisibleAnywhere)
+private:
 	float Speed;
 
 	UPROPERTY(VisibleAnywhere)
