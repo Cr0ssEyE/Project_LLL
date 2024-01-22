@@ -35,8 +35,6 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 void ALLL_ThrownObject::Throw(AActor* NewOwner)
 {
 	SetOwner(NewOwner);
-
-	BaseMesh->OnComponentHit.AddDynamic(this, &ALLL_ThrownObject::HandleHit);
 	
 	ProjectileMovement->Activate();
 	ProjectileMovement->Velocity = GetActorForwardVector() * Speed;
@@ -44,9 +42,11 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner)
 	DelayedDestroy(3.0f);
 }
 
-void ALLL_ThrownObject::HandleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OtherActor))
+	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Other))
 	{
 		if (ALLL_RangedMonster* RangedMonster = Cast<ALLL_RangedMonster>(GetOwner()))
 		{
