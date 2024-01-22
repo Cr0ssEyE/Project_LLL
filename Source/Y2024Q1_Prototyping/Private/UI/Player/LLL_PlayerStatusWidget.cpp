@@ -12,7 +12,7 @@ void ULLL_PlayerStatusWidget::NativeConstruct()
 	
 }
 
-void ULLL_PlayerStatusWidget::UpdateWidgetView(int MaxHealth, int CurrentHealth, int MaxShield, int CurrentShield) const
+void ULLL_PlayerStatusWidget::UpdateWidgetView(float MaxHealth, float CurrentHealth, float MaxShield, float CurrentShield) const
 {
 	if(MaxHealth)
 	{

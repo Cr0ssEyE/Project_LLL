@@ -31,7 +31,8 @@ void ULLL_PlayerUIManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	const ULLL_PlayerBaseDataAsset* PlayerBaseDataAsset = CastChecked<ALLL_PlayerBase>(GetOwner())->GetPlayerDataAsset();
+	const ULLL_BaseCharacterDataAsset* CharacterDataAsset = CastChecked<ALLL_PlayerBase>(GetOwner())->GetCharacterDataAsset();
+	const ULLL_PlayerBaseDataAsset* PlayerBaseDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
 	PauseWidgetClass = PlayerBaseDataAsset->PauseWidgetClass;
 	InventoryWidgetClass = PlayerBaseDataAsset->InventoryWidgetClass;
 	InteractionWidgetClass = PlayerBaseDataAsset->InteractionWidgetClass;

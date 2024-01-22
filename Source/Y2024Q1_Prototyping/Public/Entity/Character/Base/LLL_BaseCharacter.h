@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LLL_BaseCharacterAnimInstance.h"
+#include "DataAsset/LLL_BaseCharacterDataAsset.h"
 #include "GameFramework/Character.h"
 #include "LLL_BaseCharacter.generated.h"
 
@@ -14,11 +16,17 @@ class Y2024Q1_PROTOTYPING_API ALLL_BaseCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ALLL_BaseCharacter();
-
-	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
+	
+	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
+	FORCEINLINE float GetOffencePower() const { return OffensePower; }
+	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
 
 protected:
+	virtual void PostLoad() override;
+	virtual void OnConstruction(const FTransform& Transform) override;
+	virtual void PostInitializeComponents() override;
+	virtual void SetDefaultInformation();
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
@@ -79,6 +87,16 @@ protected:
 	UPROPERTY()
 	FVector MoveDirection;
 
+protected:
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<const ULLL_BaseCharacterDataAsset> CharacterDataAsset;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_BaseCharacterAnimInstance> CharacterAnimInstance;
+
+protected:
+	virtual void DeadMontageEndEvent();
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수
 public:
@@ -86,6 +104,6 @@ public:
 	
 	// 디버그용 변수
 public:
-
+	uint8 bIsSpawned : 1;
 #endif
 };

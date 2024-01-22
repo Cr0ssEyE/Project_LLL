@@ -18,7 +18,7 @@ class Y2024Q1_PROTOTYPING_API ULLL_PlayerStatusWidget : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
-	void UpdateWidgetView(int MaxHealth, int CurrentHealth, int MaxShield, int CurrentShield) const;
+	void UpdateWidgetView(float MaxHealth, float CurrentHealth, float MaxShield, float CurrentShield) const;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))

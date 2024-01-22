@@ -29,4 +29,5 @@ void ULLL_GamePauseWidget::SettingButtonEvent()
 void ULLL_GamePauseWidget::ExitButtonEvent()
 {
 	//TODO: 정산창 Or 준비 공간으로 보내기
+	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 }

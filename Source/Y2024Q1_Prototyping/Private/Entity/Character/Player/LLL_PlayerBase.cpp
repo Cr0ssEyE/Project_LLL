@@ -11,6 +11,8 @@
 #include "Constant/LLL_MonatgeSectionName.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "DataAsset/LLL_WeaponBaseDataAsset.h"
+#include "Engine/DamageEvents.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerWeaponComponent.h"
@@ -28,63 +30,36 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	PlayerWeaponComponent = CreateDefaultSubobject<ULLL_PlayerWeaponComponent>(TEXT("PlayerWeaponComponent"));
 
-	PlayerBaseDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
-	if (IsValid(PlayerBaseDataAsset))
+	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
+	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
+	if (IsValid(CharacterDataAsset))
 	{
-		DashSpeed = PlayerBaseDataAsset->DashSpeed;
+		DashSpeed = PlayerDataAsset->DashSpeed;
 		
-		GetCapsuleComponent()->SetCapsuleSize(PlayerBaseDataAsset->CollisionSize.Y, PlayerBaseDataAsset->CollisionSize.X);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
-
-		GetMesh()->SetSkeletalMesh(PlayerBaseDataAsset->SkeletalMesh);
-		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -PlayerBaseDataAsset->CollisionSize.X));
-
-		UClass* AnimBlueprint = PlayerBaseDataAsset->AnimInstance.LoadSynchronous();
-		if (IsValid(AnimBlueprint))
-		{
-			GetMesh()->SetAnimInstanceClass(AnimBlueprint);
-		}
-
-		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = PlayerBaseDataAsset->MoveSpeed;
-		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = PlayerBaseDataAsset->AccelerateSpeed;
-		GetCharacterMovement()->GroundFriction = GroundFriction = PlayerBaseDataAsset->GroundFriction;
-		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->RotationRate = FRotator(0.f, PlayerBaseDataAsset->TurnSpeed * 360.f, 0.f);
-		GetCharacterMovement()->FallingLateralFriction = 3.0f;
 		
-		bUseControllerRotationYaw = false;
-		bUseControllerRotationPitch = false;
-		bUseControllerRotationRoll = false;
-		
-		Camera->SetFieldOfView(PlayerBaseDataAsset->CameraFOV);
+		Camera->SetFieldOfView(PlayerDataAsset->CameraFOV);
 		Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 		Camera->bUsePawnControlRotation = false;
 		
-		SpringArm->TargetArmLength = PlayerBaseDataAsset->SpringArmLength;
-		SpringArm->SetRelativeRotation(FRotator(PlayerBaseDataAsset->SpringArmAngle, 0.f, 0.f));
+		SpringArm->TargetArmLength = PlayerDataAsset->SpringArmLength;
+		SpringArm->SetRelativeRotation(FRotator(PlayerDataAsset->SpringArmAngle, 0.f, 0.f));
 		SpringArm->bDoCollisionTest = false;
 		SpringArm->bUsePawnControlRotation = false;
 		SpringArm->bInheritPitch = false;
 		SpringArm->bInheritYaw = false;
 		SpringArm->bInheritRoll = false;
 		SpringArm->SetupAttachment(RootComponent);
-
-		MaxHealthAmount = PlayerBaseDataAsset->Health;
-		CurrentHealthAmount = MaxHealthAmount;
-		MaxShieldAmount = PlayerBaseDataAsset->ShieldAmount;
-		CurrentShieldAmount = MaxShieldAmount;
-		OffensePower = PlayerBaseDataAsset->OffensePower;
 		
-		MaxDashCount = PlayerBaseDataAsset->DashBaseCount;
-		DashInputCheckTime = PlayerBaseDataAsset->DashInputCheckTime;
-		DashCoolDownSeconds = PlayerBaseDataAsset->DashBaseCoolDownSeconds;
-		DashInvincibleTime = PlayerBaseDataAsset->DashBaseInvincibleTime;
+		MaxDashCount = PlayerDataAsset->DashBaseCount;
+		DashInputCheckTime = PlayerDataAsset->DashInputCheckTime;
+		DashCoolDownSeconds = PlayerDataAsset->DashBaseCoolDownSeconds;
+		DashInvincibleTime = PlayerDataAsset->DashBaseInvincibleTime;
 		
-		if(IsValid(PlayerBaseDataAsset->DefaultWeaponBaseDataAsset))
+		if(IsValid(PlayerDataAsset->DefaultWeaponBaseDataAsset))
 		{
-			PlayerWeaponComponent->SetupWeaponInfo(PlayerBaseDataAsset->DefaultWeaponBaseDataAsset);
-			MaxComboActionCount = PlayerBaseDataAsset->DefaultWeaponBaseDataAsset->WeaponAttackActionCount;
+			PlayerWeaponComponent->SetupWeaponInfo(PlayerDataAsset->DefaultWeaponBaseDataAsset);
+			MaxComboActionCount = PlayerDataAsset->DefaultWeaponBaseDataAsset->WeaponAttackActionCount;
 		}
 		else
 		{
@@ -100,10 +75,11 @@ void ALLL_PlayerBase::BeginPlay()
 	
 	if(IsValid(PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance())))
 	{
+		PlayerAnimInstance->SetDataAsset(CharacterDataAsset);
 		PlayerAnimInstance->AttackComboCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackComboCheckState);
 		PlayerAnimInstance->AttackHitCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackHitCheckState);
-		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DeadMontageEndEvent);
 	}
+	
 	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
 }
 
@@ -139,7 +115,7 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	if(CurrentShieldAmount > 0)
 	{
 		CurrentShieldAmount -= DamageAmount;
-		if(CurrentShieldAmount < 0)
+		if(CurrentShieldAmount <= 0)
 		{
 			CurrentShieldAmount = 0;
 		}
@@ -147,7 +123,7 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	else
 	{
 		CurrentHealthAmount -= DamageAmount;
-		if(CurrentHealthAmount < 0)
+		if(CurrentHealthAmount <= 0)
 		{
 			CurrentHealthAmount = 0;
 			// TODO: 목숨 같은거 생기면 사이에 추가하기
@@ -165,17 +141,17 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	const APlayerController* PlayerController = CastChecked<APlayerController>(GetController());
 	UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 	SubSystem->ClearAllMappings();
-	SubSystem->AddMappingContext(PlayerBaseDataAsset->PlayerInputMappingContext, 0);
+	SubSystem->AddMappingContext(PlayerDataAsset->PlayerInputMappingContext, 0);
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	
-	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
-	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction);
-	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction);
-	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction);
-	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
-	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->InteractiveTargetChangeInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractiveTargetChangeAction);
-	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
-	EnhancedInputComponent->BindAction(PlayerBaseDataAsset->PauseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::PauseAction);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractiveTargetChangeInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractiveTargetChangeAction);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->PauseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::PauseAction);
 }
 
 void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
@@ -235,10 +211,10 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	{
 		return;
 	}
-	if(GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+ 	if(GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
 	{
 		GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
-		ClearStateWhenMotionCanceled();
+		ClearState();
 	}
 	
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
@@ -278,12 +254,13 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 		return;
 	}
 	
-	ClearStateWhenMotionCanceled();
+	ClearState();
 	
 	CurrentDashCount++;
 	DashElapsedTime = 0;
 	DashDisabledTime = 0;
-	
+
+	GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
 	LaunchCharacter(MoveDirection * (DashSpeed * 1000.f), true, true);
 	
 	bIsInvincibleOnDashing = true;
@@ -306,26 +283,7 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 {
-	if(bIsAttackActionOnGoing)
-	{
-		if(bIsAttackHitCheckOnGoing || !bCheckAttackComboActionInput)
-		{
-			return;
-		}
-		
-		CurrentComboActionCount++;
-		if(CurrentComboActionCount >= MaxComboActionCount)
-		{
-			CurrentComboActionCount = 0;
-		}
-		bCheckAttackComboActionInput = false;
-	}
-	else
-	{
-		CurrentComboActionCount = 0;
-	}
-	CharacterRotateToCursor();
-	AttackSequence();
+	Attack();
 }
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value)
@@ -407,9 +365,9 @@ void ALLL_PlayerBase::CharacterRotateToCursor()
 void ALLL_PlayerBase::SetAttackComboCheckState(bool Value)
 {
 	bCheckAttackComboActionInput = Value;
-	if(!bCheckAttackComboActionInput)
+ 	if(!bCheckAttackComboActionInput)
 	{
-		bIsAttackActionOnGoing = false;
+ 		ClearState();
 		PlayerWeaponComponent->StopMeleeWeaponHitCheck();
 	}
 }
@@ -451,8 +409,8 @@ void ALLL_PlayerBase::AttackSequence()
 {
 	bIsAttackActionOnGoing = true;
 	RootComponent->ComponentVelocity = FVector::ZeroVector;
-	PlayerAnimInstance->Montage_Play(PlayerBaseDataAsset->AttackAnimMontage);
-	PlayerAnimInstance->Montage_JumpToSection(*FString(SECTION_ATTACK).Append(FString::FromInt(CurrentComboActionCount)));
+	CharacterAnimInstance->Montage_Play(CharacterDataAsset->AttackAnimMontage);
+	CharacterAnimInstance->Montage_JumpToSection(*FString(SECTION_ATTACK).Append(FString::FromInt(CurrentComboActionCount)));
 }
 
 void ALLL_PlayerBase::CheckDashElapsedTime()
@@ -469,7 +427,7 @@ void ALLL_PlayerBase::CheckDashElapsedTime()
 			}
 		}
 #endif
-
+		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 		bIsInvincibleOnDashing = false;
 	}
 
@@ -512,7 +470,7 @@ void ALLL_PlayerBase::CheckDashDelay()
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashDelay);
 }
 
-void ALLL_PlayerBase::ClearStateWhenMotionCanceled()
+void ALLL_PlayerBase::ClearState()
 {
 	bIsAttackActionOnGoing = false;
 	bIsAttackHitCheckOnGoing = false;
@@ -525,16 +483,38 @@ void ALLL_PlayerBase::ClearStateWhenMotionCanceled()
 void ALLL_PlayerBase::Dead()
 {
 	Super::Dead();
-	if(IsValid(PlayerBaseDataAsset->DeadAnimMontage))
-	{
-		PlayerAnimInstance->Montage_Play(PlayerBaseDataAsset->DeadAnimMontage);
-	}
+	
 	DisableInput(Cast<APlayerController>(GetController()));
 }
 
 void ALLL_PlayerBase::DeadMontageEndEvent()
 {
-	// TODO: 화면 페이드, 결과창 출력 등등. 임시로 Destroy 처리
-	Destroy();
+	// Super::DeadMontageEndEvent();
+	PlayerUIManager->TogglePauseWidget();
 }
 
+void ALLL_PlayerBase::Attack()
+{
+	Super::Attack();
+
+	if(bIsAttackActionOnGoing)
+	{
+		if(bIsAttackHitCheckOnGoing || !bCheckAttackComboActionInput)
+		{
+			return;
+		}
+		
+		CurrentComboActionCount++;
+		if(CurrentComboActionCount >= MaxComboActionCount)
+		{
+			CurrentComboActionCount = 0;
+		}
+		bCheckAttackComboActionInput = false;
+	}
+	else
+	{
+		CurrentComboActionCount = 0;
+	}
+	CharacterRotateToCursor();
+	AttackSequence();
+}

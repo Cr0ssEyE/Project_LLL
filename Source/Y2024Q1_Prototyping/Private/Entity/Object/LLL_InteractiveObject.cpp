@@ -50,6 +50,19 @@ void ALLL_InteractiveObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckObjectCollisionDebug())
+		{
+			InteractOnlyCollisionBox->SetHiddenInGame(false);
+		}
+		else
+		{
+			InteractOnlyCollisionBox->SetHiddenInGame(true);
+		}
+	}
+#endif
 }
 
 void ALLL_InteractiveObject::InteractiveEvent()

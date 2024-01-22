@@ -14,11 +14,6 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 {
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 	
-	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-	
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->FallingLateralFriction = 3.0f;
-	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
@@ -26,13 +21,26 @@ float ALLL_MonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (CurrentHealthAmount <= 0)
+	if(CurrentShieldAmount > 0)
 	{
-		Dead();
+		CurrentShieldAmount -= DamageAmount;
+		if(CurrentShieldAmount <= 0)
+		{
+			CurrentShieldAmount = 0;
+		}
 	}
 	else
 	{
-		Stun();
+		CurrentHealthAmount -= DamageAmount;
+		if(CurrentHealthAmount <= 0)
+		{
+			CurrentHealthAmount = 0;
+			Dead();
+		}
+		else
+		{
+			Damaged();
+		}
 	}
 	
 	return 0;
@@ -61,7 +69,17 @@ void ALLL_MonsterBase::Attack()
 	}
 }
 
-void ALLL_MonsterBase::Stun()
+bool ALLL_MonsterBase::AttackAnimationIsPlaying()
 {
-	// Todo: 스턴 애니메이션 재생
+	if (IsValid(CharacterAnimInstance))
+	{
+		return CharacterAnimInstance->Montage_IsPlaying(CharacterDataAsset->AttackAnimMontage);
+	}
+
+	return false;
+}
+
+void ALLL_MonsterBase::Damaged()
+{
+	// Todo: 피격 애니메이션 재생
 }

@@ -18,9 +18,11 @@ class Y2024Q1_PROTOTYPING_API ALLL_MeleeMonster : public ALLL_MonsterBase
 
 public:
 	ALLL_MeleeMonster();
-	
-	virtual bool AttackAnimationIsPlaying() override;
-	
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
 	void DamageToPlayer();
 	
 protected:

@@ -19,3 +19,4 @@
 #define CP_PLAYER TEXT("Player")
 #define CP_MONSTER TEXT("Monster")
 #define CP_INTERACTION TEXT("Interaction")
+#define CP_EVADE TEXT("Evade")

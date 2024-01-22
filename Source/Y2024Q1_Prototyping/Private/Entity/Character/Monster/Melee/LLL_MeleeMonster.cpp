@@ -3,43 +3,23 @@
 
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
 
-#include "Components/CapsuleComponent.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_MeleeMonsterDataAsset.h"
+#include "Engine/DamageEvents.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonsterAIController.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/ProtoGameInstance.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_MeleeMonster::ALLL_MeleeMonster()
 {
 	// 몬스터 데이터 에셋 할당
-	MeleeMonsterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MeleeMonsterDataAsset>(PATH_MELEE_MONSTER_DATA, EAssertionLevel::Check);
+	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MeleeMonsterDataAsset>(PATH_MELEE_MONSTER_DATA, EAssertionLevel::Check);
+	MeleeMonsterDataAsset = Cast<ULLL_MeleeMonsterDataAsset>(CharacterDataAsset);
 	if (IsValid(MeleeMonsterDataAsset))
 	{
-		GetCapsuleComponent()->SetCapsuleSize(MeleeMonsterDataAsset->CollisionSize.Y, MeleeMonsterDataAsset->CollisionSize.X);
-		
-		GetMesh()->SetSkeletalMesh(MeleeMonsterDataAsset->SkeletalMesh);
-		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -MeleeMonsterDataAsset->CollisionSize.X));
-
-		UClass* AnimBlueprint = MeleeMonsterDataAsset->AnimInstance.LoadSynchronous();
-		if (IsValid(AnimBlueprint))
-		{
-			GetMesh()->SetAnimInstanceClass(AnimBlueprint);
-		}
-
-		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = MeleeMonsterDataAsset->MoveSpeed;
-		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = MeleeMonsterDataAsset->AccelerateSpeed;
-		GetCharacterMovement()->GroundFriction = GroundFriction = MeleeMonsterDataAsset->GroundFriction;
-		GetCharacterMovement()->RotationRate = FRotator(0.f, MeleeMonsterDataAsset->TurnSpeed * 360.f, 0.f);
-
-		MaxHealthAmount = MeleeMonsterDataAsset->Health;
-		CurrentHealthAmount = MaxHealthAmount;
-		MaxShieldAmount = MeleeMonsterDataAsset->ShieldAmount;
-		CurrentShieldAmount = MaxShieldAmount;
-		OffensePower = MeleeMonsterDataAsset->OffensePower;
-		AttackDistance = MeleeMonsterDataAsset->AttackDistance;
-
 		DetectDistance = MeleeMonsterDataAsset->DetectDistance;
 		FieldOfView = MeleeMonsterDataAsset->FieldOfView;
 	}
@@ -48,20 +28,46 @@ ALLL_MeleeMonster::ALLL_MeleeMonster()
 	AIControllerClass = ALLL_MeleeMonsterAIController::StaticClass();
 }
 
-bool ALLL_MeleeMonster::AttackAnimationIsPlaying()
+void ALLL_MeleeMonster::BeginPlay()
 {
-	Super::AttackAnimationIsPlaying();
-
-	const ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(MonsterBaseAnimInstance))
+	Super::BeginPlay();
+	
+	if(IsValid(CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance())))
 	{
-		return MonsterBaseAnimInstance->Montage_IsPlaying(MeleeMonsterDataAsset->AttackAnimMontage);
+		CharacterAnimInstance->SetDataAsset(CharacterDataAsset);
 	}
-
-	return false;
 }
 
 void ALLL_MeleeMonster::DamageToPlayer()
 {
-	// Todo: 플레이어에게 데미지 구현
+	FHitResult HitResult;
+	const FVector Start = GetActorLocation();
+	const FVector End = Start + GetActorForwardVector() * AttackDistance;
+	const FQuat Rot = FQuat::Identity;
+	FCollisionShape Shape = FCollisionShape::MakeSphere(CharacterDataAsset->AttackRadius);
+	const bool bSweepResult = GetWorld()->SweepSingleByChannel(HitResult, Start, End, Rot, ECC_PLAYER_ONLY, Shape);
+	
+	if (bSweepResult)
+	{
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(HitResult.GetActor());
+		if (IsValid(Player))
+		{
+			FDamageEvent DamageEvent;
+			Player->TakeDamage(OffensePower, DamageEvent, GetController(), this);
+		}
+	}
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckMonsterAttackDebug())
+		{
+			const FVector Center = Start + (End - Start) * 0.5f;
+			const float HalfHeight = AttackDistance * 0.5f;
+			const FQuat CapsuleRotate = FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat();
+			const FColor DrawColor = bSweepResult ? FColor::Green : FColor::Red;
+			DrawDebugCapsule(GetWorld(), Center, HalfHeight, CharacterDataAsset->AttackRadius, CapsuleRotate, DrawColor, false, 1.f);
+		}
+	}
+#endif
 }

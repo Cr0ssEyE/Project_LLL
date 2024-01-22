@@ -17,9 +17,5 @@ class Y2024Q1_PROTOTYPING_API ULLL_MonsterBaseAnimInstance : public ULLL_BaseCha
 	GENERATED_BODY()
 
 public:
-	virtual void PlayAttackAnimation() {}
-
-protected:
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
+	void PlayAttackAnimation();
 };

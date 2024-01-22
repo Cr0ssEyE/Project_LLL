@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
+#include "LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
@@ -15,7 +16,6 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 class ULLL_PlayerBaseDataAsset;
-
 /**
  * 
  */
@@ -35,8 +35,6 @@ public:
 
 	// 외부 접근용
 public:
-	FORCEINLINE ULLL_PlayerBaseDataAsset* GetPlayerDataAsset() const { return PlayerBaseDataAsset; }
-	
 	void AddInteractableObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
 
@@ -58,6 +56,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerWeaponComponent> PlayerWeaponComponent;
+	
 	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);
@@ -74,7 +73,7 @@ private:
 	// 데이터 에셋
 private:
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerBaseDataAsset> PlayerBaseDataAsset;
+	TObjectPtr<ULLL_PlayerBaseDataAsset> PlayerDataAsset;
 
 	// 이동 관련 변수
 private:
@@ -138,15 +137,14 @@ private:
 	UPROPERTY()
 	uint32 InteractionRange;
 
-	// 사망 관련 함수
+	// 상태 관련 함수
 protected:
 	virtual void Dead() override;
-
-private:
-	void DeadMontageEndEvent();
+	virtual void DeadMontageEndEvent() override;
+	virtual void Attack() override;
 	
 	// 모션 캔슬시 사용 목적 함수
 private:
-	void ClearStateWhenMotionCanceled();
+	void ClearState();
 	
 };

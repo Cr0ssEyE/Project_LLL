@@ -3,45 +3,22 @@
 
 #include "Entity/Character/Monster/Ranged/LLL_RangedMonster.h"
 
-#include "Components/CapsuleComponent.h"
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_RangedMonsterDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Ranged/LLL_RangedMonsterAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_ThrownObject.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "Game/ProtoGameInstance.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_RangedMonster::ALLL_RangedMonster()
 {
 	// 몬스터 데이터 에셋 할당
-	RangedMonsterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RangedMonsterDataAsset>(PATH_RANGED_MONSTER_DATA, EAssertionLevel::Check);
+	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RangedMonsterDataAsset>(PATH_RANGED_MONSTER_DATA, EAssertionLevel::Check);
+	RangedMonsterDataAsset = Cast<ULLL_RangedMonsterDataAsset>(CharacterDataAsset);
 	if (IsValid(RangedMonsterDataAsset))
 	{
-		GetCapsuleComponent()->SetCapsuleSize(RangedMonsterDataAsset->CollisionSize.Y, RangedMonsterDataAsset->CollisionSize.X);
-		
-		GetMesh()->SetSkeletalMesh(RangedMonsterDataAsset->SkeletalMesh);
-		GetMesh()->AddRelativeLocation(FVector(0.f, 0.f, -RangedMonsterDataAsset->CollisionSize.X));
-
-		UClass* AnimBlueprint = RangedMonsterDataAsset->AnimInstance.LoadSynchronous();
-		if (IsValid(AnimBlueprint))
-		{
-			GetMesh()->SetAnimInstanceClass(AnimBlueprint);
-		}
-
-		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = RangedMonsterDataAsset->MoveSpeed;
-		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = RangedMonsterDataAsset->AccelerateSpeed;
-		GetCharacterMovement()->GroundFriction = GroundFriction = RangedMonsterDataAsset->GroundFriction;
-		GetCharacterMovement()->RotationRate = FRotator(0.f, RangedMonsterDataAsset->TurnSpeed * 360.f, 0.f);
-
-		MaxHealthAmount = RangedMonsterDataAsset->Health;
-		CurrentHealthAmount = MaxHealthAmount;
-		MaxShieldAmount = RangedMonsterDataAsset->ShieldAmount;
-		CurrentShieldAmount = MaxShieldAmount;
-		OffensePower = RangedMonsterDataAsset->OffensePower;
-		AttackDistance = RangedMonsterDataAsset->AttackDistance;
-
 		DetectDistance = RangedMonsterDataAsset->DetectDistance;
 		FieldOfView = RangedMonsterDataAsset->FieldOfView;
 	}
@@ -50,17 +27,14 @@ ALLL_RangedMonster::ALLL_RangedMonster()
 	AIControllerClass = ALLL_RangedMonsterAIController::StaticClass();
 }
 
-bool ALLL_RangedMonster::AttackAnimationIsPlaying()
+void ALLL_RangedMonster::BeginPlay()
 {
-	Super::AttackAnimationIsPlaying();
+	Super::BeginPlay();
 
-	const ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(MonsterBaseAnimInstance))
+	if(IsValid(CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance())))
 	{
-		return MonsterBaseAnimInstance->Montage_IsPlaying(RangedMonsterDataAsset->AttackAnimMontage);
+		CharacterAnimInstance->SetDataAsset(CharacterDataAsset);
 	}
-
-	return false;
 }
 
 void ALLL_RangedMonster::ThrowToPlayer()
@@ -81,5 +55,15 @@ void ALLL_RangedMonster::ThrowToPlayer()
 	
 		ThrownObject->SetActorLocationAndRotation(StartLocation, PredictedRotation);
 		ThrownObject->Throw(this);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				DrawDebugLine(GetWorld(), StartLocation, PredictedLocation, FColor::Red, false, 1.f);
+			}
+		}
+#endif
 	}
 }

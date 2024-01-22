@@ -22,10 +22,15 @@ public:
 	
 	void Throw(AActor* NewOwner);
 
+protected:
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+
 private:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
+	float Speed;
 
 	UPROPERTY(VisibleAnywhere)
-	float Speed;
+	float OffensePower;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 };

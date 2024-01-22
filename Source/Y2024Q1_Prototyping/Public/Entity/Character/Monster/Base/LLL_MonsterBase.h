@@ -20,16 +20,17 @@ public:
 	FORCEINLINE float GetDetectDistance() const { return DetectDistance; }
 	FORCEINLINE float GetFieldOfView() const { return FieldOfView; }
 
-protected:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-
+	
+protected:
 	virtual void Dead() override;
 	
 public:
 	virtual void Attack() override;
-	virtual bool AttackAnimationIsPlaying() { return false; }
-
-	void Stun();
+	
+	bool AttackAnimationIsPlaying();
+	
+	void Damaged();
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
