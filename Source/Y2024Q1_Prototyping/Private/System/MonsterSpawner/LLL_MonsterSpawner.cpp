@@ -19,23 +19,20 @@ void ALLL_MonsterSpawner::SpawnMonster()
 {
 	Wave++;
 	
-	Group = FMath::RandRange(1, MS_GROUPS_SIZE);
+	Group = FMath::RandRange(1, 1);
 	int32 SpawnPointNum = 0;
 
-	TArray<FMonsterSpawnDataTable*> DataTables;
-	MonsterSpawnDataTable->GetAllRows<FMonsterSpawnDataTable>(TEXT("Failed To Load Monster Spawn Data Tables"), DataTables);
-	
 	for (ULLL_MonsterSpawnPointComponent* SpawnPoint : SpawnPoints)
 	{
 		if (IsValid(SpawnPoint))
 		{
 			SpawnPointNum++;
 
-			for (FMonsterSpawnDataTable* DataTable : DataTables)
+			for (FMonsterSpawnDataTable DataTable : DataTables)
 			{
-				if (DataTable->Group == Group && DataTable->SpawnPoint == SpawnPointNum)
+				if (DataTable.Group == Group && DataTable.SpawnPoint == SpawnPointNum)
 				{
-					GetWorld()->SpawnActor<ALLL_MonsterBase>(DataTable->MonsterClass);
+					GetWorld()->SpawnActor<ALLL_MonsterBase>(DataTable.MonsterClass, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 				}
 			}
 		}
@@ -46,6 +43,17 @@ void ALLL_MonsterSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
+	TArray<FMonsterSpawnDataTable*> DummyData;
+	MonsterSpawnDataTable->GetAllRows<FMonsterSpawnDataTable>(TEXT("Failed To Load Monster Spawn Data Tables"), DummyData);
+	for (const FMonsterSpawnDataTable* Data : DummyData)
+	{
+		FMonsterSpawnDataTable TableData;
+		TableData.Group = Data->Group;
+		TableData.SpawnPoint = Data->SpawnPoint;
+		TableData.MonsterClass = Data->MonsterClass;
+		DataTables.Emplace(TableData);
+	}
+	
 	for (USceneComponent* ChildComponent : GetRootComponent()->GetAttachChildren())
 	{
 		ULLL_MonsterSpawnPointComponent* SpawnPoint = Cast<ULLL_MonsterSpawnPointComponent>(ChildComponent);

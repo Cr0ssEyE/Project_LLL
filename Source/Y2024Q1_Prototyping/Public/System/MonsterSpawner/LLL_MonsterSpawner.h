@@ -32,6 +32,9 @@ private:
 	TObjectPtr<const UDataTable> MonsterSpawnDataTable;
 
 	UPROPERTY(VisibleDefaultsOnly)
+	TArray<FMonsterSpawnDataTable> DataTables;
+	
+	UPROPERTY(VisibleDefaultsOnly)
 	int32 Wave;
 
 	UPROPERTY(VisibleDefaultsOnly)
