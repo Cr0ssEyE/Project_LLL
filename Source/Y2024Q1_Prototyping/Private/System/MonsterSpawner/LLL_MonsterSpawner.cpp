@@ -13,7 +13,6 @@
 ALLL_MonsterSpawner::ALLL_MonsterSpawner()
 {
 	MonsterSpawnDataTable = FLLLConstructorHelper::FindAndGetObject<ULLL_MonsterSpawnDataTable>(PATH_MONSTER_SPAWN_DATA, EAssertionLevel::Check);
-	MonsterSpawnDataTable->GetAllRows<FMonsterSpawnDataTable>(TEXT("Failed To Load Monster Spawn Data Tables"), DataTables);
 }
 
 void ALLL_MonsterSpawner::SpawnMonster()
@@ -22,6 +21,9 @@ void ALLL_MonsterSpawner::SpawnMonster()
 	
 	Group = FMath::RandRange(1, MS_GROUPS_SIZE);
 	int32 SpawnPointNum = 0;
+
+	TArray<FMonsterSpawnDataTable*> DataTables;
+	MonsterSpawnDataTable->GetAllRows<FMonsterSpawnDataTable>(TEXT("Failed To Load Monster Spawn Data Tables"), DataTables);
 	
 	for (ULLL_MonsterSpawnPointComponent* SpawnPoint : SpawnPoints)
 	{
@@ -29,11 +31,11 @@ void ALLL_MonsterSpawner::SpawnMonster()
 		{
 			SpawnPointNum++;
 
-			for (FMonsterSpawnDataTable DataTable : DataTables)
+			for (FMonsterSpawnDataTable* DataTable : DataTables)
 			{
-				if (DataTable.Group == Group && DataTable.SpawnPoint == SpawnPointNum)
+				if (DataTable->Group == Group && DataTable->SpawnPoint == SpawnPointNum)
 				{
-					GetWorld()->SpawnActor<ALLL_MonsterBase>(DataTable.MonsterClass);
+					GetWorld()->SpawnActor<ALLL_MonsterBase>(DataTable->MonsterClass);
 				}
 			}
 		}
