@@ -29,7 +29,7 @@ private:
 	TArray<ULLL_MonsterSpawnPointComponent*> SpawnPoints;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_MonsterSpawnDataTable> MonsterSpawnDataTable;
+	TObjectPtr<const UDataTable> MonsterSpawnDataTable;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	int32 Wave;

@@ -12,7 +12,7 @@
 
 ALLL_MonsterSpawner::ALLL_MonsterSpawner()
 {
-	MonsterSpawnDataTable = FLLLConstructorHelper::FindAndGetObject<ULLL_MonsterSpawnDataTable>(PATH_MONSTER_SPAWN_DATA, EAssertionLevel::Check);
+	MonsterSpawnDataTable = FLLLConstructorHelper::FindAndGetObject<UDataTable>(PATH_MONSTER_SPAWN_DATA, EAssertionLevel::Check);
 }
 
 void ALLL_MonsterSpawner::SpawnMonster()
