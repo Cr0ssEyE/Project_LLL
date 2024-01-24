@@ -130,6 +130,8 @@ void ALLL_BaseCharacter::Dead()
 	
 	CurrentHealthAmount = 0;
 	bIsDead = true;
+
+	CharacterDeadDelegate.Broadcast(this);
 }
 
 void ALLL_BaseCharacter::DeadMontageEndEvent()

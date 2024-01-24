@@ -16,9 +16,8 @@ struct FStringDataTable : public FTableRowBase
 	GENERATED_BODY()
 	
 	// 해당 FName과 일치하는 열의 값 읽어옴
-public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	int32 Kor;
+	int32 Kor = 1;
 };
 
 UCLASS()

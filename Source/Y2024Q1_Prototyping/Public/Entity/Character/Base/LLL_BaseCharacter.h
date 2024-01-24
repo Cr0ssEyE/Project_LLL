@@ -8,6 +8,10 @@
 #include "GameFramework/Character.h"
 #include "LLL_BaseCharacter.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*)
+/**
+ * 
+ */
 UCLASS()
 class Y2024Q1_PROTOTYPING_API ALLL_BaseCharacter : public ACharacter
 {
@@ -46,6 +50,10 @@ public:
 public:
 	FORCEINLINE bool CheckCharacterIsDead() const { return bIsDead; }
 	FORCEINLINE uint32 CheckCharacterHealth() const { return CurrentHealthAmount; }
+
+	// 상태 체크용 델리게이트
+public:
+	FCharacterDeadDelegate CharacterDeadDelegate;
 	
 	// 캐릭터 공용 변수
 protected:

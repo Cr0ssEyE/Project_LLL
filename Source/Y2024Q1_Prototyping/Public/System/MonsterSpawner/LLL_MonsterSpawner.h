@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_MonsterSpawner.generated.h"
 
+class ALLL_MonsterBase;
+class UBoxComponent;
 struct FMonsterSpawnDataTable;
 class ULLL_MonsterSpawnDataTable;
 class ULLL_MonsterSpawnPointComponent;
@@ -18,16 +21,20 @@ class Y2024Q1_PROTOTYPING_API ALLL_MonsterSpawner : public AActor
 
 public:
 	ALLL_MonsterSpawner();
-	
-	void SpawnMonster();
 
 protected:
 	virtual void BeginPlay() override;
-
+	
+public:
+	void SpawnMonster();
+	
 private:
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<ULLL_MonsterSpawnPointComponent*> SpawnPoints;
+	UFUNCTION()
+	void PlayerDetectHandle(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION()
+	void MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter);
+	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const UDataTable> MonsterSpawnDataTable;
 
@@ -35,8 +42,23 @@ private:
 	TArray<FMonsterSpawnDataTable> DataTables;
 	
 	UPROPERTY(VisibleDefaultsOnly)
+	TArray<ULLL_MonsterSpawnPointComponent*> SpawnPoints;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UBoxComponent> DetectBox;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TArray<ALLL_MonsterBase*> Monsters;
+	
+	UPROPERTY(VisibleDefaultsOnly)
 	int32 Wave;
 
 	UPROPERTY(VisibleDefaultsOnly)
+	int32 MaxWave;
+
+	UPROPERTY(VisibleDefaultsOnly)
 	int32 Group;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	int32 LastGroup;
 };

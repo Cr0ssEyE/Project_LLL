@@ -18,12 +18,11 @@ struct FMonsterSpawnDataTable : public FTableRowBase
 	GENERATED_BODY()
 	
 	// 해당 FName과 일치하는 열의 값 읽어옴
-	public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	int32 Group;
+	int32 Group = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	int32 SpawnPoint;
+	int32 SpawnPoint = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	TSubclassOf<ALLL_MonsterBase> MonsterClass;
