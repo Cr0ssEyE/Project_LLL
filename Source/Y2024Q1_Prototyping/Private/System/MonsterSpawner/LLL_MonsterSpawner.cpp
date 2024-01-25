@@ -18,7 +18,6 @@ ALLL_MonsterSpawner::ALLL_MonsterSpawner()
 	
 	DetectBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	DetectBox->SetCollisionObjectType(ECC_PLAYER_ONLY);
-	DetectBox->OnComponentBeginOverlap.AddDynamic(this, &ALLL_MonsterSpawner::PlayerDetectHandle);
 	
 	SetRootComponent(DetectBox);
 
@@ -56,8 +55,20 @@ void ALLL_MonsterSpawner::BeginPlay()
 			SpawnPoints.Add(SpawnPoint);
 		}
 	}
+}
 
-	DetectBox->OnComponentBeginOverlap.AddDynamic(this, &ALLL_MonsterSpawner::PlayerDetectHandle);
+void ALLL_MonsterSpawner::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+
+	if (Wave == 0)
+	{
+		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OtherActor);
+		if (IsValid(Player))
+		{
+			SpawnMonster();
+		}
+	}
 }
 
 void ALLL_MonsterSpawner::SpawnMonster()
@@ -85,18 +96,6 @@ void ALLL_MonsterSpawner::SpawnMonster()
 					}
 				}
 			}
-		}
-	}
-}
-
-void ALLL_MonsterSpawner::PlayerDetectHandle(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (Wave == 0)
-	{
-		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OtherActor);
-		if (IsValid(Player))
-		{
-			SpawnMonster();
 		}
 	}
 }
