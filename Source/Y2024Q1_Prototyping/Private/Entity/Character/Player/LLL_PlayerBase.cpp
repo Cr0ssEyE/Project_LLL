@@ -324,7 +324,7 @@ void ALLL_PlayerBase::InventoryAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
 {
-	PlayerUIManager->TogglePauseWidget();
+	PlayerUIManager->TogglePauseWidget(bIsDead);
 }
 
 void ALLL_PlayerBase::CharacterRotateToCursor()
@@ -490,7 +490,7 @@ void ALLL_PlayerBase::Dead()
 void ALLL_PlayerBase::DeadMontageEndEvent()
 {
 	// Super::DeadMontageEndEvent();
-	PlayerUIManager->TogglePauseWidget();
+	PlayerUIManager->TogglePauseWidget(bIsDead);
 }
 
 void ALLL_PlayerBase::Attack()
