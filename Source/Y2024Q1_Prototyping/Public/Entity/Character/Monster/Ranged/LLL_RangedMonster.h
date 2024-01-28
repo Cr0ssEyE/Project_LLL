@@ -7,6 +7,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "LLL_RangedMonster.generated.h"
 
+class ULLL_ObjectPoolingComponent;
 class ULLL_RangedMonsterDataAsset;
 /**
  * 
@@ -28,4 +29,7 @@ public:
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_RangedMonsterDataAsset> RangedMonsterDataAsset;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<ULLL_ObjectPoolingComponent> ObjectPooling;
 };

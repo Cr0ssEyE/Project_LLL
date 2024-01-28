@@ -27,6 +27,7 @@ public:
 
 protected:
 	void DelayedDestroy(float Time);
+	void DelayedHide(float Time);
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
@@ -36,4 +37,5 @@ protected:
 
 private:
 	void DestroyTimerCallback();
+	void HideTimerCallback();
 };

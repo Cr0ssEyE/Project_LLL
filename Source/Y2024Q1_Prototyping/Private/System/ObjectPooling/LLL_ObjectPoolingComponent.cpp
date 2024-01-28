@@ -32,3 +32,19 @@ void ULLL_ObjectPoolingComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	// ...
 }
 
+AActor* ULLL_ObjectPoolingComponent::GetActor(UClass* Class)
+{
+	for (AActor* Actor : Actors)
+	{
+		if (Actor->IsHidden())
+		{
+			Actor->SetActorHiddenInGame(false);
+			return Actor;
+		}
+	}
+
+	AActor* NewActor = GetWorld()->SpawnActor(Class);
+	Actors.Emplace(NewActor);
+	return NewActor;
+}
+

@@ -43,8 +43,21 @@ void ALLL_ObjectBase::DelayedDestroy(float Time)
 	GetWorldTimerManager().SetTimer(DestroyTimerHandle, DestroyTimerDelegate, Time, false);
 }
 
+void ALLL_ObjectBase::DelayedHide(float Time)
+{
+	FTimerHandle HideTimerHandle;
+	FTimerDelegate HideTimerDelegate;
+	HideTimerDelegate.BindUObject(this, &ALLL_ObjectBase::HideTimerCallback);
+	GetWorldTimerManager().SetTimer(HideTimerHandle, HideTimerDelegate, Time, false);
+}
+
 void ALLL_ObjectBase::DestroyTimerCallback()
 {
 	Destroy();
+}
+
+void ALLL_ObjectBase::HideTimerCallback()
+{
+	SetActorHiddenInGame(true);
 }
 

@@ -39,7 +39,7 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner)
 	ProjectileMovement->Activate();
 	ProjectileMovement->Velocity = GetActorForwardVector() * Speed;
 
-	DelayedDestroy(3.0f);
+	DelayedHide(3.0f);
 }
 
 void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
@@ -63,7 +63,9 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 				}
 			}
 #endif
-			Destroy();
+
+			ProjectileMovement->Deactivate();
+			SetActorHiddenInGame(true);
 		}
 	}
 }
