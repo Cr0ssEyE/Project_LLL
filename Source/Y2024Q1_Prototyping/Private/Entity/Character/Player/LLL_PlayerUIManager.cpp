@@ -74,7 +74,7 @@ void ULLL_PlayerUIManager::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void ULLL_PlayerUIManager::TogglePauseWidget() const
+void ULLL_PlayerUIManager::TogglePauseWidget(bool IsDead) const
 {
 	if(PauseWidget->GetIsEnabled())
 	{
@@ -84,6 +84,10 @@ void ULLL_PlayerUIManager::TogglePauseWidget() const
 	}
 	else
 	{
+		if(IsDead)
+		{
+			PauseWidget->SetupDeadStateLayout();
+		}
 		PauseWidget->SetVisibility(ESlateVisibility::Visible);
 		PauseWidget->SetIsEnabled(true);
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), SMALL_NUMBER);

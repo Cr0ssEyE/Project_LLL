@@ -30,6 +30,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "충돌 사이즈(높이, 반지름)", meta=(DisplayPriority=1))
 	FVector2D CollisionSize;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "모델링 사이즈", meta=(DisplayPriority=1))
+	FVector MeshSize = FVector::OneVector;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "기본 이동속도")
