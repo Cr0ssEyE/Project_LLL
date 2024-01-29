@@ -21,8 +21,6 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 	if (IsValid(BaseMesh))
 	{
 		BaseMesh->SetCollisionObjectType(ECC_PLAYER_ONLY);
-		CollisionBox->SetCollisionObjectType(ECC_PLAYER_ONLY);
-		CollisionBox->SetBoxExtent(FVector(50, 50, 50));
 	}
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
@@ -40,7 +38,8 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 void ALLL_ThrownObject::Throw(AActor* NewOwner)
 {
 	SetOwner(NewOwner);
-	
+
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ProjectileMovement->Activate();
 	ProjectileMovement->Velocity = GetActorForwardVector() * Speed;
 
@@ -69,6 +68,7 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 			}
 #endif
 
+			BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			ProjectileMovement->Deactivate();
 			SetActorHiddenInGame(true);
 		}
