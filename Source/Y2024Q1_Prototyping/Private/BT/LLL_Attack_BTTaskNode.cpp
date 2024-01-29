@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Game/ProtoGameInstance.h"
 
 ULLL_Attack_BTTaskNode::ULLL_Attack_BTTaskNode()
 {
@@ -21,6 +22,16 @@ EBTNodeResult::Type ULLL_Attack_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 	if (IsValid(MonsterBase) && !MonsterBase->AttackAnimationIsPlaying())
 	{
 		MonsterBase->Attack();
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("공격 수행")));
+			}
+		}
+#endif
 	}
 
 	return EBTNodeResult::InProgress;

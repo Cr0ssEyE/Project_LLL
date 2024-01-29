@@ -61,7 +61,7 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 			{
-				if (ProtoGameInstance->CheckMonsterAttackDebug())
+				if (ProtoGameInstance->CheckMonsterHitCheckDebug())
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("투사체와 플레이어 충돌")));
 				}

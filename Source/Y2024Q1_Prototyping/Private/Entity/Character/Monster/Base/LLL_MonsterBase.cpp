@@ -8,6 +8,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
+#include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()
