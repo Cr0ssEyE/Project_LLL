@@ -8,7 +8,6 @@
 #include "LLL_RangedMonster.generated.h"
 
 class ULLL_ObjectPoolingComponent;
-class ULLL_RangedMonsterDataAsset;
 /**
  * 
  */

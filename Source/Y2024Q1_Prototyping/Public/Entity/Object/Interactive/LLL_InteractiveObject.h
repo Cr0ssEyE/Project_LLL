@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Object/LLL_ObjectBase.h"
+#include "DataAsset/LLL_InteractiveObjectData.h"
+#include "Entity/Object/LLL_BaseObject.h"
 #include "GameFramework/Actor.h"
 #include "Interface/LLL_InteractiveEntityInterface.h"
 #include "LLL_InteractiveObject.generated.h"
 
 UCLASS()
-class Y2024Q1_PROTOTYPING_API ALLL_InteractiveObject : public ALLL_ObjectBase, public ILLL_InteractiveEntityInterface
+class Y2024Q1_PROTOTYPING_API ALLL_InteractiveObject : public ALLL_BaseObject, public ILLL_InteractiveEntityInterface
 {
 	GENERATED_BODY()
 	
@@ -29,6 +30,9 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UBoxComponent> InteractOnlyCollisionBox;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_InteractiveObjectData> InteractiveObjectData;
 	
 	UPROPERTY()
 	uint8 bIsEnabled : 1;

@@ -5,19 +5,24 @@
 
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_FilePath.h"
 #include "Engine/DamageEvents.h"
 #include "Entity/Character/Monster/Ranged/LLL_RangedMonster.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Util/LLLConstructorHelper.h"
 
 ALLL_ThrownObject::ALLL_ThrownObject()
 {
+	BaseObjectData = FLLLConstructorHelper::FindAndGetObject<ULLL_ThrownObjectData>(PATH_THROWN_OBJECT_DATA, EAssertionLevel::Check);
+	ThrownObjectData = Cast<ULLL_ThrownObjectData>(BaseObjectData);
+	
 	if (IsValid(BaseMesh))
 	{
-		BaseMesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
 		BaseMesh->SetCollisionObjectType(ECC_PLAYER_ONLY);
 		CollisionBox->SetCollisionObjectType(ECC_PLAYER_ONLY);
+		CollisionBox->SetBoxExtent(FVector(50, 50, 50));
 	}
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));

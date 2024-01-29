@@ -5,8 +5,11 @@
 
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_FilePath.h"
+#include "DataAsset/LLL_InteractiveObjectData.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "Util/LLLConstructorHelper.h"
 
 // Sets default values
 ALLL_InteractiveObject::ALLL_InteractiveObject()
@@ -14,6 +17,9 @@ ALLL_InteractiveObject::ALLL_InteractiveObject()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	BaseObjectData = FLLLConstructorHelper::FindAndGetObject<ULLL_InteractiveObjectData>(PATH_INTERACTIVE_OBJECT_DATA, EAssertionLevel::Check);
+	InteractiveObjectData = Cast<ULLL_InteractiveObjectData>(BaseObjectData);
+	
 	InteractOnlyCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Ineractive Collision"));
 	InteractOnlyCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	InteractOnlyCollisionBox->SetCollisionProfileName(CP_INTERACTION);
