@@ -38,9 +38,6 @@ protected:
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UBoxComponent> CollisionBox;
-
-	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_BaseObjectData> BaseObjectData;
 
 private:

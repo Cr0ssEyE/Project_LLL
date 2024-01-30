@@ -13,10 +13,6 @@ ALLL_BaseObject::ALLL_BaseObject()
 	PrimaryActorTick.bCanEverTick = true;
 
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
-
-	SetRootComponent(BaseMesh);
-	CollisionBox->SetupAttachment(RootComponent);
 }
 
 void ALLL_BaseObject::PostLoad()
