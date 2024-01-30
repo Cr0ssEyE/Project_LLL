@@ -30,7 +30,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void TogglePauseWidget() const;
+	void TogglePauseWidget(bool IsDead) const;
 	void ToggleInventoryWidget() const;
 	void EnableInteractionWidget() const;
 	void DisableInteractionWidget() const;

@@ -18,6 +18,9 @@ class Y2024Q1_PROTOTYPING_API ULLL_GamePauseWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+public:
+	void SetupDeadStateLayout();
+	
 protected:
 	UFUNCTION(BlueprintCallable)
 	void ResumeButtonEvent();

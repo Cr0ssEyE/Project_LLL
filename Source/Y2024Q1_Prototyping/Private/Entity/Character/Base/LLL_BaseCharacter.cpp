@@ -55,6 +55,7 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		GetCapsuleComponent()->SetCapsuleSize(CharacterDataAsset->CollisionSize.Y, CharacterDataAsset->CollisionSize.X);
 
 		GetMesh()->SetSkeletalMesh(CharacterDataAsset->SkeletalMesh);
+		GetMesh()->SetRelativeScale3D(CharacterDataAsset->MeshSize);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -CharacterDataAsset->CollisionSize.X));
 
