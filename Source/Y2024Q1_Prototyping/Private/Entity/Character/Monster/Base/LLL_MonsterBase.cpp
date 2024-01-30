@@ -18,6 +18,18 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
+void ALLL_MonsterBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		ProtoGameInstance->MonsterToggleAIDelegate.AddDynamic(this, &ALLL_MonsterBase::ToggleAIHandle);
+	}
+#endif
+}
+
 void ALLL_MonsterBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -70,10 +82,9 @@ void ALLL_MonsterBase::Dead()
 {
 	Super::Dead();
 
-	ALLL_MonsterBaseAIController* MonsterBaseAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
+	const ALLL_MonsterBaseAIController* MonsterBaseAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
 	if (IsValid(MonsterBaseAIController))
 	{
-		MonsterBaseAIController->StopMovement();
 		MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
 	}
 }
@@ -102,4 +113,21 @@ bool ALLL_MonsterBase::AttackAnimationIsPlaying()
 void ALLL_MonsterBase::Damaged()
 {
 	// Todo: 피격 애니메이션 재생
+}
+
+void ALLL_MonsterBase::ToggleAIHandle(bool value)
+{
+	const ALLL_MonsterBaseAIController* MonsterBaseAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
+	if (IsValid(MonsterBaseAIController))
+	{
+		UBrainComponent* BrainComponent = MonsterBaseAIController->GetBrainComponent();
+		if (value)
+		{
+			BrainComponent->ResumeLogic(TEXT("AI Debug Is Activated"));
+		}
+		else
+		{
+			BrainComponent->PauseLogic(TEXT("AI Debug Is Deactivated"));
+		}
+	}
 }

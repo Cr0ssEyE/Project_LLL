@@ -45,5 +45,5 @@ void UObjectDebugWidget::ObjectCollisionCheckBoxEvent(bool value)
 
 void UObjectDebugWidget::ObjectTrapActivateButtonEvent()
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->ObjectTrapActivateDelegate.Broadcast();
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->BroadcastObjectTrapActivate();
 }

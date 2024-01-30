@@ -6,7 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "ProtoGameInstance.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMonsterDisableAIDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMonsterToggleAIDelegate, bool, value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FObjectTrapActivateDelegate);
 
 /**
@@ -23,7 +23,7 @@ public:
 	// 디버그용 델리게이트
 public:
 	UPROPERTY(BlueprintCallable)
-	FMonsterDisableAIDelegate MonsterDisableAIDelegate;
+	FMonsterToggleAIDelegate MonsterToggleAIDelegate;
 
 	UPROPERTY(BlueprintCallable)
 	FObjectTrapActivateDelegate ObjectTrapActivateDelegate;
@@ -64,10 +64,10 @@ public:
 	FORCEINLINE void SetMonsterHitCheckDebug(bool value) { bMonsterHitCheckDebug = value; }
 	FORCEINLINE void SetMonsterAttackDebug(bool value) { bMonsterAttackDebug = value; }
 	FORCEINLINE void SetMonsterCollisionDebug(bool value) { bMonsterCollisionDebug = value; }
-
+	
 	
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void BroadcastDisableAI() const { MonsterDisableAIDelegate.Broadcast(); }
+	FORCEINLINE void BroadcastToggleAI(bool value) const { MonsterToggleAIDelegate.Broadcast(value); }
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckMonsterHitCheckDebug() const { return bMonsterHitCheckDebug; }
