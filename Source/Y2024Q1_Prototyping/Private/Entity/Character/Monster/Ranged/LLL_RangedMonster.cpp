@@ -62,9 +62,9 @@ void ALLL_RangedMonster::ThrowToPlayer()
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			if (ProtoGameInstance->CheckMonsterHitCheckDebug())
 			{
-				DrawDebugLine(GetWorld(), StartLocation, PredictedLocation, FColor::Red, false, 1.f);
+				DrawDebugLine(GetWorld(), StartLocation, PredictedLocation, FColor::Yellow, false, 1.f);
 			}
 		}
 #endif

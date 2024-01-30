@@ -9,6 +9,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/ProtoGameInstance.h"
 
 ULLL_DetectPlayer_BTService::ULLL_DetectPlayer_BTService()
 {
@@ -32,6 +33,8 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		const float HalfFieldOfViewRadian = FMath::DegreesToRadians(FieldOfView / 2.0f);
 		const FQuat Rot = FQuat::Identity;
 		const FCollisionShape Shape = FCollisionShape::MakeSphere(DetectDistance);
+		
+		FColor DebugColor = FColor::Red;
 
 		TArray<FOverlapResult> OverlapResults;
 		if (GetWorld()->OverlapMultiByChannel(OverlapResults, Center, Rot, ECC_PLAYER_ONLY, Shape))
@@ -41,20 +44,41 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 				ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OverlapResult.GetActor());
 				if (IsValid(PlayerBase) && PlayerBase->GetController()->IsPlayerController())
 				{
-					if (!PlayerBase->CheckCharacterIsDead() && IsPlayerInFieldOfView(MonsterBase, PlayerBase, FieldOfView) && LineOfSightToPlayer(MonsterBase, PlayerBase))
+					if (!PlayerBase->CheckCharacterIsDead() && IsPlayerInFieldOfView(MonsterBase, PlayerBase, FieldOfView))
 					{
-						OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, PlayerBase);
-						DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Green, false, 0.1f);
+						DebugColor = FColor::Green;
+						if (LineOfSightToPlayer(MonsterBase, PlayerBase))
+						{
 
-						DrawDebugPoint(GetWorld(), PlayerBase->GetActorLocation(), 10.0f, FColor::Green, false, 0.1f);
-						return;
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+							if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+							{
+								if (ProtoGameInstance->CheckMonsterAttackDebug())
+								{
+									GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 플레이어 감지"), *MonsterBase->GetName()));
+								}
+							}
+#endif
+							
+							OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, PlayerBase);
+							return;
+						}
 					}
 				}
 			}
 		}
-
+		
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, DebugColor, false, 0.1f);
+			}
+		}
+#endif
+		
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, nullptr);
-		DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Red, false, 0.1f);
 	}
 }
 
@@ -88,12 +112,20 @@ bool ULLL_DetectPlayer_BTService::LineOfSightToPlayer(ALLL_MonsterBase* MonsterB
 	
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams))
 	{
-		// 플레이어가 가려져 있음
-		DrawDebugLine(GetWorld(), MonsterBase->GetActorLocation(), PlayerBase->GetActorLocation(), FColor::Red, false, 0.1f);
+		
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				// 플레이어가 가려져 있음
+				DrawDebugLine(GetWorld(), MonsterBase->GetActorLocation(), PlayerBase->GetActorLocation(), FColor::Red, false, 0.1f);
+			}
+		}
+#endif
+		
 		return false;
 	}
 
-	// 플레이어가 가려져 있지 않음
-	DrawDebugLine(GetWorld(), MonsterBase->GetActorLocation(), PlayerBase->GetActorLocation(), FColor::Green, false, 0.1f);
 	return true;
 }

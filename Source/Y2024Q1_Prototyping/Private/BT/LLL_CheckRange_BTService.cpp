@@ -32,7 +32,7 @@ void ULLL_CheckRange_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 		{
 			if (ProtoGameInstance->CheckMonsterAttackDebug())
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("플레이어 캐릭터 거리 : %f"), Distance));
+				DrawDebugLine(GetWorld(), MonsterBase->GetActorLocation(), PlayerBase->GetActorLocation(), FColor::Green, false, 0.1f);
 			}
 		}
 #endif

@@ -18,6 +18,25 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
+void ALLL_MonsterBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckMonsterCollisionDebug())
+		{
+			GetCapsuleComponent()->SetHiddenInGame(false);
+		}
+		else
+		{
+			GetCapsuleComponent()->SetHiddenInGame(true);
+		}
+	}
+#endif
+}
+
 float ALLL_MonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);

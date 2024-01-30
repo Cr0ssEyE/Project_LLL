@@ -28,7 +28,7 @@ EBTNodeResult::Type ULLL_Attack_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 		{
 			if (ProtoGameInstance->CheckMonsterAttackDebug())
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s: 공격 수행"), *MonsterBase->GetName()));
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *MonsterBase->GetName()));
 			}
 		}
 #endif

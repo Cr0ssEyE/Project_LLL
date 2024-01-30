@@ -20,6 +20,7 @@ public:
 	FORCEINLINE float GetDetectDistance() const { return DetectDistance; }
 	FORCEINLINE float GetFieldOfView() const { return FieldOfView; }
 
+	virtual void Tick(float DeltaSeconds) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 protected:

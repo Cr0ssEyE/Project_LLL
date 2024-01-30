@@ -27,5 +27,6 @@ public:
 	AActor* GetActor(UClass* Class);
 
 private:
+	UPROPERTY(VisibleDefaultsOnly)
 	TArray<TObjectPtr<AActor>> Actors;
 };

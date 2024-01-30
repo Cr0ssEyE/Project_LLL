@@ -86,6 +86,7 @@ void ALLL_PlayerBase::BeginPlay()
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -99,7 +100,6 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 		}
 	}
 #endif
-	
 }
 
 float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -112,7 +112,7 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	{
 		return 0;
 	}
-	if(CurrentShieldAmount > 0)
+	if (CurrentShieldAmount > 0)
 	{
 		CurrentShieldAmount -= DamageAmount;
 		if(CurrentShieldAmount <= 0)
@@ -130,6 +130,7 @@ float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 			Dead();
 		}
 	}
+	
 	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
 	return 0;
 }
@@ -158,7 +159,7 @@ void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
 {
 	InteractiveObjects.Emplace(Object);
 	PlayerUIManager->EnableInteractionWidget();
-	if(InteractiveObjects.Num() == 1)
+	if (InteractiveObjects.Num() == 1)
 	{
 		SelectedInteractiveObjectNum = 0;
 	}
@@ -167,11 +168,11 @@ void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
 
 void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject)
 {
-	if(!InteractiveObjects.IsEmpty())
+	if (!InteractiveObjects.IsEmpty())
 	{
-		for(const auto InteractiveObject : InteractiveObjects)
+		for (const auto InteractiveObject : InteractiveObjects)
 		{
-			if(RemoveObject == InteractiveObject)
+			if (RemoveObject == InteractiveObject)
 			{
 				InteractiveObjects.Remove(RemoveObject);
 				if(InteractiveObjects.IsEmpty())
@@ -179,7 +180,7 @@ void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObj
 					PlayerUIManager->DisableInteractionWidget();
 					SelectedInteractiveObjectNum = 0;
 				}
-				else if(SelectedInteractiveObjectNum >= InteractiveObjects.Num())
+				else if (SelectedInteractiveObjectNum >= InteractiveObjects.Num())
 				{
 					while (SelectedInteractiveObjectNum >= InteractiveObjects.Num())
 					{
@@ -207,11 +208,11 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	
 	MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
 
-	if(bIsAttackActionOnGoing)
+	if (bIsAttackActionOnGoing)
 	{
 		return;
 	}
- 	if(GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+ 	if (GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
 	{
 		GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
 		ClearState();
@@ -233,7 +234,7 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 {
-	if(DashDisabledTime > 0 || CurrentDashCount >= MaxDashCount || bIsAttackHitCheckOnGoing)
+	if (DashDisabledTime > 0 || CurrentDashCount >= MaxDashCount || bIsAttackHitCheckOnGoing)
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -264,16 +265,16 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 	LaunchCharacter(MoveDirection * (DashSpeed * 1000.f), true, true);
 	
 	bIsInvincibleOnDashing = true;
-	if(GetWorldTimerManager().IsTimerActive(DashStateCheckTimerHandle))
+	if (GetWorldTimerManager().IsTimerActive(DashStateCheckTimerHandle))
 	{
 		GetWorldTimerManager().ClearTimer(DashStateCheckTimerHandle);
 	}
 	GetWorldTimerManager().SetTimer(DashStateCheckTimerHandle, this, &ALLL_PlayerBase::CheckDashElapsedTime, 0.01f, true);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerDashDebug())
+		if (ProtoGameInstance->CheckPlayerDashDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 입력. 현재 사용 횟수|최대 사용 횟수 : %d, %d"), CurrentDashCount, MaxDashCount));
 		}
@@ -294,7 +295,7 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
 {
-	if(!InteractiveObjects.Num())
+	if (!InteractiveObjects.Num())
 	{
 		return;
 	}
@@ -303,13 +304,13 @@ void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::InteractiveTargetChangeAction(const FInputActionValue& Value)
 {
-	if(!InteractiveObjects.Num())
+	if (!InteractiveObjects.Num())
 	{
 		return;
 	}
 	
 	SelectedInteractiveObjectNum++;
-	if(SelectedInteractiveObjectNum >= InteractiveObjects.Num())
+	if (SelectedInteractiveObjectNum >= InteractiveObjects.Num())
 	{
 		SelectedInteractiveObjectNum = 0;
 	}
@@ -347,7 +348,7 @@ void ALLL_PlayerBase::CharacterRotateToCursor()
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if(ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+			if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
 			{
 				DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
 				DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10.f, FColor::Red, false, 3.f);
@@ -365,7 +366,7 @@ void ALLL_PlayerBase::CharacterRotateToCursor()
 void ALLL_PlayerBase::SetAttackComboCheckState(bool Value)
 {
 	bCheckAttackComboActionInput = Value;
- 	if(!bCheckAttackComboActionInput)
+ 	if (!bCheckAttackComboActionInput)
 	{
  		ClearState();
 		PlayerWeaponComponent->StopMeleeWeaponHitCheck();
@@ -375,14 +376,14 @@ void ALLL_PlayerBase::SetAttackComboCheckState(bool Value)
 void ALLL_PlayerBase::SetAttackHitCheckState(bool Value)
 {
 	bIsAttackHitCheckOnGoing = Value;
-	if(bIsAttackHitCheckOnGoing)
+	if (bIsAttackHitCheckOnGoing)
 	{
 		PlayerWeaponComponent->StartMeleeWeaponHitCheck(CurrentComboActionCount);
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if(ProtoGameInstance->CheckPlayerAttackDebug())
+			if (ProtoGameInstance->CheckPlayerAttackDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("근접 공격 피격 체크 시작")));
 			}
@@ -394,7 +395,7 @@ void ALLL_PlayerBase::SetAttackHitCheckState(bool Value)
 		PlayerWeaponComponent->StopMeleeWeaponHitCheck();
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if(ProtoGameInstance->CheckPlayerDashDebug())
 			{
@@ -416,7 +417,7 @@ void ALLL_PlayerBase::AttackSequence()
 void ALLL_PlayerBase::CheckDashElapsedTime()
 {
 	DashElapsedTime += GetWorld()->DeltaTimeSeconds;
-	if(DashElapsedTime >= DashInvincibleTime && bIsInvincibleOnDashing)
+	if (DashElapsedTime >= DashInvincibleTime && bIsInvincibleOnDashing)
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -431,12 +432,12 @@ void ALLL_PlayerBase::CheckDashElapsedTime()
 		bIsInvincibleOnDashing = false;
 	}
 
-	if(DashElapsedTime >= DashInputCheckTime)
+	if (DashElapsedTime >= DashInputCheckTime)
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if(ProtoGameInstance->CheckPlayerDashDebug())
+			if (ProtoGameInstance->CheckPlayerDashDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 연속사용 입력대기 종료")));
 			}
@@ -452,12 +453,12 @@ void ALLL_PlayerBase::CheckDashElapsedTime()
 void ALLL_PlayerBase::CheckDashDelay()
 {
 	DashDisabledTime += GetWorld()->DeltaTimeSeconds;
-	if(DashDisabledTime >= DashCoolDownSeconds || bIsInvincibleOnDashing)
+	if (DashDisabledTime >= DashCoolDownSeconds || bIsInvincibleOnDashing)
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if(ProtoGameInstance->CheckPlayerDashDebug())
+			if (ProtoGameInstance->CheckPlayerDashDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 재사용 대기시간 종료")));
 			}
@@ -497,15 +498,15 @@ void ALLL_PlayerBase::Attack()
 {
 	Super::Attack();
 
-	if(bIsAttackActionOnGoing)
+	if (bIsAttackActionOnGoing)
 	{
-		if(bIsAttackHitCheckOnGoing || !bCheckAttackComboActionInput)
+		if (bIsAttackHitCheckOnGoing || !bCheckAttackComboActionInput)
 		{
 			return;
 		}
 		
 		CurrentComboActionCount++;
-		if(CurrentComboActionCount >= MaxComboActionCount)
+		if (CurrentComboActionCount >= MaxComboActionCount)
 		{
 			CurrentComboActionCount = 0;
 		}
