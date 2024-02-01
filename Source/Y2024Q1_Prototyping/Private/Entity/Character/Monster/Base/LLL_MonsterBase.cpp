@@ -50,35 +50,6 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 #endif
 }
 
-float ALLL_MonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
-	if(CurrentShieldAmount > 0)
-	{
-		CurrentShieldAmount -= DamageAmount;
-		if(CurrentShieldAmount <= 0)
-		{
-			CurrentShieldAmount = 0;
-		}
-	}
-	else
-	{
-		CurrentHealthAmount -= DamageAmount;
-		if(CurrentHealthAmount <= 0)
-		{
-			CurrentHealthAmount = 0;
-			Dead();
-		}
-		else
-		{
-			Damaged();
-		}
-	}
-	
-	return 0;
-}
-
 void ALLL_MonsterBase::Dead()
 {
 	Super::Dead();
@@ -101,6 +72,11 @@ void ALLL_MonsterBase::Attack()
 	}
 }
 
+void ALLL_MonsterBase::Damaged()
+{
+	// Todo: 피격 애니메이션 재생
+}
+
 bool ALLL_MonsterBase::AttackAnimationIsPlaying()
 {
 	if (IsValid(CharacterAnimInstance))
@@ -109,11 +85,6 @@ bool ALLL_MonsterBase::AttackAnimationIsPlaying()
 	}
 
 	return false;
-}
-
-void ALLL_MonsterBase::Damaged()
-{
-	// Todo: 피격 애니메이션 재생
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)

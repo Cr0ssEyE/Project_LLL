@@ -120,6 +120,33 @@ void ALLL_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 }
 
+float ALLL_BaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if(CurrentShieldAmount > 0)
+	{
+		CurrentShieldAmount -= DamageAmount;
+		if(CurrentShieldAmount <= 0)
+		{
+			CurrentShieldAmount = 0;
+		}
+	}
+	else
+	{
+		CurrentHealthAmount -= DamageAmount;
+		if(CurrentHealthAmount <= 0)
+		{
+			CurrentHealthAmount = 0;
+			Dead();
+		}
+		else
+		{
+			Damaged();
+		}
+	}
+
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
 void ALLL_BaseCharacter::Dead()
 {
 	if (bIsDead)

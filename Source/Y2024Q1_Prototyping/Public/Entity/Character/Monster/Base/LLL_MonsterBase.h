@@ -22,17 +22,15 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 protected:
 	virtual void Dead() override;
 	
 public:
 	virtual void Attack() override;
+	virtual void Damaged() override;
 	
 	bool AttackAnimationIsPlaying();
-	
-	void Damaged();
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
