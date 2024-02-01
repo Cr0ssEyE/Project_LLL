@@ -69,7 +69,7 @@ public:
 	FORCEINLINE bool GetMonsterToggleAIDebug() const { return bMonsterToggleAIDebug; }
 	
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void BroadcastToggleAI(bool value) const { MonsterToggleAIDelegate.Broadcast(value); }
+	FORCEINLINE void BroadcastToggleAI() const { MonsterToggleAIDelegate.Broadcast(bMonsterToggleAIDebug); }
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckMonsterHitCheckDebug() const { return bMonsterHitCheckDebug; }

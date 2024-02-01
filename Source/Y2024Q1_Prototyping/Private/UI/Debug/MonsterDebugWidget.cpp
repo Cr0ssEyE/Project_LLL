@@ -20,8 +20,8 @@ void UMonsterDebugWidget::NativeConstruct()
 
 void UMonsterDebugWidget::MonsterToggleAICheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->BroadcastToggleAI(value);
 	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterToggleAIDebug(MonsterAIDisableCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->BroadcastToggleAI();
 }
 
 void UMonsterDebugWidget::MonsterHitCheckCheckBoxEvent(bool value)
