@@ -10,6 +10,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_ThrownObject.h"
 #include "Game/ProtoGameInstance.h"
+#include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_RangedMonster::ALLL_RangedMonster()
@@ -25,6 +26,8 @@ ALLL_RangedMonster::ALLL_RangedMonster()
 
 	// AI Controller 할당
 	AIControllerClass = ALLL_RangedMonsterAIController::StaticClass();
+
+	ObjectPooling = CreateDefaultSubobject<ULLL_ObjectPoolingComponent>(TEXT("ObjectPooling"));
 }
 
 void ALLL_RangedMonster::BeginPlay()
@@ -39,7 +42,7 @@ void ALLL_RangedMonster::BeginPlay()
 
 void ALLL_RangedMonster::ThrowToPlayer()
 {
-	ALLL_ThrownObject* ThrownObject = GetWorld()->SpawnActor<ALLL_ThrownObject>();
+	ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(ObjectPooling->GetActor(ALLL_ThrownObject::StaticClass()));
 	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
 	if (IsValid(ThrownObject) && IsValid(PlayerBase))
@@ -59,9 +62,9 @@ void ALLL_RangedMonster::ThrowToPlayer()
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			if (ProtoGameInstance->CheckMonsterHitCheckDebug())
 			{
-				DrawDebugLine(GetWorld(), StartLocation, PredictedLocation, FColor::Red, false, 1.f);
+				DrawDebugLine(GetWorld(), StartLocation, PredictedLocation, FColor::Yellow, false, 1.f);
 			}
 		}
 #endif

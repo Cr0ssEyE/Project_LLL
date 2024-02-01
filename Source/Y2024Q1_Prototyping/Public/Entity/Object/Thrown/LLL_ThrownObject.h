@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Object/LLL_ObjectBase.h"
+#include "DataAsset/LLL_ThrownObjectData.h"
+#include "Entity/Object/LLL_BaseObject.h"
 #include "LLL_ThrownObject.generated.h"
 
 class UProjectileMovementComponent;
@@ -11,7 +12,7 @@ class UProjectileMovementComponent;
  * 
  */
 UCLASS()
-class Y2024Q1_PROTOTYPING_API ALLL_ThrownObject : public ALLL_ObjectBase
+class Y2024Q1_PROTOTYPING_API ALLL_ThrownObject : public ALLL_BaseObject
 {
 	GENERATED_BODY()
 
@@ -33,4 +34,7 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<const ULLL_ThrownObjectData> ThrownObjectData;
 };

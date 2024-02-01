@@ -3,22 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataAsset/LLL_BaseObjectData.h"
 #include "GameFramework/Actor.h"
-#include "LLL_ObjectBase.generated.h"
+#include "LLL_BaseObject.generated.h"
 
 class UBoxComponent;
 
 UCLASS()
-class Y2024Q1_PROTOTYPING_API ALLL_ObjectBase : public AActor
+class Y2024Q1_PROTOTYPING_API ALLL_BaseObject : public AActor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ALLL_ObjectBase();
+	ALLL_BaseObject();
 
 protected:
 	// Called when the game starts or when spawned
+	virtual void PostLoad() override;
+	virtual void OnConstruction(const FTransform& Transform) override;
+	virtual void PostInitializeComponents() override;
+	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
 
 public:
@@ -27,13 +32,15 @@ public:
 
 protected:
 	void DelayedDestroy(float Time);
+	void DelayedHide(float Time);
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UBoxComponent> CollisionBox;
+	TObjectPtr<const ULLL_BaseObjectData> BaseObjectData;
 
 private:
 	void DestroyTimerCallback();
+	void HideTimerCallback();
 };

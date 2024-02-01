@@ -60,13 +60,15 @@ void ALLL_MeleeMonster::DamageToPlayer()
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckMonsterAttackDebug())
+		if (ProtoGameInstance->CheckMonsterHitCheckDebug())
 		{
 			const FVector Center = Start + (End - Start) * 0.5f;
 			const float HalfHeight = AttackDistance * 0.5f;
 			const FQuat CapsuleRotate = FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat();
 			const FColor DrawColor = bSweepResult ? FColor::Green : FColor::Red;
 			DrawDebugCapsule(GetWorld(), Center, HalfHeight, CharacterDataAsset->AttackRadius, CapsuleRotate, DrawColor, false, 1.f);
+
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("강체와 플레이어 충돌")));
 		}
 	}
 #endif

@@ -8,15 +8,20 @@
 void UMonsterDebugWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	MonsterAIDisableCheckBox->OnCheckStateChanged.AddDynamic(this, &UMonsterDebugWidget::MonsterAIDisableCheckBoxEvent);
+
+	MonsterAIDisableCheckBox->SetCheckedState(ECheckBoxState::Checked);
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterToggleAIDebug(MonsterAIDisableCheckBox->IsChecked());
+	
+	MonsterAIDisableCheckBox->OnCheckStateChanged.AddDynamic(this, &UMonsterDebugWidget::MonsterToggleAICheckBoxEvent);
 	MonsterHitCheckBox->OnCheckStateChanged.AddDynamic(this, &UMonsterDebugWidget::MonsterHitCheckCheckBoxEvent);
 	MonsterAttackCheckBox->OnCheckStateChanged.AddDynamic(this, &UMonsterDebugWidget::MonsterAttackCheckBoxEvent);
 	MonsterCollisionCheckBox->OnCheckStateChanged.AddDynamic(this, &UMonsterDebugWidget::MonsterCollisionCheckBoxEvent);
 }
 
-void UMonsterDebugWidget::MonsterAIDisableCheckBoxEvent(bool value)
+void UMonsterDebugWidget::MonsterToggleAICheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->MonsterDisableAIDelegate.Broadcast();
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->BroadcastToggleAI(value);
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterToggleAIDebug(MonsterAIDisableCheckBox->IsChecked());
 }
 
 void UMonsterDebugWidget::MonsterHitCheckCheckBoxEvent(bool value)

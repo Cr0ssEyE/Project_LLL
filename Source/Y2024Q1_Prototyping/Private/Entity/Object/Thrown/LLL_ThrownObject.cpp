@@ -5,19 +5,22 @@
 
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_FilePath.h"
 #include "Engine/DamageEvents.h"
 #include "Entity/Character/Monster/Ranged/LLL_RangedMonster.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Util/LLLConstructorHelper.h"
 
 ALLL_ThrownObject::ALLL_ThrownObject()
 {
+	BaseObjectData = FLLLConstructorHelper::FindAndGetObject<ULLL_ThrownObjectData>(PATH_THROWN_OBJECT_DATA, EAssertionLevel::Check);
+	ThrownObjectData = Cast<ULLL_ThrownObjectData>(BaseObjectData);
+	
 	if (IsValid(BaseMesh))
 	{
-		BaseMesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
 		BaseMesh->SetCollisionObjectType(ECC_PLAYER_ONLY);
-		CollisionBox->SetCollisionObjectType(ECC_PLAYER_ONLY);
 	}
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
@@ -35,11 +38,12 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 void ALLL_ThrownObject::Throw(AActor* NewOwner)
 {
 	SetOwner(NewOwner);
-	
+
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ProjectileMovement->Activate();
 	ProjectileMovement->Velocity = GetActorForwardVector() * Speed;
 
-	DelayedDestroy(3.0f);
+	DelayedHide(3.0f);
 }
 
 void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
@@ -57,13 +61,16 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 			{
-				if (ProtoGameInstance->CheckMonsterAttackDebug())
+				if (ProtoGameInstance->CheckMonsterHitCheckDebug())
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("투사체와 플레이어 충돌")));
 				}
 			}
 #endif
-			Destroy();
+
+			BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			ProjectileMovement->Deactivate();
+			SetActorHiddenInGame(true);
 		}
 	}
 }

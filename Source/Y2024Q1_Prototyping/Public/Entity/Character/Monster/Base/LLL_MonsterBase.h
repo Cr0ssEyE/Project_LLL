@@ -20,6 +20,8 @@ public:
 	FORCEINLINE float GetDetectDistance() const { return DetectDistance; }
 	FORCEINLINE float GetFieldOfView() const { return FieldOfView; }
 
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 protected:
@@ -38,4 +40,8 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	float FieldOfView;
+
+public:
+	UFUNCTION()
+	void ToggleAIHandle(bool value);
 };

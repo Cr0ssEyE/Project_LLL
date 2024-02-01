@@ -21,7 +21,7 @@ public:
 
 protected:
 	UFUNCTION(BlueprintCallable)
-	void MonsterAIDisableCheckBoxEvent(bool value);
+	void MonsterToggleAICheckBoxEvent(bool value);
 
 	UFUNCTION(BlueprintCallable)
 	void MonsterHitCheckCheckBoxEvent(bool value);

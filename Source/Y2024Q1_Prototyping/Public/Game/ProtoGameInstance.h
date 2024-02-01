@@ -6,7 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "ProtoGameInstance.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMonsterDisableAIDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMonsterToggleAIDelegate, bool, value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FObjectTrapActivateDelegate);
 
 /**
@@ -23,7 +23,7 @@ public:
 	// 디버그용 델리게이트
 public:
 	UPROPERTY(BlueprintCallable)
-	FMonsterDisableAIDelegate MonsterDisableAIDelegate;
+	FMonsterToggleAIDelegate MonsterToggleAIDelegate;
 
 	UPROPERTY(BlueprintCallable)
 	FObjectTrapActivateDelegate ObjectTrapActivateDelegate;
@@ -61,14 +61,16 @@ public:
 	
 	// 몬스터 디버그 변수 Getter / Setter
 public:
+	FORCEINLINE void SetMonsterToggleAIDebug(bool value) { bMonsterToggleAIDebug = value; }
 	FORCEINLINE void SetMonsterHitCheckDebug(bool value) { bMonsterHitCheckDebug = value; }
 	FORCEINLINE void SetMonsterAttackDebug(bool value) { bMonsterAttackDebug = value; }
 	FORCEINLINE void SetMonsterCollisionDebug(bool value) { bMonsterCollisionDebug = value; }
 
+	FORCEINLINE bool GetMonsterToggleAIDebug() const { return bMonsterToggleAIDebug; }
 	
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void BroadcastDisableAI() const { MonsterDisableAIDelegate.Broadcast(); }
-	
+	FORCEINLINE void BroadcastToggleAI(bool value) const { MonsterToggleAIDelegate.Broadcast(value); }
+
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckMonsterHitCheckDebug() const { return bMonsterHitCheckDebug; }
 	
@@ -122,6 +124,8 @@ protected:
 	
 	// 몬스터 디버그 변수
 protected:
+	uint8 bMonsterToggleAIDebug : 1;
+	
 	uint8 bMonsterHitCheckDebug : 1;
 
 	uint8 bMonsterAttackDebug : 1;
