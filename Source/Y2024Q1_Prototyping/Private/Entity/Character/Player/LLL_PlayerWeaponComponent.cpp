@@ -71,7 +71,7 @@ void ULLL_PlayerWeaponComponent::MeleeWeaponHitCheck()
 		ECC_ENEMY_ONLY,
 		FCollisionShape::MakeBox(AttackActionProperties[CurrentAttackActionCount].ActionHitBoxSize),
 		Params);
-	
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
