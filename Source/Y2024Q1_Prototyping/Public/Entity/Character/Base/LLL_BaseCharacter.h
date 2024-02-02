@@ -8,6 +8,8 @@
 #include "GameFramework/Character.h"
 #include "LLL_BaseCharacter.generated.h"
 
+class UAttributeSet;
+class UAbilitySystemComponent;
 DECLARE_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*)
 /**
  * 
@@ -20,8 +22,11 @@ class Y2024Q1_PROTOTYPING_API ALLL_BaseCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ALLL_BaseCharacter();
-	
+
+	// 외부 접근용 함수
+public:
 	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
+	FORCEINLINE UAbilitySystemComponent* GetAbilitySystemComponent() const { return ASC; }
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
 	FORCEINLINE float GetOffencePower() const { return OffensePower; }
 	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
@@ -31,14 +36,8 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// 캐릭터 상태 설정
@@ -54,6 +53,14 @@ public:
 	// 상태 체크용 델리게이트
 public:
 	FCharacterDeadDelegate CharacterDeadDelegate;
+
+	// 캐릭터 공용 컴포넌트
+protected:
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> ASC;
+
+	UPROPERTY()
+	TObjectPtr<UAttributeSet> AttributeSet;
 	
 	// 캐릭터 공용 변수
 protected:

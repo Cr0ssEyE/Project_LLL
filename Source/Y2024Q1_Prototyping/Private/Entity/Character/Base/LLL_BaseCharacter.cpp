@@ -3,6 +3,7 @@
 
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 
+#include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -13,6 +14,9 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	bIsDead = false;
 
+	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+	AttributeSet = CreateDefaultSubobject<UAttributeSet>(TEXT("AttributeSet"));
+	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	bIsSpawned = false;
 #endif
@@ -103,6 +107,11 @@ void ALLL_BaseCharacter::BeginPlay()
 	if (IsValid(CharacterAnimInstance))
 	{
 		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
+	}
+
+	if(IsValid(ASC))
+	{
+		ASC->InitAbilityActorInfo(this, this);
 	}
 }
 
