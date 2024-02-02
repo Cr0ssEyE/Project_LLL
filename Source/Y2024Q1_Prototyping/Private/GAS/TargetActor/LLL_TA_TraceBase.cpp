@@ -13,6 +13,26 @@ ALLL_TA_TraceBase::ALLL_TA_TraceBase()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void ALLL_TA_TraceBase::SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes, FVector Extents)
+{
+	TraceTarget = NewTraceTarget;
+	BaseShape = NewShapeTypes;
+	if(!Extents.Length())
+	{
+		BoxExtents = Extents;
+		CapsuleExtents = Extents;
+	}
+}
+
+void ALLL_TA_TraceBase::SetSphereTraceInfo(const ESelectTraceTarget NewTraceTarget, float Radius)
+{
+	TraceTarget = NewTraceTarget;
+	if(Radius > 0)
+	{
+		SphereRadius = Radius;
+	}
+}
+
 void ALLL_TA_TraceBase::StartTargeting(UGameplayAbility* Ability)
 {
 	Super::StartTargeting(Ability);
@@ -27,9 +47,29 @@ void ALLL_TA_TraceBase::ConfirmTargetingAndContinue()
 		FGameplayAbilityTargetDataHandle DataHandle = MakeTargetData();
 		TargetDataReadyDelegate.Broadcast(DataHandle);
 	}
+	
 }
 
 FGameplayAbilityTargetDataHandle ALLL_TA_TraceBase::MakeTargetData() const
+{
+	switch (BaseShape)
+	{
+	case ESelectShapeTypes::Box:
+		TraceShape = FCollisionShape::MakeBox(BoxExtents);
+		break;
+	case ESelectShapeTypes::Capsule:
+		TraceShape = FCollisionShape::MakeCapsule(CapsuleExtents);
+		break;
+	case ESelectShapeTypes::Sphere:
+		TraceShape = FCollisionShape::MakeSphere(SphereRadius);
+		break;
+	default:
+		checkNoEntry();
+	}
+	return TraceResult();
+}
+
+FGameplayAbilityTargetDataHandle ALLL_TA_TraceBase::TraceResult() const
 {
 	FGameplayAbilityTargetDataHandle DataHandle;
 	return DataHandle;

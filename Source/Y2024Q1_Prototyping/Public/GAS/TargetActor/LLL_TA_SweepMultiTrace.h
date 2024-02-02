@@ -16,6 +16,6 @@ public:
 	ALLL_TA_SweepMultiTrace();
 
 protected:
-	virtual FGameplayAbilityTargetDataHandle MakeTargetData() const override;
+	virtual FGameplayAbilityTargetDataHandle TraceResult() const override;
 	
 };

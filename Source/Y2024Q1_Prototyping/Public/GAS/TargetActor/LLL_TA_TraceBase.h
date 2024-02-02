@@ -4,15 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbilityTargetActor.h"
+#include "Enumeration/LLL_EditorSelectHelper.h"
 #include "LLL_TA_TraceBase.generated.h"
-
-UENUM()
-enum class EShapeTypes
-{
-	Box,
-	Capsule,
-	Sphere
-};
 
 UCLASS()
 class Y2024Q1_PROTOTYPING_API ALLL_TA_TraceBase : public AGameplayAbilityTargetActor
@@ -23,23 +16,32 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_TA_TraceBase();
 
+	void SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes = ESelectShapeTypes::Box, FVector Extents = FVector::ZeroVector);
+	void SetSphereTraceInfo(const ESelectTraceTarget NewTraceTarget, float Radius = 0.0f);
+	
 protected:
 	virtual void StartTargeting(UGameplayAbility* Ability) override;
 	virtual void ConfirmTargetingAndContinue() override;
 
 protected:
 	virtual FGameplayAbilityTargetDataHandle MakeTargetData() const;
-
+	virtual FGameplayAbilityTargetDataHandle TraceResult() const;
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+	ESelectTraceTarget TraceTarget;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Shape")
-	EShapeTypes TraceShape;
+	ESelectShapeTypes BaseShape;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Shape", meta=(EditCondition = "TraceShape == EShapeTypes::Box", EditConditionHides))
-	FVector3d BoxExtents;
+	FVector BoxExtents;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Shape", meta=(EditCondition = "TraceShape == EShapeTypes::Capsule", EditConditionHides))
-	FVector2D CapsuleSize;
+	FVector CapsuleExtents;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Shape", meta=(EditCondition = "TraceShape == EShapeTypes::Sphere", EditConditionHides))
 	float SphereRadius;
+
+	mutable FCollisionShape TraceShape;
+	
 };
