@@ -85,6 +85,15 @@ void ALLL_PlayerBase::BeginPlay()
 
 	if(IsValid(ASC))
 	{
+		for (const auto BaseAbility : PlayerDataAsset->DefaultGameplayAbility)
+		{
+			if(IsValid(BaseAbility))
+			{
+				FGameplayAbilitySpec AbilitySpec(BaseAbility);
+				ASC->GiveAbility(AbilitySpec);
+			}
+		}
+		
 		for (const auto SkillAbility : PlayerDataAsset->DefaultSkillAbility)
 		{
 			if(IsValid(SkillAbility.Value))
@@ -310,6 +319,7 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, int32 InputID)
 	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID);
 	if(SkillSpec)
 	{
+		ClearState();
 		SkillSpec->InputPressed = true;
 		if (SkillSpec->IsActive())
 		{

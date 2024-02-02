@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 UENUM(BlueprintType)
-enum class ESelectShapeTypes
+enum class ESelectShapeTypes : uint8
 {
 	Box,
 	Capsule,
@@ -12,11 +12,9 @@ enum class ESelectShapeTypes
 };
 
 UENUM(BlueprintType)
-enum class ESelectTraceTarget
+enum class ESelectTraceTarget : uint8
 {
 	Player UMETA(DisplayName="Player"),
 	Monster UMETA(DisplayName="Monster"),
 	AllEntity UMETA(DisplayName="AllEntity")
 };
-
-DEFINE_ENUM_TO_STRING(ESelectTraceTarget)

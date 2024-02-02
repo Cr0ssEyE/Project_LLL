@@ -17,7 +17,7 @@ void ULLL_PlayerGameplayAbilityBase::ActivateAbility(const FGameplayAbilitySpecH
 void ULLL_PlayerGameplayAbilityBase::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
 	Super::InputPressed(Handle, ActorInfo, ActivationInfo);
-	
+
 }
 
 void ULLL_PlayerGameplayAbilityBase::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)

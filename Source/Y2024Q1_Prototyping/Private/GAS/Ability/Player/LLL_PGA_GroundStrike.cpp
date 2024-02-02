@@ -49,12 +49,10 @@ void ULLL_PGA_GroundStrike::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 
 void ULLL_PGA_GroundStrike::OnCompleteCallBack()
 {
-	
-	Super::OnCompleteCallBack();
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void ULLL_PGA_GroundStrike::OnInterruptedCallBack()
 {
-	
-	Super::OnInterruptedCallBack();
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }

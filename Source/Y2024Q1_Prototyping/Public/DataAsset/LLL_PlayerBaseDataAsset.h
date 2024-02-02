@@ -72,7 +72,10 @@ public:
 	float InteractionRange;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Skill", DisplayName = "기본 스킬")
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "기본 게임플레이 어빌리티")
+	TArray<TSubclassOf<UGameplayAbility>> DefaultGameplayAbility;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "기본 스킬")
 	TMap<int32, TSubclassOf<UGameplayAbility>> DefaultSkillAbility;
 	
 public:
