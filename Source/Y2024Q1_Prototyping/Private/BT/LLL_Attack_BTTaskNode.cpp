@@ -22,16 +22,6 @@ EBTNodeResult::Type ULLL_Attack_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 	if (IsValid(MonsterBase) && !MonsterBase->AttackAnimationIsPlaying())
 	{
 		MonsterBase->Attack();
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *MonsterBase->GetName()));
-			}
-		}
-#endif
 	}
 
 	return EBTNodeResult::InProgress;

@@ -69,12 +69,37 @@ void ALLL_MonsterBase::Attack()
 	if (IsValid(MonsterBaseAnimInstance))
 	{
 		MonsterBaseAnimInstance->PlayAttackAnimation();
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
+			}
+		}
+#endif
 	}
 }
 
 void ALLL_MonsterBase::Damaged()
 {
-	// Todo: 피격 애니메이션 재생
+	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+	if (IsValid(MonsterBaseAnimInstance))
+	{
+		MonsterBaseAnimInstance->StopAllMontages(0.0f);
+		MonsterBaseAnimInstance->PlayDamagedAnimation();
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterCollisionDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 피격"), *GetName()));
+			}
+		}
+#endif
+	}
 }
 
 bool ALLL_MonsterBase::AttackAnimationIsPlaying()
