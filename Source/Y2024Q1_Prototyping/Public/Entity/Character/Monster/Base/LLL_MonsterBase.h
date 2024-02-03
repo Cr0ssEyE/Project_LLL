@@ -20,7 +20,7 @@ public:
 	
 	FORCEINLINE float GetDetectDistance() const { return DetectDistance; }
 	FORCEINLINE float GetFieldOfView() const { return FieldOfView; }
-
+	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	

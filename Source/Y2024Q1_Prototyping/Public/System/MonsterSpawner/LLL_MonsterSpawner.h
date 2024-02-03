@@ -48,7 +48,7 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 	TArray<ALLL_MonsterBase*> Monsters;
 	
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 	int32 Wave;
 
 	UPROPERTY(VisibleDefaultsOnly)

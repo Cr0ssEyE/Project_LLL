@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "CharacterDebugWidget.h"
 #include "PlayerDebugWidget.generated.h"
 
 class UButton;
@@ -12,7 +12,7 @@ class UCheckBox;
  * 
  */
 UCLASS()
-class Y2024Q1_PROTOTYPING_API UPlayerDebugWidget : public UUserWidget
+class Y2024Q1_PROTOTYPING_API UPlayerDebugWidget : public UCharacterDebugWidget
 {
 	GENERATED_BODY()
 
@@ -29,14 +29,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void PlayerSkillCheckBoxEvent(bool value);
 
-	UFUNCTION(BlueprintCallable)
-	void PlayerHitCheckBoxEvent(bool value);
-
-	UFUNCTION(BlueprintCallable)
-	void PlayerAttackCheckBoxEvent(bool value);
-
-	UFUNCTION(BlueprintCallable)
-	void PlayerCollisionCheckBoxEvent(bool value);
+	virtual void CharacterHitCheckCheckBoxEvent(bool value) override;
+	virtual void CharacterAttackCheckBoxEvent(bool value) override;
+	virtual void CharacterCollisionCheckBoxEvent(bool value) override;
 
 	UFUNCTION(BlueprintCallable)
 	void PlayerFillHealthButtonEvent();
@@ -53,15 +48,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UCheckBox> PlayerSkillCheckBox;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCheckBox> PlayerHitCheckBox;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCheckBox> PlayerAttackCheckBox;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCheckBox> PlayerCollisionCheckBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> PlayerFillHealthButton;

@@ -83,19 +83,19 @@ protected:
 
 	// 이동 관련 변수
 protected:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	float MoveSpeed;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	float AccelerateSpeed;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	float GroundFriction;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	float TurnSpeed;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FVector MoveDirection;
 
 protected:
