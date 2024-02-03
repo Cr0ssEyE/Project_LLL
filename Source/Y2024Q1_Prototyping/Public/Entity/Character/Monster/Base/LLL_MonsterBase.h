@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_MonsterBase.generated.h"
 
@@ -30,9 +31,12 @@ public:
 	virtual void Attack() override;
 	virtual void Damaged() override;
 	
-	bool AttackAnimationIsPlaying();
+	bool CanPlayAttackAnimation();
 
 protected:
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
+	
 	UPROPERTY(VisibleDefaultsOnly)
 	float DetectDistance;
 

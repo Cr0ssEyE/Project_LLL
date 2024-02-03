@@ -22,6 +22,8 @@ void ALLL_MonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -87,7 +89,6 @@ void ALLL_MonsterBase::Damaged()
 	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(MonsterBaseAnimInstance))
 	{
-		MonsterBaseAnimInstance->StopAllMontages(0.0f);
 		MonsterBaseAnimInstance->PlayDamagedAnimation();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -102,11 +103,21 @@ void ALLL_MonsterBase::Damaged()
 	}
 }
 
-bool ALLL_MonsterBase::AttackAnimationIsPlaying()
+bool ALLL_MonsterBase::CanPlayAttackAnimation()
 {
 	if (IsValid(CharacterAnimInstance))
 	{
-		return CharacterAnimInstance->Montage_IsPlaying(CharacterDataAsset->AttackAnimMontage);
+		if (CharacterAnimInstance->Montage_IsPlaying(CharacterDataAsset->AttackAnimMontage))
+		{
+			return false;
+		}
+
+		if (CharacterAnimInstance->Montage_IsPlaying(MonsterBaseDataAsset->DamagedAnimMontage))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	return false;
