@@ -3,13 +3,17 @@
 
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 
+#include "AbilitySystemComponent.h"
 #include "BrainComponent.h"
+#include "GameplayAbilitySpec.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/Ability/Monster/LLL_MGA_GroundStrike.h"
+#include "GAS/Ability/Monster/LLL_MonsterGameplayAbilityBase.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
@@ -23,6 +27,15 @@ void ALLL_MonsterBase::BeginPlay()
 	Super::BeginPlay();
 
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
+
+	if(IsValid(ASC))
+	{
+		if(IsValid(MonsterBaseDataAsset->DefaultGameplayAbility_Test))
+		{
+			FGameplayAbilitySpec AbilitySpec(MonsterBaseDataAsset->DefaultGameplayAbility_Test);
+			ASC->GiveAbility(AbilitySpec);
+		}
+	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -67,7 +80,7 @@ void ALLL_MonsterBase::Attack()
 {
 	Super::Attack();
 
-	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+	/*ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(MonsterBaseAnimInstance))
 	{
 		MonsterBaseAnimInstance->PlayAttackAnimation();
@@ -81,6 +94,15 @@ void ALLL_MonsterBase::Attack()
 			}
 		}
 #endif
+	}*/
+
+	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromClass(MonsterBaseDataAsset->DefaultGameplayAbility_Test);
+	if (SkillSpec)
+	{
+		if (!SkillSpec->IsActive())
+		{
+			ASC->TryActivateAbility(SkillSpec->Handle);
+		}
 	}
 }
 
