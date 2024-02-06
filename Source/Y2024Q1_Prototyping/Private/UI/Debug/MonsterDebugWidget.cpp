@@ -9,32 +9,35 @@ void UMonsterDebugWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	MonsterAIDisableCheckBox->SetCheckedState(ECheckBoxState::Checked);
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterToggleAIDebug(MonsterAIDisableCheckBox->IsChecked());
-	
-	MonsterAIDisableCheckBox->OnCheckStateChanged.AddDynamic(this, &UMonsterDebugWidget::MonsterToggleAICheckBoxEvent);
-	MonsterHitCheckBox->OnCheckStateChanged.AddDynamic(this, &UMonsterDebugWidget::MonsterHitCheckCheckBoxEvent);
-	MonsterAttackCheckBox->OnCheckStateChanged.AddDynamic(this, &UMonsterDebugWidget::MonsterAttackCheckBoxEvent);
-	MonsterCollisionCheckBox->OnCheckStateChanged.AddDynamic(this, &UMonsterDebugWidget::MonsterCollisionCheckBoxEvent);
+	MonsterSpawnDataCheckBox->OnCheckStateChanged.AddDynamic(this, &UMonsterDebugWidget::MonsterSpawnDataCheckBoxEvent);
+	MonsterDisableAICheckBox->OnCheckStateChanged.AddDynamic(this, &UMonsterDebugWidget::MonsterToggleAICheckBoxEvent);
+
+	MonsterDisableAICheckBox->SetCheckedState(ECheckBoxState::Checked);
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterToggleAIDebug(MonsterDisableAICheckBox->IsChecked());
+}
+
+void UMonsterDebugWidget::MonsterSpawnDataCheckBoxEvent(bool value)
+{
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterSpawnDataDebug(MonsterSpawnDataCheckBox->IsChecked());
 }
 
 void UMonsterDebugWidget::MonsterToggleAICheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->BroadcastToggleAI(value);
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterToggleAIDebug(MonsterAIDisableCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterToggleAIDebug(MonsterDisableAICheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->BroadcastToggleAI();
 }
 
-void UMonsterDebugWidget::MonsterHitCheckCheckBoxEvent(bool value)
+void UMonsterDebugWidget::CharacterHitCheckCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterHitCheckDebug(MonsterHitCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterHitCheckDebug(CharacterHitCheckCheckBox->IsChecked());
 }
 
-void UMonsterDebugWidget::MonsterAttackCheckBoxEvent(bool value)
+void UMonsterDebugWidget::CharacterAttackCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterAttackDebug(MonsterAttackCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterAttackDebug(CharacterAttackCheckBox->IsChecked());
 }
 
-void UMonsterDebugWidget::MonsterCollisionCheckBoxEvent(bool value)
+void UMonsterDebugWidget::CharacterCollisionCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterCollisionDebug(MonsterCollisionCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetMonsterCollisionDebug(CharacterCollisionCheckBox->IsChecked());
 }

@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/CheckBox.h"
 #include "Engine/GameInstance.h"
+#include "UI/Debug/MonsterDebugWidget.h"
 #include "ProtoGameInstance.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMonsterToggleAIDelegate, bool, value);
@@ -61,15 +63,20 @@ public:
 	
 	// 몬스터 디버그 변수 Getter / Setter
 public:
+	FORCEINLINE void SetMonsterSpawnDataDebug(bool value) { bMonsterSpawnDataDebug = value; }
 	FORCEINLINE void SetMonsterToggleAIDebug(bool value) { bMonsterToggleAIDebug = value; }
 	FORCEINLINE void SetMonsterHitCheckDebug(bool value) { bMonsterHitCheckDebug = value; }
 	FORCEINLINE void SetMonsterAttackDebug(bool value) { bMonsterAttackDebug = value; }
 	FORCEINLINE void SetMonsterCollisionDebug(bool value) { bMonsterCollisionDebug = value; }
 
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool CheckMonsterSpawnDataDebug() const { return bMonsterSpawnDataDebug; }
+
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool GetMonsterToggleAIDebug() const { return bMonsterToggleAIDebug; }
 	
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void BroadcastToggleAI(bool value) const { MonsterToggleAIDelegate.Broadcast(value); }
+	FORCEINLINE void BroadcastToggleAI() const { MonsterToggleAIDelegate.Broadcast(bMonsterToggleAIDebug); }
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckMonsterHitCheckDebug() const { return bMonsterHitCheckDebug; }
@@ -105,7 +112,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckObjectCollisionDebug() const { return bObjectCollisionDebug; }
-	
+
+
 	// 플레이어 디버그 변수
 protected:
 	uint8 bPlayerMovementDebug : 1;
@@ -124,6 +132,8 @@ protected:
 	
 	// 몬스터 디버그 변수
 protected:
+	uint8 bMonsterSpawnDataDebug : 1;
+	
 	uint8 bMonsterToggleAIDebug : 1;
 	
 	uint8 bMonsterHitCheckDebug : 1;

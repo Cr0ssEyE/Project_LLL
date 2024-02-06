@@ -127,37 +127,19 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 #endif
 }
 
-float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
+float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
 	// 무적 또는 데미지 처리 무시는 해당 구문에서 추가
 	if (bIsInvincibleOnDashing)
 	{
 		return 0;
-	}
-	if (CurrentShieldAmount > 0)
-	{
-		CurrentShieldAmount -= DamageAmount;
-		if(CurrentShieldAmount <= 0)
-		{
-			CurrentShieldAmount = 0;
-		}
-	}
-	else
-	{
-		CurrentHealthAmount -= DamageAmount;
-		if(CurrentHealthAmount <= 0)
-		{
-			CurrentHealthAmount = 0;
-			// TODO: 목숨 같은거 생기면 사이에 추가하기
-			Dead();
-		}
-	}
+	};
+
+	const float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
 	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
-	return 0;
+	
+	return ActualDamage;
 }
 
 void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -523,6 +505,8 @@ void ALLL_PlayerBase::ClearState()
 void ALLL_PlayerBase::Dead()
 {
 	Super::Dead();
+
+	// TODO: 목숨 같은거 생기면 사이에 추가하기
 	
 	DisableInput(Cast<APlayerController>(GetController()));
 }

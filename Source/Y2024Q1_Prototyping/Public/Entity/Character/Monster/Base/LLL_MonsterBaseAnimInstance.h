@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacterAnimInstance.h"
 #include "LLL_MonsterBaseAnimInstance.generated.h"
 
-class ULLL_MonsterBaseDataAsset;
 /**
  * 
  */
@@ -17,5 +17,12 @@ class Y2024Q1_PROTOTYPING_API ULLL_MonsterBaseAnimInstance : public ULLL_BaseCha
 	GENERATED_BODY()
 
 public:
+	virtual void SetDataAsset(const ULLL_BaseCharacterDataAsset* InCharacterDataAsset) override;
+	
 	void PlayAttackAnimation();
+	void PlayDamagedAnimation();
+
+protected:
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 };
