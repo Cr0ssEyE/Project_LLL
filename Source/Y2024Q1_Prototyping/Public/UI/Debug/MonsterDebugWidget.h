@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "CharacterDebugWidget.h"
 #include "MonsterDebugWidget.generated.h"
 
 class UCheckBox;
@@ -12,7 +12,7 @@ class UCheckBox;
  * 
  */
 UCLASS()
-class Y2024Q1_PROTOTYPING_API UMonsterDebugWidget : public UUserWidget
+class Y2024Q1_PROTOTYPING_API UMonsterDebugWidget : public UCharacterDebugWidget
 {
 	GENERATED_BODY()
 
@@ -21,27 +21,19 @@ public:
 
 protected:
 	UFUNCTION(BlueprintCallable)
+	void MonsterSpawnDataCheckBoxEvent(bool value);
+	
+	UFUNCTION(BlueprintCallable)
 	void MonsterToggleAICheckBoxEvent(bool value);
 
-	UFUNCTION(BlueprintCallable)
-	void MonsterHitCheckCheckBoxEvent(bool value);
-
-	UFUNCTION(BlueprintCallable)
-	void MonsterAttackCheckBoxEvent(bool value);
-
-	UFUNCTION(BlueprintCallable)
-	void MonsterCollisionCheckBoxEvent(bool value);
+	virtual void CharacterHitCheckCheckBoxEvent(bool value) override;
+	virtual void CharacterAttackCheckBoxEvent(bool value) override;
+	virtual void CharacterCollisionCheckBoxEvent(bool value) override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCheckBox> MonsterAIDisableCheckBox;
-
+	TObjectPtr<UCheckBox> MonsterSpawnDataCheckBox;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCheckBox> MonsterHitCheckBox;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCheckBox> MonsterAttackCheckBox;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCheckBox> MonsterCollisionCheckBox;
+	TObjectPtr<UCheckBox> MonsterDisableAICheckBox;
 };

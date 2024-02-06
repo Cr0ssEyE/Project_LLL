@@ -22,6 +22,8 @@ void ALLL_MonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -50,35 +52,6 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 #endif
 }
 
-float ALLL_MonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
-	if(CurrentShieldAmount > 0)
-	{
-		CurrentShieldAmount -= DamageAmount;
-		if(CurrentShieldAmount <= 0)
-		{
-			CurrentShieldAmount = 0;
-		}
-	}
-	else
-	{
-		CurrentHealthAmount -= DamageAmount;
-		if(CurrentHealthAmount <= 0)
-		{
-			CurrentHealthAmount = 0;
-			Dead();
-		}
-		else
-		{
-			Damaged();
-		}
-	}
-	
-	return 0;
-}
-
 void ALLL_MonsterBase::Dead()
 {
 	Super::Dead();
@@ -98,22 +71,56 @@ void ALLL_MonsterBase::Attack()
 	if (IsValid(MonsterBaseAnimInstance))
 	{
 		MonsterBaseAnimInstance->PlayAttackAnimation();
-	}
-}
 
-bool ALLL_MonsterBase::AttackAnimationIsPlaying()
-{
-	if (IsValid(CharacterAnimInstance))
-	{
-		return CharacterAnimInstance->Montage_IsPlaying(CharacterDataAsset->AttackAnimMontage);
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
+			}
+		}
+#endif
 	}
-
-	return false;
 }
 
 void ALLL_MonsterBase::Damaged()
 {
-	// Todo: 피격 애니메이션 재생
+	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+	if (IsValid(MonsterBaseAnimInstance))
+	{
+		MonsterBaseAnimInstance->PlayDamagedAnimation();
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterCollisionDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 피격"), *GetName()));
+			}
+		}
+#endif
+	}
+}
+
+bool ALLL_MonsterBase::CanPlayAttackAnimation()
+{
+	if (IsValid(CharacterAnimInstance))
+	{
+		if (CharacterAnimInstance->Montage_IsPlaying(CharacterDataAsset->AttackAnimMontage))
+		{
+			return false;
+		}
+
+		if (CharacterAnimInstance->Montage_IsPlaying(MonsterBaseDataAsset->DamagedAnimMontage))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)

@@ -10,13 +10,10 @@
 void UPlayerDebugWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	
 	PlayerMovementCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerMovementCheckBoxEvent);
 	PlayerDashCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerDashCheckBoxEvent);
 	PlayerSkillCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerSkillCheckBoxEvent);
-	
-	PlayerHitCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerHitCheckBoxEvent);
-	PlayerAttackCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerAttackCheckBoxEvent);
-	PlayerCollisionCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerCollisionCheckBoxEvent);
 
 	PlayerFillHealthButton->OnClicked.AddDynamic(this, &UPlayerDebugWidget::PlayerFillHealthButtonEvent);
 	PlayerCoolDownResetButton->OnClicked.AddDynamic(this, &UPlayerDebugWidget::PlayerCoolDownResetButtonEvent);
@@ -37,19 +34,19 @@ void UPlayerDebugWidget::PlayerSkillCheckBoxEvent(bool value)
 	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerSkillDebug(PlayerSkillCheckBox->IsChecked());
 }
 
-void UPlayerDebugWidget::PlayerHitCheckBoxEvent(bool value)
+void UPlayerDebugWidget::CharacterHitCheckCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerHitCheckDebug(PlayerHitCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerHitCheckDebug(CharacterHitCheckCheckBox->IsChecked());
 }
 
-void UPlayerDebugWidget::PlayerAttackCheckBoxEvent(bool value)
+void UPlayerDebugWidget::CharacterAttackCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerAttackDebug(PlayerAttackCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerAttackDebug(CharacterAttackCheckBox->IsChecked());
 }
 
-void UPlayerDebugWidget::PlayerCollisionCheckBoxEvent(bool value)
+void UPlayerDebugWidget::CharacterCollisionCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerCollisionDebug(PlayerCollisionCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerCollisionDebug(CharacterCollisionCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerFillHealthButtonEvent()

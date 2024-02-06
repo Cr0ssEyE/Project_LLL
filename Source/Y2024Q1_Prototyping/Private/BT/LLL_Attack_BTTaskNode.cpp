@@ -19,19 +19,9 @@ EBTNodeResult::Type ULLL_Attack_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-	if (IsValid(MonsterBase) && !MonsterBase->AttackAnimationIsPlaying())
+	if (IsValid(MonsterBase) && MonsterBase->CanPlayAttackAnimation())
 	{
 		MonsterBase->Attack();
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *MonsterBase->GetName()));
-			}
-		}
-#endif
 	}
 
 	return EBTNodeResult::InProgress;
@@ -42,7 +32,7 @@ void ULLL_Attack_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
 	ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-	if (IsValid(MonsterBase) && !MonsterBase->AttackAnimationIsPlaying())
+	if (IsValid(MonsterBase) && MonsterBase->CanPlayAttackAnimation())
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}

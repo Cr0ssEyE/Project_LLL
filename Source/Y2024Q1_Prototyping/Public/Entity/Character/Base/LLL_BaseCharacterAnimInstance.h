@@ -22,7 +22,7 @@ class Y2024Q1_PROTOTYPING_API ULLL_BaseCharacterAnimInstance : public UAnimInsta
 public:
 	ULLL_BaseCharacterAnimInstance();
 	
-	FORCEINLINE void SetDataAsset(const ULLL_BaseCharacterDataAsset* InCharacterDataAsset) { CharacterDataAsset = InCharacterDataAsset; }
+	FORCEINLINE virtual void SetDataAsset(const ULLL_BaseCharacterDataAsset* InCharacterDataAsset) { CharacterDataAsset = InCharacterDataAsset; }
 
 	void PlayDeadAnimation();
 

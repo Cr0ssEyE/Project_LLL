@@ -43,7 +43,10 @@ public:
 
 	// 캐릭터 상태 설정
 public:
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	
 	virtual void Attack() {}
+	virtual void Damaged() {}
 	virtual void Dead();
 
 	// 상태 체크용 변수
@@ -80,19 +83,19 @@ protected:
 
 	// 이동 관련 변수
 protected:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	float MoveSpeed;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	float AccelerateSpeed;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	float GroundFriction;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	float TurnSpeed;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FVector MoveDirection;
 
 protected:
