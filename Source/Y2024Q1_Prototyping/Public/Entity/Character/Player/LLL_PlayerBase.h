@@ -62,7 +62,7 @@ private:
 	void MoveAction(const FInputActionValue& Value);
 	void DashAction(const FInputActionValue& Value);
 	void AttackAction(const FInputActionValue& Value);
-	void SkillAction(const FInputActionValue& Value);
+	void SkillAction(const FInputActionValue& Value, int32 InputID);
 	void InteractAction(const FInputActionValue& Value);
 	void InteractiveTargetChangeAction(const FInputActionValue& Value);
 	void InventoryAction(const FInputActionValue& Value);

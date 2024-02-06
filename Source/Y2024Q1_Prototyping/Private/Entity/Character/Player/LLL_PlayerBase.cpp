@@ -2,8 +2,11 @@
 
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+
+#include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -79,6 +82,28 @@ void ALLL_PlayerBase::BeginPlay()
 		PlayerAnimInstance->AttackComboCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackComboCheckState);
 		PlayerAnimInstance->AttackHitCheckDelegate.AddUObject(this, &ALLL_PlayerBase::SetAttackHitCheckState);
 	}
+
+	if(IsValid(ASC))
+	{
+		for (const auto BaseAbility : PlayerDataAsset->DefaultGameplayAbility)
+		{
+			if(IsValid(BaseAbility))
+			{
+				FGameplayAbilitySpec AbilitySpec(BaseAbility);
+				ASC->GiveAbility(AbilitySpec);
+			}
+		}
+		
+		for (const auto SkillAbility : PlayerDataAsset->DefaultSkillAbility)
+		{
+			if(IsValid(SkillAbility.Value))
+			{
+				FGameplayAbilitySpec SkillSpec(SkillAbility.Value);
+				SkillSpec.InputID = SkillAbility.Key;
+				ASC->GiveAbility(SkillSpec);
+			}
+		}
+	}
 	
 	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
 }
@@ -130,7 +155,7 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction, 0);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractiveTargetChangeInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractiveTargetChangeAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
@@ -269,10 +294,24 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 	Attack();
 }
 
-void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value)
+void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, int32 InputID)
 {
 	CharacterRotateToCursor();
 	// TODO: 스킬 처리용 가상 함수 만들어서 붙이기
+	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID);
+	if(SkillSpec)
+	{
+		ClearState();
+		SkillSpec->InputPressed = true;
+		if (SkillSpec->IsActive())
+		{
+			ASC->AbilitySpecInputPressed(*SkillSpec);
+		}
+		else
+		{
+			ASC->TryActivateAbility(SkillSpec->Handle);
+		}
+	}
 }
 
 void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)

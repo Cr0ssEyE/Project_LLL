@@ -11,9 +11,10 @@ class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;
 class ULLL_GamePauseWidget;
+class ULLL_PlayerAnimInstance;
 class UInputAction;
 class UInputMappingContext;
-class ULLL_PlayerAnimInstance;
+class UGameplayAbility;
 
 /**
  * 
@@ -39,11 +40,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스테이터스 UI")
 	TSubclassOf<ULLL_PlayerStatusWidget> StatusWidgetClass;
-	
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "기본 돌진속도")
-	float DashSpeed;
-	
+
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV")
 	float CameraFOV;
@@ -53,6 +50,10 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 기울기")
 	float SpringArmAngle;
+	
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "기본 돌진속도")
+	float DashSpeed;
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "돌진 기본 사용 횟수")
@@ -69,6 +70,13 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "상호작용 거리")
 	float InteractionRange;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "기본 게임플레이 어빌리티")
+	TArray<TSubclassOf<UGameplayAbility>> DefaultGameplayAbility;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "기본 스킬")
+	TMap<int32, TSubclassOf<UGameplayAbility>> DefaultSkillAbility;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "키 입력 매핑 IMC")
