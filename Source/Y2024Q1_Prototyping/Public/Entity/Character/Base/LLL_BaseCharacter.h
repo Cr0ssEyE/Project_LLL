@@ -6,16 +6,18 @@
 #include "LLL_BaseCharacterAnimInstance.h"
 #include "DataAsset/LLL_BaseCharacterDataAsset.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
 class UAttributeSet;
 class UAbilitySystemComponent;
+
 DECLARE_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*)
 /**
  * 
  */
 UCLASS()
-class Y2024Q1_PROTOTYPING_API ALLL_BaseCharacter : public ACharacter
+class Y2024Q1_PROTOTYPING_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
