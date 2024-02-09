@@ -112,6 +112,15 @@ void ALLL_BaseCharacter::BeginPlay()
 	if(IsValid(ASC))
 	{
 		ASC->InitAbilityActorInfo(this, this);
+
+		for (const auto BaseAbility : CharacterDataAsset->DefaultGameplayAbility)
+		{
+			if(IsValid(BaseAbility))
+			{
+				FGameplayAbilitySpec AbilitySpec(BaseAbility);
+				ASC->GiveAbility(AbilitySpec);
+			}
+		}
 	}
 }
 

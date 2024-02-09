@@ -28,15 +28,6 @@ void ALLL_MonsterBase::BeginPlay()
 
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
 
-	if(IsValid(ASC))
-	{
-		if(IsValid(MonsterBaseDataAsset->DefaultGameplayAbility_Test))
-		{
-			FGameplayAbilitySpec AbilitySpec(MonsterBaseDataAsset->DefaultGameplayAbility_Test);
-			ASC->GiveAbility(AbilitySpec);
-		}
-	}
-
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -96,7 +87,8 @@ void ALLL_MonsterBase::Attack()
 #endif
 	}*/
 
-	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromClass(MonsterBaseDataAsset->DefaultGameplayAbility_Test);
+	int32 index = FMath::RandRange(0, MonsterBaseDataAsset->DefaultGameplayAbility.Num() - 1);
+	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromClass(MonsterBaseDataAsset->DefaultGameplayAbility[index]);
 	if (SkillSpec)
 	{
 		if (!SkillSpec->IsActive())

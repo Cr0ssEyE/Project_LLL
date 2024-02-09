@@ -28,7 +28,6 @@ public:
 	// 외부 접근용 함수
 public:
 	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
-	FORCEINLINE UAbilitySystemComponent* GetAbilitySystemComponent() const { return ASC; }
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
 	FORCEINLINE float GetOffencePower() const { return OffensePower; }
 	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
@@ -59,13 +58,15 @@ public:
 public:
 	FCharacterDeadDelegate CharacterDeadDelegate;
 
-	// 캐릭터 공용 컴포넌트
+	// GAS
 protected:
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> ASC;
 
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
+
+	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	
 	// 캐릭터 공용 변수
 protected:

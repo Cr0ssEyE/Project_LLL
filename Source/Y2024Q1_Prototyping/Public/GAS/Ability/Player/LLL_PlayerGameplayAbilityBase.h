@@ -14,10 +14,4 @@ class Y2024Q1_PROTOTYPING_API ULLL_PlayerGameplayAbilityBase : public ULLL_Chara
 {
 	GENERATED_BODY()
 	
-public:
-	ULLL_PlayerGameplayAbilityBase();
-
-protected:
-	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
-	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 };

@@ -7,11 +7,6 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-ULLL_PGA_GroundStrike::ULLL_PGA_GroundStrike()
-{
-	
-}
-
 void ULLL_PGA_GroundStrike::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -45,14 +40,4 @@ void ULLL_PGA_GroundStrike::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	}
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-}
-
-void ULLL_PGA_GroundStrike::OnCompleteCallBack()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-}
-
-void ULLL_PGA_GroundStrike::OnInterruptedCallBack()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }

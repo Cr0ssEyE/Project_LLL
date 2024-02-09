@@ -67,7 +67,4 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "기본 게임플레이 어빌리티")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultGameplayAbility;
-
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "기본 게임플레이 어빌리티")
-	TSubclassOf<UGameplayAbility> DefaultGameplayAbility_Test;
 };

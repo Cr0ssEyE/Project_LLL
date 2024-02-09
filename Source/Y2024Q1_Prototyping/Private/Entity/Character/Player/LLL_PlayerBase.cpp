@@ -85,15 +85,6 @@ void ALLL_PlayerBase::BeginPlay()
 
 	if(IsValid(ASC))
 	{
-		for (const auto BaseAbility : PlayerDataAsset->DefaultGameplayAbility)
-		{
-			if(IsValid(BaseAbility))
-			{
-				FGameplayAbilitySpec AbilitySpec(BaseAbility);
-				ASC->GiveAbility(AbilitySpec);
-			}
-		}
-		
 		for (const auto SkillAbility : PlayerDataAsset->DefaultSkillAbility)
 		{
 			if(IsValid(SkillAbility.Value))
@@ -269,7 +260,7 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 	DashDisabledTime = 0;
 
 	GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
-	LaunchCharacter(MoveDirection * (DashSpeed * 1000.f), true, true);
+	LaunchCharacter(GetActorForwardVector() * (DashSpeed * 1000.f), true, true);
 	
 	bIsInvincibleOnDashing = true;
 	if (GetWorldTimerManager().IsTimerActive(DashStateCheckTimerHandle))
