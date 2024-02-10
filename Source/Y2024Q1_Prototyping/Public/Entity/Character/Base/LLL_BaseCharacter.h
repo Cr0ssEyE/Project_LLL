@@ -28,6 +28,7 @@ public:
 	// 외부 접근용 함수
 public:
 	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
+	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
 	FORCEINLINE float GetOffencePower() const { return OffensePower; }
 	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
@@ -39,8 +40,7 @@ protected:
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
 	// 캐릭터 상태 설정
 public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -58,15 +58,10 @@ public:
 public:
 	FCharacterDeadDelegate CharacterDeadDelegate;
 
-	// GAS
+	// GAS 변수
 protected:
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> ASC;
-
-	UPROPERTY()
-	TObjectPtr<UAttributeSet> AttributeSet;
-
-	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	
 	// 캐릭터 공용 변수
 protected:

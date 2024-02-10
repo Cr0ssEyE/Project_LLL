@@ -55,6 +55,9 @@ protected:
 	TObjectPtr<ULLL_PlayerUIManager> PlayerUIManager;
 
 	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAttributeSet> PlayerAttributeSet;
+	
+	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerWeaponComponent> PlayerWeaponComponent;
 	
 	// 입력 액션 관련
