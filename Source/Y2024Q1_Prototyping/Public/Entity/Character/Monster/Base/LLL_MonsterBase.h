@@ -7,6 +7,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_MonsterBase.generated.h"
 
+class ULLL_MonsterAttributeSet;
 /**
  * 
  */
@@ -36,6 +37,9 @@ public:
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<ULLL_MonsterAttributeSet> MonsterAttributeSet;
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	float DetectDistance;

@@ -14,9 +14,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Ability/Monster/LLL_MGA_GroundStrike.h"
 #include "GAS/Ability/Monster/LLL_MonsterGameplayAbilityBase.h"
+#include "GAS/Attribute/Monster/LLL_MonsterAttributeSet.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
+	MonsterAttributeSet = CreateDefaultSubobject<ULLL_MonsterAttributeSet>(TEXT("MonsterAttributes"));
+	
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -27,6 +30,11 @@ void ALLL_MonsterBase::BeginPlay()
 	Super::BeginPlay();
 
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
+
+	if (IsValid(ASC))
+	{
+		ASC->AddSpawnedAttribute(MonsterAttributeSet);
+	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -71,29 +79,24 @@ void ALLL_MonsterBase::Attack()
 {
 	Super::Attack();
 
-	/*ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(MonsterBaseAnimInstance))
-	{
-		MonsterBaseAnimInstance->PlayAttackAnimation();
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
-			}
-		}
-#endif
-	}*/
-
 	int32 index = FMath::RandRange(0, MonsterBaseDataAsset->DefaultGameplayAbility.Num() - 1);
 	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromClass(MonsterBaseDataAsset->DefaultGameplayAbility[index]);
 	if (SkillSpec)
 	{
 		if (!SkillSpec->IsActive())
 		{
-			ASC->TryActivateAbility(SkillSpec->Handle);
+			if (ASC->TryActivateAbility(SkillSpec->Handle))
+			{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+				if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+				{
+					if (ProtoGameInstance->CheckMonsterAttackDebug())
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
+					}
+				}
+#endif
+			}
 		}
 	}
 }
