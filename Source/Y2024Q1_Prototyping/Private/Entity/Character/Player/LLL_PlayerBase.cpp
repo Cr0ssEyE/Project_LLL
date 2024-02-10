@@ -4,6 +4,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameplayAbilitySpec.h"
@@ -14,14 +15,12 @@
 #include "Constant/LLL_MonatgeSectionName.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "DataAsset/LLL_WeaponBaseDataAsset.h"
-#include "Engine/DamageEvents.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerWeaponComponent.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 #include "Game/ProtoGameInstance.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
@@ -215,12 +214,11 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	}
 	
 	MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
-
 	if (bIsAttackActionOnGoing)
 	{
 		return;
 	}
- 	if (GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+ 	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(PlayerDataAsset->AttackAnimMontage))
 	{
 		GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
 		ClearState();

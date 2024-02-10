@@ -24,25 +24,23 @@ protected:
 
 protected:
 	void DashActionEvent();
-	void StartDashInputCheck();
+	void StartDashInputDelay();
+	void EndDashInputDelay();
 	
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, DisplayName = "대쉬 애님 몽타주")
 	TObjectPtr<UAnimMontage> DashAnimMontage;
-
-	UPROPERTY(EditAnywhere)
-	float DashInputCheckTime = 0.f;
-
-	UPROPERTY(EditAnywhere)
-	float DashInputCheckDelay = 0.f;
 	
-	FTimerHandle DashInputTimerHandle;
+	UPROPERTY(EditAnywhere, DisplayName = "대쉬 연속 사용 제한시간")
+	float DashInputCheckTime = 0.f;
+	
+	FTimerHandle DashInputDelayHandle;
 	
 	uint32 CurrentDashCount;
 
 	uint32 MaxDashCount;
 
 	uint32 DashSpeed;
-	
-	uint8 bIsInputPressed : 1;
+
+	uint32 bIsInputPressed : 1;
 };

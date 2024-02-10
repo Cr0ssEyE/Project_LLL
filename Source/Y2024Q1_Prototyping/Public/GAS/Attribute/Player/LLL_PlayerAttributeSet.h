@@ -16,16 +16,12 @@ class Y2024Q1_PROTOTYPING_API ULLL_PlayerAttributeSet : public ULLL_CharacterAtt
 
 public:
 	ULLL_PlayerAttributeSet();
-
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, CurrentDashCount);
+	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxDashCount);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, DashSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, DashInvincibleTime);
 	
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData CurrentDashCount;
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxDashCount;
 

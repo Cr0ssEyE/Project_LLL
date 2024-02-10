@@ -14,20 +14,15 @@ ULLL_PGA_Dash::ULLL_PGA_Dash()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	CurrentDashCount = 0;
-	bIsInputPressed = false;
 }
 
 void ULLL_PGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, FName(TEXT("DashMontage")), DashAnimMontage);
-	MontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_Dash::OnCompleteCallBack);
-	MontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_Dash::OnInterruptedCallBack);
-	MontageTask->ReadyForActivation();
-
-	ALLL_PlayerBase * PlayerCharacter = Cast<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	const ULLL_PlayerAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
+	
+	// ASC에 등록된 어트리뷰트 가져오고 GA에서 필요한 어트리뷰트 저장하기
+	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	const ULLL_PlayerAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
 	if(IsValid(PlayerCharacter) && IsValid(PlayerAttributeSet))
 	{
 		DashSpeed = PlayerAttributeSet->GetDashSpeed();
@@ -35,59 +30,56 @@ void ULLL_PGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	}
 	bIsInputPressed = true;
 	DashActionEvent();
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("대쉬 발동 %f"), PlayerAttributeSet->GetCurrentHealth()));
 }
 
 void ULLL_PGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	ALLL_PlayerBase * PlayerCharacter = Cast<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	if(IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 	}
 	CurrentDashCount = 0;
-	bIsInputPressed = false;
-	DashInputTimerHandle.Invalidate();
+	DashInputDelayHandle.Invalidate();
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void ULLL_PGA_Dash::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo)
+void ULLL_PGA_Dash::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
 	Super::InputPressed(Handle, ActorInfo, ActivationInfo);
-	if(DashInputTimerHandle.IsValid())
-	{
-		bIsInputPressed = false;
-	}
-	else
+	if(DashInputDelayHandle.IsValid())
 	{
 		bIsInputPressed = true;
+		DashActionEvent();
 	}
 }
 
 void ULLL_PGA_Dash::DashActionEvent()
 {
-	DashInputTimerHandle.Invalidate();
-	ALLL_PlayerBase * PlayerCharacter = Cast<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	const ULLL_PlayerAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
+	DashInputDelayHandle.Invalidate();
+	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	const ULLL_PlayerAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
 	
 	if(IsValid(PlayerCharacter) && IsValid(PlayerAttributeSet) && bIsInputPressed && CurrentDashCount < MaxDashCount)
 	{
 		CurrentDashCount++;
-		DashSpeed = PlayerAttributeSet->GetDashSpeed();
-		MaxDashCount = PlayerAttributeSet->GetMaxDashCount();
 		PlayerCharacter->LaunchCharacter(PlayerCharacter->GetActorForwardVector() * (DashSpeed * 1000.f), true, true);
 		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
-		StartDashInputCheck();
-		MontageJumpToSection(SECTION_DASH);
-		
+		PlayerCharacter->StopAnimMontage(DashAnimMontage);
+		PlayerCharacter->PlayAnimMontage(DashAnimMontage);
+		StartDashInputDelay();
 		bIsInputPressed = false;
 	}
 }
 
-void ULLL_PGA_Dash::StartDashInputCheck()
+void ULLL_PGA_Dash::StartDashInputDelay()
 {
-	if(CurrentDashCount < MaxDashCount)
-	{
-		GetWorld()->GetTimerManager().SetTimer(DashInputTimerHandle, this , &ULLL_PGA_Dash::DashActionEvent, DashInputCheckTime, false, DashInputCheckDelay);
-	}
+	GetWorld()->GetTimerManager().SetTimer(DashInputDelayHandle, this, &ULLL_PGA_Dash::EndDashInputDelay, DashInputCheckTime, false);
+}
+
+void ULLL_PGA_Dash::EndDashInputDelay()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("대쉬 어빌리티 종료")));
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
