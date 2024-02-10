@@ -23,6 +23,7 @@
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLLConstructorHelper.h"
 
@@ -32,6 +33,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	PlayerWeaponComponent = CreateDefaultSubobject<ULLL_PlayerWeaponComponent>(TEXT("PlayerWeaponComponent"));
+	PlayerAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
 
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
@@ -90,9 +92,17 @@ void ALLL_PlayerBase::BeginPlay()
 			if(IsValid(SkillAbility.Value))
 			{
 				FGameplayAbilitySpec SkillSpec(SkillAbility.Value);
-				SkillSpec.InputID = SkillAbility.Key;
+				SkillSpec.InputID = static_cast<int32>(SkillAbility.Key);
 				ASC->GiveAbility(SkillSpec);
 			}
+		}
+		ASC->AddSpawnedAttribute(PlayerAttributeSet);
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->InitEffect, 1.0, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 	}
 	
@@ -145,8 +155,8 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction, 0);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction, EAbilityInputName::Skill);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractiveTargetChangeInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractiveTargetChangeAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
@@ -230,7 +240,7 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 #endif
 }
 
-void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
+void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
 	if (DashDisabledTime > 0 || CurrentDashCount >= MaxDashCount || bIsAttackHitCheckOnGoing)
 	{
@@ -254,20 +264,36 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value)
 	}
 	
 	ClearState();
-	
-	CurrentDashCount++;
-	DashElapsedTime = 0;
-	DashDisabledTime = 0;
 
-	GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
-	LaunchCharacter(GetActorForwardVector() * (DashSpeed * 1000.f), true, true);
-	
-	bIsInvincibleOnDashing = true;
-	if (GetWorldTimerManager().IsTimerActive(DashStateCheckTimerHandle))
+	int32 InputID = static_cast<int32>(InputName);
+	FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID);
+	if(DashSpec)
 	{
-		GetWorldTimerManager().ClearTimer(DashStateCheckTimerHandle);
+		ClearState();
+		DashSpec->InputPressed = true;
+		if (DashSpec->IsActive())
+		{
+			ASC->AbilitySpecInputPressed(*DashSpec);
+		}
+		else
+		{
+			ASC->TryActivateAbility(DashSpec->Handle);
+		}
 	}
-	GetWorldTimerManager().SetTimer(DashStateCheckTimerHandle, this, &ALLL_PlayerBase::CheckDashElapsedTime, 0.01f, true);
+	
+	// CurrentDashCount++;
+	// DashElapsedTime = 0;
+	// DashDisabledTime = 0;
+	// 
+	// GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
+	// LaunchCharacter(GetActorForwardVector() * (DashSpeed * 1000.f), true, true);
+	// 
+	// bIsInvincibleOnDashing = true;
+	// if (GetWorldTimerManager().IsTimerActive(DashStateCheckTimerHandle))
+	// {
+	// 	GetWorldTimerManager().ClearTimer(DashStateCheckTimerHandle);
+	// }
+	// GetWorldTimerManager().SetTimer(DashStateCheckTimerHandle, this, &ALLL_PlayerBase::CheckDashElapsedTime, 0.01f, true);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -285,10 +311,11 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
 	Attack();
 }
 
-void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, int32 InputID)
+void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
 	CharacterRotateToCursor();
 	// TODO: 스킬 처리용 가상 함수 만들어서 붙이기
+	int32 InputID = static_cast<int32>(InputName);
 	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID);
 	if(SkillSpec)
 	{

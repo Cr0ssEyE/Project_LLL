@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "LLL_PlayerAnimInstance.h"
+#include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ULLL_PlayerAttributeSet;
 class ULLL_PlayerWeaponComponent;
 class ULLL_PlayerAnimInstance;
 class ALLL_InteractiveObject;
@@ -15,7 +17,7 @@ class ULLL_PlayerUIManager;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
-class ULLL_PlayerBaseDataAsset;
+
 /**
  * 
  */
@@ -55,7 +57,7 @@ protected:
 	TObjectPtr<ULLL_PlayerUIManager> PlayerUIManager;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UAttributeSet> PlayerAttributeSet;
+	TObjectPtr<ULLL_PlayerAttributeSet> PlayerAttributeSet;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerWeaponComponent> PlayerWeaponComponent;
@@ -63,9 +65,9 @@ protected:
 	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);
-	void DashAction(const FInputActionValue& Value);
+	void DashAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void AttackAction(const FInputActionValue& Value);
-	void SkillAction(const FInputActionValue& Value, int32 InputID);
+	void SkillAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void InteractAction(const FInputActionValue& Value);
 	void InteractiveTargetChangeAction(const FInputActionValue& Value);
 	void InventoryAction(const FInputActionValue& Value);

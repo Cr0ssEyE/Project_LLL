@@ -6,6 +6,7 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+class UGameplayEffect;
 class ULLL_WeaponBaseDataAsset;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
@@ -15,6 +16,14 @@ class ULLL_PlayerAnimInstance;
 class UInputAction;
 class UInputMappingContext;
 class UGameplayAbility;
+
+UENUM()
+enum class EAbilityInputName
+{
+	Attack,
+	Skill,
+	Dash
+};
 
 /**
  * 
@@ -72,8 +81,11 @@ public:
 	float InteractionRange;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "기본 스킬")
-	TMap<int32, TSubclassOf<UGameplayAbility>> DefaultSkillAbility;
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
+	TSubclassOf<UGameplayEffect> InitEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "입력 어빌리티")
+	TMap<EAbilityInputName, TSubclassOf<UGameplayAbility>> DefaultSkillAbility;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "키 입력 매핑 IMC")
