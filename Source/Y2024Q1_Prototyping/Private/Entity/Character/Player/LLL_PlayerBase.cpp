@@ -71,6 +71,7 @@ void ALLL_PlayerBase::BeginPlay()
 				ASC->GiveAbility(SkillSpec);
 			}
 		}
+		// GE 기반으로 자신의 어트리뷰트 초기화
 		ASC->AddSpawnedAttribute(PlayerAttributeSet);
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);

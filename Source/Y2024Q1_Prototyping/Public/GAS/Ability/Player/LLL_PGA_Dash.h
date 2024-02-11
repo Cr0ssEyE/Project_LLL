@@ -33,6 +33,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, DisplayName = "대쉬 연속 사용 제한시간")
 	float DashInputCheckTime = 0.f;
+
+	UPROPERTY(EditAnywhere, DisplayName = "대쉬 연속 사용 딜레이")
+	float DashReActionTime = 0.f;
 	
 	FTimerHandle WaitInputTimerHandle;
 	
