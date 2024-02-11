@@ -59,24 +59,8 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 기울기")
 	float SpringArmAngle;
-	
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "기본 돌진속도")
-	float DashSpeed;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "돌진 기본 사용 횟수")
-	uint32 DashBaseCount;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "돌진 연속사용 입력체크 유지 시간")
-	float DashInputCheckTime;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "돌진 재사용 대기 시간")
-	float DashBaseCoolDownSeconds;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "돌진 기본 무적 시간")
-	float DashBaseInvincibleTime;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "상호작용 거리")
 	float InteractionRange;
 

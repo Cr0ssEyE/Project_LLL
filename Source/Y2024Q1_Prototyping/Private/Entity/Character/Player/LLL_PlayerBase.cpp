@@ -38,8 +38,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
 	if (IsValid(CharacterDataAsset))
 	{
-		DashSpeed = PlayerDataAsset->DashSpeed;
-		
 		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 		
 		Camera->SetFieldOfView(PlayerDataAsset->CameraFOV);
@@ -54,12 +52,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		SpringArm->bInheritYaw = false;
 		SpringArm->bInheritRoll = false;
 		SpringArm->SetupAttachment(RootComponent);
-		
-		MaxDashCount = PlayerDataAsset->DashBaseCount;
-		DashInputCheckTime = PlayerDataAsset->DashInputCheckTime;
-		DashCoolDownSeconds = PlayerDataAsset->DashBaseCoolDownSeconds;
-		DashInvincibleTime = PlayerDataAsset->DashBaseInvincibleTime;
-		
+
 		if(IsValid(PlayerDataAsset->DefaultWeaponBaseDataAsset))
 		{
 			PlayerWeaponComponent->SetupWeaponInfo(PlayerDataAsset->DefaultWeaponBaseDataAsset);
@@ -129,12 +122,8 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 
 float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	// 무적 또는 데미지 처리 무시는 해당 구문에서 추가
-	if (bIsInvincibleOnDashing)
-	{
-		return 0;
-	};
-
+	// TODO: TakeDamage 처리 여부 생각하기
+	
 	const float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
 	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
@@ -240,29 +229,6 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	if (DashDisabledTime > 0 || CurrentDashCount >= MaxDashCount || bIsAttackHitCheckOnGoing)
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if(ProtoGameInstance->CheckPlayerDashDebug())
-			{
-				if(CurrentDashCount >= MaxDashCount)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 횟수 사용 후 입력. 현재 사용 횟수|최대 사용 횟수 : %d, %d"), CurrentDashCount, MaxDashCount));
-				}
-				else if(DashDisabledTime > 0)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 대기시간 도중 입력. 현재 남은 대기시간 : %f"), DashCoolDownSeconds - DashDisabledTime));
-				}
-			}
-		}
-#endif
-		return;
-	}
-	
-	ClearState();
-
 	int32 InputID = static_cast<int32>(InputName);
 	FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID);
 	if(DashSpec)
@@ -278,30 +244,6 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputNa
 			ASC->TryActivateAbility(DashSpec->Handle);
 		}
 	}
-	
-	// CurrentDashCount++;
-	// DashElapsedTime = 0;
-	// DashDisabledTime = 0;
-	// 
-	// GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
-	// LaunchCharacter(GetActorForwardVector() * (DashSpeed * 1000.f), true, true);
-	// 
-	// bIsInvincibleOnDashing = true;
-	// if (GetWorldTimerManager().IsTimerActive(DashStateCheckTimerHandle))
-	// {
-	// 	GetWorldTimerManager().ClearTimer(DashStateCheckTimerHandle);
-	// }
-	// GetWorldTimerManager().SetTimer(DashStateCheckTimerHandle, this, &ALLL_PlayerBase::CheckDashElapsedTime, 0.01f, true);
-	
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-	{
-		if (ProtoGameInstance->CheckPlayerDashDebug())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 입력. 현재 사용 횟수|최대 사용 횟수 : %d, %d"), CurrentDashCount, MaxDashCount));
-		}
-	}
-#endif
 }
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value)
@@ -451,69 +393,11 @@ void ALLL_PlayerBase::AttackSequence()
 	CharacterAnimInstance->Montage_JumpToSection(*FString(SECTION_ATTACK).Append(FString::FromInt(CurrentComboActionCount)));
 }
 
-void ALLL_PlayerBase::CheckDashElapsedTime()
-{
-	DashElapsedTime += GetWorld()->DeltaTimeSeconds;
-	if (DashElapsedTime >= DashInvincibleTime && bIsInvincibleOnDashing)
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if(ProtoGameInstance->CheckPlayerDashDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 무적시간 종료")));
-			}
-		}
-#endif
-		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
-		bIsInvincibleOnDashing = false;
-	}
-
-	if (DashElapsedTime >= DashInputCheckTime)
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckPlayerDashDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 연속사용 입력대기 종료")));
-			}
-		}
-#endif
-		
-		CurrentDashCount = 0;
-		GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashDelay);
-		GetWorldTimerManager().ClearTimer(DashStateCheckTimerHandle);
-	}
-}
-
-void ALLL_PlayerBase::CheckDashDelay()
-{
-	DashDisabledTime += GetWorld()->DeltaTimeSeconds;
-	if (DashDisabledTime >= DashCoolDownSeconds || bIsInvincibleOnDashing)
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckPlayerDashDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("돌진 재사용 대기시간 종료")));
-			}
-		}
-#endif
-		
-		DashDisabledTime = 0.f;
-		return;
-	}
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::CheckDashDelay);
-}
-
 void ALLL_PlayerBase::ClearState()
 {
 	bIsAttackActionOnGoing = false;
 	bIsAttackHitCheckOnGoing = false;
 	bCheckAttackComboActionInput = false;
-	bIsInvincibleOnDashing = false;
 
 	SetAttackHitCheckState(false);
 }

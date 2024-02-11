@@ -79,12 +79,7 @@ private:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerBaseDataAsset> PlayerDataAsset;
-
-	// 이동 관련 변수
-private:
-	UPROPERTY()
-	float DashSpeed;
-
+	
 	// 공격 관련 함수
 private:
 	void SetAttackComboCheckState(bool Value);
@@ -103,34 +98,7 @@ private:
 	uint8 bIsAttackHitCheckOnGoing : 1;
 
 	uint8 bIsAttackActionOnGoing : 1;
-	
-	// 돌진 관련 함수
-private:
-	void CheckDashElapsedTime();
-	void CheckDashDelay();
-	
-	// 돌진 관련 변수
-private:
-	FTimerHandle DashStateCheckTimerHandle;
 
-	UPROPERTY(VisibleDefaultsOnly)
-	uint32 MaxDashCount;
-
-	UPROPERTY()
-	uint32 CurrentDashCount;
-	
-	float DashInputCheckTime;
-	
-	float DashCoolDownSeconds;
-	
-	float DashInvincibleTime;
-	
-	float DashDisabledTime;
-	
-	float DashElapsedTime;
-
-	uint8 bIsInvincibleOnDashing : 1;
-	
 	// 상호작용 관련 변수
 private:
 	UPROPERTY()
