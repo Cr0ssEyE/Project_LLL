@@ -186,11 +186,6 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	}
 	
 	MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
- 	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(PlayerDataAsset->AttackAnimMontage))
-	{
-		GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
-	}
-	
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	AddMovementInput(MoveDirection, 1.f);
 
