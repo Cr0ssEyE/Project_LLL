@@ -17,7 +17,7 @@ public:
 	ALLL_TA_TraceBase();
 
 	void SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes = ESelectShapeTypes::Box, FVector Extents = FVector::ZeroVector);
-	void SetSphereTraceInfo(const ESelectTraceTarget NewTraceTarget, float Radius = 0.0f);
+	void SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes = ESelectShapeTypes::Capsule, FVector2D Radius = FVector2D::ZeroVector);
 	virtual void StartTargeting(UGameplayAbility* Ability) override;
 	virtual void ConfirmTargetingAndContinue() override;
 
@@ -41,10 +41,10 @@ protected:
 	FVector BoxExtents;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Shape", meta=(EditCondition = "BaseShape == ESelectShapeTypes::Capsule", EditConditionHides))
-	FVector CapsuleExtents;
+	FVector2D CapsuleExtents;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Shape", meta=(EditCondition = "BaseShape == ESelectShapeTypes::Sphere", EditConditionHides))
-	float SphereRadius;
+	FVector2D SphereExtents;
 
 	mutable FCollisionShape TraceShape;
 	

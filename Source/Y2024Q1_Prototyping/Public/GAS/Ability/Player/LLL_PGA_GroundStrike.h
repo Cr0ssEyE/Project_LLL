@@ -13,6 +13,9 @@ UCLASS()
 class Y2024Q1_PROTOTYPING_API ULLL_PGA_GroundStrike : public ULLL_PlayerGameplayAbilityBase
 {
 	GENERATED_BODY()
+
+public:
+	ULLL_PGA_GroundStrike();
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;

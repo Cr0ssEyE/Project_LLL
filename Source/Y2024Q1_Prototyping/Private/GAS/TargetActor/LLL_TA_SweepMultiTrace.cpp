@@ -5,6 +5,8 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Engine/DamageEvents.h"
+#include "Game/ProtoGameInstance.h"
+#include "Util/LLL_DebugDrawHelper.h"
 
 // Sets default values
 ALLL_TA_SweepMultiTrace::ALLL_TA_SweepMultiTrace()
@@ -49,7 +51,22 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 		TraceShape,
 		Params);
 
-	DrawDebugBox(GetWorld(), SweepStartLocation, TraceShape.GetExtent(), FColor::Blue, false, 2.f);
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+		{
+			if(Results.IsEmpty())
+			{
+				FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepStartLocation, FColor::Blue, 2.f, BoxExtents, CapsuleExtents, SphereExtents);
+			}
+			else
+			{
+				FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepStartLocation, FColor::Red, 2.f, BoxExtents, CapsuleExtents, SphereExtents);
+			}
+		}
+	}
+#endif
 	
 	TArray<TWeakObjectPtr<AActor>> HitActors;
 	if(!Results.IsEmpty())
