@@ -24,8 +24,8 @@ protected:
 
 protected:
 	void DashActionEvent();
-	void StartDashInputDelay();
-	void EndDashInputDelay();
+	void StartDashInputWait();
+	void EndDashInputWait();
 	
 protected:
 	UPROPERTY(EditAnywhere, DisplayName = "대쉬 애님 몽타주")
@@ -34,7 +34,7 @@ protected:
 	UPROPERTY(EditAnywhere, DisplayName = "대쉬 연속 사용 제한시간")
 	float DashInputCheckTime = 0.f;
 	
-	FTimerHandle DashInputDelayHandle;
+	FTimerHandle WaitInputTimerHandle;
 	
 	uint32 CurrentDashCount;
 

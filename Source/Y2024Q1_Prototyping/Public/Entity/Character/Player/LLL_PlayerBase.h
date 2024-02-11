@@ -58,15 +58,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerAttributeSet> PlayerAttributeSet;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerWeaponComponent> PlayerWeaponComponent;
-	
+
 	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);
 	void DashAction(const FInputActionValue& Value, EAbilityInputName InputName);
-	void AttackAction(const FInputActionValue& Value);
+	void AttackAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void SkillAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void InteractAction(const FInputActionValue& Value);
 	void InteractiveTargetChangeAction(const FInputActionValue& Value);
@@ -80,25 +77,6 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerBaseDataAsset> PlayerDataAsset;
 	
-	// 공격 관련 함수
-private:
-	void SetAttackComboCheckState(bool Value);
-	void SetAttackHitCheckState(bool Value);
-	void AttackSequence();
-	
-	// 공격 관련 변수
-private:
-	uint32 CurrentComboActionCount;
-
-	// 임시 변수
-	uint32 MaxComboActionCount;
-	
-	uint8 bCheckAttackComboActionInput : 1;
-
-	uint8 bIsAttackHitCheckOnGoing : 1;
-
-	uint8 bIsAttackActionOnGoing : 1;
-
 	// 상호작용 관련 변수
 private:
 	UPROPERTY()
@@ -115,9 +93,5 @@ protected:
 	virtual void Dead() override;
 	virtual void DeadMontageEndEvent() override;
 	virtual void Attack() override;
-	
-	// 모션 캔슬시 사용 목적 함수
-private:
-	void ClearState();
 	
 };

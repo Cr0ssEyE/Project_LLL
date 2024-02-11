@@ -21,9 +21,25 @@ protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
+
+protected:
+	void SetNextAttackAction();
+	void StartAttackInputWait();
+	void EndAttackInputWait();
 	
 protected:
 	UPROPERTY(EditAnywhere, DisplayName = "공격 애님 몽타주")
 	TObjectPtr<UAnimMontage> AttackAnimMontage;
+
+	FTimerHandle WaitInputTimerHandle;
+
+	float ComboActionIntervalTime;
+
+	float ComboActionInputDelayTime;
 	
+	uint32 CurrentComboAction;
+
+	uint32 MaxComboAction;
+	
+	uint8 bIsInputPressed : 1;
 };
