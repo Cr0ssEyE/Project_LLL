@@ -14,8 +14,8 @@ ULLL_PGA_AttackBase::ULLL_PGA_AttackBase()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	CurrentComboAction = 0;
-	ComboActionIntervalTime = 0.f;
-	ComboActionInputDelayTime = 0.f;
+	AttackActionIntervalTime = 0.f;
+	AttackActionInputDelayTime = 0.f;
 	bIsInputPressed = false;
 }
 
@@ -37,9 +37,9 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const ULLL_PlayerAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
 	if(IsValid(PlayerCharacter) && IsValid(PlayerAttributeSet) && IsValid(AttackAnimMontage))
 	{
-		MaxComboAction = PlayerAttributeSet->GetMaxComboAction();
-		ComboActionIntervalTime = PlayerAttributeSet->GetComboActionIntervalTime();
-		ComboActionInputDelayTime = PlayerAttributeSet->GetComboActionInputDelayTime();
+		MaxAttackAction = PlayerAttributeSet->GetMaxAttackAction();
+		AttackActionIntervalTime = PlayerAttributeSet->GetAttackActionIntervalTime();
+		AttackActionInputDelayTime = PlayerAttributeSet->GetAttackActionInputDelayTime();
 		PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	}
 	else
@@ -91,7 +91,7 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 {
 	Super::InputPressed(Handle, ActorInfo, ActivationInfo);
 	float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(WaitInputTimerHandle);
-	if(CurrentComboAction < MaxComboAction && ElapsedTime > ComboActionInputDelayTime)
+	if(CurrentComboAction < MaxAttackAction && ElapsedTime > AttackActionInputDelayTime)
 	{
 		bIsInputPressed = true;
 		SetNextAttackAction();
@@ -113,7 +113,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
 	WaitInputTimerHandle.Invalidate();
 	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	if(IsValid(PlayerCharacter) && bIsInputPressed && CurrentComboAction < MaxComboAction)
+	if(IsValid(PlayerCharacter) && bIsInputPressed && CurrentComboAction < MaxAttackAction)
 	{
 		MontageJumpToSection(*FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 		StartAttackInputWait();
@@ -133,7 +133,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 
 void ULLL_PGA_AttackBase::StartAttackInputWait()
 {
-	GetWorld()->GetTimerManager().SetTimer(WaitInputTimerHandle, this, &ULLL_PGA_AttackBase::EndAttackInputWait, ComboActionIntervalTime);
+	GetWorld()->GetTimerManager().SetTimer(WaitInputTimerHandle, this, &ULLL_PGA_AttackBase::EndAttackInputWait, AttackActionIntervalTime);
 }
 
 void ULLL_PGA_AttackBase::EndAttackInputWait()

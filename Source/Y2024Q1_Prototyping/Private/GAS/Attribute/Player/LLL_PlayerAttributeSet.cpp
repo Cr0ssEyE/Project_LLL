@@ -3,6 +3,8 @@
 
 #include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 
+#include "GameplayEffectExtension.h"
+
 ULLL_PlayerAttributeSet::ULLL_PlayerAttributeSet()
 {
 	

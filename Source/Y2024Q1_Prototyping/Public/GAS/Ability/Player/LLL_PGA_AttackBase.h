@@ -33,13 +33,13 @@ protected:
 
 	FTimerHandle WaitInputTimerHandle;
 
-	float ComboActionIntervalTime;
+	float AttackActionIntervalTime;
 
-	float ComboActionInputDelayTime;
+	float AttackActionInputDelayTime;
 	
 	uint32 CurrentComboAction;
 
-	uint32 MaxComboAction;
+	uint32 MaxAttackAction;
 	
 	uint8 bIsInputPressed : 1;
 };

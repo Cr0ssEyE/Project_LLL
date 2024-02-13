@@ -17,23 +17,29 @@ class Y2024Q1_PROTOTYPING_API ULLL_PlayerAttributeSet : public ULLL_CharacterAtt
 public:
 	ULLL_PlayerAttributeSet();
 
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxComboAction);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, ComboActionIntervalTime);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, ComboActionInputDelayTime);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxAttackAction);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, AttackActionIntervalTime);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, AttackActionInputDelayTime);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxDashCount);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, DashSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, DashInvincibleTime);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, CurrentComboCount);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxComboCount);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, ComboStackDuration);
 	
+	// 일반 공격 관련
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MaxComboAction;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData ComboActionIntervalTime;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData ComboActionInputDelayTime;
+	FGameplayAttributeData MaxAttackAction;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData AttackActionIntervalTime;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData AttackActionInputDelayTime;
+
+	// 대쉬 관련
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxDashCount;
 
@@ -42,5 +48,17 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DashInvincibleTime;
+
+	// 콤보 관련
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData CurrentComboCount;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MaxComboCount;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ComboStackDuration;
+
 	
 };
