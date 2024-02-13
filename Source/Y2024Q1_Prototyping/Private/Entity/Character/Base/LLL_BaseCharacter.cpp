@@ -106,11 +106,20 @@ void ALLL_BaseCharacter::BeginPlay()
 	{
 		ASC->InitAbilityActorInfo(this, this);
 
-		for (const auto BaseAbility : CharacterDataAsset->DefaultGameplayAbility)
+		for (const auto ActiveAbility : CharacterDataAsset->ActiveGameplayAbility)
 		{
-			if(IsValid(BaseAbility))
+			if(IsValid(ActiveAbility))
 			{
-				FGameplayAbilitySpec AbilitySpec(BaseAbility);
+				FGameplayAbilitySpec AbilitySpec(ActiveAbility);
+				ASC->GiveAbility(AbilitySpec);
+			}
+		}
+		
+		for (const auto PassiveAbility : CharacterDataAsset->PassiveGameplayAbility)
+		{
+			if(IsValid(PassiveAbility))
+			{
+				FGameplayAbilitySpec AbilitySpec(PassiveAbility);
 				ASC->GiveAbility(AbilitySpec);
 			}
 		}

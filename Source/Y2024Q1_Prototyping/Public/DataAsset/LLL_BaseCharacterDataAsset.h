@@ -65,6 +65,9 @@ public:
 	float AttackRadius;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "기본 게임플레이 어빌리티")
-	TArray<TSubclassOf<UGameplayAbility>> DefaultGameplayAbility;
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "발동형 게임플레이 어빌리티")
+	TArray<TSubclassOf<UGameplayAbility>> ActiveGameplayAbility;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "수동형 게임플레이 어빌리티")
+	TArray<TSubclassOf<UGameplayAbility>> PassiveGameplayAbility;
 };
