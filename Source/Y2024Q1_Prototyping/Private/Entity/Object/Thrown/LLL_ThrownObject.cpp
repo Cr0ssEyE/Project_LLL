@@ -54,7 +54,7 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	{
 		if (ALLL_RangedMonster* RangedMonster = Cast<ALLL_RangedMonster>(GetOwner()))
 		{
-			const float OffencePower = RangedMonster->GetOffencePower();
+			const float OffencePower = 10.0f;
 			const FDamageEvent DamageEvent;
 			Player->TakeDamage(OffencePower, DamageEvent, RangedMonster->GetController(), RangedMonster);
 

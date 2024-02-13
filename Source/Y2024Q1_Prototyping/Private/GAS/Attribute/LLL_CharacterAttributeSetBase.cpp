@@ -4,6 +4,7 @@
 #include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
 
 #include "GameplayEffectExtension.h"
+#include "Entity/Character/Base/LLL_BaseCharacter.h"
 
 ULLL_CharacterAttributeSetBase::ULLL_CharacterAttributeSetBase()
 {
@@ -37,5 +38,27 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
 		}
 		SetReceiveDamage(0.f);
+
+		if(GetCurrentShield() > 0)
+		{
+			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
+		}
+		else
+		{
+			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+
+			ALLL_BaseCharacter* Character = Cast<ALLL_BaseCharacter>(GetOwningActor());
+			if (IsValid(Character))
+			{
+				if(GetCurrentHealth() == 0)
+				{
+					Character->Dead();
+				}
+				else
+				{
+					Character->Damaged();
+				}
+			}
+		}
 	}
 }

@@ -29,10 +29,10 @@ protected:
 	ESelectTraceTarget TraceTarget;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Trace")
-	FVector TraceStartLocation = FVector::OneVector;
+	FVector TraceStartLocation = FVector::ZeroVector;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Trace")
-	FVector TraceEndLocation = FVector::OneVector;
+	FVector TraceEndLocation = FVector::ZeroVector;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Shape")
 	ESelectShapeTypes BaseShape;
