@@ -33,9 +33,9 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 		// 맞은 액터 갯수만큼 콤보 수 증가
 		float Magnitude = TargetDataHandle.Data[0]->GetActors().Num();
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ComboStackEffect, CurrentLevel);
-		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_COMBO_ADDITIVE, Magnitude);
 		if (EffectSpecHandle.IsValid())
 		{
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_COMBO_ADDITIVE, Magnitude);
 			ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
 		}
 		

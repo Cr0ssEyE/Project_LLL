@@ -3,6 +3,7 @@
 
 #include "GAS/Ability/Player/LLL_PGA_ComboManagement.h"
 
+#include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 
 ULLL_PGA_ComboManagement::ULLL_PGA_ComboManagement()
@@ -14,8 +15,18 @@ ULLL_PGA_ComboManagement::ULLL_PGA_ComboManagement()
 void ULLL_PGA_ComboManagement::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	PlayerAttributes = CastChecked<ULLL_PlayerAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
 
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("콤보 관리 어빌리티 발동")));
+		}
+	}
+#endif
+	
+	PlayerAttributes = CastChecked<ULLL_PlayerAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
 	if(IsValid(PlayerAttributes))
 	{
 		CurrentComboCount = 0;
@@ -27,6 +38,16 @@ void ULLL_PGA_ComboManagement::ActivateAbility(const FGameplayAbilitySpecHandle 
 
 void ULLL_PGA_ComboManagement::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("콤보 관리 어빌리티 종료")));
+		}
+	}
+#endif
+	
 	if(!OnEndedEffects.IsEmpty())
 	{
 		for (auto EndedEffect : OnEndedEffects)
@@ -43,18 +64,28 @@ void ULLL_PGA_ComboManagement::EndAbility(const FGameplayAbilitySpecHandle Handl
 void ULLL_PGA_ComboManagement::ComboTimerTick()
 {
 	CurrentComboStackDuration -= GetWorld()->GetDeltaSeconds();
-	if(CurrentComboStackDuration)
+	if(CurrentComboStackDuration > 0.f)
 	{
 		if(CurrentComboCount < PlayerAttributes->GetCurrentComboCount())
 		{
-			CurrentComboCount = PlayerAttributes->GetCurrentComboCount();
 			CurrentComboStackDuration = MaxComboStackDuration;
 		}
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ComboManagement::ComboTimerTick);
 	}
 	else
 	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		if(CurrentComboCount == 0)
+		{
+			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+			return;
+		}
+		CurrentComboStackDuration = MaxComboStackDuration;
+		if(IsValid(ComboDivideEffect))
+		{
+			BP_ApplyGameplayEffectToOwner(ComboDivideEffect);
+		}
 	}
+	CurrentComboCount = PlayerAttributes->GetCurrentComboCount();
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ComboManagement::ComboTimerTick);
 	// TODO: UI 연결
 }
+

@@ -25,12 +25,19 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, DashInvincibleTime);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, CurrentComboCount);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxComboCount);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MultiplyComboCountWhenHit);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MultiplyComboCountPerTime);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxComboStackDuration);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, bIsComboTimerElapsed);
+	
+protected:
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+
+protected:
+	void TryStartComboManagement(const FGameplayEffectModCallbackData& Data);
 	
 	// 일반 공격 관련
 protected:
-	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxAttackAction;
 	
@@ -58,8 +65,18 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxComboCount;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MultiplyComboCountWhenHit;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MultiplyComboCountPerTime;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxComboStackDuration;
-	
+
+	// 메타 어트리뷰트
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData bIsComboTimerElapsed;
 };

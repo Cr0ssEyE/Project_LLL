@@ -26,9 +26,9 @@ protected:
 	virtual void OnInterruptedCallBack();
 	
 protected:
-	UPROPERTY(EditAnywhere, Category = "GameplayEffect")
+	UPROPERTY(EditAnywhere, Category = "GameplayEffect", DisplayName = "활성화시 호출되는 이펙트 리스트")
 	TMap<TSubclassOf<UGameplayEffect>, EEffectApplyTarget> OnActivateEffects;
 	
-	UPROPERTY(EditAnywhere, Category = "GameplayEffect")
+	UPROPERTY(EditAnywhere, Category = "GameplayEffect", DisplayName = "종료시 호출되는 이펙트 리스트")
 	TMap<TSubclassOf<UGameplayEffect>, EEffectApplyTarget> OnEndedEffects;
 };

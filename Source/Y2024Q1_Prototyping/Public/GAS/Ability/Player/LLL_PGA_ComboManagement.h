@@ -23,12 +23,16 @@ protected:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
+	UFUNCTION()
 	void ComboTimerTick();
-	
+
 protected:
 	UPROPERTY()
 	TObjectPtr<const ULLL_PlayerAttributeSet> PlayerAttributes;
 
+	UPROPERTY(EditDefaultsOnly, Category = "GameplayEffect", DisplayName = "콤보 타이머 경과시 호출되는 이펙트")
+	TSubclassOf<UGameplayEffect> ComboDivideEffect;
+	
 	uint32 CurrentComboCount;
 	
 	float CurrentComboStackDuration;
