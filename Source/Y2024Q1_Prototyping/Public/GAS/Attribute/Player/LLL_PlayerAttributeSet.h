@@ -25,7 +25,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, DashInvincibleTime);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, CurrentComboCount);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxComboCount);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, ComboStackDuration);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxComboStackDuration);
 	
 	// 일반 공격 관련
 protected:
@@ -58,9 +58,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxComboCount;
-
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData ComboStackDuration;
-
+	FGameplayAttributeData MaxComboStackDuration;
 	
 };

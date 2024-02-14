@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "Enumeration/LLL_EffectApplyTargetHelper.h"
 #include "LLL_CharacterGameplayAbilityBase.generated.h"
 
 /**
@@ -26,8 +27,8 @@ protected:
 	
 protected:
 	UPROPERTY(EditAnywhere, Category = "GameplayEffect")
-	TSubclassOf<UGameplayEffect> BaseEffect;
-
+	TMap<TSubclassOf<UGameplayEffect>, EEffectApplyTarget> OnActivateEffects;
+	
 	UPROPERTY(EditAnywhere, Category = "GameplayEffect")
-	TArray<TSubclassOf<UGameplayEffect>> AdditionalEffect;
+	TMap<TSubclassOf<UGameplayEffect>, EEffectApplyTarget> OnEndedEffects;
 };
