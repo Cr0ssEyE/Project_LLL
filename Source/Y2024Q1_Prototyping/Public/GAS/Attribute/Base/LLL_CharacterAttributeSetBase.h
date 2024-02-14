@@ -24,6 +24,9 @@ class Y2024Q1_PROTOTYPING_API ULLL_CharacterAttributeSetBase : public UAttribute
 public:
 	ULLL_CharacterAttributeSetBase();
 
+	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, CurrentHealth);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, MaxHealth);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, CurrentShield);

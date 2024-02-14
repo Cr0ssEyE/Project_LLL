@@ -81,8 +81,6 @@ void ALLL_PlayerBase::BeginPlay()
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 	}
-	
-	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -102,17 +100,6 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 		}
 	}
 #endif
-}
-
-float ALLL_PlayerBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	// TODO: TakeDamage 처리 여부 생각하기
-	
-	const float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	
-	PlayerUIManager->UpdateStatusWidget(MaxHealthAmount, CurrentHealthAmount, MaxShieldAmount, CurrentShieldAmount);
-	
-	return ActualDamage;
 }
 
 void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

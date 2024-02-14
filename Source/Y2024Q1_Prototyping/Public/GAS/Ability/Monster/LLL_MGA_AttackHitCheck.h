@@ -6,6 +6,7 @@
 #include "LLL_MonsterGameplayAbilityBase.h"
 #include "LLL_MGA_AttackHitCheck.generated.h"
 
+class ALLL_TA_TraceBase;
 /**
  * 
  */
@@ -13,4 +14,16 @@ UCLASS()
 class Y2024Q1_PROTOTYPING_API ULLL_MGA_AttackHitCheck : public ULLL_MonsterGameplayAbilityBase
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+	UFUNCTION()
+	void OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
+
+	UPROPERTY(EditAnywhere, Category = "GAS")
+	TSubclassOf<UGameplayEffect> AttackDamageEffect;
+	
+	UPROPERTY(EditAnywhere, Category = "GAS")
+	TSubclassOf<ALLL_TA_TraceBase> TargetActorClass;
 };

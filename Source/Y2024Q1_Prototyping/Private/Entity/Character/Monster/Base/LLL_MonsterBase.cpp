@@ -79,8 +79,8 @@ void ALLL_MonsterBase::Attack()
 {
 	Super::Attack();
 
-	int32 index = FMath::RandRange(0, MonsterBaseDataAsset->DefaultGameplayAbility.Num() - 1);
-	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromClass(MonsterBaseDataAsset->DefaultGameplayAbility[index]);
+	int32 index = FMath::RandRange(0, MonsterBaseDataAsset->ActiveGameplayAbility.Num() - 1);
+	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromClass(MonsterBaseDataAsset->ActiveGameplayAbility[index]);
 	if (SkillSpec)
 	{
 		if (!SkillSpec->IsActive())

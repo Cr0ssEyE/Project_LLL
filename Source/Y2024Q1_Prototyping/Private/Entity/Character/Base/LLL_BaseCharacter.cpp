@@ -69,7 +69,6 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 			CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 		}
 
-		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed = CharacterDataAsset->MoveSpeed;
 		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = CharacterDataAsset->AccelerateSpeed;
 		GetCharacterMovement()->GroundFriction = GroundFriction = CharacterDataAsset->GroundFriction;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -80,11 +79,6 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationRoll = false;
 
-		MaxHealthAmount = CharacterDataAsset->Health;
-		CurrentHealthAmount = MaxHealthAmount;
-		MaxShieldAmount = CharacterDataAsset->ShieldAmount;
-		CurrentShieldAmount = MaxShieldAmount;
-		OffensePower = CharacterDataAsset->OffensePower;
 		AttackDistance = CharacterDataAsset->AttackDistance;
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -112,11 +106,20 @@ void ALLL_BaseCharacter::BeginPlay()
 	{
 		ASC->InitAbilityActorInfo(this, this);
 
-		for (const auto BaseAbility : CharacterDataAsset->DefaultGameplayAbility)
+		for (const auto ActiveAbility : CharacterDataAsset->ActiveGameplayAbility)
 		{
-			if(IsValid(BaseAbility))
+			if(IsValid(ActiveAbility))
 			{
-				FGameplayAbilitySpec AbilitySpec(BaseAbility);
+				FGameplayAbilitySpec AbilitySpec(ActiveAbility);
+				ASC->GiveAbility(AbilitySpec);
+			}
+		}
+		
+		for (const auto PassiveAbility : CharacterDataAsset->PassiveGameplayAbility)
+		{
+			if(IsValid(PassiveAbility))
+			{
+				FGameplayAbilitySpec AbilitySpec(PassiveAbility);
 				ASC->GiveAbility(AbilitySpec);
 			}
 		}
@@ -130,35 +133,6 @@ void ALLL_BaseCharacter::Tick(float DeltaTime)
 
 }
 
-float ALLL_BaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	const float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	
-	if(CurrentShieldAmount > 0)
-	{
-		CurrentShieldAmount -= DamageAmount;
-		if(CurrentShieldAmount <= 0)
-		{
-			CurrentShieldAmount = 0;
-		}
-	}
-	else
-	{
-		CurrentHealthAmount -= DamageAmount;
-		if(CurrentHealthAmount <= 0)
-		{
-			CurrentHealthAmount = 0;
-			Dead();
-		}
-		else
-		{
-			Damaged();
-		}
-	}
-
-	return ActualDamage;
-}
-
 void ALLL_BaseCharacter::Dead()
 {
 	if (bIsDead)
@@ -168,7 +142,6 @@ void ALLL_BaseCharacter::Dead()
 
 	CharacterAnimInstance->PlayDeadAnimation();
 	
-	CurrentHealthAmount = 0;
 	bIsDead = true;
 
 	CharacterDeadDelegate.Broadcast(this);

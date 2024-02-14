@@ -10,7 +10,7 @@ public:
 		switch (ShapeTypes)
 		{
 		case ESelectShapeTypes::Box:
-			DrawDebugBox(InWorld, Center, BoxExtent, Color, bPersistentLines, LifeTime, DepthPriority, Thickness);
+			DrawDebugBox(InWorld, Center, BoxExtent, Rotation, Color, bPersistentLines, LifeTime, DepthPriority, Thickness);
 			break;
 		case ESelectShapeTypes::Capsule:
 			DrawDebugCapsule(InWorld, Center, CapsuleExtent.X, CapsuleExtent.Y, Rotation, Color, bPersistentLines, LifeTime, DepthPriority, Thickness);
