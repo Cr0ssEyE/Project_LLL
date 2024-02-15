@@ -23,14 +23,23 @@ void ALLL_TA_TraceBase::SetTraceInfo(const ESelectTraceTarget NewTraceTarget, co
 	}
 }
 
-void ALLL_TA_TraceBase::SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes, FVector2D Radius)
+void ALLL_TA_TraceBase::SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes, FVector2D Extents)
 {
 	TraceTarget = NewTraceTarget;
 	BaseShape = NewShapeTypes;
-	if(Radius.X > 0)
+	if(Extents.X > 0 && Extents.Y > 0)
 	{
-		SphereExtents = Radius;
-		CapsuleExtents = Radius;
+		CapsuleExtents = Extents;
+	}
+}
+
+void ALLL_TA_TraceBase::SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes, float Radius)
+{
+	TraceTarget = NewTraceTarget;
+	BaseShape = NewShapeTypes;
+	if(Radius > 0)
+	{
+		SphereRadius = Radius;
 	}
 }
 
@@ -62,7 +71,7 @@ FGameplayAbilityTargetDataHandle ALLL_TA_TraceBase::MakeTargetData() const
 		TraceShape = FCollisionShape::MakeCapsule(CapsuleExtents.Y, CapsuleExtents.X);
 		break;
 	case ESelectShapeTypes::Sphere:
-		TraceShape = FCollisionShape::MakeSphere(SphereExtents.X);
+		TraceShape = FCollisionShape::MakeSphere(SphereRadius);
 		break;
 	default:
 		checkNoEntry();

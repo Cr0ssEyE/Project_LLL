@@ -80,11 +80,11 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 			
 			if(Results.IsEmpty())
 			{
-				FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, FColor::Blue, 2.f, BoxExtents, CapsuleExtents, SphereExtents, SweepQuat);
+				FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, FColor::Blue, 2.f, BoxExtents, CapsuleExtents, SphereRadius, SweepQuat);
 			}
 			else
 			{
-				FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, FColor::Red, 2.f, BoxExtents, CapsuleExtents, SphereExtents, SweepQuat);
+				FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, FColor::Red, 2.f, BoxExtents, CapsuleExtents, SphereRadius, SweepQuat);
 			}
 		}
 	}
