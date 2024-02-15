@@ -18,9 +18,6 @@ class Y2024Q1_PROTOTYPING_API ALLL_MeleeMonster : public ALLL_MonsterBase
 
 public:
 	ALLL_MeleeMonster();
-
-protected:
-	virtual void BeginPlay() override;
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)

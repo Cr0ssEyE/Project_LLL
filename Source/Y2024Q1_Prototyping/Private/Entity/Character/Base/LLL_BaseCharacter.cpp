@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
 
 // Sets default values
 ALLL_BaseCharacter::ALLL_BaseCharacter()
@@ -92,13 +93,9 @@ void ALLL_BaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(!IsValid(CharacterAnimInstance))
+	if(IsValid(CharacterAnimInstance))
 	{
-		CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());;
-	}
-
-	if (IsValid(CharacterAnimInstance))
-	{
+		CharacterAnimInstance->SetDataAsset(CharacterDataAsset);
 		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
 	}
 
