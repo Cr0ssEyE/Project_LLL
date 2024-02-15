@@ -15,16 +15,6 @@
 
 ALLL_RangedMonster::ALLL_RangedMonster()
 {
-	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RangedMonsterDataAsset>(PATH_RANGED_MONSTER_DATA, EAssertionLevel::Check);
-	RangedMonsterDataAsset = Cast<ULLL_RangedMonsterDataAsset>(CharacterDataAsset);
-	if (IsValid(RangedMonsterDataAsset))
-	{
-		DetectDistance = RangedMonsterDataAsset->DetectDistance;
-		FieldOfView = RangedMonsterDataAsset->FieldOfView;
-	}
-
-	AIControllerClass = ALLL_RangedMonsterAIController::StaticClass();
-
 	ObjectPooling = CreateDefaultSubobject<ULLL_ObjectPoolingComponent>(TEXT("ObjectPooling"));
 }
 
@@ -57,4 +47,11 @@ void ALLL_RangedMonster::ThrowToPlayer()
 		}
 #endif
 	}
+}
+
+void ALLL_RangedMonster::BeginPlay()
+{
+	Super::BeginPlay();
+
+	RangedMonsterDataAsset = Cast<ULLL_RangedMonsterDataAsset>(CharacterDataAsset);
 }

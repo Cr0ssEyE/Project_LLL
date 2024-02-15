@@ -6,7 +6,6 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "LLL_RangedMonsterAIController.generated.h"
 
-class ULLL_RangedMonsterDataAsset;
 /**
  * 
  */
@@ -15,6 +14,4 @@ class Y2024Q1_PROTOTYPING_API ALLL_RangedMonsterAIController : public ALLL_Monst
 {
 	GENERATED_BODY()
 	
-public:
-	ALLL_RangedMonsterAIController();
 };

@@ -6,7 +6,9 @@
 #include "DataAsset/LLL_MeleeMonsterDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 
-ALLL_MeleeMonster::ALLL_MeleeMonster()
+void ALLL_MeleeMonster::BeginPlay()
 {
+	Super::BeginPlay();
+
 	MeleeMonsterDataAsset = Cast<ULLL_MeleeMonsterDataAsset>(CharacterDataAsset);
 }
