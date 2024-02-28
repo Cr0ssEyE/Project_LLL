@@ -72,6 +72,13 @@ void ALLL_MonsterSpawner::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
+void ALLL_MonsterSpawner::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	MonsterSpawnerDestroyDelegate.Broadcast();
+}
+
 void ALLL_MonsterSpawner::SpawnMonster()
 {
 	Wave++;

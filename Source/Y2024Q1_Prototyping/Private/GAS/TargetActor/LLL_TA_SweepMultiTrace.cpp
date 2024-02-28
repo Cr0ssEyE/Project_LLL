@@ -5,6 +5,10 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Engine/DamageEvents.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/ProtoGameInstance.h"
+#include "Util/LLL_DebugDrawHelper.h"
 
 // Sets default values
 ALLL_TA_SweepMultiTrace::ALLL_TA_SweepMultiTrace()
@@ -37,6 +41,12 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 	TArray<FHitResult> Results;
 	FVector SweepStartLocation =  SourceActor->GetActorLocation() +  SourceActor->GetActorForwardVector() * TraceStartLocation;
 	FVector SweepEndLocation = SweepStartLocation +  SourceActor->GetActorForwardVector() * TraceEndLocation;
+	FQuat SweepQuat = SourceActor->GetActorQuat();
+
+	if (TraceShape.ShapeType == ECollisionShape::Capsule)
+	{
+		SweepQuat *= FQuat(FVector::RightVector, FMath::DegreesToRadians(-90.0f));
+	}
 	
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(ALLL_TA_SweepMultiTrace), false, SourceActor);
 	
@@ -44,12 +54,41 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 		Results,
 		SweepStartLocation,
 		SweepEndLocation,
-		FQuat::Identity,
+		SweepQuat,
 		TraceProfile,
 		TraceShape,
 		Params);
 
-	DrawDebugBox(GetWorld(), SweepStartLocation, TraceShape.GetExtent(), FColor::Blue, false, 2.f);
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		bool Debug = false;
+		
+		if (Cast<ALLL_PlayerBase>(SourceActor) && ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+		{
+			Debug = true;
+		}
+		else if (Cast<ALLL_MonsterBase>(SourceActor) && ProtoGameInstance->CheckMonsterAttackDebug())
+		{
+			Debug = true;
+		}
+
+		if (Debug)
+		{
+			FVector DistanceVector = SweepEndLocation - SweepStartLocation;
+			FVector SweepCenter = SweepStartLocation + DistanceVector / 2.0f;
+			
+			if(Results.IsEmpty())
+			{
+				FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, FColor::Blue, 2.f, BoxExtents, CapsuleExtents, SphereExtents, SweepQuat);
+			}
+			else
+			{
+				FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, FColor::Red, 2.f, BoxExtents, CapsuleExtents, SphereExtents, SweepQuat);
+			}
+		}
+	}
+#endif
 	
 	TArray<TWeakObjectPtr<AActor>> HitActors;
 	if(!Results.IsEmpty())
@@ -57,11 +96,6 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 		for (const FHitResult& Result : Results)
 		{
 			AActor* HitActor = Result.GetActor();
-			//TODO: 어트리뷰트 적용하면 삭제
-			{
-				FDamageEvent DamageEvent;
-				HitActor->TakeDamage(100.f, DamageEvent, SourceActor->GetInstigatorController(), SourceActor);
-			}
 			
 			if (HitActor && !HitActors.Contains(HitActor))
 			{

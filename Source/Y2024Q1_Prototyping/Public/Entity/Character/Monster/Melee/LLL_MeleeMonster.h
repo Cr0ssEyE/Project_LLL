@@ -21,9 +21,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-public:
-	void DamageToPlayer();
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)

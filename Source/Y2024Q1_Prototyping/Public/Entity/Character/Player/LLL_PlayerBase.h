@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "LLL_PlayerAnimInstance.h"
+#include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ULLL_PlayerAttributeSet;
 class ULLL_PlayerWeaponComponent;
 class ULLL_PlayerAnimInstance;
 class ALLL_InteractiveObject;
@@ -15,7 +17,7 @@ class ULLL_PlayerUIManager;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
-class ULLL_PlayerBaseDataAsset;
+
 /**
  * 
  */
@@ -30,13 +32,14 @@ public:
 	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	// 외부 접근용
 public:
 	void AddInteractableObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
+
+	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 
 	// 카메라
 private:
@@ -55,14 +58,14 @@ protected:
 	TObjectPtr<ULLL_PlayerUIManager> PlayerUIManager;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerWeaponComponent> PlayerWeaponComponent;
-	
+	TObjectPtr<ULLL_PlayerAttributeSet> PlayerAttributeSet;
+
 	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);
-	void DashAction(const FInputActionValue& Value);
-	void AttackAction(const FInputActionValue& Value);
-	void SkillAction(const FInputActionValue& Value, int32 InputID);
+	void DashAction(const FInputActionValue& Value, EAbilityInputName InputName);
+	void AttackAction(const FInputActionValue& Value, EAbilityInputName InputName);
+	void SkillAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void InteractAction(const FInputActionValue& Value);
 	void InteractiveTargetChangeAction(const FInputActionValue& Value);
 	void InventoryAction(const FInputActionValue& Value);
@@ -74,57 +77,6 @@ private:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerBaseDataAsset> PlayerDataAsset;
-
-	// 이동 관련 변수
-private:
-	UPROPERTY()
-	float DashSpeed;
-
-	// 공격 관련 함수
-private:
-	void SetAttackComboCheckState(bool Value);
-	void SetAttackHitCheckState(bool Value);
-	void AttackSequence();
-	
-	// 공격 관련 변수
-private:
-	uint32 CurrentComboActionCount;
-
-	// 임시 변수
-	uint32 MaxComboActionCount;
-	
-	uint8 bCheckAttackComboActionInput : 1;
-
-	uint8 bIsAttackHitCheckOnGoing : 1;
-
-	uint8 bIsAttackActionOnGoing : 1;
-	
-	// 돌진 관련 함수
-private:
-	void CheckDashElapsedTime();
-	void CheckDashDelay();
-	
-	// 돌진 관련 변수
-private:
-	FTimerHandle DashStateCheckTimerHandle;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	uint32 MaxDashCount;
-
-	UPROPERTY()
-	uint32 CurrentDashCount;
-	
-	float DashInputCheckTime;
-	
-	float DashCoolDownSeconds;
-	
-	float DashInvincibleTime;
-	
-	float DashDisabledTime;
-	
-	float DashElapsedTime;
-
-	uint8 bIsInvincibleOnDashing : 1;
 	
 	// 상호작용 관련 변수
 private:
@@ -142,9 +94,5 @@ protected:
 	virtual void Dead() override;
 	virtual void DeadMontageEndEvent() override;
 	virtual void Attack() override;
-	
-	// 모션 캔슬시 사용 목적 함수
-private:
-	void ClearState();
 	
 };
