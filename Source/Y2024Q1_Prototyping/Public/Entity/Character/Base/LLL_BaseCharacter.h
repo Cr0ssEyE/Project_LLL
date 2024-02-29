@@ -56,7 +56,7 @@ public:
 
 	// GAS 변수
 protected:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;
 	
 	// 캐릭터 공용 변수

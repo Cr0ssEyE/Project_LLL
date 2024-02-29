@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "Enumeration/LLL_EffectApplyTargetHelper.h"
 #include "LLL_CharacterGameplayAbilityBase.generated.h"
 
 /**
@@ -25,9 +26,9 @@ protected:
 	virtual void OnInterruptedCallBack();
 	
 protected:
-	UPROPERTY(EditAnywhere, Category = "GameplayEffect")
-	TSubclassOf<UGameplayEffect> BaseEffect;
-
-	UPROPERTY(EditAnywhere, Category = "GameplayEffect")
-	TArray<TSubclassOf<UGameplayEffect>> AdditionalEffect;
+	UPROPERTY(EditAnywhere, Category = "GameplayEffect", DisplayName = "활성화시 호출되는 이펙트 리스트")
+	TMap<TSubclassOf<UGameplayEffect>, EEffectApplyTarget> OnActivateEffects;
+	
+	UPROPERTY(EditAnywhere, Category = "GameplayEffect", DisplayName = "종료시 호출되는 이펙트 리스트")
+	TMap<TSubclassOf<UGameplayEffect>, EEffectApplyTarget> OnEndedEffects;
 };
