@@ -9,5 +9,5 @@
 
 ALLL_EnergyBlasterAIController::ALLL_EnergyBlasterAIController()
 {
-	//MonsterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_EnergyBlasterDataAsset>(PATH_ENERGYBLASTER_DATA, EAssertionLevel::Check);
+	MonsterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_EnergyBlasterDataAsset>(PATH_ENERGYBLASTER_DATA, EAssertionLevel::Check);
 }

@@ -85,7 +85,7 @@ private:
 			ensure(InFinder.Succeeded());
 			break;
 		case EAssertionLevel::Check:
-			//check(InFinder.Succeeded());
+			check(InFinder.Succeeded());
 			break;
 		default:
 			checkNoEntry();

@@ -9,7 +9,7 @@
 
 ALLL_EnergyBlaster::ALLL_EnergyBlaster()
 {
-	//CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_EnergyBlasterDataAsset>(PATH_ENERGYBLASTER_DATA, EAssertionLevel::Check);
+	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_EnergyBlasterDataAsset>(PATH_ENERGYBLASTER_DATA, EAssertionLevel::Check);
 	EnergyBlasterDataAsset = Cast<ULLL_EnergyBlasterDataAsset>(CharacterDataAsset);
 	if (IsValid(EnergyBlasterDataAsset))
 	{
