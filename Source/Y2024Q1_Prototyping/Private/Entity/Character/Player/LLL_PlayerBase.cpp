@@ -54,11 +54,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if(IsValid(PlayerAnimInstance = Cast<ULLL_PlayerAnimInstance>(GetMesh()->GetAnimInstance())))
-	{
-		PlayerAnimInstance->SetDataAsset(CharacterDataAsset);
-	}
 
 	if(IsValid(ASC))
 	{

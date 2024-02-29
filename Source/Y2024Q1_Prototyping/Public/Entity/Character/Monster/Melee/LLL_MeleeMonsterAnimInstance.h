@@ -6,7 +6,6 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "LLL_MeleeMonsterAnimInstance.generated.h"
 
-class ULLL_MeleeMonsterDataAsset;
 /**
  * 
  */

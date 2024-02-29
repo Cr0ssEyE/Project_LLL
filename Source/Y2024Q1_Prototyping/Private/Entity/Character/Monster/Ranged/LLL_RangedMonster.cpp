@@ -15,7 +15,6 @@
 
 ALLL_RangedMonster::ALLL_RangedMonster()
 {
-	// 몬스터 데이터 에셋 할당
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RangedMonsterDataAsset>(PATH_RANGED_MONSTER_DATA, EAssertionLevel::Check);
 	RangedMonsterDataAsset = Cast<ULLL_RangedMonsterDataAsset>(CharacterDataAsset);
 	if (IsValid(RangedMonsterDataAsset))
@@ -24,20 +23,9 @@ ALLL_RangedMonster::ALLL_RangedMonster()
 		FieldOfView = RangedMonsterDataAsset->FieldOfView;
 	}
 
-	// AI Controller 할당
 	AIControllerClass = ALLL_RangedMonsterAIController::StaticClass();
 
 	ObjectPooling = CreateDefaultSubobject<ULLL_ObjectPoolingComponent>(TEXT("ObjectPooling"));
-}
-
-void ALLL_RangedMonster::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if(IsValid(CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance())))
-	{
-		CharacterAnimInstance->SetDataAsset(CharacterDataAsset);
-	}
 }
 
 void ALLL_RangedMonster::ThrowToPlayer()

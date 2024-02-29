@@ -6,7 +6,6 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "LLL_MeleeMonsterAIController.generated.h"
 
-class ULLL_MeleeMonsterDataAsset;
 /**
  * 
  */
@@ -15,6 +14,4 @@ class Y2024Q1_PROTOTYPING_API ALLL_MeleeMonsterAIController : public ALLL_Monste
 {
 	GENERATED_BODY()
 	
-public:
-	ALLL_MeleeMonsterAIController();
 };
