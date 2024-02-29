@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 
 #define PATH_PLAYER_DATA TEXT("/Script/Y2024Q1_Prototyping.LLL_PlayerBaseDataAsset'/Game/DataAsset/DA_Player.DA_Player'")
-#define PATH_RANGED_MONSTER_DATA TEXT("/Script/Y2024Q1_Prototyping.LLL_RangedMonsterDataAsset'/Game/DataAsset/DA_RangedMonster.DA_RangedMonster'")
 
-#define PATH_ORAWAVE_MELEE_DATA TEXT("/Script/Y2024Q1_Prototyping.LLL_OrawaveMeleeDataAsset'/Game/DataAsset/DA_Orawave.DA_Orawave'")
+#define PATH_ORAWAVE_DATA TEXT("/Script/Y2024Q1_Prototyping.LLL_OrawaveDataAsset'/Game/DataAsset/DA_Orawave.DA_Orawave'")
+#define PATH_ENERGYBLASTER_DATA TEXT("/Script/Y2024Q1_Prototyping.LLL_EnergyBlasterDataAsset'/Game/DataAsset/DA_EnergyBlaster.DA_EnergyBlaster'")
 
 #define PATH_MONSTER_SPAWN_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/MonsterSpawnData.MonsterSpawnData'")
 

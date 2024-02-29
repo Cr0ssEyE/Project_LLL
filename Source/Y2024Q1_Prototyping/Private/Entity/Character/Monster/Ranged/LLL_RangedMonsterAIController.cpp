@@ -7,7 +7,3 @@
 #include "DataAsset/LLL_RangedMonsterDataAsset.h"
 #include "Util/LLLConstructorHelper.h"
 
-ALLL_RangedMonsterAIController::ALLL_RangedMonsterAIController()
-{
-	MonsterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RangedMonsterDataAsset>(PATH_RANGED_MONSTER_DATA, EAssertionLevel::Check);
-}
