@@ -29,7 +29,14 @@ protected:
 	virtual void ThrowHand(const FGameplayAbilityActorInfo* ActorInfo);
 	virtual void ReleaseHand(const FGameplayAbilityActorInfo* ActorInfo);
 	
-protected:
-	//UPROPERTY()
+	UFUNCTION(BlueprintCallable)
+	virtual void OnGrabbedCallBack(FGameplayEventData Payload);
 	
+protected:
+	UPROPERTY(EditDefaultsOnly, Meta=(Categories=Event))
+	FGameplayTag GrabEventGameplayTag;
+
+	uint32 bIsAlreadyThrown : 1;
+	
+	uint32 bIsReleaseOnGoing : 1;
 };

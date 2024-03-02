@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GAS/Ability/Player/LLL_PlayerGameplayAbilityBase.h"
-#include "LLL_RushToWireHand.generated.h"
+#include "LLL_PGA_RushToWireHand.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_RushToWireHand : public ULLL_PlayerGameplayAbilityBase
+class PROJECT_LLL_API ULLL_PGA_RushToWireHand : public ULLL_PlayerGameplayAbilityBase
 {
 	GENERATED_BODY()
 };
