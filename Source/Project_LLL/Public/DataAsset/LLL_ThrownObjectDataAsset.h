@@ -14,4 +14,6 @@ class PROJECT_LLL_API ULLL_ThrownObjectDataAsset : public ULLL_BaseObjectDataAss
 {
 	GENERATED_BODY()
 
+public:
+	
 };

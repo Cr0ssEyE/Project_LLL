@@ -3,3 +3,7 @@
 
 #include "DataAsset/LLL_BaseObjectDataAsset.h"
 
+ULLL_BaseObjectDataAsset::ULLL_BaseObjectDataAsset()
+{
+	bIsUsingSkeletalMesh = false;
+}

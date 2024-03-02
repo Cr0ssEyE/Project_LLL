@@ -15,5 +15,8 @@ class PROJECT_LLL_API ULLL_PlayerWireObjectDataAsset : public ULLL_ThrownObjectD
 	GENERATED_BODY()
 
 public:
+	ULLL_PlayerWireObjectDataAsset();
+
+public:
 	
 };

@@ -15,8 +15,8 @@
 
 ALLL_ThrownObject::ALLL_ThrownObject()
 {
-	BaseObjectData = FLLLConstructorHelper::FindAndGetObject<ULLL_ThrownObjectDataAsset>(PATH_THROWN_OBJECT_DATA, EAssertionLevel::Check);
-	ThrownObjectData = Cast<ULLL_ThrownObjectDataAsset>(BaseObjectData);
+	BaseObjectDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_ThrownObjectDataAsset>(PATH_THROWN_OBJECT_DATA, EAssertionLevel::Check);
+	ThrownObjectDataAsset = Cast<ULLL_ThrownObjectDataAsset>(BaseObjectDataAsset);
 	
 	if (IsValid(BaseMesh))
 	{

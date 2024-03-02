@@ -30,9 +30,6 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UBoxComponent> InteractOnlyCollisionBox;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_InteractiveObjectDataAsset> InteractiveObjectData;
 	
 	UPROPERTY()
 	uint8 bIsEnabled : 1;

@@ -6,6 +6,8 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+class ULLL_PlayerWireObjectDataAsset;
+enum class EAbilityInputName;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;
@@ -14,14 +16,6 @@ class ULLL_PlayerAnimInstance;
 class UInputAction;
 class UInputMappingContext;
 class UGameplayAbility;
-
-UENUM()
-enum class EAbilityInputName
-{
-	Attack,
-	Skill,
-	Dash
-};
 
 /**
  * 

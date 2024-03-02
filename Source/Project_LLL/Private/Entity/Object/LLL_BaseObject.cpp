@@ -14,7 +14,7 @@ ALLL_BaseObject::ALLL_BaseObject()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
-	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 }
 
 void ALLL_BaseObject::PostLoad()
@@ -44,9 +44,9 @@ void ALLL_BaseObject::PostInitializeComponents()
 
 void ALLL_BaseObject::SetDefaultInformation()
 {
-	if (IsValid(BaseObjectData))
+	if (IsValid(BaseObjectDataAsset))
 	{
-		BaseMesh->SetStaticMesh(BaseObjectData->Mesh);
+		BaseMesh->SetStaticMesh(BaseObjectDataAsset->StaticMesh);
 	}
 }
 
@@ -54,7 +54,20 @@ void ALLL_BaseObject::SetDefaultInformation()
 void ALLL_BaseObject::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if(IsValid(ASC))
+	{
+		ASC->InitAbilityActorInfo(this, this);
 
+		for (const auto ActiveAbility : BaseObjectDataAsset->ActiveGameplayAbility)
+		{
+			if(IsValid(ActiveAbility))
+			{
+				FGameplayAbilitySpec AbilitySpec(ActiveAbility);
+				ASC->GiveAbility(AbilitySpec);
+			}
+		}
+	}
 }
 
 // Called every frame

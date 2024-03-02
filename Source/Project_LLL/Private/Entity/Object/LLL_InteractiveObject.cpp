@@ -17,9 +17,8 @@ ALLL_InteractiveObject::ALLL_InteractiveObject()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	BaseObjectData = FLLLConstructorHelper::FindAndGetObject<ULLL_InteractiveObjectDataAsset>(PATH_INTERACTIVE_OBJECT_DATA, EAssertionLevel::Check);
-	InteractiveObjectData = Cast<ULLL_InteractiveObjectDataAsset>(BaseObjectData);
-	
+	BaseObjectDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_InteractiveObjectDataAsset>(PATH_INTERACTIVE_OBJECT_DATA, EAssertionLevel::Check);
+
 	InteractOnlyCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Ineractive Collision"));
 	InteractOnlyCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	InteractOnlyCollisionBox->SetCollisionProfileName(CP_INTERACTION);

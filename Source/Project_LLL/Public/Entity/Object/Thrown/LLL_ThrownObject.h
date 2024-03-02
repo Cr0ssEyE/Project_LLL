@@ -20,8 +20,9 @@ public:
 	ALLL_ThrownObject();
 
 	FORCEINLINE float GetSpeed() const { return Speed; }
+	FORCEINLINE UProjectileMovementComponent* GetProjectileComponent() { return ProjectileMovement; }
 	
-	void Throw(AActor* NewOwner);
+	virtual void Throw(AActor* NewOwner);
 
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -31,7 +32,7 @@ protected:
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<const ULLL_ThrownObjectDataAsset> ThrownObjectData;
+	TObjectPtr<const ULLL_ThrownObjectDataAsset> ThrownObjectDataAsset;
 	
 protected:
 	float Speed;

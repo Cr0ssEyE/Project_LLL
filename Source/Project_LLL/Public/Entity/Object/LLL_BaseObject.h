@@ -41,7 +41,7 @@ protected:
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<const ULLL_BaseObjectDataAsset> BaseObjectData;
+	TObjectPtr<const ULLL_BaseObjectDataAsset> BaseObjectDataAsset;
 	
 protected:
 	virtual void DelayedDestroy(float Time);
