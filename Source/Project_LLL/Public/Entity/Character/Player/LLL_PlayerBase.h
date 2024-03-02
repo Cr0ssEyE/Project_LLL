@@ -9,6 +9,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ALLL_PlayerWireHand;
 class ULLL_PlayerAttributeSet;
 class ULLL_PlayerWeaponComponent;
 class ULLL_PlayerAnimInstance;
@@ -40,7 +41,8 @@ public:
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
 
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
-
+	FORCEINLINE AActor* GetWireHand() const { return WireHandActorComponent->GetChildActor(); }
+	
 	// 카메라
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -56,6 +58,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerAttributeSet> PlayerAttributeSet;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UChildActorComponent> WireHandActorComponent;
 	
 	// 입력 액션 관련
 private:

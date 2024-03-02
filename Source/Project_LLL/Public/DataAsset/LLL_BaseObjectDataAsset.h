@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "LLL_BaseObjectDataAsset.generated.h"
 
+class UGameplayEffect;
 class UGameplayAbility;
 /**
  * 
@@ -24,6 +25,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "StaticMesh", DisplayName = "스켈레탈 메시", meta=(EditCondition = "bIsUsingSkeletalMesh == true", EditConditionHides))
 	TObjectPtr<USkeletalMesh> SkeletalMesh;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
+	TSubclassOf<UGameplayEffect> InitEffect;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "발동형 게임플레이 어빌리티")
 	TArray<TSubclassOf<UGameplayAbility>> ActiveGameplayAbility;

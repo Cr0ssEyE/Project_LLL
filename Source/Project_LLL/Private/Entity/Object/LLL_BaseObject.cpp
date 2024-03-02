@@ -68,6 +68,17 @@ void ALLL_BaseObject::BeginPlay()
 			}
 		}
 	}
+	
+	if(IsValid(BaseObjectDataAsset->InitEffect))
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(BaseObjectDataAsset->InitEffect, 1.0, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
 }
 
 // Called every frame

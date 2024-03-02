@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "LLL_ThrownObject.h"
+
 #include "LLL_PlayerWireHand.generated.h"
 
+
+class ULLL_PlayerWireHandAttributeSet;
 class ULLL_PlayerWireObjectDataAsset;
-class ALLL_PlayerBase;
 
 UCLASS()
 class PROJECT_LLL_API ALLL_PlayerWireHand : public ALLL_ThrownObject
@@ -18,10 +20,15 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_PlayerWireHand();
 
+	FORCEINLINE ULLL_PlayerWireHandAttributeSet* GetWireHandAttributeSet() const {return WireHandAttributeSet; }
+	
 protected:
+	virtual void PostInitializeComponents() override;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	
 	// Called every frame
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
@@ -30,5 +37,5 @@ protected:
 	TObjectPtr<USkeletalMeshComponent> HandMesh;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_PlayerWireObjectDataAsset> WireObjectDataAsset;
+	TObjectPtr<ULLL_PlayerWireHandAttributeSet> WireHandAttributeSet;
 };

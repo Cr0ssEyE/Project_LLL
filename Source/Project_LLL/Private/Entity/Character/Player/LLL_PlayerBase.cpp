@@ -14,9 +14,9 @@
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
+#include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
 #include "Enumeration/LLL_AbilityKeyHelper.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -30,7 +30,12 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	PlayerAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
-
+	
+	WireHandActorComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("WireHandComponent"));
+	TSubclassOf<ALLL_PlayerWireHand> WireHand = ALLL_PlayerWireHand::StaticClass();
+	WireHandActorComponent->SetChildActorClass(WireHand);
+	WireHandActorComponent->SetupAttachment(RootComponent);
+	
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
 	if (IsValid(CharacterDataAsset))
