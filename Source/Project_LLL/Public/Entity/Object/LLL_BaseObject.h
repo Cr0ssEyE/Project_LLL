@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DataAsset/LLL_BaseObjectData.h"
+#include "AbilitySystemInterface.h"
+#include "DataAsset/LLL_BaseObjectDataAsset.h"
 #include "GameFramework/Actor.h"
 #include "LLL_BaseObject.generated.h"
 
 class UBoxComponent;
 
 UCLASS()
-class PROJECT_LLL_API ALLL_BaseObject : public AActor
+class PROJECT_LLL_API ALLL_BaseObject : public AActor, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -18,6 +19,8 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_BaseObject();
 
+	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void PostLoad() override;
@@ -31,16 +34,18 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	void DelayedDestroy(float Time);
-	void DelayedHide(float Time);
-
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAbilitySystemComponent> ASC;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<const ULLL_BaseObjectData> BaseObjectData;
-
-private:
-	void DestroyTimerCallback();
-	void HideTimerCallback();
+	TObjectPtr<const ULLL_BaseObjectDataAsset> BaseObjectData;
+	
+protected:
+	virtual void DelayedDestroy(float Time);
+	virtual void DelayedHide(float Time);
+	virtual void DestroyTimerCallback();
+	virtual void HideTimerCallback();
 };

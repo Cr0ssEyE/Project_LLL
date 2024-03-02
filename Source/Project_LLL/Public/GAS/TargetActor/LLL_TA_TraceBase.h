@@ -25,6 +25,7 @@ public:
 protected:
 	virtual FGameplayAbilityTargetDataHandle MakeTargetData() const;
 	virtual FGameplayAbilityTargetDataHandle TraceResult() const;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Trace")
 	ESelectTraceTarget TraceTarget;
@@ -48,5 +49,6 @@ protected:
 	float SphereRadius;
 
 	mutable FCollisionShape TraceShape;
-	
+
+	mutable ECollisionChannel TraceChannel;
 };

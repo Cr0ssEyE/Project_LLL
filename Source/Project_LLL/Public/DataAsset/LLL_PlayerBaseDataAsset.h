@@ -6,8 +6,6 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
-class UGameplayEffect;
-class ULLL_WeaponBaseDataAsset;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;
@@ -33,10 +31,6 @@ class PROJECT_LLL_API ULLL_PlayerBaseDataAsset : public ULLL_BaseCharacterDataAs
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "SubData", DisplayName = "캐릭터 기본 무기 데이터")
-	TObjectPtr<ULLL_WeaponBaseDataAsset> DefaultWeaponBaseDataAsset;
-	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "일시정지 UI")
 	TSubclassOf<ULLL_GamePauseWidget> PauseWidgetClass;
@@ -65,9 +59,6 @@ public:
 	float InteractionRange;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
-	TSubclassOf<UGameplayEffect> InitEffect;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "입력 어빌리티")
 	TMap<EAbilityInputName, TSubclassOf<UGameplayAbility>> DefaultSkillAbility;
 	

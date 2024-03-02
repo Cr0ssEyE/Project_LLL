@@ -18,29 +18,15 @@ ALLL_TA_SweepMultiTrace::ALLL_TA_SweepMultiTrace()
 
 FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 {
-	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(SourceActor);
+	const UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(SourceActor);
 	if (!ASC)
 	{
 		return FGameplayAbilityTargetDataHandle();
 	}
 	
-	switch (TraceTarget)
-	{
-	case ESelectTraceTarget::Player:
-		break;
-	case ESelectTraceTarget::Monster:
-		break;
-	case ESelectTraceTarget::AllEntity:
-		break;
-	default:
-		checkNoEntry();
-	}
-	
-	FName TraceProfile = FName(*UEnum::GetDisplayValueAsText(TraceTarget).ToString());
-	
 	TArray<FHitResult> Results;
-	FVector SweepStartLocation =  SourceActor->GetActorLocation() +  SourceActor->GetActorForwardVector() * TraceStartLocation;
-	FVector SweepEndLocation = SweepStartLocation +  SourceActor->GetActorForwardVector() * TraceEndLocation;
+	const FVector SweepStartLocation =  SourceActor->GetActorLocation() + SourceActor->GetActorForwardVector() * TraceStartLocation;
+	const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetActorForwardVector() * TraceEndLocation;
 	FQuat SweepQuat = SourceActor->GetActorQuat();
 
 	if (TraceShape.ShapeType == ECollisionShape::Capsule)
@@ -50,17 +36,17 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 	
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(ALLL_TA_SweepMultiTrace), false, SourceActor);
 	
-	GetWorld()->SweepMultiByProfile(
+	GetWorld()->SweepMultiByChannel(
 		Results,
 		SweepStartLocation,
 		SweepEndLocation,
 		SweepQuat,
-		TraceProfile,
+		TraceChannel,
 		TraceShape,
 		Params);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		bool Debug = false;
 		
@@ -75,8 +61,8 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 
 		if (Debug)
 		{
-			FVector DistanceVector = SweepEndLocation - SweepStartLocation;
-			FVector SweepCenter = SweepStartLocation + DistanceVector / 2.0f;
+			const FVector DistanceVector = SweepEndLocation - SweepStartLocation;
+			const FVector SweepCenter = SweepStartLocation + DistanceVector / 2.0f;
 			
 			if(Results.IsEmpty())
 			{

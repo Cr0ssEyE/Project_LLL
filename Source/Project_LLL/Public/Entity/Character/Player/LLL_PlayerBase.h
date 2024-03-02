@@ -56,6 +56,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerAttributeSet> PlayerAttributeSet;
+	
 	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);

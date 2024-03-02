@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "LLL_BaseObjectData.generated.h"
+#include "LLL_BaseObjectDataAsset.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_BaseObjectData : public UDataAsset
+class PROJECT_LLL_API ULLL_BaseObjectDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 

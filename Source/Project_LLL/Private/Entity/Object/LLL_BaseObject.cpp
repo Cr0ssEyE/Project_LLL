@@ -3,6 +3,7 @@
 
 #include "Entity/Object/LLL_BaseObject.h"
 
+#include "AbilitySystemComponent.h"
 #include "Components/BoxComponent.h"
 
 
@@ -12,6 +13,7 @@ ALLL_BaseObject::ALLL_BaseObject()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 }
 
