@@ -13,4 +13,12 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PGA_WireHandGrab : public ULLL_PlayerGameplayAbilityBase
 {
 	GENERATED_BODY()
+
+public:
+	ULLL_PGA_WireHandGrab();
+	
+protected:
+
+protected:
+	
 };

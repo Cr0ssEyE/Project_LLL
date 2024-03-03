@@ -165,6 +165,41 @@ void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObj
 	}
 }
 
+FVector ALLL_PlayerBase::GetMouseLocation() const
+{
+	const APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	FVector MouseWorldLocation;
+	FVector MouseWorldDirection;
+	PlayerController->DeprojectMousePositionToWorld(MouseWorldLocation, MouseWorldDirection);
+	
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+
+	if (bool bResult = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		MouseWorldLocation,
+		MouseWorldLocation + MouseWorldDirection * 10000.f,
+		ECC_Visibility
+	))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+			{
+				DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
+				DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10.f, FColor::Red, false, 3.f);
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("마우스 월드 좌표: %f, %f, %f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z));
+			}
+		}
+#endif
+		
+		FVector TrueMouseWorldLocation = HitResult.ImpactPoint;
+		return TrueMouseWorldLocation;
+	}
+	return FVector::Zero();
+}
+
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 {
 	FVector2d MoveInputValue = Value.Get<FVector2D>();
@@ -284,37 +319,10 @@ void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::CharacterRotateToCursor()
 {
-	const APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	FVector MouseWorldLocation;
-	FVector MouseWorldDirection;
-	PlayerController->DeprojectMousePositionToWorld(MouseWorldLocation, MouseWorldDirection);
-	
-	FHitResult HitResult;
-	FCollisionQueryParams Params(NAME_None, false, this);
-
-	if (bool bResult = GetWorld()->LineTraceSingleByChannel(
-		HitResult,
-		MouseWorldLocation,
-		MouseWorldLocation + MouseWorldDirection * 10000.f,
-		ECC_Visibility
-	))
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
-			{
-				DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
-				DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10.f, FColor::Red, false, 3.f);
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("마우스 월드 좌표: %f, %f, %f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z));
-			}
-		}
-#endif
-		
-		FVector ViewDirection = (HitResult.ImpactPoint - GetActorLocation()).GetSafeNormal();
-		ViewDirection.Z = 0.f;
-		SetActorRotation(ViewDirection.Rotation());
-	}
+	FVector MouseWorldLocation = GetMouseLocation();
+	FVector ViewDirection = (MouseWorldLocation - GetActorLocation()).GetSafeNormal();
+	ViewDirection.Z = 0.f;
+	SetActorRotation(ViewDirection.Rotation());
 }
 
 void ALLL_PlayerBase::Dead()

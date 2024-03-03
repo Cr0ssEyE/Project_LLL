@@ -13,4 +13,15 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PGA_WireHandThrow : public ULLL_PlayerGameplayAbilityBase
 {
 	GENERATED_BODY()
+
+public:
+	ULLL_PGA_WireHandThrow();
+
+protected:
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+
+protected:
+	virtual void ThrowToCursorLocation();
 };

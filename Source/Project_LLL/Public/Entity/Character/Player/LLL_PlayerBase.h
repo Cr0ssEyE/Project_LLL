@@ -37,11 +37,13 @@ public:
 
 	// 외부 접근용
 public:
+	// TODO: GAS로 전환
 	void AddInteractableObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
 
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE AActor* GetWireHand() const { return WireHandActorComponent->GetChildActor(); }
+	FVector GetMouseLocation() const;
 	
 	// 카메라
 private:

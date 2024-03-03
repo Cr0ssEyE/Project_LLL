@@ -16,41 +16,16 @@ ULLL_PGA_ControlWireHand::ULLL_PGA_ControlWireHand()
 	bIsReleaseOnGoing = false;
 }
 
-bool ULLL_PGA_ControlWireHand::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
-{
-	bool Result = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
-	
-	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
-	if (!IsValid(PlayerBase))
-	{
-		return false;
-	}
-	
-	const ALLL_PlayerWireHand* PlayerWireHand = Cast<ALLL_PlayerWireHand>(PlayerBase->GetWireHand());
-	if (!IsValid(PlayerWireHand))
-	{
-		return false;
-	}
-	
-	UAbilitySystemComponent* HandASC = PlayerWireHand->GetAbilitySystemComponent();
-	if(!IsValid(HandASC))
-	{
-		return false;
-	}
-	
-	return Result;
-}
-
 void ULLL_PGA_ControlWireHand::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	const ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(PlayerCharacter->GetWireHand());
-
-	UAbilityTask_WaitGameplayEvent* WireHandGrabTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, GrabEventGameplayTag, nullptr, true, true);
-	WireHandGrabTask->EventReceived.AddDynamic(this, &ULLL_PGA_ControlWireHand::OnGrabbedCallBack);
-	WireHandGrabTask->ReadyForActivation();
-
+	
+	UAbilityTask_WaitGameplayEvent* WireHandReachedTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, ReachedEventGameplayTag, nullptr, true, true);
+	WireHandReachedTask->EventReceived.AddDynamic(this, &ULLL_PGA_ControlWireHand::OnReachedCallBack);
+	WireHandReachedTask->ReadyForActivation();
+	
 	ThrowHand(ActorInfo);
 }
 
@@ -59,16 +34,6 @@ void ULLL_PGA_ControlWireHand::EndAbility(const FGameplayAbilitySpecHandle Handl
 	bIsAlreadyThrown = false;
 	bIsReleaseOnGoing = false;
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-}
-
-void ULLL_PGA_ControlWireHand::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
-{
-	Super::InputPressed(Handle, ActorInfo, ActivationInfo);
-
-	if(bIsAlreadyThrown)
-	{
-		
-	}
 }
 
 void ULLL_PGA_ControlWireHand::ThrowHand(const FGameplayAbilityActorInfo* ActorInfo)
@@ -109,9 +74,10 @@ void ULLL_PGA_ControlWireHand::ReleaseHand(const FGameplayAbilityActorInfo* Acto
 		HandASC->TryActivateAbilitiesByTag(ReleaseHandTags);
 	}
 	bIsReleaseOnGoing = true;
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
-void ULLL_PGA_ControlWireHand::OnGrabbedCallBack(FGameplayEventData Payload)
+void ULLL_PGA_ControlWireHand::OnReachedCallBack(FGameplayEventData Payload)
 {
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	ReleaseHand(CurrentActorInfo);
 }

@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "LLL_ThrownObject.h"
-
 #include "LLL_PlayerWireHand.generated.h"
 
-
+class USphereComponent;
 class ULLL_PlayerWireHandAttributeSet;
 class ULLL_PlayerWireObjectDataAsset;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWireMovementCompleteDelegate);
 
 UCLASS()
 class PROJECT_LLL_API ALLL_PlayerWireHand : public ALLL_ThrownObject
@@ -20,7 +21,14 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_PlayerWireHand();
 
-	FORCEINLINE ULLL_PlayerWireHandAttributeSet* GetWireHandAttributeSet() const {return WireHandAttributeSet; }
+	FORCEINLINE ULLL_PlayerWireHandAttributeSet* GetWireHandAttributeSet() const { return WireHandAttributeSet; }
+	FORCEINLINE USphereComponent* GetCollisionComponent() { return HandCollision; }
+
+	void SetThrowState();
+	void SetReleaseState();
+
+	FWireMovementCompleteDelegate ThrowCompleteDelegate;
+	FWireMovementCompleteDelegate ReleaseCompleteDelegate;
 	
 protected:
 	virtual void PostInitializeComponents() override;
@@ -29,13 +37,23 @@ protected:
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
-	// Called every frame
-	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
-
+	// 기본 컴포넌트 및 객체
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USkeletalMeshComponent> HandMesh;
 
 	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USphereComponent> HandCollision;
+
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_PlayerWireHandAttributeSet> WireHandAttributeSet;
+
+protected:
+	void CheckReached();
+	
+	void RetargetReleaseVelocity();
+
+protected:
+	FTimerDelegate MovementTimerDelegate;
+	
 };
