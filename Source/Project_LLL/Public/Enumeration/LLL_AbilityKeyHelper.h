@@ -8,6 +8,7 @@ enum class EAbilityInputName
 {
 	Attack,
 	Skill,
+	Wire,
 	Dash
 };
 

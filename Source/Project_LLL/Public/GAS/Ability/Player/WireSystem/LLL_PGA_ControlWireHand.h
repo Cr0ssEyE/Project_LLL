@@ -28,15 +28,12 @@ protected:
 	virtual void ReleaseHand(const FGameplayAbilityActorInfo* ActorInfo);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnReachedCallBack(FGameplayEventData Payload);
+	virtual void OnReachedCallBack();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnReleaseCompleteCallBack();
 	
 protected:
-	UPROPERTY(EditDefaultsOnly, Meta=(Categories=Event))
-	FGameplayTag GrabEventGameplayTag;
-
-	UPROPERTY(EditDefaultsOnly, Meta=(Categories=Event))
-	FGameplayTag ReachedEventGameplayTag;
-	
 	uint32 bIsAlreadyThrown : 1;
 	
 	uint32 bIsReleaseOnGoing : 1;

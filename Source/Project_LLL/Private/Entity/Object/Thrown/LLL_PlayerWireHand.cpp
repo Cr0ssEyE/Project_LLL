@@ -8,6 +8,7 @@
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "DataAsset/LLL_PlayerWireObjectDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
@@ -35,25 +36,30 @@ ALLL_PlayerWireHand::ALLL_PlayerWireHand()
 
 	HandMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	HandMesh->SetHiddenInGame(true);
+	
 	bIsGrabbed = false;
 }
 
 void ALLL_PlayerWireHand::SetNormalState()
 {
-	HandMesh->SetVisibility(false);
 	HandMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HandMesh->SetHiddenInGame(true);
+	
 	ProjectileMovement->Velocity = FVector::Zero();
 	ProjectileMovement->Deactivate();
 }
 
 void ALLL_PlayerWireHand::SetThrowState(const FVector Location)
 {
+	SetActorLocation(GetOwner()->GetActorLocation());
 	TargetLocation = Location;
-	HandMesh->SetVisibility(true);
-	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	
 	HandCollision->SetCollisionObjectType(ECC_ENEMY_ONLY);
+	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	HandMesh->SetHiddenInGame(false);
+	
 	ProjectileMovement->Activate();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerWireHand::CheckReached);
 }
@@ -61,9 +67,11 @@ void ALLL_PlayerWireHand::SetThrowState(const FVector Location)
 void ALLL_PlayerWireHand::SetReleaseState(const FVector Location)
 {
 	TargetLocation = Location;
-	HandMesh->SetVisibility(true);
-	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	
 	HandCollision->SetCollisionObjectType(ECC_PLAYER_ONLY);
+	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	HandMesh->SetHiddenInGame(false);
+	
 	ProjectileMovement->Activate();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerWireHand::RetargetReleaseVelocity);
 }
@@ -74,16 +82,6 @@ void ALLL_PlayerWireHand::PostInitializeComponents()
 	ASC->AddSpawnedAttribute(WireHandAttributeSet);
 }
 
-// Called when the game starts or when spawned
-void ALLL_PlayerWireHand::BeginPlay()
-{
-	Super::BeginPlay();
-	if(ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetParentActor()))
-	{
-		SetOwner(PlayerCharacter);
-	}
-}
-
 void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
@@ -91,9 +89,10 @@ void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 	if(IsValid(Monster) && HandCollision->GetCollisionObjectType() == ECC_ENEMY_ONLY)
 	{
 		// PGA_WireHandGrab
-		FGameplayTagContainer GrabTag;
+		FGameplayTagContainer GrabTag(TAG_GAS_WIRE_GRAB);
 		if(ASC->TryActivateAbilitiesByTag(GrabTag))
 		{
+			SetNormalState();
 			bIsGrabbed = true;
 			return;
 		}
@@ -102,20 +101,26 @@ void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor);
 	if(IsValid(PlayerCharacter) && HandCollision->GetCollisionObjectType() == ECC_PLAYER_ONLY)
 	{
-		// PGA
-		FGameplayTagContainer ReleaseCompletedTag;
-		if(ASC->TryActivateAbilitiesByTag(ReleaseCompletedTag))
-		{
-			SetNormalState();
-			ReleaseCompleteDelegate.Broadcast();
-		}
+		SetNormalState();
+		ReleaseCompleteDelegate.Broadcast();
+		// FGameplayTagContainer ReleaseCompletedTag(TAG_GAS_PLAYER_WIRE_RETURN);
+		// if(PlayerCharacter->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ReleaseCompletedTag))
+		// {
+		// 	SetNormalState();
+		// 	ReleaseCompleteDelegate.Broadcast();
+		// }
 	}
 }
 
 void ALLL_PlayerWireHand::CheckReached()
 {
+	if(bIsGrabbed)
+	{
+		return;
+	}
+	
 	float LocationDistance = FVector::Distance(GetActorLocation(), TargetLocation);
-	if(LocationDistance <= CorrectionReachStateDistance || bIsGrabbed)
+	if(LocationDistance <= CorrectionReachStateDistance)
 	{
 		SetNormalState();
 		ThrowCompleteDelegate.Broadcast();

@@ -34,9 +34,7 @@ public:
 	
 protected:
 	virtual void PostInitializeComponents() override;
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
+	
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
 	// 기본 컴포넌트 및 객체

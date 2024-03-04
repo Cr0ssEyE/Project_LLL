@@ -23,8 +23,16 @@ protected:
 
 protected:
 	virtual void GrabAroundEntity();
+
+	virtual void CheckGrabbedTime();
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, DisplayName = "와이어의 그랩 애니메이션")
 	TObjectPtr<UAnimSequence> GrabAnim;
+
+protected:
+	float GrabElapsedTime;
+
+	float MaxGrabDuration;
+	
 };

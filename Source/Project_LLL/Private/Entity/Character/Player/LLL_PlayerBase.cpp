@@ -12,6 +12,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -30,11 +31,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	PlayerAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
-	
-	WireHandActorComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("WireHandComponent"));
-	TSubclassOf<ALLL_PlayerWireHand> WireHand = ALLL_PlayerWireHand::StaticClass();
-	WireHandActorComponent->SetChildActorClass(WireHand);
-	WireHandActorComponent->SetupAttachment(RootComponent);
 	
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
@@ -61,6 +57,9 @@ void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	WireHandActor = Cast<ALLL_PlayerWireHand>(GetWorld()->SpawnActor(ALLL_PlayerWireHand::StaticClass()));
+	WireHandActor->SetOwner(this);
+	
 	if(IsValid(ASC))
 	{
 		for (const auto SkillAbility : PlayerDataAsset->DefaultSkillAbility)
@@ -115,8 +114,9 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction, EAbilityInputName::Skill);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->ControlWireInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::WireAction, EAbilityInputName::Wire);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractiveTargetChangeInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractiveTargetChangeAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
@@ -261,6 +261,25 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 		}
 	}
 	//Attack();
+}
+
+void ALLL_PlayerBase::WireAction(const FInputActionValue& Value, EAbilityInputName InputName)
+{
+	int32 InputID = static_cast<int32>(InputName);
+	FGameplayAbilitySpec* WireSpec = ASC->FindAbilitySpecFromInputID(InputID);
+	if(WireSpec)
+	{
+		CharacterRotateToCursor();
+		if (WireSpec->IsActive())
+		{
+			FGameplayTagContainer RushTag(TAG_GAS_PLAYER_WIRE_RUSH);
+			ASC->TryActivateAbilitiesByTag(RushTag);
+		}
+		else
+		{
+			ASC->TryActivateAbility(WireSpec->Handle);
+		}
+	}
 }
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)

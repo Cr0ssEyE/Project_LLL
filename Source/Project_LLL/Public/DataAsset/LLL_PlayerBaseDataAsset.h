@@ -69,6 +69,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "기본 공격 입력 키")
 	TObjectPtr<UInputAction> AttackInputAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "와이어 액션 입력 키")
+	TObjectPtr<UInputAction> ControlWireInputAction;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "스킬 입력 키")
 	TObjectPtr<UInputAction> SkillInputAction;
 

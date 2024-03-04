@@ -24,3 +24,8 @@ void ULLL_PGA_WireHandGrab::GrabAroundEntity()
 {
 	
 }
+
+void ULLL_PGA_WireHandGrab::CheckGrabbedTime()
+{
+	
+}
