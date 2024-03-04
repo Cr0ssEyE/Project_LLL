@@ -3,10 +3,10 @@
 
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 
-void ULLL_MonsterBaseAnimInstance::SetDataAsset(const ULLL_BaseCharacterDataAsset* InCharacterDataAsset)
+void ULLL_MonsterBaseAnimInstance::NativeInitializeAnimation()
 {
-	Super::SetDataAsset(InCharacterDataAsset);
-	
+	Super::NativeInitializeAnimation();
+
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
 }
 

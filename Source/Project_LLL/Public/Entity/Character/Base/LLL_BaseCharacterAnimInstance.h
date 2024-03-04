@@ -22,7 +22,7 @@ class PROJECT_LLL_API ULLL_BaseCharacterAnimInstance : public UAnimInstance
 public:
 	ULLL_BaseCharacterAnimInstance();
 	
-	FORCEINLINE virtual void SetDataAsset(const ULLL_BaseCharacterDataAsset* InCharacterDataAsset) { CharacterDataAsset = InCharacterDataAsset; }
+	//FORCEINLINE virtual void SetDataAsset(const ULLL_BaseCharacterDataAsset* InCharacterDataAsset) { CharacterDataAsset = InCharacterDataAsset; }
 
 	void PlayDeadAnimation();
 

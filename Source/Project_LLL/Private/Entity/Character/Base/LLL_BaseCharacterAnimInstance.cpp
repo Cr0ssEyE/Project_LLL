@@ -26,6 +26,7 @@ void ULLL_BaseCharacterAnimInstance::NativeInitializeAnimation()
 	if (IsValid(Character))
 	{
 		Movement = Character->GetCharacterMovement();
+		CharacterDataAsset = Character->GetCharacterDataAsset();
 	}
 }
 

@@ -17,7 +17,7 @@ class PROJECT_LLL_API ULLL_MonsterBaseAnimInstance : public ULLL_BaseCharacterAn
 	GENERATED_BODY()
 
 public:
-	virtual void SetDataAsset(const ULLL_BaseCharacterDataAsset* InCharacterDataAsset) override;
+	virtual void NativeInitializeAnimation() override;
 	
 	void PlayAttackAnimation();
 	void PlayDamagedAnimation();
