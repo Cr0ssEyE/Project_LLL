@@ -24,6 +24,9 @@ protected:
 protected:
 	virtual void OwnerLaunchToWireHand();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void OnReleasedCallBack();
+	
 protected:
 	
 };

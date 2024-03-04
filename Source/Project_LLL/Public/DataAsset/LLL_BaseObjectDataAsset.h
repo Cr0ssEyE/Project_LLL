@@ -26,6 +26,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh", DisplayName = "스켈레탈 메시", meta=(EditCondition = "bIsUsingSkeletalMesh == true", EditConditionHides))
 	TObjectPtr<USkeletalMesh> SkeletalMesh;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh", DisplayName = "모델링 사이즈", meta=(DisplayPriority=1))
+	FVector MeshScale = FVector::OneVector;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
 	TSubclassOf<UGameplayEffect> InitEffect;
 	

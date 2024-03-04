@@ -34,7 +34,8 @@ void ULLL_PGA_WireHandThrow::ThrowToCursorLocation()
 	ULLL_PlayerWireHandAttributeSet* WireHandAttributeSet = PlayerWireHand->GetWireHandAttributeSet();
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
 	
-	const FVector MouseLocation = PlayerCharacter->GetMouseLocation();
+	FVector MouseLocation = PlayerCharacter->GetMouseLocation();
+	MouseLocation.Z = PlayerCharacter->GetActorLocation().Z;
 	const FVector ThrowDirection = (MouseLocation - PlayerCharacter->GetActorLocation()).GetSafeNormal();
 
 	PlayerWireHand->SetThrowState(MouseLocation);

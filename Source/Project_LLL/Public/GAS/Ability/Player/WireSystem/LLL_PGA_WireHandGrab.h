@@ -18,6 +18,7 @@ public:
 	ULLL_PGA_WireHandGrab();
 	
 protected:
+	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
@@ -25,11 +26,17 @@ protected:
 	virtual void GrabAroundEntity();
 
 	virtual void CheckGrabbedTime();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnReleasedCallBack();
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, DisplayName = "와이어의 그랩 애니메이션")
 	TObjectPtr<UAnimSequence> GrabAnim;
 
+	UPROPERTY(EditDefaultsOnly, DisplayName = "그랩시 와이어 사이즈 수치")
+	float WireHandOnGrabbedScale = 1.f;
+	
 protected:
 	float GrabElapsedTime;
 

@@ -30,6 +30,7 @@ public:
 	void SetReleaseState(const FVector Location);
 
 	FWireMovementCompleteDelegate ThrowCompleteDelegate;
+	FWireMovementCompleteDelegate OnGrabbedDelegate;
 	FWireMovementCompleteDelegate ReleaseCompleteDelegate;
 	
 protected:

@@ -29,7 +29,6 @@ public:
 
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, ThrowSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, ReleaseSpeed);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, RushSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, CollisionRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, GrabDuration);
 	
@@ -40,9 +39,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ReleaseSpeed;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData RushSpeed;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData CollisionRadius;
 

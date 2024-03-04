@@ -270,7 +270,7 @@ void ALLL_PlayerBase::WireAction(const FInputActionValue& Value, EAbilityInputNa
 	if(WireSpec)
 	{
 		CharacterRotateToCursor();
-		if (WireSpec->IsActive())
+		if (WireSpec->IsActive() && WireHandActor->GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_WIRE_STATE_GRABBED))
 		{
 			FGameplayTagContainer RushTag(TAG_GAS_PLAYER_WIRE_RUSH);
 			ASC->TryActivateAbilitiesByTag(RushTag);

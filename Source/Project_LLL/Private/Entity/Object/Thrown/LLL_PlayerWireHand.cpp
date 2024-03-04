@@ -27,6 +27,8 @@ ALLL_PlayerWireHand::ALLL_PlayerWireHand()
 	WireHandAttributeSet = CreateDefaultSubobject<ULLL_PlayerWireHandAttributeSet>(TEXT("WireHandAttributeSet"));
 
 	HandMesh->SetSkeletalMesh(WireObjectDataAsset->SkeletalMesh);
+	HandMesh->SetRelativeScale3D(WireObjectDataAsset->MeshScale);
+	HandMesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
 	
 	CorrectionReachStateDistance = WireObjectDataAsset->CorrectionReachStateDistance;
 	// 이후 BeginPlay에서 InitEffect를 통해 실제 사용하는 값으로 초기화 해준다. 해당 매직넘버는 비정상적인 동작 방지용
@@ -43,6 +45,7 @@ ALLL_PlayerWireHand::ALLL_PlayerWireHand()
 
 void ALLL_PlayerWireHand::SetNormalState()
 {
+	bIsGrabbed = false;
 	HandMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HandMesh->SetHiddenInGame(true);
@@ -60,7 +63,6 @@ void ALLL_PlayerWireHand::SetThrowState(const FVector Location)
 	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	HandMesh->SetHiddenInGame(false);
 	
-	ProjectileMovement->Activate();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerWireHand::CheckReached);
 }
 
@@ -71,6 +73,10 @@ void ALLL_PlayerWireHand::SetReleaseState(const FVector Location)
 	HandCollision->SetCollisionObjectType(ECC_PLAYER_ONLY);
 	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	HandMesh->SetHiddenInGame(false);
+	
+	FVector WorldLocation = GetActorLocation();
+	K2_DetachFromActor();
+	SetActorLocation(WorldLocation);
 	
 	ProjectileMovement->Activate();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerWireHand::RetargetReleaseVelocity);
@@ -85,15 +91,26 @@ void ALLL_PlayerWireHand::PostInitializeComponents()
 void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
+	
 	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(OtherActor);
 	if(IsValid(Monster) && HandCollision->GetCollisionObjectType() == ECC_ENEMY_ONLY)
 	{
+		if(bIsGrabbed)
+		{
+			return;
+		}
+		
 		// PGA_WireHandGrab
 		FGameplayTagContainer GrabTag(TAG_GAS_WIRE_GRAB);
 		if(ASC->TryActivateAbilitiesByTag(GrabTag))
 		{
-			SetNormalState();
+			HandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			AttachToActor(OtherActor, FAttachmentTransformRules::KeepRelativeTransform);
+			SetActorLocation(OtherActor->GetActorLocation());
+			ProjectileMovement->Velocity = FVector::Zero();
+			ProjectileMovement->Deactivate();
 			bIsGrabbed = true;
+			OnGrabbedDelegate.Broadcast();
 			return;
 		}
 	}
