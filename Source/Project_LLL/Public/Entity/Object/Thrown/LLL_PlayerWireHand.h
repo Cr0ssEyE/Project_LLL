@@ -23,7 +23,8 @@ public:
 
 	FORCEINLINE ULLL_PlayerWireHandAttributeSet* GetWireHandAttributeSet() const { return WireHandAttributeSet; }
 	FORCEINLINE USphereComponent* GetCollisionComponent() { return HandCollision; }
-
+	FORCEINLINE USkeletalMeshComponent* GetHandMesh() { return HandMesh; }
+	
 	void SetNormalState();
 	void SetThrowState(const FVector Location);
 	void SetReleaseState(const FVector Location);

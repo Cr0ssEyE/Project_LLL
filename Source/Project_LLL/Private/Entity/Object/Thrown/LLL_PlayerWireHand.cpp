@@ -41,6 +41,7 @@ ALLL_PlayerWireHand::ALLL_PlayerWireHand()
 
 void ALLL_PlayerWireHand::SetNormalState()
 {
+	HandMesh->SetVisibility(false);
 	HandMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProjectileMovement->Velocity = FVector::Zero();
@@ -50,6 +51,7 @@ void ALLL_PlayerWireHand::SetNormalState()
 void ALLL_PlayerWireHand::SetThrowState(const FVector Location)
 {
 	TargetLocation = Location;
+	HandMesh->SetVisibility(true);
 	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	HandCollision->SetCollisionObjectType(ECC_ENEMY_ONLY);
 	ProjectileMovement->Activate();
@@ -59,6 +61,7 @@ void ALLL_PlayerWireHand::SetThrowState(const FVector Location)
 void ALLL_PlayerWireHand::SetReleaseState(const FVector Location)
 {
 	TargetLocation = Location;
+	HandMesh->SetVisibility(true);
 	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	HandCollision->SetCollisionObjectType(ECC_PLAYER_ONLY);
 	ProjectileMovement->Activate();
@@ -124,6 +127,14 @@ void ALLL_PlayerWireHand::CheckReached()
 void ALLL_PlayerWireHand::RetargetReleaseVelocity()
 {
 	// TODO: 매 틱마다 플레이어 위치 기준으로 방향 조정하기
+	if(HandCollision->GetCollisionObjectType() != ECC_PLAYER_ONLY)
+	{
+		return;
+	}
+	
+	const FVector ToOwnerDirection = (GetOwner()->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	SetActorRotation(ToOwnerDirection.Rotation());
+	ProjectileMovement->Velocity = ToOwnerDirection * WireHandAttributeSet->GetReleaseSpeed();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerWireHand::RetargetReleaseVelocity);
 }
 

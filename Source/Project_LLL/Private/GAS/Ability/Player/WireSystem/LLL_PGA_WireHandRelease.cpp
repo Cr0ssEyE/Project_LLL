@@ -28,6 +28,7 @@ void ULLL_PGA_WireHandRelease::ReleaseToOwnerLocation()
 {
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
-	
+
+	PlayerWireHand->GetHandMesh()->SetAnimation(ReleaseAnim);
 	PlayerWireHand->SetReleaseState(PlayerCharacter->GetActorLocation());
 }

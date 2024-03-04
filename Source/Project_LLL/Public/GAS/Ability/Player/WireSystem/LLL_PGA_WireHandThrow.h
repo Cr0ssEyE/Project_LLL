@@ -24,4 +24,8 @@ protected:
 
 protected:
 	virtual void ThrowToCursorLocation();
+	
+protected:
+	UPROPERTY(EditDefaultsOnly, DisplayName = "와이어의 투척 애니메이션")
+	TObjectPtr<UAnimSequence> ThrowAnim;
 };

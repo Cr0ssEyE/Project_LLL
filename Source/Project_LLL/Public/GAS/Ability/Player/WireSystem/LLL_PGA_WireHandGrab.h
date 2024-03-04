@@ -18,7 +18,13 @@ public:
 	ULLL_PGA_WireHandGrab();
 	
 protected:
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
+	virtual void GrabAroundEntity();
 	
+protected:
+	UPROPERTY(EditDefaultsOnly, DisplayName = "와이어의 그랩 애니메이션")
+	TObjectPtr<UAnimSequence> GrabAnim;
 };
