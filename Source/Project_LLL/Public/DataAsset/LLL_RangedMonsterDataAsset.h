@@ -6,6 +6,7 @@
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "LLL_RangedMonsterDataAsset.generated.h"
 
+class ALLL_ThrownObject;
 /**
  * 
  */
@@ -17,4 +18,7 @@ class PROJECT_LLL_API ULLL_RangedMonsterDataAsset : public ULLL_MonsterBaseDataA
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 예측률")
 	float PredictionRate;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Thrown Object", DisplayName = "투사체")
+	TSubclassOf<ALLL_ThrownObject> ThrownObjectClass;
 };
