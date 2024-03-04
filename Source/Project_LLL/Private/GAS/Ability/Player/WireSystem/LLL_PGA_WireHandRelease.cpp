@@ -3,6 +3,7 @@
 
 #include "GAS/Ability/Player/WireSystem/LLL_PGA_WireHandRelease.h"
 
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
 
 ULLL_PGA_WireHandRelease::ULLL_PGA_WireHandRelease()
@@ -26,6 +27,7 @@ void ULLL_PGA_WireHandRelease::EndAbility(const FGameplayAbilitySpecHandle Handl
 void ULLL_PGA_WireHandRelease::ReleaseToOwnerLocation()
 {
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
-
-	PlayerWireHand->SetReleaseState();
+	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
+	
+	PlayerWireHand->SetReleaseState(PlayerCharacter->GetActorLocation());
 }

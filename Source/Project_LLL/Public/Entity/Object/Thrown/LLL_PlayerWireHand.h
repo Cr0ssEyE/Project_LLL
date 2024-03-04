@@ -24,8 +24,9 @@ public:
 	FORCEINLINE ULLL_PlayerWireHandAttributeSet* GetWireHandAttributeSet() const { return WireHandAttributeSet; }
 	FORCEINLINE USphereComponent* GetCollisionComponent() { return HandCollision; }
 
-	void SetThrowState();
-	void SetReleaseState();
+	void SetNormalState();
+	void SetThrowState(const FVector Location);
+	void SetReleaseState(const FVector Location);
 
 	FWireMovementCompleteDelegate ThrowCompleteDelegate;
 	FWireMovementCompleteDelegate ReleaseCompleteDelegate;
@@ -54,6 +55,12 @@ protected:
 	void RetargetReleaseVelocity();
 
 protected:
-	FTimerDelegate MovementTimerDelegate;
-	
+	UPROPERTY()
+	FVector TargetLocation;
+
+	UPROPERTY()
+	float CorrectionReachStateDistance;
+
+	UPROPERTY()
+	uint32 bIsGrabbed : 1;
 };

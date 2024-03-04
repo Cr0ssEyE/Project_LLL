@@ -18,5 +18,8 @@ public:
 	ULLL_PlayerWireObjectDataAsset();
 
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Wire", DisplayName = "발사시 목표지점 도착 처리 보정값")
+	float CorrectionReachStateDistance;
+
 	
 };

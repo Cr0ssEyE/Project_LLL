@@ -20,10 +20,10 @@ public:
 	ULLL_BaseObjectDataAsset();
 	
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "StaticMesh", DisplayName = "스태틱 메시", meta=(EditCondition = "bIsUsingSkeletalMesh == false", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh", DisplayName = "스태틱 메시", meta=(EditCondition = "bIsUsingSkeletalMesh == false", EditConditionHides))
 	TObjectPtr<UStaticMesh> StaticMesh;
 
-	UPROPERTY(EditDefaultsOnly, Category = "StaticMesh", DisplayName = "스켈레탈 메시", meta=(EditCondition = "bIsUsingSkeletalMesh == true", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh", DisplayName = "스켈레탈 메시", meta=(EditCondition = "bIsUsingSkeletalMesh == true", EditConditionHides))
 	TObjectPtr<USkeletalMesh> SkeletalMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")

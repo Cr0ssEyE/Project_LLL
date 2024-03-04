@@ -31,6 +31,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, ReleaseSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, GrabRange);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, RushSpeed);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, CollisionRadius);
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
@@ -44,5 +45,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData RushSpeed;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData CollisionRadius;
 };
