@@ -93,7 +93,6 @@ void ALLL_BaseCharacter::BeginPlay()
 
 	if(IsValid(CharacterAnimInstance))
 	{
-		CharacterAnimInstance->SetDataAsset(CharacterDataAsset);
 		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
 	}
 

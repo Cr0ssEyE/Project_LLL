@@ -18,8 +18,8 @@ class PROJECT_LLL_API ALLL_RangedMonster : public ALLL_MonsterBase
 
 public:
 	ALLL_RangedMonster();
-	
-	void ThrowToPlayer();
+
+	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPooling; }
 	
 protected:
 	virtual void BeginPlay() override;

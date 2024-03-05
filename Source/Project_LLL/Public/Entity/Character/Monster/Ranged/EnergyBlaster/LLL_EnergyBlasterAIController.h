@@ -13,7 +13,5 @@ UCLASS()
 class PROJECT_LLL_API ALLL_EnergyBlasterAIController : public ALLL_RangedMonsterAIController
 {
 	GENERATED_BODY()
-
-public:
-	ALLL_EnergyBlasterAIController();
+	
 };

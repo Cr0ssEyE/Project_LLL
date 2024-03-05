@@ -14,7 +14,4 @@ class PROJECT_LLL_API ULLL_RangedMonsterAnimInstance : public ULLL_MonsterBaseAn
 {
 	GENERATED_BODY()
 
-protected:
-	UFUNCTION()
-	void AnimNotify_Release();
 };

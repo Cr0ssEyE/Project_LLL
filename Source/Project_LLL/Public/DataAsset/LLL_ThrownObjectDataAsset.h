@@ -15,5 +15,6 @@ class PROJECT_LLL_API ULLL_ThrownObjectDataAsset : public ULLL_BaseObjectDataAss
 	GENERATED_BODY()
 
 public:
-	
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "데미지 이펙트")
+	TSubclassOf<UGameplayEffect> DamageEffect;
 };
