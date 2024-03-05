@@ -23,19 +23,19 @@ public:
 
 	FORCEINLINE ULLL_PlayerWireHandAttributeSet* GetWireHandAttributeSet() const { return WireHandAttributeSet; }
 	FORCEINLINE USphereComponent* GetCollisionComponent() { return HandCollision; }
-
+	FORCEINLINE USkeletalMeshComponent* GetHandMesh() { return HandMesh; }
+	
 	void SetNormalState();
 	void SetThrowState(const FVector Location);
 	void SetReleaseState(const FVector Location);
 
 	FWireMovementCompleteDelegate ThrowCompleteDelegate;
+	FWireMovementCompleteDelegate OnGrabbedDelegate;
 	FWireMovementCompleteDelegate ReleaseCompleteDelegate;
 	
 protected:
 	virtual void PostInitializeComponents() override;
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
+	
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
 	// 기본 컴포넌트 및 객체

@@ -47,6 +47,7 @@ void ALLL_BaseObject::SetDefaultInformation()
 	if (IsValid(BaseObjectDataAsset))
 	{
 		BaseMesh->SetStaticMesh(BaseObjectDataAsset->StaticMesh);
+		BaseMesh->SetRelativeScale3D(BaseObjectDataAsset->MeshScale);
 	}
 }
 

@@ -24,4 +24,12 @@ protected:
 	
 protected:
 	virtual void ReleaseToOwnerLocation();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnReleaseCompleteCallBack();
+	
+protected:
+	UPROPERTY(EditDefaultsOnly, DisplayName = "와이어의 회수 애니메이션")
+	TObjectPtr<UAnimSequence> ReleaseAnim;
+	
 };
