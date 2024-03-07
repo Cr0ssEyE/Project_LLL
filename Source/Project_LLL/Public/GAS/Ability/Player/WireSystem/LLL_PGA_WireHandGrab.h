@@ -36,6 +36,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, DisplayName = "와이어의 그랩 애니메이션")
 	TObjectPtr<UAnimSequence> GrabAnim;
 
+	UPROPERTY(EditDefaultsOnly, DisplayName = "그랩 대상에게 적용되는 이펙트")
+	TSubclassOf<UGameplayEffect> GrabTargetApplyEffect;
+	
 protected:
 	float GrabElapsedTime;
 

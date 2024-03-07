@@ -3,6 +3,7 @@
 
 #include "GAS/Ability/Player/WireSystem/LLL_PGA_WireHandGrab.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -97,6 +98,8 @@ void ULLL_PGA_WireHandGrab::GrabTargetEntity()
 	WireHandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	PlayerWireHand->AttachToActor(PlayerWireHand->GetGrabbedActor(), FAttachmentTransformRules::KeepRelativeTransform);
 	PlayerWireHand->SetActorLocation(PlayerWireHand->GetGrabbedActor()->GetActorLocation());
+	
+	BP_ApplyGameplayEffectToTarget(UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(PlayerWireHand->GetGrabbedActor()), GrabTargetApplyEffect);
 	
 	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileComponent();
 	WireHandProjectile->Velocity = FVector::Zero();
