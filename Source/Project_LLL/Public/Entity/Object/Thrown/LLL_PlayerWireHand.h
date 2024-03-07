@@ -25,9 +25,7 @@ public:
 	FORCEINLINE USphereComponent* GetCollisionComponent() { return HandCollision; }
 	FORCEINLINE USkeletalMeshComponent* GetHandMesh() { return HandMesh; }
 	
-	void SetNormalState();
-	void SetThrowState(const FVector Location);
-	void SetReleaseState(const FVector Location);
+	void SetHiddenState();
 
 	FWireMovementCompleteDelegate ThrowCompleteDelegate;
 	FWireMovementCompleteDelegate OnGrabbedDelegate;
@@ -50,17 +48,6 @@ protected:
 	TObjectPtr<ULLL_PlayerWireHandAttributeSet> WireHandAttributeSet;
 
 protected:
-	void CheckReached();
-	
-	void RetargetReleaseVelocity();
-
-protected:
-	UPROPERTY()
-	FVector TargetLocation;
-
-	UPROPERTY()
-	float CorrectionReachStateDistance;
-
 	UPROPERTY()
 	uint32 bIsGrabbed : 1;
 };

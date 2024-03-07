@@ -25,6 +25,8 @@ protected:
 protected:
 	virtual void ReleaseToOwnerLocation();
 
+	virtual void RetargetReleaseVelocity();
+	
 	UFUNCTION(BlueprintCallable)
 	virtual void OnReleaseCompleteCallBack();
 	

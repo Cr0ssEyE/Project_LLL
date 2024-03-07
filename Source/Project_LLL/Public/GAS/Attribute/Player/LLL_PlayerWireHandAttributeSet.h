@@ -28,6 +28,7 @@ public:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, ThrowSpeed);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, CorrectionReachStateDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, ReleaseSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, CollisionRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, GrabDuration);
@@ -36,6 +37,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ThrowSpeed;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData CorrectionReachStateDistance;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ReleaseSpeed;
 	

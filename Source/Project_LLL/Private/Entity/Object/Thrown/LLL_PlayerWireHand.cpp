@@ -30,7 +30,6 @@ ALLL_PlayerWireHand::ALLL_PlayerWireHand()
 	HandMesh->SetRelativeScale3D(WireObjectDataAsset->MeshScale);
 	HandMesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
 	
-	CorrectionReachStateDistance = WireObjectDataAsset->CorrectionReachStateDistance;
 	// 이후 BeginPlay에서 InitEffect를 통해 실제 사용하는 값으로 초기화 해준다. 해당 매직넘버는 비정상적인 동작 방지용
 	HandCollision->SetSphereRadius(100.f);
 	RootComponent = HandCollision;
@@ -43,43 +42,16 @@ ALLL_PlayerWireHand::ALLL_PlayerWireHand()
 	bIsGrabbed = false;
 }
 
-void ALLL_PlayerWireHand::SetNormalState()
+void ALLL_PlayerWireHand::SetHiddenState()
 {
 	bIsGrabbed = false;
 	HandMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HandMesh->SetHiddenInGame(true);
+	SetActorLocation(GetOwner()->GetActorLocation());
 	
 	ProjectileMovement->Velocity = FVector::Zero();
 	ProjectileMovement->Deactivate();
-}
-
-void ALLL_PlayerWireHand::SetThrowState(const FVector Location)
-{
-	SetActorLocation(GetOwner()->GetActorLocation());
-	TargetLocation = Location;
-	
-	HandCollision->SetCollisionObjectType(ECC_ENEMY_ONLY);
-	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	HandMesh->SetHiddenInGame(false);
-	
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerWireHand::CheckReached);
-}
-
-void ALLL_PlayerWireHand::SetReleaseState(const FVector Location)
-{
-	TargetLocation = Location;
-	
-	HandCollision->SetCollisionObjectType(ECC_PLAYER_ONLY);
-	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	HandMesh->SetHiddenInGame(false);
-	
-	FVector WorldLocation = GetActorLocation();
-	K2_DetachFromActor();
-	SetActorLocation(WorldLocation);
-	
-	ProjectileMovement->Activate();
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerWireHand::RetargetReleaseVelocity);
 }
 
 void ALLL_PlayerWireHand::PostInitializeComponents()
@@ -118,45 +90,7 @@ void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor);
 	if(IsValid(PlayerCharacter) && HandCollision->GetCollisionObjectType() == ECC_PLAYER_ONLY)
 	{
-		SetNormalState();
+		SetHiddenState();
 		ReleaseCompleteDelegate.Broadcast();
-		// FGameplayTagContainer ReleaseCompletedTag(TAG_GAS_PLAYER_WIRE_RETURN);
-		// if(PlayerCharacter->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ReleaseCompletedTag))
-		// {
-		// 	SetNormalState();
-		// 	ReleaseCompleteDelegate.Broadcast();
-		// }
 	}
 }
-
-void ALLL_PlayerWireHand::CheckReached()
-{
-	if(bIsGrabbed)
-	{
-		return;
-	}
-	
-	float LocationDistance = FVector::Distance(GetActorLocation(), TargetLocation);
-	if(LocationDistance <= CorrectionReachStateDistance)
-	{
-		SetNormalState();
-		ThrowCompleteDelegate.Broadcast();
-		return;
-	}
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerWireHand::CheckReached);
-}
-
-void ALLL_PlayerWireHand::RetargetReleaseVelocity()
-{
-	// TODO: 매 틱마다 플레이어 위치 기준으로 방향 조정하기
-	if(HandCollision->GetCollisionObjectType() != ECC_PLAYER_ONLY)
-	{
-		return;
-	}
-	
-	const FVector ToOwnerDirection = (GetOwner()->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	SetActorRotation(ToOwnerDirection.Rotation());
-	ProjectileMovement->Velocity = ToOwnerDirection * WireHandAttributeSet->GetReleaseSpeed();
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerWireHand::RetargetReleaseVelocity);
-}
-
