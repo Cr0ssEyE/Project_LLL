@@ -28,5 +28,7 @@ protected:
 	virtual void OnReleasedCallBack();
 	
 protected:
-	
+	FVector Direction;
+
+	float RushSpeed;
 };

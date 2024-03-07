@@ -21,7 +21,7 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 	
 	if (IsValid(BaseMesh))
 	{
-		BaseMesh->SetCollisionObjectType(ECC_PLAYER_ONLY);
+		BaseMesh->SetCollisionObjectType(ECC_PLAYER_HIT);
 	}
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));

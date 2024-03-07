@@ -37,7 +37,7 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		FColor DebugColor = FColor::Red;
 
 		TArray<FOverlapResult> OverlapResults;
-		if (GetWorld()->OverlapMultiByChannel(OverlapResults, Center, Rot, ECC_PLAYER_ONLY, Shape))
+		if (GetWorld()->OverlapMultiByChannel(OverlapResults, Center, Rot, ECC_PLAYER_HIT, Shape))
 		{
 			for (FOverlapResult const& OverlapResult : OverlapResults)
 			{

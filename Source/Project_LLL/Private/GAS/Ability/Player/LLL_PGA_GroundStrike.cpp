@@ -38,8 +38,11 @@ void ULLL_PGA_GroundStrike::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		return;
 	}
 
-	PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-
+	if(PlayerCharacter->GetCharacterMovement()->IsWalking())
+	{
+		PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	}
+	
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("SkillMontage"), AbilityActionMontage, 1.0f);
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_GroundStrike::OnCompleteCallBack);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_GroundStrike::OnInterruptedCallBack);

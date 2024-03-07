@@ -21,15 +21,20 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_PlayerWireHand();
 
-	FORCEINLINE ULLL_PlayerWireHandAttributeSet* GetWireHandAttributeSet() const { return WireHandAttributeSet; }
-	FORCEINLINE USphereComponent* GetCollisionComponent() { return HandCollision; }
-	FORCEINLINE USkeletalMeshComponent* GetHandMesh() { return HandMesh; }
-	
-	void SetHiddenState();
-
+public:
 	FWireMovementCompleteDelegate ThrowCompleteDelegate;
 	FWireMovementCompleteDelegate OnGrabbedDelegate;
 	FWireMovementCompleteDelegate ReleaseCompleteDelegate;
+
+public:
+	FORCEINLINE ULLL_PlayerWireHandAttributeSet* GetWireHandAttributeSet() const { return WireHandAttributeSet; }
+	FORCEINLINE USphereComponent* GetCollisionComponent() { return HandCollision; }
+	FORCEINLINE USkeletalMeshComponent* GetHandMesh() { return HandMesh; }
+	FORCEINLINE AActor* GetGrabbedActor() const { return GrabbedActor; }
+	
+public:
+	FORCEINLINE void SetGrabbedActor(AActor* Actor) { GrabbedActor = Actor; }
+	void SetHiddenState();
 	
 protected:
 	virtual void PostInitializeComponents() override;
@@ -47,6 +52,10 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_PlayerWireHandAttributeSet> WireHandAttributeSet;
 
+protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<AActor> GrabbedActor;
+	
 protected:
 	UPROPERTY()
 	uint32 bIsGrabbed : 1;

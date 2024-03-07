@@ -23,6 +23,8 @@ protected:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
 protected:
+	virtual bool CheckOwnerAlreadyOverlapped();
+	
 	virtual void ReleaseToOwnerLocation();
 
 	virtual void RetargetReleaseVelocity();

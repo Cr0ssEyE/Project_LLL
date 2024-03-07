@@ -23,7 +23,9 @@ protected:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
-	virtual void GrabAroundEntity();
+	virtual bool TryGrabAroundEntity(const FGameplayAbilitySpecHandle Handle,const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const;
+	
+	virtual void GrabTargetEntity();
 
 	virtual void CheckGrabbedTime();
 
@@ -34,9 +36,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, DisplayName = "와이어의 그랩 애니메이션")
 	TObjectPtr<UAnimSequence> GrabAnim;
 
-	UPROPERTY(EditDefaultsOnly, DisplayName = "그랩시 와이어 사이즈 수치")
-	float WireHandOnGrabbedScale = 1.f;
-	
 protected:
 	float GrabElapsedTime;
 

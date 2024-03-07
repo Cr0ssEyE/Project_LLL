@@ -48,10 +48,11 @@ void ALLL_PlayerWireHand::SetHiddenState()
 	HandMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HandMesh->SetHiddenInGame(true);
-	SetActorLocation(GetOwner()->GetActorLocation());
 	
 	ProjectileMovement->Velocity = FVector::Zero();
 	ProjectileMovement->Deactivate();
+
+	SetActorLocation(GetOwner()->GetActorLocation());
 }
 
 void ALLL_PlayerWireHand::PostInitializeComponents()
@@ -65,7 +66,7 @@ void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 	
 	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(OtherActor);
-	if(IsValid(Monster) && HandCollision->GetCollisionObjectType() == ECC_ENEMY_ONLY)
+	if(IsValid(Monster) && HandCollision->GetCollisionObjectType() == ECC_ENEMY_HIT)
 	{
 		if(bIsGrabbed)
 		{
@@ -74,13 +75,10 @@ void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 		
 		// PGA_WireHandGrab
 		FGameplayTagContainer GrabTag(TAG_GAS_WIRE_GRAB);
+		ASC->TryActivateAbilitiesByTag(GrabTag);
 		if(ASC->TryActivateAbilitiesByTag(GrabTag))
 		{
-			HandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			AttachToActor(OtherActor, FAttachmentTransformRules::KeepRelativeTransform);
-			SetActorLocation(OtherActor->GetActorLocation());
-			ProjectileMovement->Velocity = FVector::Zero();
-			ProjectileMovement->Deactivate();
+			GrabbedActor = OtherActor;
 			bIsGrabbed = true;
 			OnGrabbedDelegate.Broadcast();
 			return;
@@ -88,7 +86,7 @@ void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 
 	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor);
-	if(IsValid(PlayerCharacter) && HandCollision->GetCollisionObjectType() == ECC_PLAYER_ONLY)
+	if(IsValid(PlayerCharacter) && (HandCollision->GetCollisionObjectType() == ECC_PLAYER_HIT || HandCollision->GetCollisionObjectType() == ECC_PLAYER_CHECK))
 	{
 		SetHiddenState();
 		ReleaseCompleteDelegate.Broadcast();

@@ -20,6 +20,7 @@
 #include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
 #include "Enumeration/LLL_AbilityKeyHelper.h"
 #include "Game/ProtoGameInstance.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
@@ -36,6 +37,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
 	if (IsValid(CharacterDataAsset))
 	{
+		GetCharacterMovement()->MaxFlySpeed = 10000.f;
+		
 		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 		
 		Camera->SetFieldOfView(PlayerDataAsset->CameraFOV);
@@ -211,7 +214,10 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	
 	MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
-	AddMovementInput(MoveDirection, 1.f);
+	if(GetCharacterMovement()->IsWalking())
+	{
+		AddMovementInput(MoveDirection, 1.f);
+	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

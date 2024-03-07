@@ -80,10 +80,10 @@ FGameplayAbilityTargetDataHandle ALLL_TA_TraceBase::MakeTargetData() const
 	switch (TraceTarget)
 	{
 	case ESelectTraceTarget::Player:
-		TraceChannel = ECC_PLAYER_ONLY;
+		TraceChannel = ECC_PLAYER_HIT;
 		break;
 	case ESelectTraceTarget::Monster:
-		TraceChannel = ECC_ENEMY_ONLY;
+		TraceChannel = ECC_ENEMY_HIT;
 		break;
 	case ESelectTraceTarget::AllEntity:
 		TraceChannel = ECC_Visibility;

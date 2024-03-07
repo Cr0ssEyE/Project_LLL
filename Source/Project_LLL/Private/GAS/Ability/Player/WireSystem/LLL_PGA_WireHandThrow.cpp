@@ -30,8 +30,13 @@ void ULLL_PGA_WireHandThrow::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	// Cancel되지 않고 종료한 경우 = 마우스 커서 위치에 도달해 회수 상태로 전환한 경우
 	if(!bWasCancelled)
 	{
-		const FGameplayTagContainer ReleaseTag(TAG_GAS_WIRE_RELEASE);
-		GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(ReleaseTag);
+		// 단, 도달한 위치 주변에 몬스터가 있다면 그랩으로 전환
+		const FGameplayTagContainer GrabTag(TAG_GAS_WIRE_GRAB);
+		if(!GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(GrabTag))
+		{
+			const FGameplayTagContainer ReleaseTag(TAG_GAS_WIRE_RELEASE);
+			GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(ReleaseTag);
+		}
 	}
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
@@ -52,7 +57,7 @@ void ULLL_PGA_WireHandThrow::ThrowToCursorLocation()
 	USphereComponent* WireHandCollision = PlayerWireHand->GetCollisionComponent();
 	USkeletalMeshComponent* HandMesh = PlayerWireHand->GetHandMesh();
 	
-	WireHandCollision->SetCollisionObjectType(ECC_ENEMY_ONLY);
+	WireHandCollision->SetCollisionObjectType(ECC_ENEMY_HIT);
 	WireHandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	HandMesh->SetHiddenInGame(false);
 	HandMesh->SetAnimation(ThrowAnim);
