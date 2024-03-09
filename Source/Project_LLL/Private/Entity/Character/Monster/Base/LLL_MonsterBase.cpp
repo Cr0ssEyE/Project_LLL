@@ -15,8 +15,6 @@
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
-	MonsterAttributeSet = CreateDefaultSubobject<ULLL_MonsterAttributeSet>(TEXT("MonsterAttributes"));
-	
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -27,11 +25,6 @@ void ALLL_MonsterBase::BeginPlay()
 	Super::BeginPlay();
 
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
-
-	if (IsValid(ASC))
-	{
-		ASC->AddSpawnedAttribute(MonsterAttributeSet);
-	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

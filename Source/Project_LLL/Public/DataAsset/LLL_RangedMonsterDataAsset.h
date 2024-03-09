@@ -16,9 +16,6 @@ class PROJECT_LLL_API ULLL_RangedMonsterDataAsset : public ULLL_MonsterBaseDataA
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 예측률")
-	float PredictionRate;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Thrown Object", DisplayName = "투사체")
 	TSubclassOf<ALLL_ThrownObject> ThrownObjectClass;
 };

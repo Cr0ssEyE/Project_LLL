@@ -37,9 +37,6 @@ public:
 	FVector MeshSize = FVector::OneVector;
 	
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "기본 이동속도")
-	float MoveSpeed;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "기본 가속도")
 	float AccelerateSpeed;
 	
@@ -50,15 +47,6 @@ public:
 	float TurnSpeed;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 체력")
-	uint32 Health;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 보호막")
-	uint32 ShieldAmount;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 공격력")
-	uint32 OffensePower;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 공격 거리")
 	float AttackDistance;
 

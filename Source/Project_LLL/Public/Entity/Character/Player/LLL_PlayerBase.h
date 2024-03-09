@@ -57,9 +57,6 @@ private:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerUIManager> PlayerUIManager;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerAttributeSet> PlayerAttributeSet;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ALLL_PlayerWireHand> WireHandActor;
@@ -99,5 +96,4 @@ protected:
 	virtual void Dead() override;
 	virtual void DeadMontageEndEvent() override;
 	virtual void Attack() override;
-	
 };
