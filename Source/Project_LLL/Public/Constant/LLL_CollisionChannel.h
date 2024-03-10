@@ -11,8 +11,10 @@
 #define ECC_GIMMICK ECC_EngineTraceChannel3
 
 // Trace Channel
-#define ECC_PLAYER_ONLY ECC_GameTraceChannel11
-#define ECC_ENEMY_ONLY ECC_GameTraceChannel12
+#define ECC_PLAYER_HIT ECC_GameTraceChannel11
+#define ECC_ENEMY_HIT ECC_GameTraceChannel12
+#define ECC_PLAYER_CHECK ECC_GameTraceChannel13
+#define ECC_ENTITY_CHECK ECC_GameTraceChannel14
 
 // Collision Profile
 #define CP_STATIC_ONLY TEXT("IgnoreOnlyPawn")

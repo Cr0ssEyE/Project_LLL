@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DataAsset/LLL_ThrownObjectData.h"
+#include "DataAsset/LLL_ThrownObjectDataAsset.h"
 #include "Entity/Object/LLL_BaseObject.h"
 #include "LLL_ThrownObject.generated.h"
 
@@ -20,21 +20,23 @@ public:
 	ALLL_ThrownObject();
 
 	FORCEINLINE float GetSpeed() const { return Speed; }
+	FORCEINLINE UProjectileMovementComponent* GetProjectileComponent() { return ProjectileMovement; }
 	
-	void Throw(AActor* NewOwner);
+	virtual void Throw(AActor* NewOwner);
 
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
-private:
-	float Speed;
-
-	UPROPERTY(VisibleAnywhere)
-	float OffensePower;
-	
+protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<const ULLL_ThrownObjectData> ThrownObjectData;
+	TObjectPtr<const ULLL_ThrownObjectDataAsset> ThrownObjectDataAsset;
+	
+protected:
+	float Speed;
+
+	UPROPERTY(VisibleAnywhere)
+	float OffensePower;
 };

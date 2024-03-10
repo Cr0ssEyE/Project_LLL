@@ -18,37 +18,6 @@ ALLL_RangedMonster::ALLL_RangedMonster()
 	ObjectPooling = CreateDefaultSubobject<ULLL_ObjectPoolingComponent>(TEXT("ObjectPooling"));
 }
 
-void ALLL_RangedMonster::ThrowToPlayer()
-{
-	ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(ObjectPooling->GetActor(ALLL_ThrownObject::StaticClass()));
-	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
-
-	if (IsValid(ThrownObject) && IsValid(PlayerBase))
-	{
-		const float Speed = ThrownObject->GetSpeed();
-		const float Distance = GetDistanceTo(PlayerBase);
-		const FVector StartLocation = GetActorLocation();
-		const FVector PredictedMove = PlayerBase->GetVelocity() * Distance / Speed;
-		const FVector PredictedLocation = PlayerBase->GetActorLocation() + PredictedMove * RangedMonsterDataAsset->PredictionRate;
-		const FVector PredictedDirection = (PredictedLocation - StartLocation).GetSafeNormal();
-		
-		const FRotator PredictedRotation = FRotationMatrix::MakeFromX(PredictedDirection).Rotator();
-	
-		ThrownObject->SetActorLocationAndRotation(StartLocation, PredictedRotation);
-		ThrownObject->Throw(this);
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckMonsterHitCheckDebug())
-			{
-				DrawDebugLine(GetWorld(), StartLocation, PredictedLocation, FColor::Yellow, false, 1.f);
-			}
-		}
-#endif
-	}
-}
-
 void ALLL_RangedMonster::BeginPlay()
 {
 	Super::BeginPlay();

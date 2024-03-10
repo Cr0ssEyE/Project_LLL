@@ -4,6 +4,7 @@
 #include "GAS/TargetActor/LLL_TA_TraceBase.h"
 
 #include "Abilities/GameplayAbility.h"
+#include "Constant/LLL_CollisionChannel.h"
 
 
 // Sets default values
@@ -57,7 +58,6 @@ void ALLL_TA_TraceBase::ConfirmTargetingAndContinue()
 		FGameplayAbilityTargetDataHandle DataHandle = MakeTargetData();
 		TargetDataReadyDelegate.Broadcast(DataHandle);
 	}
-	
 }
 
 FGameplayAbilityTargetDataHandle ALLL_TA_TraceBase::MakeTargetData() const
@@ -76,6 +76,22 @@ FGameplayAbilityTargetDataHandle ALLL_TA_TraceBase::MakeTargetData() const
 	default:
 		checkNoEntry();
 	}
+
+	switch (TraceTarget)
+	{
+	case ESelectTraceTarget::Player:
+		TraceChannel = ECC_PLAYER_HIT;
+		break;
+	case ESelectTraceTarget::Monster:
+		TraceChannel = ECC_ENEMY_HIT;
+		break;
+	case ESelectTraceTarget::AllEntity:
+		TraceChannel = ECC_Visibility;
+		break;
+	default:
+		checkNoEntry();
+	}
+	
 	return TraceResult();
 }
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DataAsset/LLL_InteractiveObjectData.h"
+#include "DataAsset/LLL_InteractiveObjectDataAsset.h"
 #include "Entity/Object/LLL_BaseObject.h"
 #include "GameFramework/Actor.h"
 #include "Interface/LLL_InteractiveEntityInterface.h"
@@ -30,9 +30,6 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UBoxComponent> InteractOnlyCollisionBox;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_InteractiveObjectData> InteractiveObjectData;
 	
 	UPROPERTY()
 	uint8 bIsEnabled : 1;

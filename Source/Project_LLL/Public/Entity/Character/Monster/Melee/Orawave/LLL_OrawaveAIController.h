@@ -14,6 +14,4 @@ class PROJECT_LLL_API ALLL_OrawaveAIController : public ALLL_MeleeMonsterAIContr
 {
 	GENERATED_BODY()
 
-public:
-	ALLL_OrawaveAIController();
 };

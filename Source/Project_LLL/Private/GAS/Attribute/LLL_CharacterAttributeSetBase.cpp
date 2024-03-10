@@ -5,10 +5,21 @@
 
 #include "GameplayEffectExtension.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ULLL_CharacterAttributeSetBase::ULLL_CharacterAttributeSetBase()
 {
 	
+}
+
+void ULLL_CharacterAttributeSetBase::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+	if(Attribute == GetMoveSpeedAttribute())
+	{
+		ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwningActor());
+		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GetMoveSpeed();
+	}
 }
 
 bool ULLL_CharacterAttributeSetBase::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)

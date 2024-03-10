@@ -3,6 +3,7 @@
 
 #include "Entity/Object/Thrown/LLL_ThrownObject.h"
 
+#include "AbilitySystemComponent.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
@@ -15,12 +16,12 @@
 
 ALLL_ThrownObject::ALLL_ThrownObject()
 {
-	BaseObjectData = FLLLConstructorHelper::FindAndGetObject<ULLL_ThrownObjectData>(PATH_THROWN_OBJECT_DATA, EAssertionLevel::Check);
-	ThrownObjectData = Cast<ULLL_ThrownObjectData>(BaseObjectData);
+	BaseObjectDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_ThrownObjectDataAsset>(PATH_THROWN_OBJECT_DATA, EAssertionLevel::Check);
+	ThrownObjectDataAsset = Cast<ULLL_ThrownObjectDataAsset>(BaseObjectDataAsset);
 	
 	if (IsValid(BaseMesh))
 	{
-		BaseMesh->SetCollisionObjectType(ECC_PLAYER_ONLY);
+		BaseMesh->SetCollisionObjectType(ECC_PLAYER_HIT);
 	}
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
@@ -54,9 +55,14 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	{
 		if (ALLL_RangedMonster* RangedMonster = Cast<ALLL_RangedMonster>(GetOwner()))
 		{
-			const float OffencePower = 10.0f;
-			const FDamageEvent DamageEvent;
-			Player->TakeDamage(OffencePower, DamageEvent, RangedMonster->GetController(), RangedMonster);
+			// GE 기반으로 플레이어에게 데미지
+			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+			EffectContextHandle.AddSourceObject(this);
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, 1.0, EffectContextHandle);
+			if(EffectSpecHandle.IsValid())
+			{
+				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());
+			}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

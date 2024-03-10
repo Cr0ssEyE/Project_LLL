@@ -3,6 +3,7 @@
 
 #include "Entity/Object/LLL_BaseObject.h"
 
+#include "AbilitySystemComponent.h"
 #include "Components/BoxComponent.h"
 
 
@@ -12,7 +13,8 @@ ALLL_BaseObject::ALLL_BaseObject()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 }
 
 void ALLL_BaseObject::PostLoad()
@@ -42,9 +44,10 @@ void ALLL_BaseObject::PostInitializeComponents()
 
 void ALLL_BaseObject::SetDefaultInformation()
 {
-	if (IsValid(BaseObjectData))
+	if (IsValid(BaseObjectDataAsset))
 	{
-		BaseMesh->SetStaticMesh(BaseObjectData->Mesh);
+		BaseMesh->SetStaticMesh(BaseObjectDataAsset->StaticMesh);
+		BaseMesh->SetRelativeScale3D(BaseObjectDataAsset->MeshScale);
 	}
 }
 
@@ -52,7 +55,31 @@ void ALLL_BaseObject::SetDefaultInformation()
 void ALLL_BaseObject::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if(IsValid(ASC))
+	{
+		ASC->InitAbilityActorInfo(this, this);
 
+		for (const auto ActiveAbility : BaseObjectDataAsset->ActiveGameplayAbility)
+		{
+			if(IsValid(ActiveAbility))
+			{
+				FGameplayAbilitySpec AbilitySpec(ActiveAbility);
+				ASC->GiveAbility(AbilitySpec);
+			}
+		}
+	}
+	
+	if(IsValid(BaseObjectDataAsset->InitEffect))
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(BaseObjectDataAsset->InitEffect, 1.0, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
 }
 
 // Called every frame

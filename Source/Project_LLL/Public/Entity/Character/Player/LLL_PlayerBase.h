@@ -9,6 +9,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ALLL_PlayerWireHand;
 class ULLL_PlayerAttributeSet;
 class ULLL_PlayerWeaponComponent;
 class ULLL_PlayerAnimInstance;
@@ -36,11 +37,14 @@ public:
 
 	// 외부 접근용
 public:
+	// TODO: GAS로 전환
 	void AddInteractableObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
 
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
-
+	FORCEINLINE ALLL_PlayerWireHand* GetWireHand() const { return WireHandActor; }
+	FVector GetMouseLocation() const;
+	
 	// 카메라
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -56,11 +60,16 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerAttributeSet> PlayerAttributeSet;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ALLL_PlayerWireHand> WireHandActor;
+	
 	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);
 	void DashAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void AttackAction(const FInputActionValue& Value, EAbilityInputName InputName);
+	void WireAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void SkillAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void InteractAction(const FInputActionValue& Value);
 	void InteractiveTargetChangeAction(const FInputActionValue& Value);
