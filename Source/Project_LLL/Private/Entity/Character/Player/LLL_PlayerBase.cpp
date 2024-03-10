@@ -31,7 +31,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
-	PlayerAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
+	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
 	
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
@@ -73,15 +73,6 @@ void ALLL_PlayerBase::BeginPlay()
 				SkillSpec.InputID = static_cast<int32>(SkillAbility.Key);
 				ASC->GiveAbility(SkillSpec);
 			}
-		}
-		// GE 기반으로 자신의 어트리뷰트 초기화
-		ASC->AddSpawnedAttribute(PlayerAttributeSet);
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
-		FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->InitEffect, 1.0, EffectContextHandle);
-		if(EffectSpecHandle.IsValid())
-		{
-			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 	}
 }
@@ -250,7 +241,6 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputNa
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-
 	int32 InputID = static_cast<int32>(InputName);
 	FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID);
 	if(AttackSpec)
@@ -266,7 +256,6 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 			ASC->TryActivateAbility(AttackSpec->Handle);
 		}
 	}
-	//Attack();
 }
 
 void ALLL_PlayerBase::WireAction(const FInputActionValue& Value, EAbilityInputName InputName)

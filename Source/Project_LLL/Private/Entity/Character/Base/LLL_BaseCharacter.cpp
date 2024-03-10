@@ -5,6 +5,7 @@
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
 
 // Sets default values
 ALLL_BaseCharacter::ALLL_BaseCharacter()
@@ -116,6 +117,16 @@ void ALLL_BaseCharacter::BeginPlay()
 				FGameplayAbilitySpec AbilitySpec(PassiveAbility);
 				ASC->GiveAbility(AbilitySpec);
 			}
+		}
+
+		// GE 기반으로 자신의 어트리뷰트 초기화
+		ASC->AddSpawnedAttribute(CharacterAttributeSet);
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(CharacterDataAsset->InitEffect, 1.0, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 	}
 }
