@@ -14,6 +14,7 @@ class UAttributeSet;
 class UAbilitySystemComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*)
+DECLARE_MULTICAST_DELEGATE(FTakeDamageDelegate);
 /**
  * 
  */
@@ -54,6 +55,11 @@ public:
 	// 상태 체크용 델리게이트
 public:
 	FCharacterDeadDelegate CharacterDeadDelegate;
+
+	
+	// 데미지 적용을 위한 델리게이트
+public:
+	FTakeDamageDelegate TakeDamageDelegate;
 
 	// GAS 변수
 protected:

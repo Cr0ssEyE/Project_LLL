@@ -3,9 +3,11 @@
 
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 
+#include "AbilitySystemComponent.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
+#include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/Player/LLL_InteractionWidget.h"
 #include "UI/Player/LLL_InventoryWidget.h"
@@ -65,6 +67,8 @@ void ULLL_PlayerUIManager::BeginPlay()
 		PlayerStatusWidget = CastChecked<ULLL_PlayerStatusWidget>(CreateWidget(GetWorld(), PlayerStatusWidgetClass));
 		PlayerStatusWidget->AddToViewport();
 	}
+
+	
 }
 
 
@@ -133,10 +137,13 @@ void ULLL_PlayerUIManager::UpdateInteractionWidget(ALLL_InteractiveObject* Curre
 	InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
 }
 
-void ULLL_PlayerUIManager::UpdateStatusWidget(int MaxHealth, int CurrentHealth, int MaxShield, int CurrentShield) const
+void ULLL_PlayerUIManager::UpdateStatusWidget() const
 {
+	const ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwner());
+	const ULLL_PlayerAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerAttributeSet>(Character->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
+	
 	// TODO: 체력 시스템 구현하고 만들기
-	PlayerStatusWidget->UpdateWidgetView(MaxHealth, CurrentHealth, MaxShield, CurrentShield);
+	PlayerStatusWidget->UpdateWidgetView(PlayerAttributeSet->GetMaxHealth(), PlayerAttributeSet->GetCurrentHealth(), PlayerAttributeSet->GetMaxShield(), PlayerAttributeSet->GetCurrentShield());
 }
 
 void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible)

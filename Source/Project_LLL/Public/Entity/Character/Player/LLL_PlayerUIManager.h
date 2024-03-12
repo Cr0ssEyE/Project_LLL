@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Entity/Character/Base/LLL_BaseCharacterUIManager.h"
 #include "LLL_PlayerUIManager.generated.h"
 
 
@@ -14,7 +15,7 @@ class ULLL_PlayerStatusWidget;
 class ULLL_GamePauseWidget;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROJECT_LLL_API ULLL_PlayerUIManager : public UActorComponent
+class PROJECT_LLL_API ULLL_PlayerUIManager : public ULLL_BaseCharacterUIManager
 {
 	GENERATED_BODY()
 
@@ -35,7 +36,8 @@ public:
 	void EnableInteractionWidget() const;
 	void DisableInteractionWidget() const;
 	void UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject, int Num) const;
-	void UpdateStatusWidget(int MaxHealth, int CurrentHealth, int MaxShield, int CurrentShield) const;
+	
+	virtual void UpdateStatusWidget() const override;
 
 	UFUNCTION(BlueprintCallable)
 	void SetAllWidgetVisibility(const bool Visible);
