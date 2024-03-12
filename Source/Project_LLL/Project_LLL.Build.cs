@@ -23,7 +23,8 @@ public class Project_LLL : ModuleRules
 			"GameFeatures",
 			"GameplayAbilities",
 			"GameplayTasks",
-			"GameplayTags"
+			"GameplayTags",
+			"FMODStudio"
 		});
         
 		PrivateDependencyModuleNames.AddRange(new string[] 

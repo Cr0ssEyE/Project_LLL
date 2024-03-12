@@ -3,6 +3,7 @@
 
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "AbilitySystemComponent.h"
+#include "FMODBlueprintStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"

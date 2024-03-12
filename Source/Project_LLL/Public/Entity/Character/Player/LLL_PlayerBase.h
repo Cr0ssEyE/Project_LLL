@@ -7,6 +7,7 @@
 #include "LLL_PlayerAnimInstance.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "System/Listener/Listener.h"
 #include "LLL_PlayerBase.generated.h"
 
 class ALLL_PlayerWireHand;
@@ -34,6 +35,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void PossessedBy(AController* NewController) override;
 
 	// 외부 접근용
 public:
