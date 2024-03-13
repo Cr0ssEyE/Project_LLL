@@ -23,7 +23,9 @@ public class Project_LLL : ModuleRules
 			"GameFeatures",
 			"GameplayAbilities",
 			"GameplayTasks",
-			"GameplayTags"
+			"GameplayTags",
+			"SpinePlugin",
+			"ProceduralMeshComponent"
 		});
         
 		PrivateDependencyModuleNames.AddRange(new string[] 
