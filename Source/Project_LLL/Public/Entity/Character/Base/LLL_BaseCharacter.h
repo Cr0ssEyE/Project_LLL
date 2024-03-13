@@ -9,7 +9,7 @@
 #include "AbilitySystemInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
-class ULLL_CharacterWidgetComponent;
+class UWidgetComponent;
 class ULLL_BaseCharacterUIManager;
 class ULLL_CharacterAttributeSetBase;
 class UAttributeSet;
@@ -104,7 +104,7 @@ protected:
 	TObjectPtr<ULLL_BaseCharacterUIManager> CharacterUIManager;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_CharacterWidgetComponent> CharacterWidgetComponent;
+	TObjectPtr<UWidgetComponent> CharacterStatusWidgetComponent;
 
 protected:
 	virtual void DeadMontageEndEvent();

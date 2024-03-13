@@ -4,13 +4,8 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 
 #include "Blueprint/UserWidget.h"
-#include "Components/CanvasPanel.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "GameFramework/HUD.h"
-#include "Kismet/GameplayStatics.h"
 #include "UI/LLL_CharacterStatusWidget.h"
-#include "UI/LLL_CharacterWidgetComponent.h"
 #include "UI/Monster/LLL_MonsterStatusWidget.h"
 
 

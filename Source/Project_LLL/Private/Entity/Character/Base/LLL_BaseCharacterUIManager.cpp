@@ -6,7 +6,6 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
 #include "UI/LLL_CharacterStatusWidget.h"
-#include "UI/LLL_CharacterWidgetComponent.h"
 
 
 // Sets default values for this component's properties
