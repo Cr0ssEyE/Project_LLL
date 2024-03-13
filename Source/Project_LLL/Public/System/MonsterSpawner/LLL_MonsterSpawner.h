@@ -38,7 +38,7 @@ private:
 	UFUNCTION()
 	void MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter);
 	
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<const UDataTable> MonsterSpawnDataTable;
 
 	UPROPERTY(VisibleDefaultsOnly)

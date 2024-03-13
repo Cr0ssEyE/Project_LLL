@@ -6,6 +6,8 @@
 #include "Engine/DataAsset.h"
 #include "LLL_BaseCharacterDataAsset.generated.h"
 
+class ULLL_CharacterStatusWidget;
+class ULLL_PlayerStatusWidget;
 class UGameplayEffect;
 class UGameplayAbility;
 /**
@@ -15,6 +17,10 @@ UCLASS()
 class PROJECT_LLL_API ULLL_BaseCharacterDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스테이터스 UI")
+	TSubclassOf<ULLL_CharacterStatusWidget> StatusWidgetClass;
 	
 	// 캐릭터 기본 모델링 관련
 public:

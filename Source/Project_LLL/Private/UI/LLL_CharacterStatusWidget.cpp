@@ -4,7 +4,7 @@
 #include "UI/LLL_CharacterStatusWidget.h"
 
 #include "Components/ProgressBar.h"
-#include "Components/TextBlock.h"
+#include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
 
 void ULLL_CharacterStatusWidget::NativeConstruct()
 {
@@ -12,8 +12,13 @@ void ULLL_CharacterStatusWidget::NativeConstruct()
 	
 }
 
-void ULLL_CharacterStatusWidget::UpdateWidgetView(float MaxHealth, float CurrentHealth, float MaxShield, float CurrentShield) const
+void ULLL_CharacterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) const
 {
+	const float MaxHealth = CharacterAttributeSet->GetMaxHealth();
+	const float CurrentHealth = CharacterAttributeSet->GetCurrentHealth();
+	const float MaxShield = CharacterAttributeSet->GetMaxShield();
+	const float CurrentShield = CharacterAttributeSet->GetCurrentShield();
+	
 	if(MaxHealth)
 	{
 		HealthGaugeBar->SetPercent(CurrentHealth / MaxHealth);

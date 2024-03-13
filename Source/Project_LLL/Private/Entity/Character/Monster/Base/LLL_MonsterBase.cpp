@@ -12,10 +12,15 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Game/ProtoGameInstance.h"
+#include "UI/LLL_CharacterWidgetComponent.h"
+#include "UI/LLL_CharacterStatusWidget.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
 	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("PlayerUIManageComponent"));
+
+	CharacterWidgetComponent->SetupAttachment(RootComponent);
+	CharacterWidgetComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
 	
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 	
@@ -27,6 +32,11 @@ void ALLL_MonsterBase::BeginPlay()
 	Super::BeginPlay();
 
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
+
+	CharacterWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
+	CharacterWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	CharacterWidgetComponent->SetDrawSize(FVector2D(200.0f, 30.0f));
+	CharacterWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

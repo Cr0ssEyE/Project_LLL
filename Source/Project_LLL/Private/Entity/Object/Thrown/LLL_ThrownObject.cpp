@@ -21,6 +21,7 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 	
 	if (IsValid(BaseMesh))
 	{
+		SetRootComponent(BaseMesh);
 		BaseMesh->SetCollisionObjectType(ECC_PLAYER_HIT);
 	}
 	

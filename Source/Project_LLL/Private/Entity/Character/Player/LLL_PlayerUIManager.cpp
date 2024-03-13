@@ -3,11 +3,9 @@
 
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 
-#include "AbilitySystemComponent.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
-#include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/Player/LLL_InteractionWidget.h"
 #include "UI/Player/LLL_InventoryWidget.h"
@@ -24,7 +22,7 @@ ULLL_PlayerUIManager::ULLL_PlayerUIManager()
 	PauseWidget = CreateDefaultSubobject<ULLL_GamePauseWidget>(TEXT("PauseWidget"));
 	InventoryWidget = CreateDefaultSubobject<ULLL_InventoryWidget>(TEXT("InventoryWidget"));
 	InteractionWidget = CreateDefaultSubobject<ULLL_InteractionWidget>(TEXT("InteractionWidget"));
-	PlayerStatusWidget = CreateDefaultSubobject<ULLL_PlayerStatusWidget>(TEXT("StatusWidget"));
+	CharacterStatusWidget = CreateDefaultSubobject<ULLL_PlayerStatusWidget>(TEXT("StatusWidget"));
 }
 
 
@@ -35,10 +33,11 @@ void ULLL_PlayerUIManager::BeginPlay()
 
 	const ULLL_BaseCharacterDataAsset* CharacterDataAsset = CastChecked<ALLL_PlayerBase>(GetOwner())->GetCharacterDataAsset();
 	const ULLL_PlayerBaseDataAsset* PlayerBaseDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
+	
 	PauseWidgetClass = PlayerBaseDataAsset->PauseWidgetClass;
 	InventoryWidgetClass = PlayerBaseDataAsset->InventoryWidgetClass;
 	InteractionWidgetClass = PlayerBaseDataAsset->InteractionWidgetClass;
-	PlayerStatusWidgetClass = PlayerBaseDataAsset->StatusWidgetClass;
+	CharacterStatusWidgetClass = CharacterDataAsset->StatusWidgetClass;
 	
 	if(IsValid(PauseWidgetClass))
 	{
@@ -62,13 +61,11 @@ void ULLL_PlayerUIManager::BeginPlay()
 		InteractionWidget->SetIsEnabled(false);
 	}
 	
-	if(IsValid(PlayerStatusWidgetClass))
+	if(IsValid(CharacterStatusWidgetClass))
 	{
-		PlayerStatusWidget = CastChecked<ULLL_PlayerStatusWidget>(CreateWidget(GetWorld(), PlayerStatusWidgetClass));
-		PlayerStatusWidget->AddToViewport();
+		CharacterStatusWidget = CastChecked<ULLL_CharacterStatusWidget>(CreateWidget(GetWorld(), CharacterStatusWidgetClass));
+		CharacterStatusWidget->AddToViewport();
 	}
-
-	
 }
 
 
@@ -137,28 +134,19 @@ void ULLL_PlayerUIManager::UpdateInteractionWidget(ALLL_InteractiveObject* Curre
 	InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
 }
 
-void ULLL_PlayerUIManager::UpdateStatusWidget() const
-{
-	const ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwner());
-	const ULLL_PlayerAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerAttributeSet>(Character->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
-	
-	// TODO: 체력 시스템 구현하고 만들기
-	PlayerStatusWidget->UpdateWidgetView(PlayerAttributeSet->GetMaxHealth(), PlayerAttributeSet->GetCurrentHealth(), PlayerAttributeSet->GetMaxShield(), PlayerAttributeSet->GetCurrentShield());
-}
-
 void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible)
 {
 	if(Visible)
 	{
 		PauseWidget->SetVisibility(ESlateVisibility::Hidden);
 		InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
-		PlayerStatusWidget->SetVisibility(ESlateVisibility::Hidden);
+		CharacterStatusWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
 		PauseWidget->SetVisibility(ESlateVisibility::Visible);
 		InventoryWidget->SetVisibility(ESlateVisibility::Visible);
-		PlayerStatusWidget->SetVisibility(ESlateVisibility::Visible);
+		CharacterStatusWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 

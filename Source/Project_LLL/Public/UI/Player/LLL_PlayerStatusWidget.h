@@ -15,7 +15,7 @@ class PROJECT_LLL_API ULLL_PlayerStatusWidget : public ULLL_CharacterStatusWidge
 	GENERATED_BODY()
 
 public:
-	virtual void UpdateWidgetView(float MaxHealth, float CurrentHealth, float MaxShield, float CurrentShield) const override;
+	virtual void UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) const override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))

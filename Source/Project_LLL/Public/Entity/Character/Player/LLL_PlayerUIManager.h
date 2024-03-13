@@ -7,7 +7,6 @@
 #include "Entity/Character/Base/LLL_BaseCharacterUIManager.h"
 #include "LLL_PlayerUIManager.generated.h"
 
-
 class ALLL_InteractiveObject;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
@@ -36,10 +35,7 @@ public:
 	void EnableInteractionWidget() const;
 	void DisableInteractionWidget() const;
 	void UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject, int Num) const;
-	
-	virtual void UpdateStatusWidget() const override;
 
-	UFUNCTION(BlueprintCallable)
 	void SetAllWidgetVisibility(const bool Visible);
 	
 protected:
@@ -60,10 +56,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_InteractionWidget> InteractionWidget;
-	
-	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<ULLL_PlayerStatusWidget> PlayerStatusWidgetClass;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_PlayerStatusWidget> PlayerStatusWidget;
 };

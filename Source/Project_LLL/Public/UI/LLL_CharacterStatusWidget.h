@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LLL_CharacterStatusWidget.generated.h"
 
+class ULLL_CharacterAttributeSetBase;
 class UTextBlock;
 class UProgressBar;
 /**
@@ -18,7 +19,7 @@ class PROJECT_LLL_API ULLL_CharacterStatusWidget : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
-	virtual void UpdateWidgetView(float MaxHealth, float CurrentHealth, float MaxShield, float CurrentShield) const;
+	virtual void UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) const;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))

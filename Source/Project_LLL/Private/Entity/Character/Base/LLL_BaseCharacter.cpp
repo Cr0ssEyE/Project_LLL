@@ -4,8 +4,10 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Entity/Character/Base/LLL_BaseCharacterUIManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
+#include "UI/LLL_CharacterWidgetComponent.h"
 
 // Sets default values
 ALLL_BaseCharacter::ALLL_BaseCharacter()
@@ -15,11 +17,11 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	bIsDead = false;
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+	CharacterWidgetComponent = CreateDefaultSubobject<ULLL_CharacterWidgetComponent>("WidgetComponent");
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	bIsSpawned = false;
 #endif
-	
 }
 
 void ALLL_BaseCharacter::PostLoad()
