@@ -30,7 +30,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
+	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
 	
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
@@ -62,6 +62,8 @@ void ALLL_PlayerBase::BeginPlay()
 
 	WireHandActor = Cast<ALLL_PlayerWireHand>(GetWorld()->SpawnActor(ALLL_PlayerWireHand::StaticClass()));
 	WireHandActor->SetOwner(this);
+
+	PlayerUIManager = CastChecked<ULLL_PlayerUIManager>(CharacterUIManager);
 	
 	if(IsValid(ASC))
 	{

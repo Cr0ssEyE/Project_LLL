@@ -10,11 +10,13 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Monster/LLL_MonsterAttributeSet.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
+	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("PlayerUIManageComponent"));
+	
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
