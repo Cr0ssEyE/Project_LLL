@@ -5,7 +5,6 @@
 #include "AbilitySystemComponent.h"
 #include "FMODBlueprintStatics.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
 
