@@ -230,8 +230,8 @@ namespace UnrealBuildTool.Rules
                 }
             }
 
-            FMODAudioLink.Apply(this, Target);
-            FMODAudioLinkEditor.Apply(this, Target);
+            //FMODAudioLink.Apply(this, Target);
+            //FMODAudioLinkEditor.Apply(this, Target);
         }
 
         private System.Collections.Generic.List<string> GetPlugins(string BasePath)
