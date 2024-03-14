@@ -20,7 +20,6 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("PlayerUIManageComponent"));
 
 	CharacterStatusWidgetComponent->SetupAttachment(RootComponent);
-	CharacterStatusWidgetComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
 	
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 	
@@ -35,7 +34,8 @@ void ALLL_MonsterBase::BeginPlay()
 
 	CharacterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
 	CharacterStatusWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
-	CharacterStatusWidgetComponent->SetDrawSize(FVector2D(200.0f, 30.0f));
+	CharacterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
+	CharacterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
 	CharacterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)

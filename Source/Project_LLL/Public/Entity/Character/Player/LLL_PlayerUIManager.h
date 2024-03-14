@@ -37,13 +37,17 @@ public:
 	void UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject, int Num) const;
 
 	void SetAllWidgetVisibility(const bool Visible);
+
+	FORCEINLINE ULLL_GamePauseWidget* GetGamePauseWidget() const { return GamePauseWidget; }
+	FORCEINLINE ULLL_InventoryWidget* GetInventoryWidget() const { return InventoryWidget; }
+	FORCEINLINE ULLL_InteractionWidget* GetInteractionWidget() const { return InteractionWidget; }
 	
 protected:
 	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<ULLL_GamePauseWidget> PauseWidgetClass;
+	TSubclassOf<ULLL_GamePauseWidget> GamePauseWidgetClass;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_GamePauseWidget> PauseWidget;
+	TObjectPtr<ULLL_GamePauseWidget> GamePauseWidget;
 
 	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<ULLL_InventoryWidget> InventoryWidgetClass;

@@ -31,4 +31,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "시야각")
 	float FieldOfView;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스테이터스 게이지 위치")
+	FVector StatusGaugeLocation;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스테이터스 게이지 크기")
+	FVector2D StatusGaugeSize;
 };

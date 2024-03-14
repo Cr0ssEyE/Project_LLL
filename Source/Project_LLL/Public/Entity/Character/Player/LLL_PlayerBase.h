@@ -91,6 +91,17 @@ private:
 	UPROPERTY()
 	uint32 InteractionRange;
 
+	// 위젯 컴포넌트
+protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetComponent> GamePauseWidgetComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetComponent> InventoryWidgetComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetComponent> InteractionWidgetComponent;
+
 	// 상태 관련 함수
 protected:
 	virtual void Dead() override;

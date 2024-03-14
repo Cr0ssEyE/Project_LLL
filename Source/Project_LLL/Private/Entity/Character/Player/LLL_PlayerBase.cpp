@@ -10,6 +10,7 @@
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -24,6 +25,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/LLL_CharacterStatusWidget.h"
+#include "UI/Player/LLL_InteractionWidget.h"
+#include "UI/Player/LLL_InventoryWidget.h"
+#include "UI/System/LLL_GamePauseWidget.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
@@ -32,6 +37,10 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
+	
+	GamePauseWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("GamePauseWidgetComponent"));
+	InventoryWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InventoryWidgetComponent"));
+	InteractionWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractionWidgetComponent"));
 	
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
@@ -64,6 +73,11 @@ void ALLL_PlayerBase::BeginPlay()
 	WireHandActor->SetOwner(this);
 
 	PlayerUIManager = CastChecked<ULLL_PlayerUIManager>(CharacterUIManager);
+
+	CharacterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
+	GamePauseWidgetComponent->SetWidget(PlayerUIManager->GetGamePauseWidget());
+	InventoryWidgetComponent->SetWidget(PlayerUIManager->GetInventoryWidget());
+	InteractionWidgetComponent->SetWidget(PlayerUIManager->GetInteractionWidget());
 	
 	if(IsValid(ASC))
 	{
