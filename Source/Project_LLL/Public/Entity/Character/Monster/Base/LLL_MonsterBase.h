@@ -39,7 +39,7 @@ protected:
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UWidgetComponent> CharacterStatusWidgetComponent;
+	TObjectPtr<UWidgetComponent> MonsterStatusWidgetComponent;
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	float DetectDistance;

@@ -18,9 +18,9 @@
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
 	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("PlayerUIManageComponent"));
-	CharacterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("CharacterStatusWidgetComponent"));
+	MonsterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("MonsterStatusWidgetComponent"));
 	
-	CharacterStatusWidgetComponent->SetupAttachment(RootComponent);
+	MonsterStatusWidgetComponent->SetupAttachment(RootComponent);
 	
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 	
@@ -33,11 +33,11 @@ void ALLL_MonsterBase::BeginPlay()
 
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
 
-	CharacterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
-	CharacterStatusWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
-	CharacterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
-	CharacterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
-	CharacterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MonsterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
+	MonsterStatusWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	MonsterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
+	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
+	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
