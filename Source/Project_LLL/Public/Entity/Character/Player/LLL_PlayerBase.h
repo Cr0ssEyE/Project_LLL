@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
-#include "LLL_PlayerAnimInstance.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
@@ -90,17 +89,6 @@ private:
 
 	UPROPERTY()
 	uint32 InteractionRange;
-
-	// 위젯 컴포넌트
-protected:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UWidgetComponent> GamePauseWidgetComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UWidgetComponent> InventoryWidgetComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UWidgetComponent> InteractionWidgetComponent;
 
 	// 상태 관련 함수
 protected:

@@ -19,6 +19,8 @@ public:
 	// Sets default values for this component's properties
 	ULLL_BaseCharacterUIManager();
 
+	FORCEINLINE ULLL_CharacterStatusWidget* GetCharacterStatusWidget() const { return CharacterStatusWidget; }
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -26,8 +28,6 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	FORCEINLINE ULLL_CharacterStatusWidget* GetCharacterStatusWidget() const { return CharacterStatusWidget; }
 	
 protected:
 	UFUNCTION()

@@ -18,7 +18,8 @@
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
 	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("PlayerUIManageComponent"));
-
+	CharacterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("CharacterStatusWidgetComponent"));
+	
 	CharacterStatusWidgetComponent->SetupAttachment(RootComponent);
 	
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);

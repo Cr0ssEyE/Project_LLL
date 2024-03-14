@@ -103,11 +103,6 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_BaseCharacterUIManager> CharacterUIManager;
 
-	// 위젯 컴포넌트
-protected:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UWidgetComponent> CharacterStatusWidgetComponent;
-
 protected:
 	virtual void DeadMontageEndEvent();
 

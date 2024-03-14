@@ -16,8 +16,6 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	bIsDead = false;
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
-	
-	CharacterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("CharacterStatusWidgetComponent");
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	bIsSpawned = false;

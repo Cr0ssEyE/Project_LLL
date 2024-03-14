@@ -38,10 +38,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
 	
-	GamePauseWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("GamePauseWidgetComponent"));
-	InventoryWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InventoryWidgetComponent"));
-	InteractionWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractionWidgetComponent"));
-	
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
 	if (IsValid(CharacterDataAsset))
@@ -73,11 +69,6 @@ void ALLL_PlayerBase::BeginPlay()
 	WireHandActor->SetOwner(this);
 
 	PlayerUIManager = CastChecked<ULLL_PlayerUIManager>(CharacterUIManager);
-
-	CharacterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
-	GamePauseWidgetComponent->SetWidget(PlayerUIManager->GetGamePauseWidget());
-	InventoryWidgetComponent->SetWidget(PlayerUIManager->GetInventoryWidget());
-	InteractionWidgetComponent->SetWidget(PlayerUIManager->GetInteractionWidget());
 	
 	if(IsValid(ASC))
 	{
