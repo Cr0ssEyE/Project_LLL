@@ -10,6 +10,7 @@
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -24,13 +25,17 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/LLL_CharacterStatusWidget.h"
+#include "UI/Player/LLL_InteractionWidget.h"
+#include "UI/Player/LLL_InventoryWidget.h"
+#include "UI/System/LLL_GamePauseWidget.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	PlayerUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
+	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
 	
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
@@ -62,6 +67,8 @@ void ALLL_PlayerBase::BeginPlay()
 
 	WireHandActor = Cast<ALLL_PlayerWireHand>(GetWorld()->SpawnActor(ALLL_PlayerWireHand::StaticClass()));
 	WireHandActor->SetOwner(this);
+
+	PlayerUIManager = CastChecked<ULLL_PlayerUIManager>(CharacterUIManager);
 	
 	if(IsValid(ASC))
 	{

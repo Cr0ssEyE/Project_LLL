@@ -37,6 +37,9 @@ public:
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetComponent> MonsterStatusWidgetComponent;
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	float DetectDistance;

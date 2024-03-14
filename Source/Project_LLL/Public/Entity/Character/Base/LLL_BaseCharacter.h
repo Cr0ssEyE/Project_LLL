@@ -9,11 +9,14 @@
 #include "AbilitySystemInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
+class UWidgetComponent;
+class ULLL_BaseCharacterUIManager;
 class ULLL_CharacterAttributeSetBase;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*)
+DECLARE_MULTICAST_DELEGATE(FTakeDamageDelegate);
 /**
  * 
  */
@@ -55,6 +58,11 @@ public:
 public:
 	FCharacterDeadDelegate CharacterDeadDelegate;
 
+	
+	// 데미지 적용을 위한 델리게이트
+public:
+	FTakeDamageDelegate TakeDamageDelegate;
+
 	// GAS 변수
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -91,6 +99,9 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_BaseCharacterAnimInstance> CharacterAnimInstance;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<ULLL_BaseCharacterUIManager> CharacterUIManager;
 
 protected:
 	virtual void DeadMontageEndEvent();

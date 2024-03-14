@@ -16,8 +16,6 @@ ULLL_PlayerAttributeSet::ULLL_PlayerAttributeSet()
 
 void ULLL_PlayerAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
-	Super::PostGameplayEffectExecute(Data);
-
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
 	if (!IsValid(Player))
 	{
@@ -65,8 +63,8 @@ void ULLL_PlayerAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 		
 		SetbIsComboTimerElapsed(0.f);
 	}
-	
-	Player->GetPlayerUIManager()->UpdateStatusWidget(GetMaxHealth(), GetCurrentHealth(), GetMaxShield(), GetCurrentShield());
+
+	Super::PostGameplayEffectExecute(Data);
 }
 
 void ULLL_PlayerAttributeSet::TryStartComboManagement(const FGameplayEffectModCallbackData& Data)

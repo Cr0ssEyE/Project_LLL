@@ -27,16 +27,13 @@ class PROJECT_LLL_API ULLL_PlayerBaseDataAsset : public ULLL_BaseCharacterDataAs
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "일시정지 UI")
-	TSubclassOf<ULLL_GamePauseWidget> PauseWidgetClass;
+	TSubclassOf<ULLL_GamePauseWidget> GamePauseWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "인벤토리 UI")
 	TSubclassOf<ULLL_InventoryWidget> InventoryWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "상호작용 정보 UI")
 	TSubclassOf<ULLL_InteractionWidget> InteractionWidgetClass;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스테이터스 UI")
-	TSubclassOf<ULLL_PlayerStatusWidget> StatusWidgetClass;
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV")

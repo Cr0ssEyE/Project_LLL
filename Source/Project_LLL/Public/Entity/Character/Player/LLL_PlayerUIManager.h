@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Entity/Character/Base/LLL_BaseCharacterUIManager.h"
 #include "LLL_PlayerUIManager.generated.h"
-
 
 class ALLL_InteractiveObject;
 class ULLL_InteractionWidget;
@@ -14,7 +14,7 @@ class ULLL_PlayerStatusWidget;
 class ULLL_GamePauseWidget;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROJECT_LLL_API ULLL_PlayerUIManager : public UActorComponent
+class PROJECT_LLL_API ULLL_PlayerUIManager : public ULLL_BaseCharacterUIManager
 {
 	GENERATED_BODY()
 
@@ -35,17 +35,19 @@ public:
 	void EnableInteractionWidget() const;
 	void DisableInteractionWidget() const;
 	void UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject, int Num) const;
-	void UpdateStatusWidget(int MaxHealth, int CurrentHealth, int MaxShield, int CurrentShield) const;
 
-	UFUNCTION(BlueprintCallable)
 	void SetAllWidgetVisibility(const bool Visible);
+
+	FORCEINLINE ULLL_GamePauseWidget* GetGamePauseWidget() const { return GamePauseWidget; }
+	FORCEINLINE ULLL_InventoryWidget* GetInventoryWidget() const { return InventoryWidget; }
+	FORCEINLINE ULLL_InteractionWidget* GetInteractionWidget() const { return InteractionWidget; }
 	
 protected:
 	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<ULLL_GamePauseWidget> PauseWidgetClass;
+	TSubclassOf<ULLL_GamePauseWidget> GamePauseWidgetClass;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_GamePauseWidget> PauseWidget;
+	TObjectPtr<ULLL_GamePauseWidget> GamePauseWidget;
 
 	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<ULLL_InventoryWidget> InventoryWidgetClass;
@@ -58,10 +60,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_InteractionWidget> InteractionWidget;
-	
-	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<ULLL_PlayerStatusWidget> PlayerStatusWidgetClass;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_PlayerStatusWidget> PlayerStatusWidget;
 };

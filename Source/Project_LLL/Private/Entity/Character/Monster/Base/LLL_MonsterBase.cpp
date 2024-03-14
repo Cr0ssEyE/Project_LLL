@@ -7,14 +7,21 @@
 #include "BrainComponent.h"
 #include "GameplayAbilitySpec.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Monster/LLL_MonsterAttributeSet.h"
+#include "UI/LLL_CharacterStatusWidget.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
+	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("PlayerUIManageComponent"));
+	MonsterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("MonsterStatusWidgetComponent"));
+	
+	MonsterStatusWidgetComponent->SetupAttachment(RootComponent);
+	
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -25,6 +32,12 @@ void ALLL_MonsterBase::BeginPlay()
 	Super::BeginPlay();
 
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
+
+	MonsterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
+	MonsterStatusWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	MonsterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
+	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
+	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
