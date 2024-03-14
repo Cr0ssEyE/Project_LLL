@@ -46,7 +46,6 @@ protected:
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Attack() {}
 	virtual void Damaged() {}
 	virtual void Dead();
 

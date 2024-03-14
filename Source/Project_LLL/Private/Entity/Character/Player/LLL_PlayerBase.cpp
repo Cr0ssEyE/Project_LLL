@@ -10,11 +10,9 @@
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
@@ -25,10 +23,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/LLL_CharacterStatusWidget.h"
-#include "UI/Player/LLL_InteractionWidget.h"
-#include "UI/Player/LLL_InventoryWidget.h"
-#include "UI/System/LLL_GamePauseWidget.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
@@ -370,10 +364,4 @@ void ALLL_PlayerBase::DeadMontageEndEvent()
 {
 	// Super::DeadMontageEndEvent();
 	PlayerUIManager->TogglePauseWidget(bIsDead);
-}
-
-void ALLL_PlayerBase::Attack()
-{
-	Super::Attack();
-
 }

@@ -78,7 +78,7 @@ private:
 	// 데이터 에셋
 private:
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerBaseDataAsset> PlayerDataAsset;
+	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;
 	
 	// 상호작용 관련 변수
 private:
@@ -95,5 +95,4 @@ private:
 protected:
 	virtual void Dead() override;
 	virtual void DeadMontageEndEvent() override;
-	virtual void Attack() override;
 };

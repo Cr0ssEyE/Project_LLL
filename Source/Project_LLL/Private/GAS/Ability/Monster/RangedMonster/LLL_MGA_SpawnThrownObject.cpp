@@ -8,6 +8,7 @@
 #include "Entity/Object/Thrown/LLL_ThrownObject.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Monster/RangedMonster/LLL_RangedMonsterAttributeSet.h"
+#include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 
 void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
