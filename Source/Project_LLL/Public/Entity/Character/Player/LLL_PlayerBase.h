@@ -3,11 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FMODBlueprintStatics.h"
 #include "InputActionValue.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
+struct FFMODEventInstance;
+class UFMODEvent;
 class ALLL_PlayerWireHand;
 class ULLL_PlayerAttributeSet;
 class ULLL_PlayerWeaponComponent;
@@ -90,6 +93,18 @@ private:
 
 	UPROPERTY()
 	uint32 InteractionRange;
+
+	UPROPERTY(EditAnywhere, Category = "FMOD")
+	TObjectPtr<UFMODEvent> Event;
+
+	UPROPERTY(EditAnywhere, Category = "FMOD")
+	FFMODEventInstance InstanceWrapper;
+
+	UPROPERTY(EditAnywhere, Category = "FMOD")
+	TObjectPtr<UFMODAudioComponent> AudioComponent;
+
+	void PlaySound();
+	void StopSound();
 
 	// 상태 관련 함수
 protected:

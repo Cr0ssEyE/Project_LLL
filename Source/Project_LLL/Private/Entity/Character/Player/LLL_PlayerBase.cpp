@@ -81,6 +81,11 @@ void ALLL_PlayerBase::BeginPlay()
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	if (UFMODBlueprintStatics::EventInstanceIsValid(InstanceWrapper)) 
+	{
+		UFMODBlueprintStatics::EventInstanceSetTransform(InstanceWrapper, GetActorTransform());
+	}
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -349,6 +354,18 @@ void ALLL_PlayerBase::CharacterRotateToCursor()
 	FVector ViewDirection = (MouseWorldLocation - GetActorLocation()).GetSafeNormal();
 	ViewDirection.Z = 0.f;
 	SetActorRotation(ViewDirection.Rotation());
+}
+
+void ALLL_PlayerBase::PlaySound()
+{
+	InstanceWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), Event, true);
+	//AudioComponent = UFMODBlueprintStatics::PlayEventAttached(Event, RootComponent, NAME_None, GetActorLocation(), EAttachLocation::KeepWorldPosition, true, true, true);
+}
+
+void ALLL_PlayerBase::StopSound()
+{
+	InstanceWrapper.Instance->stop(FMOD_STUDIO_STOP_ALLOWFADEOUT);
+	InstanceWrapper.Instance->release();
 }
 
 void ALLL_PlayerBase::Dead()
