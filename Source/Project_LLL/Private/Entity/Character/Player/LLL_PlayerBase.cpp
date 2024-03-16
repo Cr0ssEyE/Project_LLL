@@ -31,6 +31,11 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
+	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
+	
+	Continuous = 0.0f;
+	Discrete = 0;
+	Labeled = ELabeled::A;
 	
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
@@ -63,6 +68,8 @@ void ALLL_PlayerBase::BeginPlay()
 	WireHandActor->SetOwner(this);
 
 	PlayerUIManager = CastChecked<ULLL_PlayerUIManager>(CharacterUIManager);
+
+	FModAudioComponent = UFMODBlueprintStatics::PlayEventAttached(Event, RootComponent, NAME_None, GetActorLocation(), EAttachLocation::KeepWorldPosition, true, false, true);
 	
 	if(IsValid(ASC))
 	{
@@ -81,11 +88,6 @@ void ALLL_PlayerBase::BeginPlay()
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	if (UFMODBlueprintStatics::EventInstanceIsValid(InstanceWrapper)) 
-	{
-		UFMODBlueprintStatics::EventInstanceSetTransform(InstanceWrapper, GetActorTransform());
-	}
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -358,14 +360,24 @@ void ALLL_PlayerBase::CharacterRotateToCursor()
 
 void ALLL_PlayerBase::PlaySound()
 {
-	InstanceWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), Event, true);
-	//AudioComponent = UFMODBlueprintStatics::PlayEventAttached(Event, RootComponent, NAME_None, GetActorLocation(), EAttachLocation::KeepWorldPosition, true, true, true);
+	FModAudioComponent->Play();
 }
 
 void ALLL_PlayerBase::StopSound()
 {
-	InstanceWrapper.Instance->stop(FMOD_STUDIO_STOP_ALLOWFADEOUT);
-	InstanceWrapper.Instance->release();
+	FModAudioComponent->Stop();
+	FModAudioComponent->Release();
+}
+
+void ALLL_PlayerBase::ParameterTest()
+{
+	Continuous = 1.0f;
+	Discrete = 3;
+	Labeled = ELabeled::C;
+	
+	FModAudioComponent->SetParameter(FName("Continuous"), Continuous);
+	FModAudioComponent->SetParameter(FName("Discrete"), Discrete);
+	FModAudioComponent->SetParameter(FName("Labeled"), static_cast<float>(Labeled));
 }
 
 void ALLL_PlayerBase::Dead()

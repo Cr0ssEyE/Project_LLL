@@ -9,8 +9,6 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "LLL_PlayerBase.generated.h"
 
-struct FFMODEventInstance;
-class UFMODEvent;
 class ALLL_PlayerWireHand;
 class ULLL_PlayerAttributeSet;
 class ULLL_PlayerWeaponComponent;
@@ -20,6 +18,14 @@ class ULLL_PlayerUIManager;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
+
+UENUM(BlueprintType)
+enum class ELabeled : uint8
+{
+	A,
+	B,
+	C
+};
 
 /**
  * 
@@ -97,14 +103,21 @@ private:
 	UPROPERTY(EditAnywhere, Category = "FMOD")
 	TObjectPtr<UFMODEvent> Event;
 
-	UPROPERTY(EditAnywhere, Category = "FMOD")
-	FFMODEventInstance InstanceWrapper;
-
-	UPROPERTY(EditAnywhere, Category = "FMOD")
-	TObjectPtr<UFMODAudioComponent> AudioComponent;
+	UPROPERTY(VisibleAnywhere, Category = "FMOD")
+	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 
 	void PlaySound();
 	void StopSound();
+	void ParameterTest();
+
+	UPROPERTY(EditAnywhere, Category = "FMOD", meta = (ClampMin = "0", ClampMax = "1"))
+	float Continuous;
+
+	UPROPERTY(EditAnywhere, Category = "FMOD", meta = (ClampMin = "0", ClampMax = "3"))
+	int32 Discrete;
+
+	UPROPERTY(EditAnywhere, Category = "FMOD")
+	ELabeled Labeled;
 
 	// 상태 관련 함수
 protected:
