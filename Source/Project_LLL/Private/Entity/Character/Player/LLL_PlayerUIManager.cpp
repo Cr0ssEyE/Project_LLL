@@ -18,11 +18,6 @@ ULLL_PlayerUIManager::ULLL_PlayerUIManager()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	PauseWidget = CreateDefaultSubobject<ULLL_GamePauseWidget>(TEXT("PauseWidget"));
-	InventoryWidget = CreateDefaultSubobject<ULLL_InventoryWidget>(TEXT("InventoryWidget"));
-	InteractionWidget = CreateDefaultSubobject<ULLL_InteractionWidget>(TEXT("InteractionWidget"));
-	PlayerStatusWidget = CreateDefaultSubobject<ULLL_PlayerStatusWidget>(TEXT("StatusWidget"));
 }
 
 
@@ -33,17 +28,24 @@ void ULLL_PlayerUIManager::BeginPlay()
 
 	const ULLL_BaseCharacterDataAsset* CharacterDataAsset = CastChecked<ALLL_PlayerBase>(GetOwner())->GetCharacterDataAsset();
 	const ULLL_PlayerBaseDataAsset* PlayerBaseDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
-	PauseWidgetClass = PlayerBaseDataAsset->PauseWidgetClass;
+	
+	CharacterStatusWidgetClass = CharacterDataAsset->StatusWidgetClass;
+	GamePauseWidgetClass = PlayerBaseDataAsset->GamePauseWidgetClass;
 	InventoryWidgetClass = PlayerBaseDataAsset->InventoryWidgetClass;
 	InteractionWidgetClass = PlayerBaseDataAsset->InteractionWidgetClass;
-	PlayerStatusWidgetClass = PlayerBaseDataAsset->StatusWidgetClass;
-	
-	if(IsValid(PauseWidgetClass))
+
+	if(IsValid(CharacterStatusWidgetClass))
 	{
-		PauseWidget = CastChecked<ULLL_GamePauseWidget>(CreateWidget(GetWorld(), PauseWidgetClass));
-		PauseWidget->AddToViewport();
-		PauseWidget->SetVisibility(ESlateVisibility::Hidden);
-		PauseWidget->SetIsEnabled(false);
+		CharacterStatusWidget = CastChecked<ULLL_CharacterStatusWidget>(CreateWidget(GetWorld(), CharacterStatusWidgetClass));
+		CharacterStatusWidget->AddToViewport();
+	}
+	
+	if(IsValid(GamePauseWidgetClass))
+	{
+		GamePauseWidget = CastChecked<ULLL_GamePauseWidget>(CreateWidget(GetWorld(), GamePauseWidgetClass));
+		GamePauseWidget->AddToViewport();
+		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
+		GamePauseWidget->SetIsEnabled(false);
 	}
 
 	if(IsValid(InventoryWidgetClass))
@@ -59,12 +61,6 @@ void ULLL_PlayerUIManager::BeginPlay()
 		InteractionWidget->AddToViewport();
 		InteractionWidget->SetIsEnabled(false);
 	}
-	
-	if(IsValid(PlayerStatusWidgetClass))
-	{
-		PlayerStatusWidget = CastChecked<ULLL_PlayerStatusWidget>(CreateWidget(GetWorld(), PlayerStatusWidgetClass));
-		PlayerStatusWidget->AddToViewport();
-	}
 }
 
 
@@ -76,20 +72,20 @@ void ULLL_PlayerUIManager::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void ULLL_PlayerUIManager::TogglePauseWidget(bool IsDead) const
 {
-	if(PauseWidget->GetIsEnabled())
+	if(GamePauseWidget->GetIsEnabled())
 	{
-		PauseWidget->SetVisibility(ESlateVisibility::Hidden);
-		PauseWidget->SetIsEnabled(false);
+		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
+		GamePauseWidget->SetIsEnabled(false);
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 	}
 	else
 	{
 		if(IsDead)
 		{
-			PauseWidget->SetupDeadStateLayout();
+			GamePauseWidget->SetupDeadStateLayout();
 		}
-		PauseWidget->SetVisibility(ESlateVisibility::Visible);
-		PauseWidget->SetIsEnabled(true);
+		GamePauseWidget->SetVisibility(ESlateVisibility::Visible);
+		GamePauseWidget->SetIsEnabled(true);
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), SMALL_NUMBER);
 	}
 }
@@ -133,25 +129,19 @@ void ULLL_PlayerUIManager::UpdateInteractionWidget(ALLL_InteractiveObject* Curre
 	InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
 }
 
-void ULLL_PlayerUIManager::UpdateStatusWidget(int MaxHealth, int CurrentHealth, int MaxShield, int CurrentShield) const
-{
-	// TODO: 체력 시스템 구현하고 만들기
-	PlayerStatusWidget->UpdateWidgetView(MaxHealth, CurrentHealth, MaxShield, CurrentShield);
-}
-
 void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible)
 {
 	if(Visible)
 	{
-		PauseWidget->SetVisibility(ESlateVisibility::Hidden);
+		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
 		InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
-		PlayerStatusWidget->SetVisibility(ESlateVisibility::Hidden);
+		CharacterStatusWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
-		PauseWidget->SetVisibility(ESlateVisibility::Visible);
+		GamePauseWidget->SetVisibility(ESlateVisibility::Visible);
 		InventoryWidget->SetVisibility(ESlateVisibility::Visible);
-		PlayerStatusWidget->SetVisibility(ESlateVisibility::Visible);
+		CharacterStatusWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 

@@ -3,30 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/LLL_CharacterStatusWidget.h"
 #include "LLL_PlayerStatusWidget.generated.h"
 
-class UTextBlock;
-class UProgressBar;
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PlayerStatusWidget : public UUserWidget
+class PROJECT_LLL_API ULLL_PlayerStatusWidget : public ULLL_CharacterStatusWidget
 {
 	GENERATED_BODY()
 
 public:
-	virtual void NativeConstruct() override;
-	void UpdateWidgetView(float MaxHealth, float CurrentHealth, float MaxShield, float CurrentShield) const;
-	
+	virtual void UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) const override;
+
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UProgressBar> HealthGaugeBar;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UProgressBar> ShieldGaugeBar;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UTextBlock> HealthTextBlock;
 

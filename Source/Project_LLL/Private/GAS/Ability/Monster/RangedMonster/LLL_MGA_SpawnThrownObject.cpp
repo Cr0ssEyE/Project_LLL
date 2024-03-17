@@ -8,6 +8,7 @@
 #include "Entity/Object/Thrown/LLL_ThrownObject.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Monster/RangedMonster/LLL_RangedMonsterAttributeSet.h"
+#include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 
 void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -20,13 +21,14 @@ void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 
 	ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(RangedMonster->GetObjectPoolingComponent()->GetActor(RangedMonsterDataAsset->ThrownObjectClass));
 	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ULLL_PlayerAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
 
 	if (IsValid(ThrownObject) && IsValid(PlayerBase))
 	{
-		const float Speed = ThrownObject->GetSpeed();
+		const float Speed = PlayerAttributeSet->GetMoveSpeed();
 		const float Distance = RangedMonster->GetDistanceTo(PlayerBase);
 		const FVector StartLocation = RangedMonster->GetActorLocation();
-		const FVector PredictedMove = PlayerBase->GetVelocity() * Distance / Speed;
+		const FVector PredictedMove = PlayerBase->GetVelocity() * (Distance / Speed);
 		const FVector PredictedLocation = PlayerBase->GetActorLocation() + PredictedMove * RangedMonsterAttributeSet->GetPredictionRate();
 		const FVector PredictedDirection = (PredictedLocation - StartLocation).GetSafeNormal();
 		

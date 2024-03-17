@@ -23,7 +23,7 @@ class PROJECT_LLL_API ULLL_CharacterAttributeSetBase : public UAttributeSet
 
 public:
 	ULLL_CharacterAttributeSetBase();
-
+	
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
@@ -60,5 +60,4 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ReceiveDamage;
-
 };

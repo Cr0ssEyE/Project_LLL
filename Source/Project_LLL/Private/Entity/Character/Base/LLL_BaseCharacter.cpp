@@ -4,6 +4,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
 
@@ -19,7 +20,6 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	bIsSpawned = false;
 #endif
-	
 }
 
 void ALLL_BaseCharacter::PostLoad()
@@ -123,11 +123,13 @@ void ALLL_BaseCharacter::BeginPlay()
 		ASC->AddSpawnedAttribute(CharacterAttributeSet);
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
-		FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(CharacterDataAsset->InitEffect, 1.0, EffectContextHandle);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(CharacterDataAsset->InitEffect, 1.0, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
+
+		TakeDamageDelegate.Broadcast();
 	}
 }
 

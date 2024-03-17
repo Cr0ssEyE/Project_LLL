@@ -71,5 +71,8 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 				}
 			}
 		}
+
+		const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
+		OwnerCharacter->TakeDamageDelegate.Broadcast();
 	}
 }
