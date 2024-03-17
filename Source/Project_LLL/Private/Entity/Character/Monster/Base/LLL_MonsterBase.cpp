@@ -17,7 +17,7 @@
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
-	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("PlayerUIManageComponent"));
+	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("MonsterUIManageComponent"));
 	MonsterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("MonsterStatusWidgetComponent"));
 	
 	MonsterStatusWidgetComponent->SetupAttachment(RootComponent);
