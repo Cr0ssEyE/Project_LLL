@@ -29,8 +29,7 @@ protected:
 	virtual void Dead() override;
 	
 public:
-	void Attack()
-	;
+	void Attack();
 	virtual void Damaged() override;
 	
 	bool CanPlayAttackAnimation();
