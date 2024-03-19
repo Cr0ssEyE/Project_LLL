@@ -24,7 +24,7 @@
 *.la
 *.a
 *.pdb
-*.lib
+#*.lib
 
 # Executables
 *.exe
@@ -108,3 +108,5 @@ Project_LLL/Plugins/FMODStudio/Binaries/Win64/*
 !Project_LLL/Plugins/FMODStudio/Binaries/Win64/UnrealEditor-FMODStudioEditor.dll
 
 Project_LLL/Plugins/FMODStudio/Intermediate
+Binaries/Win64/UnrealEditor-Project_LLL.patch_*
+Binaries/Win64/Project_LLL.lib
