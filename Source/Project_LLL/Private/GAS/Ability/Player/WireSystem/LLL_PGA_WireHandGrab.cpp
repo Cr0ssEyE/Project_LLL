@@ -49,7 +49,7 @@ void ULLL_PGA_WireHandGrab::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	PlayerWireHand->K2_DetachFromActor(EDetachmentRule::KeepWorld);
 	PlayerWireHand->SetGrabbedActor(nullptr);
 	
-	if(!bWasCancelled)
+	if(true) //!bWasCancelled)
 	{
 		const FGameplayTagContainer ReleaseHandTags(TAG_GAS_WIRE_RELEASE);
 		GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(ReleaseHandTags);

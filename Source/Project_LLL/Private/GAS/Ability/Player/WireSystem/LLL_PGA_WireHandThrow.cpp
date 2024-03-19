@@ -25,6 +25,7 @@ void ULLL_PGA_WireHandThrow::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
 
+	PlayerWireHand->OnGrabbedDelegate.AddDynamic(this, &ULLL_PGA_WireHandThrow::OnGrabbedCallBack);
 	PlayerCharacter->PlayerRotateToMouseCursor();
 	
 	ThrowToCursorLocation();
@@ -32,6 +33,9 @@ void ULLL_PGA_WireHandThrow::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 
 void ULLL_PGA_WireHandThrow::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
+	PlayerWireHand->OnGrabbedDelegate.RemoveDynamic(this, &ULLL_PGA_WireHandThrow::OnGrabbedCallBack);
+	
 	// Cancel되지 않고 종료한 경우 = 마우스 커서 위치에 도달해 회수 상태로 전환한 경우
 	if(!bWasCancelled)
 	{
@@ -90,4 +94,9 @@ void ULLL_PGA_WireHandThrow::CheckReached()
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandThrow::CheckReached);
 	}
+}
+
+void ULLL_PGA_WireHandThrow::OnGrabbedCallBack()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }
