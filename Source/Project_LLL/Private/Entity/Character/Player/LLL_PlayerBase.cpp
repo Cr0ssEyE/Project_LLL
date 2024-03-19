@@ -252,7 +252,6 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 	FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID);
 	if(AttackSpec)
 	{
-		CharacterRotateToCursor();
 		AttackSpec->InputPressed = true;
 		if (AttackSpec->IsActive())
 		{
@@ -271,7 +270,6 @@ void ALLL_PlayerBase::WireAction(const FInputActionValue& Value, EAbilityInputNa
 	FGameplayAbilitySpec* WireSpec = ASC->FindAbilitySpecFromInputID(InputID);
 	if(WireSpec)
 	{
-		CharacterRotateToCursor();
 		if (WireSpec->IsActive() && WireHandActor->GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_WIRE_STATE_GRABBED))
 		{
 			FGameplayTagContainer RushTag(TAG_GAS_PLAYER_WIRE_RUSH);
@@ -290,7 +288,7 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID);
 	if(SkillSpec)
 	{
-		CharacterRotateToCursor();
+		PlayerRotateToMouseCursor();
 		SkillSpec->InputPressed = true;
 		if (SkillSpec->IsActive())
 		{
@@ -338,7 +336,7 @@ void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }
 
-void ALLL_PlayerBase::CharacterRotateToCursor()
+void ALLL_PlayerBase::PlayerRotateToMouseCursor()
 {
 	FVector MouseWorldLocation = GetMouseLocation();
 	FVector ViewDirection = (MouseWorldLocation - GetActorLocation()).GetSafeNormal();

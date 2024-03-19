@@ -42,7 +42,9 @@ public:
 
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ALLL_PlayerWireHand* GetWireHand() const { return WireHandActor; }
+	
 	FVector GetMouseLocation() const;
+	void PlayerRotateToMouseCursor();
 	
 	// 카메라
 private:
@@ -71,8 +73,6 @@ private:
 	void InteractiveTargetChangeAction(const FInputActionValue& Value);
 	void InventoryAction(const FInputActionValue& Value);
 	void PauseAction(const FInputActionValue& Value);
-
-	void CharacterRotateToCursor();
 
 	// 데이터 에셋
 private:
