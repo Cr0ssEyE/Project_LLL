@@ -180,7 +180,7 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 		HitResult,
 		MouseWorldLocation,
 		MouseWorldLocation + MouseWorldDirection * 10000.f,
-		ECC_Visibility
+		ECC_WorldStatic
 	))
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
