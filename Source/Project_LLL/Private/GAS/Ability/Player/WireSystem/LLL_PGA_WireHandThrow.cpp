@@ -65,9 +65,8 @@ void ULLL_PGA_WireHandThrow::ThrowToCursorLocation()
 		TargetLocation *= WireHandAttributeSet->GetMinimumThrowDistance() / TargetDistance;
 	}
 	TargetLocation.Z = PlayerCharacter->GetActorLocation().Z;
-	DrawDebugPoint(GetWorld(), TargetLocation, 10.f, FColor::Blue, false, 3.f);
 	
-	const FVector ThrowDirection = PlayerCharacter->GetActorForwardVector(); // (TargetLocation - PlayerCharacter->GetActorLocation()).GetSafeNormal();
+	const FVector ThrowDirection = PlayerCharacter->GetActorForwardVector();
 
 	PlayerWireHand->SetActorLocationAndRotation(PlayerCharacter->GetActorLocation(), ThrowDirection.Rotation());
 	PlayerWireHand->SetActorRotation(ThrowDirection.Rotation());
@@ -80,10 +79,17 @@ void ULLL_PGA_WireHandThrow::ThrowToCursorLocation()
 	HandMesh->SetHiddenInGame(false);
 	HandMesh->SetAnimation(ThrowAnim);
 
+	const FGameplayTagContainer GrabTag(TAG_GAS_WIRE_GRAB);
+	if (GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(GrabTag))
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+		return;
+	}
+	
 	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileComponent();
 	WireHandProjectile->Activate();
 	WireHandProjectile->Velocity = ThrowDirection * WireHandAttributeSet->GetThrowSpeed();
-
+	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandThrow::CheckReached);
 }
 

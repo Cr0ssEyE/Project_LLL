@@ -114,7 +114,8 @@ void ULLL_PGA_WireHandGrab::CheckGrabbedTime()
 	{
 		return;
 	}
-	
+	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
+	PlayerWireHand->SetActorLocation(PlayerWireHand->GetGrabbedActor()->GetActorLocation());
 	GrabElapsedTime += GetWorld()->GetDeltaSeconds();
 	if(GrabElapsedTime >= MaxGrabDuration)
 	{
