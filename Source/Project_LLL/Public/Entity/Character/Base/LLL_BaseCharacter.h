@@ -9,6 +9,7 @@
 #include "AbilitySystemInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
+class UFMODAudioComponent;
 class UWidgetComponent;
 class ULLL_BaseCharacterUIManager;
 class ULLL_CharacterAttributeSetBase;
@@ -35,7 +36,9 @@ public:
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
 	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
-
+	
+	FORCEINLINE void SetFModAudioComponent(UFMODAudioComponent* InFModAudioComponent) { FModAudioComponent = InFModAudioComponent; }
+	
 protected:
 	virtual void PostLoad() override;
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -103,7 +106,14 @@ protected:
 	TObjectPtr<ULLL_BaseCharacterUIManager> CharacterUIManager;
 
 protected:
+	UPROPERTY(VisibleAnywhere, Category = "FMOD")
+	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
+
+protected:
 	virtual void DeadMontageEndEvent();
+
+	void PlaySound();
+	void StopSound();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수

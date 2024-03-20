@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "LLL_BaseCharacterDataAsset.generated.h"
 
+class UGameplayCueNotify_Burst;
 class ULLL_CharacterStatusWidget;
 class ULLL_PlayerStatusWidget;
 class UGameplayEffect;
@@ -60,6 +61,9 @@ public:
 	float AttackRadius;
 
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "사운드 큐")
+	TArray<TSubclassOf<UGameplayCueNotify_Burst>> SoundCue;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
 	TSubclassOf<UGameplayEffect> InitEffect;
 	
