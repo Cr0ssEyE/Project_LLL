@@ -10,11 +10,9 @@
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
@@ -25,10 +23,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/LLL_CharacterStatusWidget.h"
-#include "UI/Player/LLL_InteractionWidget.h"
-#include "UI/Player/LLL_InventoryWidget.h"
-#include "UI/System/LLL_GamePauseWidget.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
@@ -37,6 +31,11 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
+	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
+	
+	Continuous = 0.0f;
+	Discrete = 0;
+	Labeled = ELabeled::A;
 	
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
@@ -69,6 +68,8 @@ void ALLL_PlayerBase::BeginPlay()
 	WireHandActor->SetOwner(this);
 
 	PlayerUIManager = CastChecked<ULLL_PlayerUIManager>(CharacterUIManager);
+
+	FModAudioComponent = UFMODBlueprintStatics::PlayEventAttached(Event, RootComponent, NAME_None, GetActorLocation(), EAttachLocation::KeepWorldPosition, true, false, true);
 	
 	if(IsValid(ASC))
 	{
@@ -122,6 +123,17 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractiveTargetChangeInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractiveTargetChangeAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->PauseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::PauseAction);
+}
+
+void ALLL_PlayerBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	APlayerController* PlayerController = Cast<APlayerController>(NewController);
+	if (IsValid(PlayerController))
+	{
+		PlayerController->SetAudioListenerOverride(GetRootComponent(), FVector::ZeroVector, FRotator::ZeroRotator);
+	}
 }
 
 void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
@@ -346,6 +358,28 @@ void ALLL_PlayerBase::CharacterRotateToCursor()
 	SetActorRotation(ViewDirection.Rotation());
 }
 
+void ALLL_PlayerBase::PlaySound()
+{
+	FModAudioComponent->Play();
+}
+
+void ALLL_PlayerBase::StopSound()
+{
+	FModAudioComponent->Stop();
+	FModAudioComponent->Release();
+}
+
+void ALLL_PlayerBase::ParameterTest()
+{
+	Continuous = 1.0f;
+	Discrete = 3;
+	Labeled = ELabeled::C;
+	
+	FModAudioComponent->SetParameter(FName("Continuous"), Continuous);
+	FModAudioComponent->SetParameter(FName("Discrete"), Discrete);
+	FModAudioComponent->SetParameter(FName("Labeled"), static_cast<float>(Labeled));
+}
+
 void ALLL_PlayerBase::Dead()
 {
 	Super::Dead();
@@ -359,10 +393,4 @@ void ALLL_PlayerBase::DeadMontageEndEvent()
 {
 	// Super::DeadMontageEndEvent();
 	PlayerUIManager->TogglePauseWidget(bIsDead);
-}
-
-void ALLL_PlayerBase::Attack()
-{
-	Super::Attack();
-
 }
