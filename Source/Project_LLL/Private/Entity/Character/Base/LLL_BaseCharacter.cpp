@@ -94,6 +94,7 @@ void ALLL_BaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 	if(IsValid(CharacterAnimInstance))
 	{
 		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
