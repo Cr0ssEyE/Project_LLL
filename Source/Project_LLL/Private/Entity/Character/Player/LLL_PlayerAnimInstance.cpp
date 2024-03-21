@@ -5,7 +5,6 @@
 
 #include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Engine/UserDefinedEnum.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 
 void ULLL_PlayerAnimInstance::NativeInitializeAnimation()
@@ -33,7 +32,7 @@ void ULLL_PlayerAnimInstance::AnimNotify_Step()
 			{
 				if (HitResult.PhysMaterial->SurfaceType == StepEventParameterProperty.Key)
 				{
-					Character->GetFModAudioComponent()->SetParameter(PlayerDataAsset->StepEventParameterName, StepEventParameterProperty.Value);
+					Character->GetFModAudioComponent()->SetParameter(PlayerDataAsset->StepEventParameterName, static_cast<float>(StepEventParameterProperty.Value));
 				}
 			}
 		}
