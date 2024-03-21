@@ -30,6 +30,8 @@ public:
 	// Sets default values for this character's properties
 	ALLL_BaseCharacter();
 
+	void tmp();
+
 	// 외부 접근용 함수
 public:
 	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }

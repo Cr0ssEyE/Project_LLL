@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
 #include "LLL_BaseCharacterDataAsset.generated.h"
 
@@ -61,9 +62,6 @@ public:
 	float AttackRadius;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "사운드 큐")
-	TArray<TSubclassOf<UGameplayCueNotify_Burst>> SoundCue;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
 	TSubclassOf<UGameplayEffect> InitEffect;
 	
@@ -72,4 +70,8 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "수동형 게임플레이 어빌리티")
 	TArray<TSubclassOf<UGameplayAbility>> PassiveGameplayAbility;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "스텝 큐")
+	FGameplayTag Step;
 };
