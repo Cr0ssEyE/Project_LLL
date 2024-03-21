@@ -72,6 +72,6 @@ public:
 	TArray<TSubclassOf<UGameplayAbility>> PassiveGameplayAbility;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "스텝 큐")
-	FGameplayTag Step;
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "스텝 큐 태그")
+	FGameplayTag StepCueTag;
 };

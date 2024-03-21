@@ -30,8 +30,6 @@ public:
 	// Sets default values for this character's properties
 	ALLL_BaseCharacter();
 
-	void tmp();
-
 	// 외부 접근용 함수
 public:
 	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
@@ -39,8 +37,6 @@ public:
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
 	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
 	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
-	
-	FORCEINLINE void SetFModAudioComponent(UFMODAudioComponent* InFModAudioComponent) { FModAudioComponent = InFModAudioComponent; }
 	
 protected:
 	virtual void PostLoad() override;

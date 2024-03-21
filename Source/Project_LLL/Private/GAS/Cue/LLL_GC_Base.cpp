@@ -11,7 +11,8 @@ bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCue
 	const UObject* SourceObject = Parameters.EffectContext.GetSourceObject();
 	if (IsValid(SourceObject))
 	{
-		UFMODAudioComponent* FModAudioComponent = CastChecked<ALLL_BaseCharacter>(MyTarget)->GetFModAudioComponent();
+		const ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(MyTarget);
+		UFMODAudioComponent* FModAudioComponent = Character->GetFModAudioComponent();
 		FModAudioComponent->Event = FModEvent;
 		FModAudioComponent->Play();
 	}

@@ -24,17 +24,6 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 #endif
 }
 
-void ALLL_BaseCharacter::tmp()
-{
-	UAbilitySystemComponent* ASC = CastChecked<ALLL_BaseCharacter>(ActorInfo->AvatarActor)->GetAbilitySystemComponent();
-	FGameplayEffectContextHandle CueContextHandle = ASC->MakeEffectContext();
-	CueContextHandle.AddSourceObject(this);
-	FGameplayCueParameters CueParam;
-	CueParam.EffectContext = CueContextHandle;
-	
-	ASC->ExecuteGameplayCue(TAG_GAS_STEP_SOUND, CueParam);
-}
-
 void ALLL_BaseCharacter::PostLoad()
 {
 	Super::PostLoad();
@@ -106,7 +95,7 @@ void ALLL_BaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-	if(IsValid(CharacterAnimInstance))
+	if (IsValid(CharacterAnimInstance))
 	{
 		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
 	}
