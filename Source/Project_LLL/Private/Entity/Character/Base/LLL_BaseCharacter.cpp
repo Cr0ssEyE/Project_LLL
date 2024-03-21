@@ -3,9 +3,8 @@
 
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "AbilitySystemComponent.h"
-#include "FMODBlueprintStatics.h"
+#include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Constant/LLL_GameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
 
@@ -18,6 +17,7 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
+	FModAudioComponent->SetupAttachment(RootComponent);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	bIsSpawned = false;
@@ -160,20 +160,4 @@ void ALLL_BaseCharacter::DeadMontageEndEvent()
 {
 	// TODO: 화면 페이드, 결과창 출력 등등. 임시로 Destroy 처리
 	Destroy();
-}
-
-void ALLL_BaseCharacter::PlaySound()
-{
-	FGameplayEffectContextHandle CueContextHandle = ASC->MakeEffectContext();
-	CueContextHandle.AddSourceObject(this);
-	FGameplayCueParameters CueParam;
-	CueParam.EffectContext = CueContextHandle;
-	
-	ASC->ExecuteGameplayCue(TAG_GAS_STEP_SOUND, CueParam);
-}
-
-void ALLL_BaseCharacter::StopSound()
-{
-	FModAudioComponent->Stop();
-	FModAudioComponent->Release();
 }

@@ -36,6 +36,7 @@ public:
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
 	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
+	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
 	
 	FORCEINLINE void SetFModAudioComponent(UFMODAudioComponent* InFModAudioComponent) { FModAudioComponent = InFModAudioComponent; }
 	
@@ -111,9 +112,6 @@ protected:
 
 protected:
 	virtual void DeadMontageEndEvent();
-
-	void PlaySound();
-	void StopSound();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수
