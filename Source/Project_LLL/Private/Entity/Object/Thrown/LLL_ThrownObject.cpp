@@ -22,7 +22,7 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 	if (IsValid(BaseMesh))
 	{
 		SetRootComponent(BaseMesh);
-		BaseMesh->SetCollisionProfileName(CP_MONSTER_THROWN);
+		BaseMesh->SetCollisionProfileName(CP_MONSTER_ATTACK);
 	}
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
