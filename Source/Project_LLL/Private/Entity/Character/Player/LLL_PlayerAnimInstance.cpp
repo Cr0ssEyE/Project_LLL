@@ -24,7 +24,7 @@ void ULLL_PlayerAnimInstance::AnimNotify_Step()
 	CollisionParams.AddIgnoredActor(Character);
 	CollisionParams.bReturnPhysicalMaterial = true;
 	
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_WorldStatic, CollisionParams))
 	{
 		if (HitResult.PhysMaterial != nullptr)
 		{

@@ -110,7 +110,7 @@ bool ULLL_DetectPlayer_BTService::LineOfSightToPlayer(ALLL_MonsterBase* MonsterB
 	CollisionParams.AddIgnoredActor(MonsterBase); // AI 자신은 무시
 	CollisionParams.AddIgnoredActor(PlayerBase); // 플레이어는 무시
 	
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_WorldStatic, CollisionParams))
 	{
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
