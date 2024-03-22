@@ -22,3 +22,4 @@
 #define CP_MONSTER TEXT("Monster")
 #define CP_INTERACTION TEXT("Interaction")
 #define CP_EVADE TEXT("Evade")
+#define CP_MONSTER_THROWN TEXT("MonsterThrown")

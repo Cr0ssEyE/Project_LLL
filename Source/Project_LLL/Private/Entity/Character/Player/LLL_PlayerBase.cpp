@@ -4,7 +4,6 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemGlobals.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "FMODAudioComponent.h"
