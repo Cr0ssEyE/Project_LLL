@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FMODBlueprintStatics.h"
 #include "InputActionValue.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
@@ -17,6 +18,14 @@ class ULLL_PlayerUIManager;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
+
+UENUM(BlueprintType)
+enum class ELabeled : uint8
+{
+	A,
+	B,
+	C
+};
 
 /**
  * 
@@ -33,6 +42,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void PossessedBy(AController* NewController) override;
 
 	// 외부 접근용
 public:
@@ -77,7 +87,7 @@ private:
 	// 데이터 에셋
 private:
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerBaseDataAsset> PlayerDataAsset;
+	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;
 	
 	// 상호작용 관련 변수
 private:
@@ -90,9 +100,27 @@ private:
 	UPROPERTY()
 	uint32 InteractionRange;
 
+	UPROPERTY(EditAnywhere, Category = "FMOD")
+	TObjectPtr<UFMODEvent> Event;
+
+	UPROPERTY(VisibleAnywhere, Category = "FMOD")
+	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
+
+	void PlaySound();
+	void StopSound();
+	void ParameterTest();
+
+	UPROPERTY(EditAnywhere, Category = "FMOD", meta = (ClampMin = "0", ClampMax = "1"))
+	float Continuous;
+
+	UPROPERTY(EditAnywhere, Category = "FMOD", meta = (ClampMin = "0", ClampMax = "3"))
+	int32 Discrete;
+
+	UPROPERTY(EditAnywhere, Category = "FMOD")
+	ELabeled Labeled;
+
 	// 상태 관련 함수
 protected:
 	virtual void Dead() override;
 	virtual void DeadMontageEndEvent() override;
-	virtual void Attack() override;
 };
