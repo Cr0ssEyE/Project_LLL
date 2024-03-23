@@ -86,9 +86,9 @@ public:
 	TObjectPtr<UInputAction> PauseInputAction;
 	
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "스텝 이벤트 파라미터 이름")
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 이름")
 	FName StepEventParameterName;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "스텝 이벤트 파라미터 속성")
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
 	TMap<TEnumAsByte<EPhysicalSurface>, EPlayerFootstepsSurface> StepEventParameterProperties;
 };
