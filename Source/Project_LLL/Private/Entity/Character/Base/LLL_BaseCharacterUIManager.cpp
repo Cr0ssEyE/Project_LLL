@@ -23,7 +23,7 @@ void ULLL_BaseCharacterUIManager::BeginPlay()
 	Super::BeginPlay();
 	
 	ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwner());
-	Character->TakeDamageDelegate.AddUObject(this, &ULLL_BaseCharacterUIManager::UpdateStatusWidget);
+	Character->TakeDamageDelegate.AddUObject(this, &ULLL_BaseCharacterUIManager::UpdateWidget);
 }
 
 
@@ -35,7 +35,7 @@ void ULLL_BaseCharacterUIManager::TickComponent(float DeltaTime, ELevelTick Tick
 	// ...
 }
 
-void ULLL_BaseCharacterUIManager::UpdateStatusWidget()
+void ULLL_BaseCharacterUIManager::UpdateWidget()
 {
 	const ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwner());
 	const ULLL_CharacterAttributeSetBase* CharacterAttributeSet = CastChecked<ULLL_CharacterAttributeSetBase>(Character->GetAbilitySystemComponent()->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));

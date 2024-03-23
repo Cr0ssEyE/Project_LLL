@@ -11,7 +11,9 @@
 
 ULLL_PlayerAttributeSet::ULLL_PlayerAttributeSet()
 {
-	
+	MaxSkillGauge.SetBaseValue(100.f);
+	SkillGaugeAmplifyByCombo.SetBaseValue(1.0f);
+	SkillGaugeAmplifyByItem.SetBaseValue(1.0f);
 }
 
 void ULLL_PlayerAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -22,7 +24,7 @@ void ULLL_PlayerAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 		return;
 	}
 
-	if(Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
+	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
 		const uint32 DeclinedComboCount = FMath::FloorToInt(GetCurrentComboCount() * GetMultiplyComboCountWhenHit());
 		
@@ -40,12 +42,12 @@ void ULLL_PlayerAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 		SetCurrentComboCount(FMath::Clamp(DeclinedComboCount, 0.f, GetMaxComboCount()));
 	}
 	
-	if(Data.EvaluatedData.Attribute == GetCurrentComboCountAttribute())
+	if (Data.EvaluatedData.Attribute == GetCurrentComboCountAttribute())
 	{
 		TryStartComboManagement(Data);
 	}
 
-	if(Data.EvaluatedData.Attribute == GetbIsComboTimerElapsedAttribute())
+	if (Data.EvaluatedData.Attribute == GetbIsComboTimerElapsedAttribute())
 	{
 		const uint32 DeclinedComboCount = FMath::FloorToInt(GetCurrentComboCount() * GetMultiplyComboCountPerTime());
 
@@ -64,6 +66,24 @@ void ULLL_PlayerAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 		SetbIsComboTimerElapsed(0.f);
 	}
 
+	if (Data.EvaluatedData.Attribute == GetAddCurrentSkillGaugeAttribute())
+	{
+		const float NewCurrentSkillGauge = FMath::Clamp(GetCurrentSkillGauge() + Data.EvaluatedData.Magnitude, 0.f, GetMaxSkillGauge());
+		
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckPlayerSkillDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("스킬 게이지 증감 작동. %f -> %f. 입력값 %f"), GetCurrentSkillGauge(), NewCurrentSkillGauge, GetAddCurrentSkillGauge()));
+			}
+		}
+#endif
+		
+		SetCurrentSkillGauge(NewCurrentSkillGauge);
+		SetAddCurrentSkillGauge(0.f);
+	}
+	
 	Super::PostGameplayEffectExecute(Data);
 }
 
@@ -81,7 +101,7 @@ void ULLL_PlayerAttributeSet::TryStartComboManagement(const FGameplayEffectModCa
 		
 	SetCurrentComboCount(FMath::Clamp(GetCurrentComboCount(), 0.f, GetMaxComboCount()));
 	
-	UAbilitySystemComponent* OwnerASC =  GetOwningAbilitySystemComponentChecked();
+	UAbilitySystemComponent* OwnerASC = GetOwningAbilitySystemComponentChecked();
 	FGameplayTagContainer ComboManagementTag(TAG_GAS_COMBO_MANAGEMENT);
 	OwnerASC->TryActivateAbilitiesByTag(ComboManagementTag);
 }
