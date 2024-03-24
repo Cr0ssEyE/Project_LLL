@@ -7,6 +7,7 @@
 #include "DataAsset/LLL_BaseCharacterDataAsset.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "Interface/LLL_EntityInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
 class UFMODAudioComponent;
@@ -24,7 +25,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface
+class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface, public ILLL_EntityInterface
 {
 	GENERATED_BODY()
 
