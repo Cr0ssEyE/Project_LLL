@@ -27,7 +27,7 @@ protected:
 	TObjectPtr<ALLL_MonsterBase> Monster;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	UBlackboardComponent* BlackboardComponent;
+	TObjectPtr<UBlackboardComponent> BlackboardComponent;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterDataAsset;

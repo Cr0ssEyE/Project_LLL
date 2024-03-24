@@ -22,10 +22,11 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	}
 
 	// 블랙보드와 행동트리 할당
-	BlackboardComponent = GetBlackboardComponent();
-	if (UseBlackboard(MonsterDataAsset->BlackBoard, BlackboardComponent))
+	UBlackboardComponent* NewBlackboardComponent = GetBlackboardComponent();
+	if (UseBlackboard(MonsterDataAsset->BlackBoard, NewBlackboardComponent))
 	{
 		check(RunBehaviorTree(MonsterDataAsset->BehaviorTree));
+		BlackboardComponent = NewBlackboardComponent;
 	}
 }
 
