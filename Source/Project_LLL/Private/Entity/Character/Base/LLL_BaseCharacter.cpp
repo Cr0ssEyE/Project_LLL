@@ -150,6 +150,8 @@ void ALLL_BaseCharacter::Dead()
 		return;
 	}
 
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CharacterAnimInstance->PlayDeadAnimation();
 	
 	bIsDead = true;
