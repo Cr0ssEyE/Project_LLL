@@ -37,15 +37,9 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, nullptr);
 		return;
 	}
-	
-	if (IsPlayerInFieldOfView(MonsterBase, PlayerBase, FieldOfView) && LineOfSightToPlayer(MonsterBase, PlayerBase))
-	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, true);
-	}
-	else
-	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, false);
-	}
+
+	const bool IsInFieldOfView = IsPlayerInFieldOfView(MonsterBase, PlayerBase, FieldOfView) && LineOfSightToPlayer(MonsterBase, PlayerBase);
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, IsInFieldOfView);
 }
 
 void ULLL_DetectPlayer_BTService::DetectPlayer(UBehaviorTreeComponent& OwnerComp, ALLL_MonsterBase* MonsterBase, float FieldOfView) const
