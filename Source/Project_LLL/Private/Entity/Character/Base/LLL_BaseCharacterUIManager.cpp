@@ -23,7 +23,7 @@ void ULLL_BaseCharacterUIManager::BeginPlay()
 	Super::BeginPlay();
 	
 	ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwner());
-	Character->TakeDamageDelegate.AddUObject(this, &ULLL_BaseCharacterUIManager::UpdateStatusWidget);
+	Character->UpdateWidgetDelegate.AddUObject(this, &ULLL_BaseCharacterUIManager::UpdateStatusWidget);
 }
 
 

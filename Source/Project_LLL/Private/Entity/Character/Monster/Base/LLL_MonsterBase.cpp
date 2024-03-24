@@ -21,7 +21,8 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	MonsterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("MonsterStatusWidgetComponent"));
 	
 	MonsterStatusWidgetComponent->SetupAttachment(RootComponent);
-	
+
+	GetMesh()->SetCollisionProfileName(CP_MONSTER);
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;

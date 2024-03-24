@@ -22,64 +22,83 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-	if (IsValid(MonsterBase))
-	{
-		const float DetectDistance = MonsterBase->GetDetectDistance();
-		const float FieldOfView = MonsterBase->GetFieldOfView();
+	ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
+	const float FieldOfView = MonsterBase->GetFieldOfView();
 	
-		const FVector Center = MonsterBase->GetActorLocation();
-		const FVector Direction = MonsterBase->GetActorForwardVector();
-		const float HalfFieldOfViewRadian = FMath::DegreesToRadians(FieldOfView / 2.0f);
-		const FQuat Rot = FQuat::Identity;
-		const FCollisionShape Shape = FCollisionShape::MakeSphere(DetectDistance);
-		
-		FColor DebugColor = FColor::Red;
+	ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
+	if (!IsValid(PlayerBase))
+	{
+		DetectPlayer(OwnerComp, MonsterBase, FieldOfView);
+		return;
+	}
+	
+	if (PlayerBase->CheckCharacterIsDead())
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, nullptr);
+		return;
+	}
 
-		TArray<FOverlapResult> OverlapResults;
-		if (GetWorld()->OverlapMultiByChannel(OverlapResults, Center, Rot, ECC_PLAYER_HIT, Shape))
+	const bool IsInFieldOfView = IsPlayerInFieldOfView(MonsterBase, PlayerBase, FieldOfView) && LineOfSightToPlayer(MonsterBase, PlayerBase);
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, IsInFieldOfView);
+}
+
+void ULLL_DetectPlayer_BTService::DetectPlayer(UBehaviorTreeComponent& OwnerComp, ALLL_MonsterBase* MonsterBase, float FieldOfView) const
+{
+	const float DetectDistance = MonsterBase->GetDetectDistance();
+	const FVector Center = MonsterBase->GetActorLocation();
+	const FVector Direction = MonsterBase->GetActorForwardVector();
+	const float HalfFieldOfViewRadian = FMath::DegreesToRadians(FieldOfView / 2.0f);
+	const FQuat Rot = FQuat::Identity;
+	const FCollisionShape Shape = FCollisionShape::MakeSphere(DetectDistance);
+		
+	FColor DebugColor = FColor::Red;
+
+	TArray<FOverlapResult> OverlapResults;
+	GetWorld()->OverlapMultiByChannel(OverlapResults, Center, Rot, ECC_PLAYER_HIT, Shape);
+
+	for (FOverlapResult const& OverlapResult : OverlapResults)
+	{
+		ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OverlapResult.GetActor());
+		if (!IsValid(PlayerBase) || PlayerBase->CheckCharacterIsDead())
 		{
-			for (FOverlapResult const& OverlapResult : OverlapResults)
-			{
-				ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OverlapResult.GetActor());
-				if (IsValid(PlayerBase) && PlayerBase->GetController()->IsPlayerController())
-				{
-					if (!PlayerBase->CheckCharacterIsDead() && IsPlayerInFieldOfView(MonsterBase, PlayerBase, FieldOfView))
-					{
-						DebugColor = FColor::Green;
-						if (LineOfSightToPlayer(MonsterBase, PlayerBase))
-						{
+			continue;
+		}
+
+		if (!IsPlayerInFieldOfView(MonsterBase, PlayerBase, FieldOfView))
+		{
+			continue;
+		}
+		
+		DebugColor = FColor::Green;
+		
+		if (LineOfSightToPlayer(MonsterBase, PlayerBase))
+		{
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-							if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-							{
-								if (ProtoGameInstance->CheckMonsterAttackDebug())
-								{
-									GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 플레이어 감지"), *MonsterBase->GetName()));
-								}
-							}
-#endif
-							
-							OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, PlayerBase);
-							return;
-						}
-					}
+			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+			{
+				if (ProtoGameInstance->CheckMonsterAttackDebug())
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 플레이어 감지"), *MonsterBase->GetName()));
 				}
 			}
-		}
-		
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
-			{
-				DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, DebugColor, false, 0.1f);
-			}
-		}
 #endif
-		
-		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, nullptr);
+							
+			OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, PlayerBase);
+			return;
+		}
 	}
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckMonsterAttackDebug())
+		{
+			DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, DebugColor, false, 0.1f);
+		}
+	}
+#endif
+	
 }
 
 bool ULLL_DetectPlayer_BTService::IsPlayerInFieldOfView(const ALLL_MonsterBase* MonsterBase, const ALLL_PlayerBase* PlayerBase, float FieldOfView)
@@ -110,7 +129,7 @@ bool ULLL_DetectPlayer_BTService::LineOfSightToPlayer(ALLL_MonsterBase* MonsterB
 	CollisionParams.AddIgnoredActor(MonsterBase); // AI 자신은 무시
 	CollisionParams.AddIgnoredActor(PlayerBase); // 플레이어는 무시
 	
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_WorldStatic, CollisionParams))
+	if (GetWorld()->LineTraceSingleByProfile(HitResult, StartLocation, EndLocation, CP_MONSTER_ATTACK, CollisionParams))
 	{
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)

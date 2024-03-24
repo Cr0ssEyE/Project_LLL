@@ -132,7 +132,7 @@ void ALLL_BaseCharacter::BeginPlay()
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 
-		TakeDamageDelegate.Broadcast();
+		UpdateWidgetDelegate.Broadcast();
 	}
 }
 
