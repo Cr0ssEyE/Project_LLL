@@ -29,7 +29,7 @@ protected:
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "와이어 돌진 정지 거리")
-	float AbilityEndDistance = 200.f;
+	float AbilityEndDistance;
 	
 	FVector TargetLocation;
 	

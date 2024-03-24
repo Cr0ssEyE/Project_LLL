@@ -17,6 +17,7 @@ ULLL_PGA_RushToWireHand::ULLL_PGA_RushToWireHand()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	TargetLocation = Direction = FVector::Zero();
+	AbilityEndDistance = 200.f;
 	RushSpeed = 0.f;
 }
 
