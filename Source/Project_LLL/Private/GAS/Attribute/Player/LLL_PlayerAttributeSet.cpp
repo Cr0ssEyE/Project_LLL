@@ -6,14 +6,15 @@
 #include "GameplayEffectExtension.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Game/ProtoGameInstance.h"
+#include "Util/LLL_MathHelper.h"
 
-ULLL_PlayerAttributeSet::ULLL_PlayerAttributeSet()
+ULLL_PlayerAttributeSet::ULLL_PlayerAttributeSet() :
+	MaxSkillGauge(100.f),
+	SkillGaugeAmplifyByCombo(1.f),
+	SkillGaugeAmplifyByItem(1.f)
 {
-	MaxSkillGauge.SetBaseValue(100.f);
-	SkillGaugeAmplifyByCombo.SetBaseValue(1.0f);
-	SkillGaugeAmplifyByItem.SetBaseValue(1.0f);
+	
 }
 
 void ULLL_PlayerAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -68,7 +69,8 @@ void ULLL_PlayerAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 
 	if (Data.EvaluatedData.Attribute == GetAddCurrentSkillGaugeAttribute())
 	{
-		const float NewCurrentSkillGauge = FMath::Clamp(GetCurrentSkillGauge() + Data.EvaluatedData.Magnitude, 0.f, GetMaxSkillGauge());
+		const float Result = FLLL_MathHelper::CalculateSkillGaugeIncrement(Data.EvaluatedData.Magnitude, GetSkillGaugeAmplifyByCombo(), GetSkillGaugeAmplifyByItem());
+		const float NewCurrentSkillGauge = FMath::Clamp(GetCurrentSkillGauge() + Result, 0.f, GetMaxSkillGauge());
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
