@@ -4,9 +4,9 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemGlobals.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "FMODAudioComponent.h"
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -31,7 +31,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
-	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	
 	Continuous = 0.0f;
 	Discrete = 0;
@@ -68,8 +67,6 @@ void ALLL_PlayerBase::BeginPlay()
 	WireHandActor->SetOwner(this);
 
 	PlayerUIManager = CastChecked<ULLL_PlayerUIManager>(CharacterUIManager);
-
-	FModAudioComponent = UFMODBlueprintStatics::PlayEventAttached(Event, RootComponent, NAME_None, GetActorLocation(), EAttachLocation::KeepWorldPosition, true, false, true);
 	
 	if(IsValid(ASC))
 	{
@@ -354,17 +351,6 @@ void ALLL_PlayerBase::PlayerRotateToMouseCursor()
 	FVector ViewDirection = (MouseWorldLocation - GetActorLocation()).GetSafeNormal();
 	ViewDirection.Z = 0.f;
 	SetActorRotation(ViewDirection.Rotation());
-}
-
-void ALLL_PlayerBase::PlaySound()
-{
-	FModAudioComponent->Play();
-}
-
-void ALLL_PlayerBase::StopSound()
-{
-	FModAudioComponent->Stop();
-	FModAudioComponent->Release();
 }
 
 void ALLL_PlayerBase::ParameterTest()

@@ -3,6 +3,8 @@
 
 #include "Entity/Character/Base/LLL_BaseCharacterAnimInstance.h"
 
+#include "AbilitySystemComponent.h"
+#include "GameplayEffectTypes.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -44,4 +46,15 @@ void ULLL_BaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsIdle = GroundSpeed < MovingThreshold;
 	bIsFalling = Movement->IsFalling();
 	bIsJumping = bIsFalling && (Velocity.Z > JumpingThreshold);
+}
+
+void ULLL_BaseCharacterAnimInstance::AnimNotify_Step()
+{
+	UAbilitySystemComponent* ASC = Character->GetAbilitySystemComponent();
+	FGameplayEffectContextHandle CueContextHandle = ASC->MakeEffectContext();
+	CueContextHandle.AddSourceObject(this);
+	FGameplayCueParameters CueParam;
+	CueParam.EffectContext = CueContextHandle;
+	
+	ASC->ExecuteGameplayCue(CharacterDataAsset->StepCueTag, CueParam);
 }

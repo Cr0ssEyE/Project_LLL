@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FMODBlueprintStatics.h"
 #include "InputActionValue.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
@@ -99,15 +98,7 @@ private:
 
 	UPROPERTY()
 	uint32 InteractionRange;
-
-	UPROPERTY(EditAnywhere, Category = "FMOD")
-	TObjectPtr<UFMODEvent> Event;
-
-	UPROPERTY(VisibleAnywhere, Category = "FMOD")
-	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
-
-	void PlaySound();
-	void StopSound();
+	
 	void ParameterTest();
 
 	UPROPERTY(EditAnywhere, Category = "FMOD", meta = (ClampMin = "0", ClampMax = "1"))
