@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
 #include "LLL_BaseCharacterDataAsset.generated.h"
 
+class UGameplayCueNotify_Burst;
 class ULLL_CharacterStatusWidget;
 class ULLL_PlayerStatusWidget;
 class UGameplayEffect;
@@ -68,4 +70,8 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "수동형 게임플레이 어빌리티")
 	TArray<TSubclassOf<UGameplayAbility>> PassiveGameplayAbility;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "발걸음 이벤트 태그")
+	FGameplayTag StepCueTag;
 };

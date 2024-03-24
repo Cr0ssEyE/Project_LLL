@@ -38,6 +38,8 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 {
 	Super::PostGameplayEffectExecute(Data);
 
+	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
+	
 	if(Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
 		if(GetCurrentShield() > 0.f)
@@ -50,6 +52,7 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 		}
 		SetReceiveDamage(0.f);
 
+		ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
 		if(GetCurrentShield() > 0)
 		{
 			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
@@ -58,9 +61,6 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 		{
 			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
 
-			ALLL_BaseCharacter* Character = Cast<ALLL_BaseCharacter>(GetOwningActor());
-			if (IsValid(Character))
-			{
 				if(GetCurrentHealth() == 0)
 				{
 					Character->Dead();
@@ -69,10 +69,8 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 				{
 					Character->Damaged();
 				}
-			}
 		}
+		OwnerCharacter->TakeDamageDelegate.Broadcast();
 	}
-	
-	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }

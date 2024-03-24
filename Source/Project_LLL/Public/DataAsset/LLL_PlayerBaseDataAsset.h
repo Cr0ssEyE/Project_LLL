@@ -6,6 +6,7 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+enum class EPlayerFootstepsSurface : uint8;
 class ULLL_SkillWidget;
 class ULLL_PlayerWireObjectDataAsset;
 enum class EAbilityInputName;
@@ -87,4 +88,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "일시정지 입력 키")
 	TObjectPtr<UInputAction> PauseInputAction;
+	
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 이름")
+	FName StepEventParameterName;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
+	TMap<TEnumAsByte<EPhysicalSurface>, EPlayerFootstepsSurface> StepEventParameterProperties;
 };

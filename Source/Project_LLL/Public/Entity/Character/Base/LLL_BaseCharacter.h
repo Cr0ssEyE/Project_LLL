@@ -9,13 +9,15 @@
 #include "AbilitySystemInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
+class UFMODAudioComponent;
 class UWidgetComponent;
 class ULLL_BaseCharacterUIManager;
 class ULLL_CharacterAttributeSetBase;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*, Character);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTakeDamageDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
 
 /**
@@ -36,7 +38,8 @@ public:
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
 	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
-
+	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
+	
 protected:
 	virtual void PostLoad() override;
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -54,9 +57,11 @@ public:
 public:
 	FORCEINLINE bool CheckCharacterIsDead() const { return bIsDead; }
 
-	// 상태 체크용 델리게이트
+	// 델리게이트
 public:
 	FCharacterDeadDelegate CharacterDeadDelegate;
+
+	FTakeDamageDelegate TakeDamageDelegate;
 	
 	// 위젯 업데이트를 위한 델리게이트
 public:
@@ -101,6 +106,10 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_BaseCharacterUIManager> CharacterUIManager;
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "FMOD")
+	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 
 protected:
 	virtual void DeadMontageEndEvent();
