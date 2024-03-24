@@ -98,6 +98,7 @@ void ULLL_DetectPlayer_BTService::DetectPlayer(UBehaviorTreeComponent& OwnerComp
 		}
 	}
 #endif
+	
 }
 
 bool ULLL_DetectPlayer_BTService::IsPlayerInFieldOfView(const ALLL_MonsterBase* MonsterBase, const ALLL_PlayerBase* PlayerBase, float FieldOfView)
