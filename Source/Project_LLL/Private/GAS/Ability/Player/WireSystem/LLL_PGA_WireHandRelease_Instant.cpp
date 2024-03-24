@@ -15,14 +15,13 @@ void ULLL_PGA_WireHandRelease_Instant::RetargetReleaseVelocity()
 {
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
-
 	PlayerWireHand->TeleportTo(PlayerCharacter->GetActorLocation(), PlayerCharacter->GetActorRotation());
-	
-	if(CheckOwnerAlreadyOverlapped())
-    {
+
+	if (CheckOwnerAlreadyOverlapped())
+	{
 		PlayerWireHand->SetHiddenState();
 		PlayerWireHand->ReleaseCompleteDelegate.Broadcast();
-    	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-    }
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	}
 }
 

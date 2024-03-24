@@ -16,7 +16,7 @@ class PROJECT_LLL_API ULLL_PGA_WireHandRelease_Instant : public ULLL_PGA_WireHan
 
 public:
 	ULLL_PGA_WireHandRelease_Instant();
-	
+
 protected:
 	virtual void RetargetReleaseVelocity() override;
 };
