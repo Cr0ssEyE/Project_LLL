@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FMODBlueprintStatics.h"
 #include "InputActionValue.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
@@ -52,7 +51,9 @@ public:
 
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ALLL_PlayerWireHand* GetWireHand() const { return WireHandActor; }
+	
 	FVector GetMouseLocation() const;
+	void PlayerRotateToMouseCursor();
 	
 	// 카메라
 private:
@@ -82,8 +83,6 @@ private:
 	void InventoryAction(const FInputActionValue& Value);
 	void PauseAction(const FInputActionValue& Value);
 
-	void CharacterRotateToCursor();
-
 	// 데이터 에셋
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -99,15 +98,7 @@ private:
 
 	UPROPERTY()
 	uint32 InteractionRange;
-
-	UPROPERTY(EditAnywhere, Category = "FMOD")
-	TObjectPtr<UFMODEvent> Event;
-
-	UPROPERTY(VisibleAnywhere, Category = "FMOD")
-	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
-
-	void PlaySound();
-	void StopSound();
+	
 	void ParameterTest();
 
 	UPROPERTY(EditAnywhere, Category = "FMOD", meta = (ClampMin = "0", ClampMax = "1"))

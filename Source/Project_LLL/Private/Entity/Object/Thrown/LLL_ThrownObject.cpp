@@ -22,7 +22,7 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 	if (IsValid(BaseMesh))
 	{
 		SetRootComponent(BaseMesh);
-		BaseMesh->SetCollisionObjectType(ECC_PLAYER_HIT);
+		BaseMesh->SetCollisionProfileName(CP_MONSTER_ATTACK);
 	}
 	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
@@ -41,8 +41,7 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner)
 {
 	SetOwner(NewOwner);
 
-	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	ProjectileMovement->Activate();
+	Activate();
 	ProjectileMovement->Velocity = GetActorForwardVector() * Speed;
 
 	DelayedHide(3.0f);
@@ -75,9 +74,24 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 			}
 #endif
 
-			BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			ProjectileMovement->Deactivate();
-			SetActorHiddenInGame(true);
+			Deactivate();
 		}
 	}
+	else
+	{
+		Deactivate();
+	}
+}
+
+void ALLL_ThrownObject::Activate()
+{
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ProjectileMovement->Activate();
+}
+
+void ALLL_ThrownObject::Deactivate()
+{
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ProjectileMovement->Deactivate();
+	SetActorHiddenInGame(true);
 }

@@ -75,7 +75,6 @@ void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 		
 		// PGA_WireHandGrab
 		FGameplayTagContainer GrabTag(TAG_GAS_WIRE_GRAB);
-		ASC->TryActivateAbilitiesByTag(GrabTag);
 		if(ASC->TryActivateAbilitiesByTag(GrabTag))
 		{
 			GrabbedActor = OtherActor;

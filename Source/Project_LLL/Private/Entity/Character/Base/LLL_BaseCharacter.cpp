@@ -3,7 +3,7 @@
 
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "AbilitySystemComponent.h"
-#include "FMODBlueprintStatics.h"
+#include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
@@ -16,6 +16,8 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	bIsDead = false;
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
+	FModAudioComponent->SetupAttachment(RootComponent);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	bIsSpawned = false;
@@ -91,9 +93,9 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 void ALLL_BaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-	if(IsValid(CharacterAnimInstance))
+	if (IsValid(CharacterAnimInstance))
 	{
 		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
 	}
@@ -130,7 +132,7 @@ void ALLL_BaseCharacter::BeginPlay()
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 
-		TakeDamageDelegate.Broadcast();
+		UpdateWidgetDelegate.Broadcast();
 	}
 }
 
@@ -148,6 +150,8 @@ void ALLL_BaseCharacter::Dead()
 		return;
 	}
 
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CharacterAnimInstance->PlayDeadAnimation();
 	
 	bIsDead = true;

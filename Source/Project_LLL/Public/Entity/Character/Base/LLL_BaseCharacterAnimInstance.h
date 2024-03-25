@@ -31,6 +31,9 @@ protected:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	UFUNCTION(BlueprintCallable)
+	virtual void AnimNotify_Step();
+
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AnimNotify_DeadMotionEnded() { DeadMotionEndedDelegate.Broadcast(); }
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Character")

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_ThrownObjectDataAsset.h"
 #include "Entity/Object/LLL_BaseObject.h"
+#include "Interface/LLL_ObjectPoolingObjectInterface.h"
 #include "LLL_ThrownObject.generated.h"
 
 class UProjectileMovementComponent;
@@ -12,7 +13,7 @@ class UProjectileMovementComponent;
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_ThrownObject : public ALLL_BaseObject
+class PROJECT_LLL_API ALLL_ThrownObject : public ALLL_BaseObject, public ILLL_ObjectPoolingObjectInterface
 {
 	GENERATED_BODY()
 
@@ -26,6 +27,8 @@ public:
 
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+	virtual void Activate() override;
+	virtual void Deactivate() override;
 
 protected:
 	UPROPERTY(VisibleAnywhere)
