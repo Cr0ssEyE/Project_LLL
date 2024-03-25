@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "LLL_MonsterBaseAIController.generated.h"
 
+class UAISenseConfig_Sight;
 class ALLL_BaseCharacter;
 class ALLL_MonsterBase;
 class ULLL_MonsterBaseDataAsset;
@@ -16,6 +17,9 @@ UCLASS()
 class PROJECT_LLL_API ALLL_MonsterBaseAIController : public AAIController
 {
 	GENERATED_BODY()
+
+public:
+	ALLL_MonsterBaseAIController();
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
@@ -31,4 +35,10 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterDataAsset;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UAISenseConfig_Sight> AISenseConfig_Sight;
 };

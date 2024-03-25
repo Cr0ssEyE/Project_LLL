@@ -8,6 +8,14 @@
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
+
+ALLL_MonsterBaseAIController::ALLL_MonsterBaseAIController()
+{
+	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
+	AISenseConfig_Sight = CreateOptionalDefaultSubobject<UAISenseConfig_Sight>(TEXT("SenseConfig_Sight"));
+}
 
 void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 {
@@ -28,6 +36,12 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 		check(RunBehaviorTree(MonsterDataAsset->BehaviorTree));
 		BlackboardComponent = NewBlackboardComponent;
 	}
+
+	AISenseConfig_Sight->SightRadius = 100.0f;
+	AISenseConfig_Sight->LoseSightRadius = MonsterDataAsset->DetectDistance;
+	AISenseConfig_Sight->PeripheralVisionAngleDegrees = MonsterDataAsset->FieldOfView / 2.0f;
+	
+	AIPerceptionComponent->ConfigureSense(*AISenseConfig_Sight);
 }
 
 void ALLL_MonsterBaseAIController::SetPlayer()

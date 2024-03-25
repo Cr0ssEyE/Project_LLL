@@ -10,6 +10,7 @@
 #include "Interface/LLL_EntityInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
+class UAIPerceptionStimuliSourceComponent;
 class UFMODAudioComponent;
 class UWidgetComponent;
 class ULLL_BaseCharacterUIManager;
@@ -106,6 +107,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "FMOD")
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "AI Perception")
+	TObjectPtr<UAIPerceptionStimuliSourceComponent> AIPerceptionStimuliSourceComponent;
 
 protected:
 	virtual void DeadMontageEndEvent();
