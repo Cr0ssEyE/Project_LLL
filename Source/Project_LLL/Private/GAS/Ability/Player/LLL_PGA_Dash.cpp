@@ -8,6 +8,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 
 ULLL_PGA_Dash::ULLL_PGA_Dash()
@@ -101,6 +102,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 	if(IsValid(PlayerCharacter) && bIsInputPressed && CurrentDashCount < MaxDashCount)
 	{
 		CurrentDashCount++;
+		PlayerCharacter->GetMovementComponent()->Velocity = FVector::Zero();
 		PlayerCharacter->LaunchCharacter(PlayerCharacter->GetActorForwardVector() * (DashSpeed * 1000.f), true, true);
 		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
 		// 애님 몽타주 처음부터 다시 실행하거나 특정 시간부터 실행 시키도록 하는게 상당히 귀찮아서 땜빵 처리

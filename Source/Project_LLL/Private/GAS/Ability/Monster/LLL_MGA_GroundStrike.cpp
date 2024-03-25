@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Ability/Monster/MeleeMonster/LLL_MGA_GroundStrike.h"
+#include "GAS/Ability/Monster/LLL_MGA_GroundStrike.h"
 
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"

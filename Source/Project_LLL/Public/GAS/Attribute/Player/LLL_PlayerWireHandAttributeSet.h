@@ -27,6 +27,8 @@ public:
 	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, MinimumThrowDistance);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, MaximumThrowDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, ThrowSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, CorrectionReachStateDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, ReleaseSpeed);
@@ -34,6 +36,12 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, GrabDuration);
 	
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MinimumThrowDistance;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MaximumThrowDistance;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ThrowSpeed;
 
