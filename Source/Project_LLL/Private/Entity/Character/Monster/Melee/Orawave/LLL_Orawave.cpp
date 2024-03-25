@@ -21,5 +21,5 @@ void ALLL_Orawave::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OrawaveMeleeDataAsset = Cast<ULLL_OrawaveDataAsset>(CharacterDataAsset);
+	OrawaveMeleeDataAsset = Cast<ULLL_OrawaveDataAsset>(MeleeMonsterDataAsset);
 }

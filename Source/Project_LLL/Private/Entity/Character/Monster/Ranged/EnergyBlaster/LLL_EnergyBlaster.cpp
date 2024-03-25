@@ -20,5 +20,5 @@ void ALLL_EnergyBlaster::BeginPlay()
 {
 	Super::BeginPlay();
 
-	EnergyBlasterDataAsset = Cast<ULLL_EnergyBlasterDataAsset>(CharacterDataAsset);
+	EnergyBlasterDataAsset = Cast<ULLL_EnergyBlasterDataAsset>(RangedMonsterDataAsset);
 }
