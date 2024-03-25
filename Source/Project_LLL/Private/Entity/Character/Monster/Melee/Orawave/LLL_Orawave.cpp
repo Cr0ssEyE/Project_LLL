@@ -14,12 +14,12 @@ ALLL_Orawave::ALLL_Orawave()
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_OrawaveAttributeSet>(TEXT("OrawaveAttributes"));
 	
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_OrawaveDataAsset>(PATH_ORAWAVE_DATA, EAssertionLevel::Check);
-	OrawaveMeleeDataAsset = Cast<ULLL_OrawaveDataAsset>(CharacterDataAsset);
-	if (IsValid(OrawaveMeleeDataAsset))
-	{
-		DetectDistance = OrawaveMeleeDataAsset->DetectDistance;
-		FieldOfView = OrawaveMeleeDataAsset->FieldOfView;
-	}
-
 	AIControllerClass = ALLL_OrawaveAIController::StaticClass();
+}
+
+void ALLL_Orawave::BeginPlay()
+{
+	Super::BeginPlay();
+
+	OrawaveMeleeDataAsset = Cast<ULLL_OrawaveDataAsset>(MeleeMonsterDataAsset);
 }

@@ -19,6 +19,8 @@ public:
 	ALLL_EnergyBlaster();
 
 protected:
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_EnergyBlasterDataAsset> EnergyBlasterDataAsset;
 };
