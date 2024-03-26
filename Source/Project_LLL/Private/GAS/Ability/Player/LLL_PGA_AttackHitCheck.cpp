@@ -31,15 +31,15 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
 
 		// 맞은 액터 갯수만큼 콤보 수 증가
-		int Magnitude = TargetDataHandle.Data[0]->GetActors().Num();
-		FGameplayEffectSpecHandle ComboEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ComboStackEffect, CurrentLevel);
+		const int Magnitude = TargetDataHandle.Data[0]->GetActors().Num();
+		const FGameplayEffectSpecHandle ComboEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ComboStackEffect, CurrentLevel);
 		if (ComboEffectSpecHandle.IsValid())
 		{
 			ComboEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_COMBO_ADDITIVE, Magnitude);
 			ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, ComboEffectSpecHandle);
 		}
 
-		// 맞은 액터 갯수만큼 스킬 게이지 증가
+		const // 맞은 액터 갯수만큼 스킬 게이지 증가
 		FGameplayEffectSpecHandle SkillGaugeEffectSpecHandle = MakeOutgoingGameplayEffectSpec(IncreaseSkillGaugeEffect, CurrentLevel);
 		if (SkillGaugeEffectSpecHandle.IsValid())
 		{

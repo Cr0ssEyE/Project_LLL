@@ -18,8 +18,6 @@ void ULLL_SkillWidget::UpdateWidgetView(const ULLL_PlayerAttributeSet* Character
 	const float MaxSkillGauge = CharacterAttributeSet->GetMaxSkillGauge();
 	const float CurrentSkillGauge = CharacterAttributeSet->GetCurrentSkillGauge();
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("스킬 게이지 현재값과 최대값: %f , %f."), CurrentSkillGauge, MaxSkillGauge));
-	
 	if(MaxSkillGauge > 0.f)
 	{
 		SkillGaugeBar->SetPercent(CurrentSkillGauge / MaxSkillGauge);
