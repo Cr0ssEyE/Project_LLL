@@ -27,6 +27,5 @@ public:
 
 protected:
 	virtual void InteractiveEvent() override;
-
-	virtual void PostInitializeComponents() override;
+	
 };

@@ -37,6 +37,12 @@ public:
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
+	virtual void PostInitializeComponents() override;
+
+	virtual void BeginPlay() override;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<class UBoxComponent> RootBox;
 	// Stage Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
@@ -47,6 +53,12 @@ protected:
 
 	UFUNCTION()
 	void OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void CreateMapAndGate(uint8 GateNum);
+
+	UFUNCTION()
+	void RandomMap();
 
 // Gate Section
 protected:
