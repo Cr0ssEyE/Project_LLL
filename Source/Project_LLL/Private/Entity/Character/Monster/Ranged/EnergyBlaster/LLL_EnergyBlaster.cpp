@@ -13,12 +13,12 @@ ALLL_EnergyBlaster::ALLL_EnergyBlaster()
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_EnergyBlasterAttributeSet>(TEXT("EnergyBlasterAttributes"));
 	
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_EnergyBlasterDataAsset>(PATH_ENERGYBLASTER_DATA, EAssertionLevel::Check);
-	EnergyBlasterDataAsset = Cast<ULLL_EnergyBlasterDataAsset>(CharacterDataAsset);
-	if (IsValid(EnergyBlasterDataAsset))
-	{
-		DetectDistance = EnergyBlasterDataAsset->DetectDistance;
-		FieldOfView = EnergyBlasterDataAsset->FieldOfView;
-	}
-
 	AIControllerClass = ALLL_EnergyBlasterAIController::StaticClass();
+}
+
+void ALLL_EnergyBlaster::BeginPlay()
+{
+	Super::BeginPlay();
+
+	EnergyBlasterDataAsset = Cast<ULLL_EnergyBlasterDataAsset>(RangedMonsterDataAsset);
 }

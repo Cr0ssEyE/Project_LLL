@@ -19,6 +19,8 @@ public:
 	ALLL_Orawave();
 
 protected:
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_OrawaveDataAsset> OrawaveMeleeDataAsset;
 };

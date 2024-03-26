@@ -10,5 +10,5 @@ void ALLL_MeleeMonster::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MeleeMonsterDataAsset = Cast<ULLL_MeleeMonsterDataAsset>(CharacterDataAsset);
+	MeleeMonsterDataAsset = Cast<ULLL_MeleeMonsterDataAsset>(MonsterBaseDataAsset);
 }

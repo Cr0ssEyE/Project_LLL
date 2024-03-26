@@ -28,6 +28,11 @@ protected:
 	virtual void OnReleasedCallBack();
 	
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "와이어 돌진 정지 거리")
+	float AbilityEndDistance;
+	
+	FVector TargetLocation;
+	
 	FVector Direction;
 
 	float RushSpeed;

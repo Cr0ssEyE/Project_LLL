@@ -22,5 +22,5 @@ void ALLL_RangedMonster::BeginPlay()
 {
 	Super::BeginPlay();
 
-	RangedMonsterDataAsset = Cast<ULLL_RangedMonsterDataAsset>(CharacterDataAsset);
+	RangedMonsterDataAsset = Cast<ULLL_RangedMonsterDataAsset>(MonsterBaseDataAsset);
 }

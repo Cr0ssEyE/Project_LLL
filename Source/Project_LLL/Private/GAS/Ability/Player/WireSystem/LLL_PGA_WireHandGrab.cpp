@@ -49,11 +49,8 @@ void ULLL_PGA_WireHandGrab::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	PlayerWireHand->K2_DetachFromActor(EDetachmentRule::KeepWorld);
 	PlayerWireHand->SetGrabbedActor(nullptr);
 	
-	if(!bWasCancelled)
-	{
-		const FGameplayTagContainer ReleaseHandTags(TAG_GAS_WIRE_RELEASE);
-		GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(ReleaseHandTags);
-	}
+	const FGameplayTagContainer ReleaseHandTags(TAG_GAS_WIRE_RELEASE);
+	GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(ReleaseHandTags);
 	
 	GrabElapsedTime = 0.f;
 	MaxGrabDuration = 0.f;
@@ -114,7 +111,8 @@ void ULLL_PGA_WireHandGrab::CheckGrabbedTime()
 	{
 		return;
 	}
-	
+	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
+	PlayerWireHand->SetActorLocation(PlayerWireHand->GetGrabbedActor()->GetActorLocation());
 	GrabElapsedTime += GetWorld()->GetDeltaSeconds();
 	if(GrabElapsedTime >= MaxGrabDuration)
 	{

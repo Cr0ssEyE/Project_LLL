@@ -50,6 +50,8 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
 		return;
 	}
+
+	PlayerCharacter->PlayerRotateToMouseCursor();
 	
 	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackAnimMontage, 1.f, *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 	MontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
@@ -118,6 +120,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	if(IsValid(PlayerCharacter) && bIsInputPressed && CurrentComboAction < MaxAttackAction)
 	{
+		PlayerCharacter->PlayerRotateToMouseCursor();
 		MontageJumpToSection(*FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 		StartAttackInputWait();
 		bIsInputPressed = false;
