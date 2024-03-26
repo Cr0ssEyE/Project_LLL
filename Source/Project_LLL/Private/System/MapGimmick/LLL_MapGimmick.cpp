@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Entity/Object/Interactive/LLL_GateObject.h"
 #include "Util/LLLConstructorHelper.h"
 
 // Sets default values
@@ -25,26 +26,16 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 
 	// Gate Section
 	static FName GateSockets[] = { TEXT("+XGate"), TEXT("-XGate"), TEXT("+YGate"), TEXT("-YGate") };
-	GateMeshRef = FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/MapTest/Meshes/SM_GateTest.SM_GateTest'"), EAssertionLevel::Check);
+
+	GateClass = ALLL_GateObject::StaticClass();
 	for (FName GateSocket : GateSockets)
 	{
-		UStaticMeshComponent* Gate = CreateDefaultSubobject<UStaticMeshComponent>(GateSocket);
-		Gate->SetStaticMesh(GateMeshRef);
-		Gate->SetupAttachment(Stage, GateSocket);
-		Gate->SetRelativeLocation(FVector(0.0f, -80.5f, 0.0f));
-		Gate->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
-		Gates.Add(GateSocket, Gate);
-
-		FName TriggerName = *GateSocket.ToString().Append(TEXT("Trigger"));
-		UBoxComponent* GateTrigger = CreateDefaultSubobject<UBoxComponent>(TriggerName);
-		GateTrigger->SetBoxExtent(FVector(100.0f, 100.0f, 300.0f));
-		GateTrigger->SetupAttachment(Stage, GateSocket);
-		GateTrigger->SetRelativeLocation(FVector(70.0f, 0.0f, 250.0f));
-		GateTrigger->SetCollisionProfileName(CP_STAGETRIGGER);
-		GateTrigger->OnComponentBeginOverlap.AddDynamic(this, &ALLL_MapGimmick::OnGateTriggerBeginOverlap);
-		GateTrigger->ComponentTags.Add(GateSocket);
-
-		GateTriggers.Add(GateTrigger);
+		FVector GateLocation = Stage->GetSocketLocation(GateSocket) + FVector(0.0f, 0.0f, 50.0f);
+		GateLocations.Add(GateSocket, GateLocation);
+		//AActor* GateActor = GetWorld()->SpawnActor(GateClass, &GateLocation, &FRotator::ZeroRotator);
+		//GateActor->SetActorRotation(FRotator(0.0f, -90.0f, 0.0f));
+		//ALLL_GateObject* GateObjectActor = Cast<ALLL_GateObject>(GateActor);
+		//Gates.Add(GateObjectActor);
 	}
 
 	// State Section
@@ -64,8 +55,13 @@ void ALLL_MapGimmick::OnConstruction(const FTransform& Transform)
 	SetState(CurrentState);
 }
 
+void ALLL_MapGimmick::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	SetState(EStageState::FIGHT);
 }
@@ -76,14 +72,14 @@ void ALLL_MapGimmick::OnGateTriggerBeginOverlap(UPrimitiveComponent* OverlappedC
 	
 }
 
-void ALLL_MapGimmick::OpenGates(uint8 index)
+void ALLL_MapGimmick::OpenAllGates()
 {
-	
+	//게이트 상호작용 여부 변경
 }
 
 void ALLL_MapGimmick::CloseAllGates()
 {
-	
+	//게이트 상호작용 여부 변경
 }
 
 void ALLL_MapGimmick::SetState(EStageState InNewState)
@@ -98,22 +94,30 @@ void ALLL_MapGimmick::SetState(EStageState InNewState)
 
 void ALLL_MapGimmick::SetReady()
 {
+	StageTrigger->SetCollisionProfileName(CP_STAGETRIGGER);
 	
+	CloseAllGates();
 }
 
 void ALLL_MapGimmick::SetFight()
 {
-	
+	StageTrigger->SetCollisionProfileName(TEXT("NoCollision"));
+
+	CloseAllGates();
 }
 
 void ALLL_MapGimmick::SetChooseReward()
 {
+	StageTrigger->SetCollisionProfileName(TEXT("NoCollision"));
 	
+	CloseAllGates();
 }
 
 void ALLL_MapGimmick::SetChooseNext()
 {
-	
+	StageTrigger->SetCollisionProfileName(TEXT("NoCollision"));
+
+	OpenAllGates();
 }
 
 

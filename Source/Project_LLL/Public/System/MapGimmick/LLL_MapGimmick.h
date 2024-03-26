@@ -36,7 +36,7 @@ public:
 
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
-
+	virtual void BeginPlay() override;
 	// Stage Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
@@ -50,19 +50,18 @@ protected:
 
 // Gate Section
 protected:
-	UPROPERTY()
-	TObjectPtr<class UStaticMesh> GateMeshRef;
+	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class ALLL_GateObject> GateClass;
 	
 	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
-	TMap<FName, TObjectPtr<class UStaticMeshComponent>> Gates;
+	TArray<TObjectPtr<class ALLL_GateObject>> Gates;
 
-	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
-	TArray<TObjectPtr<class UBoxComponent>> GateTriggers;
-
+	TMap<FName, FVector> GateLocations;
+	
 	UFUNCTION()
 	void OnGateTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	void OpenGates(uint8 index);
+	void OpenAllGates();
 	void CloseAllGates();
 
 // State Section
