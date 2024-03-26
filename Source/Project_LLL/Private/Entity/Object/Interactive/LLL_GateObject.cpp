@@ -2,6 +2,7 @@
 
 
 #include "Entity/Object/Interactive/LLL_GateObject.h"
+#include "Util/LLLConstructorHelper.h"
 
 ALLL_GateObject::ALLL_GateObject()
 {
@@ -21,9 +22,11 @@ void ALLL_GateObject::Tick(float DeltaTime)
 void ALLL_GateObject::InteractiveEvent()
 {
 	Super::InteractiveEvent();
+
+	//문 오픈 애니 및 이펙트 로직
 }
 
 void ALLL_GateObject::PostInitializeComponents()
 {
-	
+	BaseMesh->SetStaticMesh(FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/MapTest/Meshes/SM_GateTest.SM_GateTest'"), EAssertionLevel::Check));
 }
