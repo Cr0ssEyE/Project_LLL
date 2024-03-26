@@ -139,5 +139,9 @@
 			"Name": "FMODStudio",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Windows",
+		"Mac"
 	]
 }

@@ -24,10 +24,10 @@ protected:
 	virtual void ApplySkillGaugeAmplify();
 	
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName ="스킬 게이지 콤보 배율 조정 이펙트")
 	TSubclassOf<UGameplayEffect> UpdateComboAmplifyEffect;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName ="커브 테이블 내 콤보 비례 스킬 게이지 배율 변화값 행")
 	FCurveTableRowHandle ComboAmplifyChangeSection;
 	
 	UPROPERTY()

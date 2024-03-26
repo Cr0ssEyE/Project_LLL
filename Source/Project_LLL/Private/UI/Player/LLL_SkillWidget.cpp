@@ -21,6 +21,6 @@ void ULLL_SkillWidget::UpdateWidgetView(const ULLL_PlayerAttributeSet* Character
 	if(MaxSkillGauge > 0.f)
 	{
 		SkillGaugeBar->SetPercent(CurrentSkillGauge / MaxSkillGauge);
-		SkillGaugeText->SetText(FText::FromString(FString::Printf(TEXT("%d"), FMath::FloorToInt(SkillGaugeBar->GetPercent() * 100.f)).Append(TEXT("%"))));
+		SkillGaugeText->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), SkillGaugeBar->GetPercent() * 100.f).Append(TEXT("%"))));
 	}
 }

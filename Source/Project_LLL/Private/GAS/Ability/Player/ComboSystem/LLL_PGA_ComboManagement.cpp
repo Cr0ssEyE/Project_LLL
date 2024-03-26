@@ -2,6 +2,7 @@
 
 #include "GAS/Ability/Player/ComboSystem/LLL_PGA_ComboManagement.h"
 
+#include "Constant/LLL_GameplayTags.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 
@@ -57,6 +58,10 @@ void ULLL_PGA_ComboManagement::EndAbility(const FGameplayAbilitySpecHandle Handl
 			}
 		}
 	}
+
+	FGameplayTagContainer SkillGaugeAmplifyByComboTag(TAG_GAS_COMBO_CHECK_AMPLIFY);
+	GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(SkillGaugeAmplifyByComboTag);
+	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -69,6 +74,8 @@ void ULLL_PGA_ComboManagement::ComboTimerTick()
 		{
 			CurrentComboStackDuration = MaxComboStackDuration;
 		}
+		FGameplayTagContainer SkillGaugeAmplifyByComboTag(TAG_GAS_COMBO_CHECK_AMPLIFY);
+		GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(SkillGaugeAmplifyByComboTag);
 	}
 	else
 	{
@@ -77,6 +84,7 @@ void ULLL_PGA_ComboManagement::ComboTimerTick()
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 			return;
 		}
+		
 		CurrentComboStackDuration = MaxComboStackDuration;
 		if(IsValid(ComboDivideEffect))
 		{

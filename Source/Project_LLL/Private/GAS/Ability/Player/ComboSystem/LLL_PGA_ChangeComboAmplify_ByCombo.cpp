@@ -21,12 +21,33 @@ void ULLL_PGA_ChangeComboAmplify_ByCombo::ActivateAbility(const FGameplayAbility
 void ULLL_PGA_ChangeComboAmplify_ByCombo::ApplySkillGaugeAmplify()
 {
 	const ULLL_PlayerAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
+	
+	bool AmplifyChanged = false;
 	const uint32 CurrentComboCount = PlayerAttributeSet->GetCurrentComboCount();
-	const uint32 NextAmplifyNeededComboCount = ComboAmplifyChangeSection.Eval(CurrentComboAmplifyLevel, ComboAmplifyChangeSection.RowName.ToString());
+	
+	const uint32 NextAmplifyNeededComboCount = ComboAmplifyChangeSection.Eval(CurrentComboAmplifyLevel + 1, ComboAmplifyChangeSection.RowName.ToString());
 	if(CurrentComboCount >= NextAmplifyNeededComboCount)
 	{
-		
+		AmplifyChanged = true;
+		CurrentComboAmplifyLevel++;
 	}
-	BP_ApplyGameplayEffectToOwner(UpdateComboAmplifyEffect, CurrentComboAmplifyLevel);
+
+	const uint32 BeforeAmplifyNeededComboCount = ComboAmplifyChangeSection.Eval(FMath::Clamp(CurrentComboAmplifyLevel - 1, 1, CurrentComboAmplifyLevel), ComboAmplifyChangeSection.RowName.ToString());
+	if(CurrentComboCount < BeforeAmplifyNeededComboCount)
+	{
+		AmplifyChanged = true;
+		CurrentComboAmplifyLevel--;
+		
+		if(CurrentComboCount <= 0)
+		{
+			CurrentComboAmplifyLevel = 1;
+		}
+	}
+	
+	if(AmplifyChanged)
+	{
+		BP_ApplyGameplayEffectToOwner(UpdateComboAmplifyEffect, CurrentComboAmplifyLevel);
+	}
+	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
