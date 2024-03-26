@@ -8,8 +8,11 @@
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISense_Sight.h"
 
 ULLL_DetectPlayer_BTService::ULLL_DetectPlayer_BTService()
 {
@@ -21,15 +24,29 @@ ULLL_DetectPlayer_BTService::ULLL_DetectPlayer_BTService()
 void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
-
+	
 	ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 	const float FieldOfView = MonsterBase->GetFieldOfView();
 	
 	ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
-	if (!IsValid(PlayerBase))
+	//DetectPlayer(OwnerComp, MonsterBase, FieldOfView);
+
+	ALLL_MonsterBaseAIController* MonsterAIController = Cast<ALLL_MonsterBaseAIController>(MonsterBase->GetController());
+	TArray<AActor*> OutActors;
+	MonsterAIController->GetAIPerceptionComponent()->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), OutActors);
+	for (auto OutActor : OutActors)
 	{
-		DetectPlayer(OwnerComp, MonsterBase, FieldOfView);
-		return;
+		if (Cast<ALLL_PlayerBase>(OutActor))
+		{
+			if (IsValid(PlayerBase))
+			{
+				OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, true);
+			}
+			else
+			{
+				OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, OutActor);
+			}
+		}
 	}
 	
 	if (PlayerBase->CheckCharacterIsDead())

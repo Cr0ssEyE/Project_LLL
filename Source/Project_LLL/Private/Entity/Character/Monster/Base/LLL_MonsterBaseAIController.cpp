@@ -13,15 +13,21 @@
 
 ALLL_MonsterBaseAIController::ALLL_MonsterBaseAIController()
 {
-	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
-	AISenseConfig_Sight = CreateOptionalDefaultSubobject<UAISenseConfig_Sight>(TEXT("SenseConfig_Sight"));
+	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
+	AISenseConfig_Sight = CreateOptionalDefaultSubobject<UAISenseConfig_Sight>(TEXT("AISenseConfig_Sight"));
+
+	AISenseConfig_Sight->DetectionByAffiliation.bDetectEnemies = true;
+	AISenseConfig_Sight->DetectionByAffiliation.bDetectFriendlies = true;
+	AISenseConfig_Sight->DetectionByAffiliation.bDetectNeutrals = true;
+	
+	PerceptionComponent->ConfigureSense(*AISenseConfig_Sight);
 }
 
 void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	Monster = Cast<ALLL_MonsterBase>(InPawn);
+	Monster = CastChecked<ALLL_MonsterBase>(InPawn);
 	if (IsValid(Monster))
 	{
 		MonsterDataAsset = CastChecked<ULLL_MonsterBaseDataAsset>(Monster->GetCharacterDataAsset());
@@ -37,11 +43,9 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 		BlackboardComponent = NewBlackboardComponent;
 	}
 
-	AISenseConfig_Sight->SightRadius = 100.0f;
-	AISenseConfig_Sight->LoseSightRadius = MonsterDataAsset->DetectDistance;
+	AISenseConfig_Sight->SightRadius = MonsterDataAsset->DetectDistance;
+	AISenseConfig_Sight->LoseSightRadius = MonsterDataAsset->DetectDistance * 2;
 	AISenseConfig_Sight->PeripheralVisionAngleDegrees = MonsterDataAsset->FieldOfView / 2.0f;
-	
-	AIPerceptionComponent->ConfigureSense(*AISenseConfig_Sight);
 }
 
 void ALLL_MonsterBaseAIController::SetPlayer()
@@ -51,4 +55,26 @@ void ALLL_MonsterBaseAIController::SetPlayer()
 	{
 		BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
 	}
+}
+
+void ALLL_MonsterBaseAIController::DetectCharacter(const TArray<AActor*>& UpdatedActors)
+{
+	for (auto Actor : UpdatedActors)
+	{
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Actor);
+		if (!IsValid(Player))
+		{
+			continue;
+		}
+
+		if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
+		{
+			BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
+		}
+		
+		BlackboardComponent->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, true);
+		return;
+	}
+	
+	BlackboardComponent->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, false);
 }

@@ -7,6 +7,7 @@
 #include "DataAsset/LLL_BaseCharacterDataAsset.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "GenericTeamAgentInterface.h"
 #include "Interface/LLL_EntityInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
@@ -25,7 +26,7 @@ DECLARE_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface, public ILLL_EntityInterface
+class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface, public ILLL_EntityInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -107,9 +108,6 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "FMOD")
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
-
-	UPROPERTY(VisibleAnywhere, Category = "AI Perception")
-	TObjectPtr<UAIPerceptionStimuliSourceComponent> AIPerceptionStimuliSourceComponent;
 
 protected:
 	virtual void DeadMontageEndEvent();

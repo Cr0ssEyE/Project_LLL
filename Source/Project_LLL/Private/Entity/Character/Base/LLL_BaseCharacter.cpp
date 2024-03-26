@@ -19,7 +19,6 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
-	AIPerceptionStimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("AI Perception Stimuli Source Component"));
 	
 	FModAudioComponent->SetupAttachment(RootComponent);
 
@@ -104,8 +103,8 @@ void ALLL_BaseCharacter::BeginPlay()
 		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
 	}
 
-	AIPerceptionStimuliSourceComponent->bAutoRegister = true;
-	AIPerceptionStimuliSourceComponent->RegisterForSense(UAISense_Sight::StaticClass());
+	//AIPerceptionStimuliSourceComponent->RegisterForSense(UAISense_Sight::StaticClass());
+	//AIPerceptionStimuliSourceComponent->RegisterWithPerceptionSystem();
 
 	if(IsValid(ASC))
 	{

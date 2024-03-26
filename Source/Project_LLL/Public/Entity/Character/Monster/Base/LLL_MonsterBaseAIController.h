@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "LLL_MonsterBaseAIController.generated.h"
 
+struct FAIStimulus;
 class UAISenseConfig_Sight;
 class ALLL_BaseCharacter;
 class ALLL_MonsterBase;
@@ -27,6 +28,9 @@ protected:
 	UFUNCTION()
 	void SetPlayer();
 
+	UFUNCTION()
+	void DetectCharacter(const TArray<AActor*>& UpdatedActors);
+	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ALLL_MonsterBase> Monster;
 
@@ -35,9 +39,6 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterDataAsset;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UAISenseConfig_Sight> AISenseConfig_Sight;
