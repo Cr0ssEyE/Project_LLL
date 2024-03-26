@@ -50,13 +50,14 @@ protected:
 
 // Gate Section
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class ALLL_GateObject> GateObjectClass;
+	UPROPERTY()
+	TObjectPtr<class UStaticMesh> GateMeshRef;
+	
+	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
+	TMap<FName, TObjectPtr<class UStaticMeshComponent>> Gates;
 
-	UPROPERTY(VisibleAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
-	TArray<TWeakObjectPtr<class ALLL_GateObject>> Gates;
-
-	TMap<FName, FVector> GateLocations;
+	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
+	TArray<TObjectPtr<class UBoxComponent>> GateTriggers;
 
 	UFUNCTION()
 	void OnGateTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

@@ -2,7 +2,11 @@
 
 
 #include "Entity/Object/Interactive/LLL_GateObject.h"
-#include "Util/LLLConstructorHelper.h"
+
+ALLL_GateObject::ALLL_GateObject()
+{
+	
+}
 
 void ALLL_GateObject::BeginPlay()
 {
@@ -17,11 +21,9 @@ void ALLL_GateObject::Tick(float DeltaTime)
 void ALLL_GateObject::InteractiveEvent()
 {
 	Super::InteractiveEvent();
-
-	//게이트 오픈 애니메이션 재생
 }
 
 void ALLL_GateObject::PostInitializeComponents()
 {
-	BaseMesh->SetStaticMesh(FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/MapTest/Meshes/SM_GateTest.SM_GateTest'"), EAssertionLevel::Check));
+	
 }

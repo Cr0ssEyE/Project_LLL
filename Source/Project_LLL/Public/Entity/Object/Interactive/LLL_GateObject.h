@@ -13,6 +13,9 @@ UCLASS()
 class PROJECT_LLL_API ALLL_GateObject : public ALLL_InteractiveObject
 {
 	GENERATED_BODY()
+
+public:
+	ALLL_GateObject();
 	
 protected:
 	// Called when the game starts or when spawned
