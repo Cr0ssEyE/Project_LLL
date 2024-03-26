@@ -6,6 +6,7 @@
 #include "InputActionValue.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
 class ALLL_PlayerWireHand;
@@ -30,7 +31,7 @@ enum class ELabeled : uint8
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_PlayerBase : public ALLL_BaseCharacter
+class PROJECT_LLL_API ALLL_PlayerBase : public ALLL_BaseCharacter, public ILLL_PlayerDependencyInterface
 {
 	GENERATED_BODY()
 

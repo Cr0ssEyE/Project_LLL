@@ -29,7 +29,12 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MultiplyComboCountWhenHit);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MultiplyComboCountPerTime);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxComboStackDuration);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, CurrentSkillGauge);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxSkillGauge);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, SkillGaugeAmplifyByCombo);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, SkillGaugeAmplifyByItem);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, bIsComboTimerElapsed);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, AddCurrentSkillGauge);
 	
 protected:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
@@ -79,8 +84,26 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxComboStackDuration;
 
+	// 스킬 관련
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData CurrentSkillGauge;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MaxSkillGauge;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData SkillGaugeAmplifyByCombo;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData SkillGaugeAmplifyByItem;
+	
 	// 메타 어트리뷰트
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData bIsComboTimerElapsed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData AddCurrentSkillGauge;
+	
 };

@@ -7,6 +7,7 @@
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
 enum class EPlayerFootstepsSurface : uint8;
+class ULLL_SkillWidget;
 class ULLL_PlayerWireObjectDataAsset;
 enum class EAbilityInputName;
 class ULLL_InteractionWidget;
@@ -36,6 +37,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "상호작용 정보 UI")
 	TSubclassOf<ULLL_InteractionWidget> InteractionWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스킬 게이지 UI")
+	TSubclassOf<ULLL_SkillWidget> SkillGaugeWidgetClass;
+	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV")
 	float CameraFOV;

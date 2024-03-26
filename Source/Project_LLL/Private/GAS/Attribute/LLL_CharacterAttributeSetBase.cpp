@@ -38,6 +38,8 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 {
 	Super::PostGameplayEffectExecute(Data);
 
+	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
+	
 	if(Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
 		if(GetCurrentShield() > 0.f)
@@ -68,8 +70,7 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 					Character->Damaged();
 				}
 		}
-		
-		Character->TakeDamageDelegate.Broadcast();
-		Character->UpdateWidgetDelegate.Broadcast();
+		OwnerCharacter->TakeDamageDelegate.Broadcast();
 	}
+	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }

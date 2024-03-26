@@ -18,7 +18,7 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	{
 		MonsterDataAsset = CastChecked<ULLL_MonsterBaseDataAsset>(Monster->GetCharacterDataAsset());
 
-		Monster->TakeDamageDelegate.AddUObject(this, &ALLL_MonsterBaseAIController::SetPlayer);
+		Monster->TakeDamageDelegate.AddDynamic(this, &ALLL_MonsterBaseAIController::SetPlayer);
 	}
 
 	// 블랙보드와 행동트리 할당

@@ -55,7 +55,7 @@ void ULLL_PGA_WireHandThrow::ThrowToCursorLocation()
 {
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
-	ULLL_PlayerWireHandAttributeSet* WireHandAttributeSet = PlayerWireHand->GetWireHandAttributeSet();
+	const ULLL_PlayerWireHandAttributeSet* WireHandAttributeSet = CastChecked<ULLL_PlayerWireHandAttributeSet>(PlayerWireHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerWireHandAttributeSet::StaticClass()));
 	
 	TargetLocation = PlayerCharacter->GetMouseLocation();
 	float TargetDistance = FVector::DistXY(TargetLocation, PlayerCharacter->GetActorLocation());
@@ -97,7 +97,7 @@ void ULLL_PGA_WireHandThrow::CheckReached()
 {
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
-	ULLL_PlayerWireHandAttributeSet* WireHandAttributeSet = PlayerWireHand->GetWireHandAttributeSet();
+	const ULLL_PlayerWireHandAttributeSet* WireHandAttributeSet = CastChecked<ULLL_PlayerWireHandAttributeSet>(PlayerWireHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerWireHandAttributeSet::StaticClass()));
 	
 	float LocationDistance = FVector::Distance(PlayerWireHand->GetActorLocation(), TargetLocation);
 	float OwnerDistance = FVector::DistXY(PlayerWireHand->GetActorLocation(), PlayerCharacter->GetActorLocation());
