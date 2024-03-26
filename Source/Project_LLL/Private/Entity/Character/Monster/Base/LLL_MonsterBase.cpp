@@ -39,6 +39,9 @@ void ALLL_MonsterBase::BeginPlay()
 	MonsterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
 	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
 	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	DetectDistance = MonsterBaseDataAsset->DetectDistance;
+	FieldOfView = MonsterBaseDataAsset->FieldOfView;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
