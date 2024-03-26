@@ -3,12 +3,14 @@
 
 #include "GAS/Ability/Player/ComboSystem/LLL_PGA_ChangeComboAmplify_ByCombo.h"
 
+#include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
 
 ULLL_PGA_ChangeComboAmplify_ByCombo::ULLL_PGA_ChangeComboAmplify_ByCombo()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	CurrentComboAmplifyLevel = 1;
+	CurrentAmplifyLevelComboCount = 0;
 }
 
 void ULLL_PGA_ChangeComboAmplify_ByCombo::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -26,26 +28,33 @@ void ULLL_PGA_ChangeComboAmplify_ByCombo::ApplySkillGaugeAmplify()
 	const uint32 CurrentComboCount = PlayerAttributeSet->GetCurrentComboCount();
 	
 	const uint32 NextAmplifyNeededComboCount = ComboAmplifyChangeSection.Eval(CurrentComboAmplifyLevel + 1, ComboAmplifyChangeSection.RowName.ToString());
-	if(CurrentComboCount >= NextAmplifyNeededComboCount)
+	if(CurrentComboCount >= NextAmplifyNeededComboCount && CurrentAmplifyLevelComboCount != NextAmplifyNeededComboCount)
 	{
 		AmplifyChanged = true;
 		CurrentComboAmplifyLevel++;
+		CurrentAmplifyLevelComboCount = NextAmplifyNeededComboCount;
 	}
 
 	const uint32 BeforeAmplifyNeededComboCount = ComboAmplifyChangeSection.Eval(FMath::Clamp(CurrentComboAmplifyLevel - 1, 1, CurrentComboAmplifyLevel), ComboAmplifyChangeSection.RowName.ToString());
-	if(CurrentComboCount < BeforeAmplifyNeededComboCount)
+	if(CurrentComboCount < BeforeAmplifyNeededComboCount && CurrentComboAmplifyLevel > 1)
 	{
 		AmplifyChanged = true;
 		CurrentComboAmplifyLevel--;
-		
-		if(CurrentComboCount <= 0)
-		{
-			CurrentComboAmplifyLevel = 1;
-		}
+		CurrentAmplifyLevelComboCount = BeforeAmplifyNeededComboCount;
 	}
 	
 	if(AmplifyChanged)
 	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("현재 콤보에 따른 스킬게이지 증가 배율 레벨 변경. 새로운 레벨: %d"), CurrentComboAmplifyLevel));
+			}
+		}
+#endif
+		
 		BP_ApplyGameplayEffectToOwner(UpdateComboAmplifyEffect, CurrentComboAmplifyLevel);
 	}
 	

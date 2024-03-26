@@ -32,5 +32,7 @@ protected:
 	
 	UPROPERTY()
 	uint32 CurrentComboAmplifyLevel;
-	
+
+	UPROPERTY()
+	uint32 CurrentAmplifyLevelComboCount;
 };
