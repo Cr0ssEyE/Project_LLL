@@ -6,8 +6,6 @@
 #include "AIController.h"
 #include "LLL_MonsterBaseAIController.generated.h"
 
-class UAISenseConfig;
-struct FAIStimulus;
 class UAISenseConfig_Sight;
 class ALLL_BaseCharacter;
 class ALLL_MonsterBase;

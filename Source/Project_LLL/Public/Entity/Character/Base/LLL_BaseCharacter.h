@@ -7,11 +7,9 @@
 #include "DataAsset/LLL_BaseCharacterDataAsset.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
-#include "GenericTeamAgentInterface.h"
 #include "Interface/LLL_EntityInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
-class UAIPerceptionStimuliSourceComponent;
 class UFMODAudioComponent;
 class UWidgetComponent;
 class ULLL_BaseCharacterUIManager;
@@ -26,7 +24,7 @@ DECLARE_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface, public ILLL_EntityInterface, public IGenericTeamAgentInterface
+class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface, public ILLL_EntityInterface
 {
 	GENERATED_BODY()
 
