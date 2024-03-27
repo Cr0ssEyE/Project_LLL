@@ -6,6 +6,8 @@
 #include "AIController.h"
 #include "LLL_MonsterBaseAIController.generated.h"
 
+class UAISenseConfig;
+class UAISenseConfig_Hearing;
 struct FAIStimulus;
 class UAISenseConfig_Sight;
 class ALLL_BaseCharacter;
@@ -22,14 +24,11 @@ class PROJECT_LLL_API ALLL_MonsterBaseAIController : public AAIController
 public:
 	ALLL_MonsterBaseAIController();
 
-protected:
+public:
 	virtual void OnPossess(APawn* InPawn) override;
 
 	UFUNCTION()
 	void SetPlayer();
-
-	UFUNCTION()
-	void DetectCharacter(const TArray<AActor*>& UpdatedActors);
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ALLL_MonsterBase> Monster;
@@ -42,4 +41,7 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UAISenseConfig_Sight> AISenseConfig_Sight;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UAISenseConfig_Hearing> AISenseConfig_Hearing;
 };

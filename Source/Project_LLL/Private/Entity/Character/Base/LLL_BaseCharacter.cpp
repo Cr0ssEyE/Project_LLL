@@ -103,9 +103,6 @@ void ALLL_BaseCharacter::BeginPlay()
 		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
 	}
 
-	//AIPerceptionStimuliSourceComponent->RegisterForSense(UAISense_Sight::StaticClass());
-	//AIPerceptionStimuliSourceComponent->RegisterWithPerceptionSystem();
-
 	if(IsValid(ASC))
 	{
 		ASC->InitAbilityActorInfo(this, this);
