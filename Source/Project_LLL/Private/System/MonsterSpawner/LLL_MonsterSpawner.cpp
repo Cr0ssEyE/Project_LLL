@@ -21,8 +21,6 @@ ALLL_MonsterSpawner::ALLL_MonsterSpawner()
 	DetectBox->SetCollisionObjectType(ECC_PLAYER_HIT);
 	
 	SetRootComponent(DetectBox);
-
-	MaxWave = 3;
 }
 
 void ALLL_MonsterSpawner::BeginPlay()

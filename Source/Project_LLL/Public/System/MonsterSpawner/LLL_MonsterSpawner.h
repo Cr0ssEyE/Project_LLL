@@ -53,10 +53,10 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 	TArray<ALLL_MonsterBase*> Monsters;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleDefaultsOnly)
 	int32 Wave;
 
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	int32 MaxWave;
 
 	UPROPERTY(VisibleDefaultsOnly)
