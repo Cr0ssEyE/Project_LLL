@@ -8,6 +8,7 @@
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "GameplayDebugger/GameplayDebuggerCategory_Perception.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Hearing.h"
 #include "Perception/AISenseConfig_Sight.h"
@@ -23,6 +24,7 @@ ALLL_MonsterBaseAIController::ALLL_MonsterBaseAIController()
 void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+	FGameplayDebuggerCategory_Perception::MakeInstance();
 
 	Monster = CastChecked<ALLL_MonsterBase>(InPawn);
 	if (IsValid(Monster))
