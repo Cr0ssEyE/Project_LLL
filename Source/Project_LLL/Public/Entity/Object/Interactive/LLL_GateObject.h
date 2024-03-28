@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
+#include "GameFramework/RotatingMovementComponent.h"
 #include "LLL_GateObject.generated.h"
 
 /**
@@ -27,5 +28,8 @@ public:
 
 protected:
 	virtual void InteractiveEvent() override;
-	
+
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+	void OpenGate();
 };

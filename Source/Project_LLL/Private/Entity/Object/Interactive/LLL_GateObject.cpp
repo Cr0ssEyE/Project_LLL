@@ -23,6 +23,17 @@ void ALLL_GateObject::InteractiveEvent()
 {
 	Super::InteractiveEvent();
 
-	//문 오픈 애니 및 이펙트 로직
+	OpenGate();
+}
+
+void ALLL_GateObject::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+
+}
+
+void ALLL_GateObject::OpenGate()
+{
+	//문 오픈 애니 및 이펙트
+	AddActorLocalRotation(FRotator(0.0f, -90.0f, 0.0f));
 }
 
