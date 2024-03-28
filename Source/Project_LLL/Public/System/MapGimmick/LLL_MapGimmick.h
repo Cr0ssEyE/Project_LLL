@@ -60,6 +60,10 @@ protected:
 	UFUNCTION()
 	void RandomMap();
 
+private:
+	UPROPERTY()
+	uint8 GateIndex;
+
 // Gate Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
@@ -69,9 +73,6 @@ protected:
 	TArray<TWeakObjectPtr<class ALLL_GateObject>> Gates;
 
 	TMap<FName, FVector> GateLocations;
-
-	UFUNCTION()
-	void OnGateTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	void OpenGates(uint8 index);
 	void CloseAllGates();
