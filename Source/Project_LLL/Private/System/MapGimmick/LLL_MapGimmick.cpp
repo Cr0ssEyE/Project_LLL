@@ -7,6 +7,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Util/LLLConstructorHelper.h"
 #include "Entity/Object/Interactive/LLL_GateObject.h"
+#include "Entity/Object/Breakable/LLL_BreakableObjectBase.h"
 #include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
 
 // Sets default values
@@ -42,7 +43,7 @@ void ALLL_MapGimmick::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CreateMapAndGate(0);
+	CreateMapAndGate();
 }
 
 void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -51,7 +52,7 @@ void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* Overlapped
 	SetState(EStageState::FIGHT);
 }
 
-void ALLL_MapGimmick::CreateMapAndGate(uint8 GateNum)
+void ALLL_MapGimmick::CreateMapAndGate()
 {
 	
 	
