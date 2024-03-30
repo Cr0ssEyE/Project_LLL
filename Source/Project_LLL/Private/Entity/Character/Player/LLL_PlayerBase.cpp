@@ -185,29 +185,68 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
-	if (bool bResult = GetWorld()->LineTraceSingleByChannel(
+	bool bResult = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
 		MouseWorldLocation,
 		MouseWorldLocation + MouseWorldDirection * 10000.f,
 		ECC_WorldStatic
-	))
+	);
+	
+	if (!bResult)
 	{
+		return FVector::Zero();
+	}
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
 		{
-			if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+			DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
+			DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10.f, FColor::Red, false, 3.f);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("마우스 월드 좌표: %f, %f, %f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z));
+		}
+	}
+#endif
+	
+	FVector TrueMouseWorldLocation = HitResult.ImpactPoint;
+	
+	HitResult.Init();
+	bResult = false;
+	bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		TrueMouseWorldLocation,
+		TrueMouseWorldLocation,
+		FQuat::Identity,
+		ECC_ENEMY_HIT,
+		FCollisionShape::MakeSphere(PlayerDataAsset->MouseCursorCorrectRadius),
+		Params
+		);
+	
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+		{
+			if(bResult)
 			{
-				DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
-				DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10.f, FColor::Red, false, 3.f);
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("마우스 월드 좌표: %f, %f, %f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z));
+				DrawDebugSphere(GetWorld(), TrueMouseWorldLocation, PlayerDataAsset->MouseCursorCorrectRadius, 16, FColor::Green, false, 2.f);
+			}
+			else
+			{
+				DrawDebugSphere(GetWorld(), TrueMouseWorldLocation, PlayerDataAsset->MouseCursorCorrectRadius, 16, FColor::Red, false, 2.f);
 			}
 		}
-#endif
-		
-		FVector TrueMouseWorldLocation = HitResult.ImpactPoint;
-		return TrueMouseWorldLocation;
 	}
-	return FVector::Zero();
+#endif
+	
+	if(bResult)
+	{
+		FVector CorrectedMouseLocation = HitResult.GetActor()->GetActorLocation();
+		return CorrectedMouseLocation;
+	}
+	
+	return TrueMouseWorldLocation;
 }
 
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
@@ -279,15 +318,7 @@ void ALLL_PlayerBase::WireAction(const FInputActionValue& Value, EAbilityInputNa
 	FGameplayAbilitySpec* WireSpec = ASC->FindAbilitySpecFromInputID(InputID);
 	if(WireSpec)
 	{
-		if (WireSpec->IsActive() && WireHandActor->GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_WIRE_STATE_GRABBED))
-		{
-			FGameplayTagContainer RushTag(TAG_GAS_PLAYER_WIRE_RUSH);
-			ASC->TryActivateAbilitiesByTag(RushTag);
-		}
-		else
-		{
-			ASC->TryActivateAbility(WireSpec->Handle);
-		}
+		ASC->TryActivateAbility(WireSpec->Handle);
 	}
 }
 

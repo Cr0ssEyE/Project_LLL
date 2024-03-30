@@ -8,8 +8,10 @@
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GAS/Ability/Player/WireSystem/LLL_PGA_RushToWireHand.h"
 #include "GAS/Attribute/Player/LLL_PlayerWireHandAttributeSet.h"
 
 ULLL_PGA_WireHandGrab::ULLL_PGA_WireHandGrab()
@@ -90,7 +92,6 @@ bool ULLL_PGA_WireHandGrab::TryGrabAroundEntity(const FGameplayAbilitySpecHandle
 void ULLL_PGA_WireHandGrab::GrabTargetEntity()
 {
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
-
 	USphereComponent* WireHandCollision = PlayerWireHand->GetCollisionComponent();
 	USkeletalMeshComponent* HandMesh = PlayerWireHand->GetHandMesh();
 	
@@ -104,6 +105,10 @@ void ULLL_PGA_WireHandGrab::GrabTargetEntity()
 	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileComponent();
 	WireHandProjectile->Velocity = FVector::Zero();
 	WireHandProjectile->Deactivate();
+
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
+	const FGameplayTagContainer RushTag(TAG_GAS_PLAYER_WIRE_RUSH);
+	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(RushTag);
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandGrab::CheckGrabbedTime);
 }
