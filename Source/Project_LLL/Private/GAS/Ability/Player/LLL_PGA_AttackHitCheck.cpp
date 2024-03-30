@@ -4,6 +4,8 @@
 #include "GAS/Ability/Player/LLL_PGA_AttackHitCheck.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "GAS/Task/LLL_AT_Trace.h"
 
@@ -38,8 +40,9 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_COMBO_ADDITIVE, Magnitude);
 			ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
 		}
-		
 		BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect);
+		TArray<TWeakObjectPtr<AActor>> Actors = TargetDataHandle.Data[0]->GetActors();
+		Cast<IAbilitySystemInterface>(Actors[0].Get())->GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_SYSTEM_DROP_GOLD);
 	}
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

@@ -3,11 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
+#include "Interface/LLL_DropGoldInterface.h"
+#include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "GameFramework/Actor.h"
 #include "LLL_BreakableObjectBase.generated.h"
-
+DECLARE_MULTICAST_DELEGATE(FOnDropGoldDelegate)
 UCLASS()
-class PROJECT_LLL_API ALLL_BreakableObjectBase : public AActor
+class PROJECT_LLL_API ALLL_BreakableObjectBase : public AActor, public IAbilitySystemInterface, public ILLL_DropGoldInterface
 {
 	GENERATED_BODY()
 	
@@ -15,17 +18,33 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_BreakableObjectBase();
 
+	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	virtual void DropGold(const FGameplayTag tag, int32 data) override;
+	FOnDropGoldDelegate GoldDelegate;
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<class UCapsuleComponent> HitCollision;
+
+//GAS Part
+protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAbilitySystemComponent> ASC;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
+	TSubclassOf<UGameplayEffect> InitEffect;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_DropGoldAttributeSet> DropGoldAttributeSet;
 };

@@ -63,6 +63,7 @@ void ALLL_MonsterBase::Dead()
 	{
 		MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
 	}
+	//DropGold() -> GoldAttribute -> DropGoldStat -> player Gold up
 }
 
 void ALLL_MonsterBase::Attack()
