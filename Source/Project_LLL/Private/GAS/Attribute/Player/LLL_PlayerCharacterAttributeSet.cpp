@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
+#include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
 
 #include "GameplayEffectExtension.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -9,7 +9,7 @@
 #include "Game/ProtoGameInstance.h"
 #include "Util/LLL_MathHelper.h"
 
-ULLL_PlayerAttributeSet::ULLL_PlayerAttributeSet() :
+ULLL_PlayerCharacterAttributeSet::ULLL_PlayerCharacterAttributeSet() :
 	MaxSkillGauge(100.f),
 	SkillGaugeAmplifyByCombo(1.f),
 	SkillGaugeAmplifyByItem(1.f)
@@ -17,7 +17,7 @@ ULLL_PlayerAttributeSet::ULLL_PlayerAttributeSet() :
 	
 }
 
-void ULLL_PlayerAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
 	if (!IsValid(Player))
@@ -89,7 +89,7 @@ void ULLL_PlayerAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 	Super::PostGameplayEffectExecute(Data);
 }
 
-void ULLL_PlayerAttributeSet::TryStartComboManagement(const FGameplayEffectModCallbackData& Data)
+void ULLL_PlayerCharacterAttributeSet::TryStartComboManagement(const FGameplayEffectModCallbackData& Data)
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

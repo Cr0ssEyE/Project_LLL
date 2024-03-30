@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LLL_SkillWidget.generated.h"
 
-class ULLL_PlayerAttributeSet;
+class ULLL_PlayerCharacterAttributeSet;
 class UTextBlock;
 class UProgressBar;
 /**
@@ -19,7 +19,7 @@ class PROJECT_LLL_API ULLL_SkillWidget : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
-	virtual void UpdateWidgetView(const ULLL_PlayerAttributeSet* CharacterAttributeSet) const;
+	virtual void UpdateWidgetView(const ULLL_PlayerCharacterAttributeSet* CharacterAttributeSet) const;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))

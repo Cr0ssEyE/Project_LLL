@@ -4,37 +4,37 @@
 
 #include "CoreMinimal.h"
 #include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
-#include "LLL_PlayerAttributeSet.generated.h"
+#include "LLL_PlayerCharacterAttributeSet.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PlayerAttributeSet : public ULLL_CharacterAttributeSetBase
+class PROJECT_LLL_API ULLL_PlayerCharacterAttributeSet : public ULLL_CharacterAttributeSetBase
 {
 	GENERATED_BODY()
 
 public:
-	ULLL_PlayerAttributeSet();
+	ULLL_PlayerCharacterAttributeSet();
 
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxAttackAction);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, AttackActionIntervalTime);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, AttackActionInputDelayTime);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxDashCount);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, DashSpeed);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, DashInvincibleTime);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, RushSpeed);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, CurrentComboCount);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxComboCount);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MultiplyComboCountWhenHit);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MultiplyComboCountPerTime);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxComboStackDuration);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, CurrentSkillGauge);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, MaxSkillGauge);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, SkillGaugeAmplifyByCombo);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, SkillGaugeAmplifyByItem);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, bIsComboTimerElapsed);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerAttributeSet, AddCurrentSkillGauge);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxAttackAction);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, AttackActionIntervalTime);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, AttackActionInputDelayTime);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxDashCount);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashSpeed);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashInvincibleTime);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, RushSpeed);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CurrentComboCount);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxComboCount);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MultiplyComboCountWhenHit);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MultiplyComboCountPerTime);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxComboStackDuration);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CurrentSkillGauge);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxSkillGauge);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, SkillGaugeAmplifyByCombo);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, SkillGaugeAmplifyByItem);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, bIsComboTimerElapsed);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, AddCurrentSkillGauge);
 	
 protected:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
