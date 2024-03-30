@@ -5,6 +5,8 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
+#include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
@@ -85,7 +87,7 @@ void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 
 	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor);
-	if(IsValid(PlayerCharacter) && (HandCollision->GetCollisionObjectType() == ECC_PLAYER_HIT || HandCollision->GetCollisionObjectType() == ECC_PLAYER_CHECK))
+	if(IsValid(PlayerCharacter) && HandCollision->GetCollisionObjectType() == ECC_PLAYER_CHECK)
 	{
 		SetHiddenState();
 		ReleaseCompleteDelegate.Broadcast();

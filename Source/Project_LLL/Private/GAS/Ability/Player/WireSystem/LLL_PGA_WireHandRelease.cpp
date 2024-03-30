@@ -23,8 +23,7 @@ void ULLL_PGA_WireHandRelease::ActivateAbility(const FGameplayAbilitySpecHandle 
 	PlayerWireHand->GetHandMesh()->SetAnimation(ReleaseAnim);
 
 	PlayerWireHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_WireHandRelease::OnReleaseCompleteCallBack);
-	
-	ReleaseToOwnerLocation();
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandRelease::ReleaseToOwnerLocation);
 }
 
 void ULLL_PGA_WireHandRelease::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

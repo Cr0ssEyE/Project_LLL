@@ -4,6 +4,7 @@
 #include "GAS/Ability/Player/WireSystem/LLL_PGA_RushToWireHand.h"
 
 #include "AbilitySystemComponent.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -11,6 +12,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/Ability/Player/WireSystem/LLL_PGA_ControlWireHand.h"
 #include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
 
 ULLL_PGA_RushToWireHand::ULLL_PGA_RushToWireHand()
@@ -24,7 +26,7 @@ ULLL_PGA_RushToWireHand::ULLL_PGA_RushToWireHand()
 void ULLL_PGA_RushToWireHand::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
+	
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
@@ -36,12 +38,15 @@ void ULLL_PGA_RushToWireHand::ActivateAbility(const FGameplayAbilitySpecHandle H
 
 	PlayerWireHand->GetCollisionComponent()->SetCollisionObjectType(ECC_PLAYER_CHECK);
 	PlayerWireHand->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	PlayerWireHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_RushToWireHand::OnReleasedCallBack);
 
 	TargetLocation = PlayerWireHand->GetActorLocation();
 	Direction = (TargetLocation - PlayerCharacter->GetActorLocation()).GetSafeNormal();
 	RushSpeed = PlayerAttributeSet->GetRushSpeed();
-	
+
+	UAbilityTask_WaitGameplayTagAdded* WaitTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, TAG_GAS_COLLIDE_WALL);
+	WaitTask->Added.AddDynamic(this, &ULLL_PGA_RushToWireHand::OnCollidedCallBack);
+	WaitTask->ReadyForActivation();
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 돌진 어빌리티 발동")));
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_RushToWireHand::OwnerLaunchToWireHand);
 }
 
@@ -54,17 +59,18 @@ void ULLL_PGA_RushToWireHand::EndAbility(const FGameplayAbilitySpecHandle Handle
 	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 	PlayerCharacter->GetCharacterMovement()->Velocity = PlayerCharacter->GetCharacterMovement()->Velocity.GetSafeNormal() * PlayerCharacter->GetCharacterMovement()->GetMaxSpeed();
 	
-	PlayerWireHand->ReleaseCompleteDelegate.RemoveDynamic(this, &ULLL_PGA_RushToWireHand::OnReleasedCallBack);
+	PlayerWireHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_RELEASE));
+	
+	PlayerCharacter->GetAbilitySystemComponent()->CancelAbilities( new FGameplayTagContainer(TAG_GAS_PLAYER_WIRE_THROW));
 
-	if(bWasCancelled)
+	if (!bWasCancelled)
 	{
-		const FGameplayTagContainer ReleaseHandTags(TAG_GAS_WIRE_RELEASE);
-		PlayerWireHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ReleaseHandTags);
+		PlayerCharacter->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_PLAYER_WIRE_ATTACK));
 	}
 	
 	TargetLocation = Direction = FVector::Zero();
 	RushSpeed = 0.f;
-	
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 돌진 어빌리티 종료")));
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -76,8 +82,7 @@ void ULLL_PGA_RushToWireHand::OwnerLaunchToWireHand()
 	
 	if(RushSpeed <= 0.f || Distance2D < AbilityEndDistance)
 	{
-		const FGameplayTagContainer ReleaseHandTags(TAG_GAS_WIRE_RELEASE);
-		PlayerWireHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ReleaseHandTags);
+		PlayerWireHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_RELEASE));
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}
@@ -88,7 +93,8 @@ void ULLL_PGA_RushToWireHand::OwnerLaunchToWireHand()
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_RushToWireHand::OwnerLaunchToWireHand);
 }
 
-void ULLL_PGA_RushToWireHand::OnReleasedCallBack()
+void ULLL_PGA_RushToWireHand::OnCollidedCallBack()
 {
-	// EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	RushSpeed = 0.f;
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }

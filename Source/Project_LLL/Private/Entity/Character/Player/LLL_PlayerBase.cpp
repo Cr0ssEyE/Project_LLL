@@ -41,7 +41,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	if (IsValid(CharacterDataAsset))
 	{
 		GetCharacterMovement()->MaxFlySpeed = 10000.f;
-		
 		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 		
 		Camera->SetFieldOfView(PlayerDataAsset->CameraFOV);
@@ -55,6 +54,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		SpringArm->bInheritPitch = false;
 		SpringArm->bInheritYaw = false;
 		SpringArm->bInheritRoll = false;
+		SpringArm->SetUsingAbsoluteRotation(true);
 		SpringArm->SetupAttachment(RootComponent);
 	}
 }

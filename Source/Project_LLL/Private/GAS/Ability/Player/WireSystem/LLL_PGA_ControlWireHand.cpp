@@ -14,7 +14,6 @@ ULLL_PGA_ControlWireHand::ULLL_PGA_ControlWireHand()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	bIsAlreadyThrown = false;
-	bIsReleaseOnGoing = false;
 }
 
 void ULLL_PGA_ControlWireHand::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -23,7 +22,6 @@ void ULLL_PGA_ControlWireHand::ActivateAbility(const FGameplayAbilitySpecHandle 
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
 	
-	PlayerWireHand->ThrowCompleteDelegate.AddDynamic(this, &ULLL_PGA_ControlWireHand::OnReachedCallBack);
 	PlayerWireHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_ControlWireHand::OnReleaseCompleteCallBack);
 	ThrowHand(ActorInfo);
 }
@@ -33,12 +31,10 @@ void ULLL_PGA_ControlWireHand::EndAbility(const FGameplayAbilitySpecHandle Handl
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
 	
-	PlayerWireHand->ThrowCompleteDelegate.RemoveDynamic(this, &ULLL_PGA_ControlWireHand::OnReachedCallBack);
 	PlayerWireHand->ReleaseCompleteDelegate.RemoveDynamic(this, &ULLL_PGA_ControlWireHand::OnReleaseCompleteCallBack);
 	
 	bIsAlreadyThrown = false;
-	bIsReleaseOnGoing = false;
-	
+
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -55,36 +51,10 @@ void ULLL_PGA_ControlWireHand::ThrowHand(const FGameplayAbilityActorInfo* ActorI
 	UAbilitySystemComponent* HandASC = PlayerWireHand->GetAbilitySystemComponent();
 	if(IsValid(HandASC))
 	{
-		// TODO: ThrowHand Ability 및 태그 생성 후 부착 
 		const FGameplayTagContainer ThrowHandTags(TAG_GAS_WIRE_THROW);
 		HandASC->TryActivateAbilitiesByTag(ThrowHandTags);
 	}
 	bIsAlreadyThrown = true;
-}
-
-void ULLL_PGA_ControlWireHand::ReleaseHand(const FGameplayAbilityActorInfo* ActorInfo)
-{
-	if(bIsReleaseOnGoing)
-	{
-		return;
-	}
-	
-	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
-	const ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
-
-	UAbilitySystemComponent* HandASC = PlayerWireHand->GetAbilitySystemComponent();
-	if(IsValid(HandASC))
-	{
-		// TODO: ReleaseHand Ability 및 태그 생성 후 부착
-		const FGameplayTagContainer ReleaseHandTags(TAG_GAS_WIRE_RELEASE);
-		HandASC->TryActivateAbilitiesByTag(ReleaseHandTags);
-	}
-	bIsReleaseOnGoing = true;
-}
-
-void ULLL_PGA_ControlWireHand::OnReachedCallBack()
-{
-	ReleaseHand(CurrentActorInfo);
 }
 
 void ULLL_PGA_ControlWireHand::OnReleaseCompleteCallBack()

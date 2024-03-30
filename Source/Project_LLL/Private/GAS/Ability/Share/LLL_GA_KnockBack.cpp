@@ -32,7 +32,7 @@ void ULLL_GA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataHa
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}
-
+	
 	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	FVector AvatarLocation = CurrentActorInfo->AvatarActor->GetActorLocation();
 	for (auto Actor : TargetDataHandle.Data[0]->GetActors())

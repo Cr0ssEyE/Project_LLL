@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -44,7 +45,8 @@ void ULLL_PGA_WireHandGrab::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	const ULLL_PlayerWireHandAttributeSet* WireHandAttributeSet = CastChecked<ULLL_PlayerWireHandAttributeSet>(PlayerWireHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerWireHandAttributeSet::StaticClass()));
 	
 	MaxGrabDuration = WireHandAttributeSet->GetGrabDuration();
-	GrabTargetEntity();
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandGrab::GrabTargetEntity);
 }
 
 void ULLL_PGA_WireHandGrab::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -54,8 +56,8 @@ void ULLL_PGA_WireHandGrab::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	PlayerWireHand->K2_DetachFromActor(EDetachmentRule::KeepWorld);
 	PlayerWireHand->SetGrabbedActor(nullptr);
 	
-	const FGameplayTagContainer ReleaseHandTags(TAG_GAS_WIRE_RELEASE);
-	GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(ReleaseHandTags);
+	// const FGameplayTagContainer ReleaseHandTags(TAG_GAS_WIRE_RELEASE);
+	// GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(ReleaseHandTags);
 	
 	GrabElapsedTime = 0.f;
 	MaxGrabDuration = 0.f;
@@ -107,8 +109,7 @@ void ULLL_PGA_WireHandGrab::GrabTargetEntity()
 	WireHandProjectile->Deactivate();
 
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
-	const FGameplayTagContainer RushTag(TAG_GAS_PLAYER_WIRE_RUSH);
-	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(RushTag);
+	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_PLAYER_WIRE_RUSH));
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandGrab::CheckGrabbedTime);
 }
@@ -117,6 +118,7 @@ void ULLL_PGA_WireHandGrab::CheckGrabbedTime()
 {
 	if(MaxGrabDuration <= 0.f)
 	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
@@ -126,6 +128,7 @@ void ULLL_PGA_WireHandGrab::CheckGrabbedTime()
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	}
+	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandGrab::CheckGrabbedTime);
 }
 
