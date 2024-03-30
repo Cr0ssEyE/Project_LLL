@@ -14,6 +14,11 @@ public:
 		return CalculateResult;
 	}
 
+	static FVector CalculateLaunchVelocity(const FVector Direction, const float Multiply)
+	{
+		const FVector CalculateResult = Direction * Multiply * 10.f;
+		return CalculateResult;
+	}
 	// 플레이어
 public:
 	static float CalculateSkillGaugeIncrement(const float BaseValue, const float ComboAmplify, const float ItemAmplify)

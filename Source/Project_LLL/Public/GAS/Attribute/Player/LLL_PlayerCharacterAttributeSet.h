@@ -24,6 +24,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashInvincibleTime);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, RushSpeed);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackPower);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CurrentComboCount);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxComboCount);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MultiplyComboCountWhenHit);
@@ -66,6 +67,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData RushSpeed;
+
+	// 넉백 관련
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData KnockBackPower;
 	
 	// 콤보 관련
 protected:
