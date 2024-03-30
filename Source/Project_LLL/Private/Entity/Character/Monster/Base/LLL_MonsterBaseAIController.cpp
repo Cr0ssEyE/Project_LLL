@@ -24,12 +24,9 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	Monster = CastChecked<ALLL_MonsterBase>(InPawn);
-	if (IsValid(Monster))
-	{
-		MonsterDataAsset = CastChecked<ULLL_MonsterBaseDataAsset>(Monster->GetCharacterDataAsset());
+	MonsterDataAsset = CastChecked<ULLL_MonsterBaseDataAsset>(Monster->GetCharacterDataAsset());
 
-		Monster->TakeDamageDelegate.AddUObject(this, &ALLL_MonsterBaseAIController::SetPlayer);
-	}
+	Monster->TakeDamageDelegate.AddUObject(this, &ALLL_MonsterBaseAIController::SetPlayer);
 
 	// 블랙보드와 행동트리 할당
 	UBlackboardComponent* NewBlackboardComponent = GetBlackboardComponent();

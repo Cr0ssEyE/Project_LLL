@@ -54,13 +54,13 @@ private:
 	TArray<ALLL_MonsterBase*> Monsters;
 	
 	UPROPERTY(VisibleDefaultsOnly)
-	int32 Wave;
+	int32 CurrentWave;
 
 	UPROPERTY(EditAnywhere)
 	int32 MaxWave;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	int32 Group;
+	int32 CurrentGroup;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	int32 LastGroup;

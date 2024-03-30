@@ -60,7 +60,7 @@ void ALLL_MonsterSpawner::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	if (Wave == 0)
+	if (CurrentWave == 0)
 	{
 		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OtherActor);
 		if (IsValid(Player))
@@ -79,9 +79,9 @@ void ALLL_MonsterSpawner::BeginDestroy()
 
 void ALLL_MonsterSpawner::SpawnMonster()
 {
-	Wave++;
+	CurrentWave++;
 	
-	Group = FMath::RandRange(1, LastGroup);
+	CurrentGroup = FMath::RandRange(1, LastGroup);
 	int32 SpawnPointNum = 0;
 
 	for (const ULLL_MonsterSpawnPointComponent* SpawnPoint : SpawnPoints)
@@ -92,7 +92,7 @@ void ALLL_MonsterSpawner::SpawnMonster()
 
 			for (FMonsterSpawnDataTable DataTable : DataTables)
 			{
-				if (DataTable.Group == Group && DataTable.SpawnPoint == SpawnPointNum)
+				if (DataTable.Group == CurrentGroup && DataTable.SpawnPoint == SpawnPointNum)
 				{
 					ALLL_MonsterBase* MonsterBase = GetWorld()->SpawnActor<ALLL_MonsterBase>(DataTable.MonsterClass, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 					if (IsValid(MonsterBase))
@@ -105,7 +105,7 @@ void ALLL_MonsterSpawner::SpawnMonster()
 						{
 							if (ProtoGameInstance->CheckMonsterSpawnDataDebug())
 							{
-								GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 스폰 (웨이브 : %d, 그룹 : %d, 스폰 포인트 : %d)"), *GetName(), Wave, Group, SpawnPointNum));
+								GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 스폰 (웨이브 : %d, 그룹 : %d, 스폰 포인트 : %d)"), *GetName(), CurrentWave, CurrentGroup, SpawnPointNum));
 							}
 						}
 #endif
@@ -126,7 +126,7 @@ void ALLL_MonsterSpawner::MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter)
 
 	if (Monsters.Num() == 0)
 	{
-		if (Wave < MaxWave)
+		if (CurrentWave < MaxWave)
 		{
 			SpawnMonster();
 		}
