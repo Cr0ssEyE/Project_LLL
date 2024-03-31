@@ -27,7 +27,11 @@ public:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 	ATTRIBUTE_ACCESSORS(ULLL_DropGoldAttributeSet, DropGoldStat);
+	ATTRIBUTE_ACCESSORS(ULLL_DropGoldAttributeSet, ReceiveDamage);
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DropGoldStat;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ReceiveDamage;
 };

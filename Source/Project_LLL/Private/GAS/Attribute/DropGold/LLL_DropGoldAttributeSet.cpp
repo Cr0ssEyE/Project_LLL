@@ -16,5 +16,4 @@ bool ULLL_DropGoldAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallb
 void ULLL_DropGoldAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
-	UE_LOG(LogTemp, Log, TEXT("Stat : %f"), GetDropGoldStat());
 }

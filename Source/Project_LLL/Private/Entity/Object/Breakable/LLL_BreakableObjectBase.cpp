@@ -63,7 +63,6 @@ void ALLL_BreakableObjectBase::Tick(float DeltaTime)
 
 void ALLL_BreakableObjectBase::DropGold(const FGameplayTag tag, int32 data)
 {
-	//GoldAttribute -> DropGoldStat -> player Gold up = 월드에서 플레이어 찾아서 실행
 	float GoldData = DropGoldAttributeSet->GetDropGoldStat();
 
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
@@ -72,16 +71,16 @@ void ALLL_BreakableObjectBase::DropGold(const FGameplayTag tag, int32 data)
 		ULLL_PlayerGoldComponet* GoldComponet = Cast<ULLL_PlayerGoldComponet>(ChildComponent);
 		if(IsValid(GoldComponet))
 		{
+			GoldComponet->IncreaseMoney(GoldData);
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 			if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 			{
 				if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Player %f"), GoldData));
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("PlayerGold %f"), GoldComponet->GetMoney()));
 				}
 			}
 #endif
-			GoldComponet->IncreaseMoney(GoldData);
 		}
 	}
 	Destroy();

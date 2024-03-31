@@ -17,9 +17,9 @@ public:
 	ULLL_PlayerGoldComponet();
 
 	FOnPlayerMoneyChangedDelegate FOnMoneyChanged;
-	FORCEINLINE void IncreaseMoney(const float InMoney) { Money += InMoney; FOnMoneyChanged.Broadcast(GetMoney()); UE_LOG(LogTemp, Log, TEXT("Money : %f"), Money); }
-	FORCEINLINE void DecreaseMoney(const float OutMoney) { Money = Money - OutMoney >= 0 ? Money - OutMoney : 0; FOnMoneyChanged.Broadcast(GetMoney()); UE_LOG(LogTemp, Log, TEXT("Money : %f"), Money); }
-	FORCEINLINE const uint32 GetMoney() { return Money; }
+	FORCEINLINE void IncreaseMoney(const float InMoney) { Money += InMoney; FOnMoneyChanged.Broadcast(GetMoney()); }
+	FORCEINLINE void DecreaseMoney(const float OutMoney) { Money = Money - OutMoney >= 0 ? Money - OutMoney : 0; FOnMoneyChanged.Broadcast(GetMoney()); }
+	FORCEINLINE const float GetMoney() { return Money; }
 
 protected:
 	// Called when the game starts

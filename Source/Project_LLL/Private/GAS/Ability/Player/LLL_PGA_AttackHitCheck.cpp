@@ -31,7 +31,8 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{
 		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
-
+		TWeakObjectPtr<AActor> gold = TargetDataHandle.Data[0]->GetActors()[0];
+		AActor* Actor = gold.Get();
 		// 맞은 액터 갯수만큼 콤보 수 증가
 		float Magnitude = TargetDataHandle.Data[0]->GetActors().Num();
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ComboStackEffect, CurrentLevel);
@@ -41,8 +42,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 			ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
 		}
 		BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect);
-		TArray<TWeakObjectPtr<AActor>> Actors = TargetDataHandle.Data[0]->GetActors();
-		Cast<IAbilitySystemInterface>(Actors[0].Get())->GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_SYSTEM_DROP_GOLD);
+		BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect);
 	}
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
