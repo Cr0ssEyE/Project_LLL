@@ -97,7 +97,7 @@ void ALLL_MonsterSpawner::SpawnMonster()
 					ALLL_MonsterBase* MonsterBase = GetWorld()->SpawnActor<ALLL_MonsterBase>(DataTable.MonsterClass, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 					if (IsValid(MonsterBase))
 					{
-						MonsterBase->CharacterDeadDelegate.AddUObject(this, &ALLL_MonsterSpawner::MonsterDeadHandle);
+						MonsterBase->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::MonsterDeadHandle);
 						Monsters.Emplace(MonsterBase);
 						
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)

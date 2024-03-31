@@ -31,7 +31,7 @@ public:
 	
 protected:
 	UFUNCTION()
-	void UpdateStatusWidget();
+	virtual void UpdateWidget();
 
 	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<ULLL_CharacterStatusWidget> CharacterStatusWidgetClass;
