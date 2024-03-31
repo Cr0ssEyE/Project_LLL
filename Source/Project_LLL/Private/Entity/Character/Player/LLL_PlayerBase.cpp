@@ -324,21 +324,20 @@ void ALLL_PlayerBase::WireAction(const FInputActionValue& Value, EAbilityInputNa
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	if(SkillSpec)
-	{
-		PlayerRotateToMouseCursor();
-		SkillSpec->InputPressed = true;
-		if (SkillSpec->IsActive())
-		{
-			ASC->AbilitySpecInputPressed(*SkillSpec);
-		}
-		else
-		{
-			ASC->TryActivateAbility(SkillSpec->Handle);
-		}
-	}
+	// int32 InputID = static_cast<int32>(InputName);
+	// FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID);
+	// if(SkillSpec)
+	// {
+	// 	SkillSpec->InputPressed = true;
+	// 	if (SkillSpec->IsActive())
+	// 	{
+	// 		ASC->AbilitySpecInputPressed(*SkillSpec);
+	// 	}
+	// 	else
+	// 	{
+	// 		ASC->TryActivateAbility(SkillSpec->Handle);
+	// 	}
+	// }
 }
 
 void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
