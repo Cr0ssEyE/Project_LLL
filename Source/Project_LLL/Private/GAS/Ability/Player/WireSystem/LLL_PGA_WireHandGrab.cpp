@@ -38,7 +38,10 @@ void ULLL_PGA_WireHandGrab::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	PlayerWireHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_WireHandGrab::OnReleasedCallBack);
 	
 	GrabElapsedTime = 0.f;
-	MaxGrabDuration = PlayerWireHand->GetWireHandAttributeSet()->GetGrabDuration();
+
+	const ULLL_PlayerWireHandAttributeSet* WireHandAttributeSet = CastChecked<ULLL_PlayerWireHandAttributeSet>(PlayerWireHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerWireHandAttributeSet::StaticClass()));
+	
+	MaxGrabDuration = WireHandAttributeSet->GetGrabDuration();
 	GrabTargetEntity();
 }
 

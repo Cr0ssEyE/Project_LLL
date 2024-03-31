@@ -17,9 +17,10 @@ class ULLL_CharacterAttributeSetBase;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*);
-DECLARE_MULTICAST_DELEGATE(FTakeDamageDelegate);
-DECLARE_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*, Character);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTakeDamageDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
+
 /**
  * 
  */
@@ -60,9 +61,13 @@ public:
 	// 델리게이트
 public:
 	FCharacterDeadDelegate CharacterDeadDelegate;
-	FTakeDamageDelegate TakeDamageDelegate;
-	FUpdateWidgetDelegate UpdateWidgetDelegate;
 
+	FTakeDamageDelegate TakeDamageDelegate;
+	
+	// 위젯 업데이트를 위한 델리게이트
+public:
+	FUpdateWidgetDelegate UpdateWidgetDelegate;
+	
 	// GAS 변수
 protected:
 	UPROPERTY(VisibleAnywhere)
