@@ -37,7 +37,6 @@ void ULLL_PlayerUIManager::BeginPlay()
 	{
 		CharacterStatusWidget = CastChecked<ULLL_CharacterStatusWidget>(CreateWidget(GetWorld(), CharacterStatusWidgetClass));
 		CharacterStatusWidget->AddToViewport();
-		UE_LOG(LogTemp, Warning, TEXT("플레이어 스탯 위젯 생성 실패"));
 	}
 	
 	if(IsValid(GamePauseWidgetClass))
@@ -46,7 +45,6 @@ void ULLL_PlayerUIManager::BeginPlay()
 		GamePauseWidget->AddToViewport();
 		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
 		GamePauseWidget->SetIsEnabled(false);
-		UE_LOG(LogTemp, Warning, TEXT("플레이어 일시정지 위젯 생성 실패"));
 	}
 
 	if(IsValid(InventoryWidgetClass))
@@ -54,7 +52,6 @@ void ULLL_PlayerUIManager::BeginPlay()
 		InventoryWidget = CastChecked<ULLL_InventoryWidget>(CreateWidget(GetWorld(), InventoryWidgetClass));
 		InventoryWidget->AddToViewport();
 		InventoryWidget->SetIsEnabled(false);
-		UE_LOG(LogTemp, Warning, TEXT("플레이어 인벤토리 위젯 생성 실패"));
 	}
 
 	if(IsValid(InteractionWidgetClass))
@@ -62,14 +59,12 @@ void ULLL_PlayerUIManager::BeginPlay()
 		InteractionWidget = CastChecked<ULLL_InteractionWidget>(CreateWidget(GetWorld(), InteractionWidgetClass));
 		InteractionWidget->AddToViewport();
 		InteractionWidget->SetIsEnabled(false);
-		UE_LOG(LogTemp, Warning, TEXT("플레이어 상호작용 위젯 생성 실패"));
 	}
 
 	if(IsValid(SkillGaugeWidgetClass))
 	{
 		SkillGaugeWidget = CastChecked<ULLL_SkillWidget>(CreateWidget(GetWorld(), SkillGaugeWidgetClass));
 		SkillGaugeWidget->AddToViewport();
-		UE_LOG(LogTemp, Warning, TEXT("플레이어 스킬게이지 위젯 생성 실패"));
 	}
 }
 
