@@ -264,16 +264,6 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	{
 		AddMovementInput(MoveDirection, 1.f);
 	}
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-	{
-		if (ProtoGameInstance->CheckPlayerMovementDebug())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("플레이어 캐릭터 방향 X: %f, Y: %f"), MoveDirection.X, MoveDirection.Y));
-		}
-	}
-#endif
 }
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputName InputName)

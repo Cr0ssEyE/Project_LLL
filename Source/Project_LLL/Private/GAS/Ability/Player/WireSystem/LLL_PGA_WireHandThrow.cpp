@@ -9,6 +9,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Player/LLL_PlayerWireHandAttributeSet.h"
 
@@ -42,9 +43,27 @@ void ULLL_PGA_WireHandThrow::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	if (!bWasCancelled)
 	{
 		// 단, 도달한 위치 주변에 몬스터가 있다면 그랩으로 전환
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerWireActionDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 이동 종료. 주변 대상 그랩 시도")));
+			}
+		}
+#endif
 		if (!GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_GRAB)))
 		{
 			GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_RELEASE));
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+			if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+			{
+				if(ProtoGameInstance->CheckPlayerWireActionDebug())
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 이동 종료 후 그랩 실패. 회수 시작")));
+				}
+			}
+#endif
 		}
 	}
 	
@@ -84,6 +103,16 @@ void ULLL_PGA_WireHandThrow::ThrowToCursorLocation()
 	WireHandProjectile->Velocity = ThrowDirection * WireHandAttributeSet->GetThrowSpeed();
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandThrow::CheckReached);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerWireActionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 이동 시작. 목표 좌표 : %f, %f, %f"), TargetLocation.X, TargetLocation.Y, TargetLocation.Z));
+		}
+	}
+#endif
 }
 
 void ULLL_PGA_WireHandThrow::CheckReached()

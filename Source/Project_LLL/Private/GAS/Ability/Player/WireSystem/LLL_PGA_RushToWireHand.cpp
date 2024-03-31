@@ -11,6 +11,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Ability/Player/WireSystem/LLL_PGA_ControlWireHand.h"
 #include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
@@ -46,8 +47,17 @@ void ULLL_PGA_RushToWireHand::ActivateAbility(const FGameplayAbilitySpecHandle H
 	UAbilityTask_WaitGameplayTagAdded* WaitTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, TAG_GAS_COLLIDE_WALL);
 	WaitTask->Added.AddDynamic(this, &ULLL_PGA_RushToWireHand::OnCollidedCallBack);
 	WaitTask->ReadyForActivation();
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 돌진 어빌리티 발동")));
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_RushToWireHand::OwnerLaunchToWireHand);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerDashDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 돌진 어빌리티 발동")));
+		}
+	}
+#endif
 }
 
 void ULLL_PGA_RushToWireHand::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -70,8 +80,17 @@ void ULLL_PGA_RushToWireHand::EndAbility(const FGameplayAbilitySpecHandle Handle
 	
 	TargetLocation = Direction = FVector::Zero();
 	RushSpeed = 0.f;
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 돌진 어빌리티 종료")));
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerDashDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 돌진 어빌리티 종료")));
+		}
+	}
+#endif
 }
 
 void ULLL_PGA_RushToWireHand::OwnerLaunchToWireHand()

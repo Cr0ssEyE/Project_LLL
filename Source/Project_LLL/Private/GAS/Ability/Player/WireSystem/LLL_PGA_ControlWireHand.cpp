@@ -7,6 +7,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Player/LLL_PlayerWireHandAttributeSet.h"
 
@@ -19,6 +20,7 @@ ULLL_PGA_ControlWireHand::ULLL_PGA_ControlWireHand()
 void ULLL_PGA_ControlWireHand::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
 	
@@ -42,8 +44,27 @@ void ULLL_PGA_ControlWireHand::ThrowHand(const FGameplayAbilityActorInfo* ActorI
 {
 	if(bIsAlreadyThrown)
 	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerWireActionDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 와이어 투척이 이미 발동된 상태")));
+			}
+		}
+#endif
 		return;
 	}
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerWireActionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("플레이어 와이어 투척 어빌리티 발동")));
+		}
+	}
+#endif
 	
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	const ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();

@@ -11,6 +11,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Ability/Player/WireSystem/LLL_PGA_RushToWireHand.h"
 #include "GAS/Attribute/Player/LLL_PlayerWireHandAttributeSet.h"
@@ -47,6 +48,16 @@ void ULLL_PGA_WireHandGrab::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	MaxGrabDuration = WireHandAttributeSet->GetGrabDuration();
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandGrab::GrabTargetEntity);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerWireActionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 그랩 동작")));
+		}
+	}
+#endif
 }
 
 void ULLL_PGA_WireHandGrab::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -127,6 +138,15 @@ void ULLL_PGA_WireHandGrab::CheckGrabbedTime()
 	if(GrabElapsedTime >= MaxGrabDuration)
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerWireActionDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 그랩 유지시간 종료")));
+			}
+		}
+#endif
 	}
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandGrab::CheckGrabbedTime);

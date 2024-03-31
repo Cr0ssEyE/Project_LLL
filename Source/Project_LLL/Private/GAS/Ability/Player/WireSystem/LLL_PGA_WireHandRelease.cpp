@@ -7,6 +7,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Player/LLL_PlayerWireHandAttributeSet.h"
 
@@ -24,6 +25,16 @@ void ULLL_PGA_WireHandRelease::ActivateAbility(const FGameplayAbilitySpecHandle 
 
 	PlayerWireHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_WireHandRelease::OnReleaseCompleteCallBack);
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandRelease::ReleaseToOwnerLocation);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerWireActionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 회수 시작")));
+		}
+	}
+#endif
 }
 
 void ULLL_PGA_WireHandRelease::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -33,6 +44,16 @@ void ULLL_PGA_WireHandRelease::EndAbility(const FGameplayAbilitySpecHandle Handl
 	PlayerWireHand->SetHiddenState();
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerWireActionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 회수 종료")));
+		}
+	}
+#endif
 }
 
 bool ULLL_PGA_WireHandRelease::CheckOwnerAlreadyOverlapped()
