@@ -6,7 +6,9 @@
 
 ALLL_GateObject::ALLL_GateObject()
 {
+	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
 	BaseMesh->SetStaticMesh(FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/MapTest/Meshes/SM_GateTest.SM_GateTest'"), EAssertionLevel::Check));
+	SetRootComponent(BaseMesh);
 }
 
 void ALLL_GateObject::BeginPlay()
