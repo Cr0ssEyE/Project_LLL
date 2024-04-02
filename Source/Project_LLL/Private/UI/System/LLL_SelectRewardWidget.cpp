@@ -38,4 +38,7 @@ void ULLL_SelectRewardWidget::CheckButton()
 		}
 	}
 #endif
+	//보상 관련 로직, 버튼 클릭 시 효과
+	SetIsEnabled(false);
+	SetVisibility(ESlateVisibility::Hidden);
 }
