@@ -40,14 +40,18 @@ public:
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
 	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
 	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
-	
+
+	// 플레이어
 protected:
 	virtual void PostLoad() override;
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
+	
+protected:
 	virtual void Tick(float DeltaTime) override;
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	
 	// 캐릭터 상태 설정
 public:

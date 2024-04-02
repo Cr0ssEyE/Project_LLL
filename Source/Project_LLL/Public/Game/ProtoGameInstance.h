@@ -3,9 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/CheckBox.h"
+#include "LLL_GameInstance.h"
 #include "Engine/GameInstance.h"
-#include "UI/Debug/MonsterDebugWidget.h"
 #include "ProtoGameInstance.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMonsterToggleAIDelegate, bool, value);
@@ -15,7 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FObjectTrapActivateDelegate);
  * 
  */
 UCLASS(Blueprintable)
-class PROJECT_LLL_API UProtoGameInstance : public UGameInstance
+class PROJECT_LLL_API UProtoGameInstance : public ULLL_GameInstance
 {
 	GENERATED_BODY()
 	
@@ -35,6 +34,7 @@ public:
 	FORCEINLINE void SetPlayerMovementDebug(bool value) { bPlayerMovementDebug = value; }
 	FORCEINLINE void SetPlayerDashDebug(bool value) { bPlayerDashDebug = value; }
 	FORCEINLINE void SetPlayerSkillDebug(bool value) { bPlayerSkillDebug = value; }
+	FORCEINLINE void SetPlayerWireActionDebug(bool value) { bPlayerWireActionDebug = value; }
 	FORCEINLINE void SetPlayerHitCheckDebug(bool value) { bPlayerHitCheckDebug = value; }
 	FORCEINLINE void SetPlayerAttackDebug(bool value) { bPlayerAttackDebug = value; }
 	FORCEINLINE void SetPlayerCollisionDebug(bool value) { bPlayerCollisionDebug = value; }
@@ -48,6 +48,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerSkillDebug() const { return bPlayerSkillDebug; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool CheckPlayerWireActionDebug() const { return bPlayerWireActionDebug; }
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerHitDebug() const { return bPlayerHitCheckDebug; }
@@ -120,6 +123,8 @@ protected:
 
 	uint8 bPlayerDashDebug : 1;
 
+	uint8 bPlayerWireActionDebug : 1;
+	
 	uint8 bPlayerSkillDebug : 1;
 
 	uint8 bPlayerHitCheckDebug : 1;

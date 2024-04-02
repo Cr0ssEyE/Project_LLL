@@ -10,7 +10,7 @@
 #include "LLL_PlayerBase.generated.h"
 
 class ALLL_PlayerWireHand;
-class ULLL_PlayerAttributeSet;
+class ULLL_PlayerCharacterAttributeSet;
 class ULLL_PlayerWeaponComponent;
 class ULLL_PlayerAnimInstance;
 class ALLL_InteractiveObject;

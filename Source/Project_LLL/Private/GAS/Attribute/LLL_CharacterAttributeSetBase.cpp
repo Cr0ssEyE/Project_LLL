@@ -20,6 +20,8 @@ void ULLL_CharacterAttributeSetBase::PostAttributeChange(const FGameplayAttribut
 		ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwningActor());
 		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GetMoveSpeed();
 	}
+	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
+	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }
 
 bool ULLL_CharacterAttributeSetBase::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)

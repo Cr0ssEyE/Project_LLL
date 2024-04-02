@@ -27,9 +27,6 @@ protected:
 
 	virtual void CheckReached();
 
-	UFUNCTION()
-	virtual void OnGrabbedCallBack();
-	
 protected:
 	UPROPERTY(EditDefaultsOnly, DisplayName = "와이어의 투척 애니메이션")
 	TObjectPtr<UAnimSequence> ThrowAnim;

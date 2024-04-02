@@ -6,7 +6,7 @@
 #include "GAS/Ability/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_ComboManagement.generated.h"
 
-class ULLL_PlayerAttributeSet;
+class ULLL_PlayerCharacterAttributeSet;
 /**
  * 
  */
@@ -28,7 +28,7 @@ protected:
 
 protected:
 	UPROPERTY()
-	TObjectPtr<const ULLL_PlayerAttributeSet> PlayerAttributes;
+	TObjectPtr<const ULLL_PlayerCharacterAttributeSet> PlayerAttributes;
 
 	UPROPERTY(EditDefaultsOnly, Category = "GameplayEffect", DisplayName = "콤보 타이머 경과시 호출되는 이펙트")
 	TSubclassOf<UGameplayEffect> ComboDivideEffect;

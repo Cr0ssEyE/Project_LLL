@@ -4,7 +4,7 @@
 #include "GAS/Ability/Player/ComboSystem/LLL_PGA_ChangeComboAmplify_ByCombo.h"
 
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
+#include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
 
 ULLL_PGA_ChangeComboAmplify_ByCombo::ULLL_PGA_ChangeComboAmplify_ByCombo()
 {
@@ -22,7 +22,7 @@ void ULLL_PGA_ChangeComboAmplify_ByCombo::ActivateAbility(const FGameplayAbility
 
 void ULLL_PGA_ChangeComboAmplify_ByCombo::ApplySkillGaugeAmplify()
 {
-	const ULLL_PlayerAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	
 	bool AmplifyChanged = false;
 	const uint32 CurrentComboCount = PlayerAttributeSet->GetCurrentComboCount();

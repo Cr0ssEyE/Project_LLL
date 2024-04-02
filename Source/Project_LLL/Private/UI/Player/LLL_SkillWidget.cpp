@@ -5,7 +5,7 @@
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
+#include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
 
 void ULLL_SkillWidget::NativeConstruct()
 {
@@ -13,7 +13,7 @@ void ULLL_SkillWidget::NativeConstruct()
 	
 }
 
-void ULLL_SkillWidget::UpdateWidgetView(const ULLL_PlayerAttributeSet* CharacterAttributeSet) const
+void ULLL_SkillWidget::UpdateWidgetView(const ULLL_PlayerCharacterAttributeSet* CharacterAttributeSet) const
 {
 	const float MaxSkillGauge = CharacterAttributeSet->GetMaxSkillGauge();
 	const float CurrentSkillGauge = CharacterAttributeSet->GetCurrentSkillGauge();

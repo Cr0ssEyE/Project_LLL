@@ -4,7 +4,7 @@
 
 #include "Constant/LLL_GameplayTags.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
+#include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
 
 ULLL_PGA_ComboManagement::ULLL_PGA_ComboManagement()
 {
@@ -26,7 +26,7 @@ void ULLL_PGA_ComboManagement::ActivateAbility(const FGameplayAbilitySpecHandle 
 	}
 #endif
 	
-	PlayerAttributes = CastChecked<ULLL_PlayerAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
+	PlayerAttributes = CastChecked<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	if(IsValid(PlayerAttributes))
 	{
 		CurrentComboCount = 0;
