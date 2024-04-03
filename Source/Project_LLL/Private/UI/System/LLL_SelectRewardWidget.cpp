@@ -9,21 +9,18 @@ void ULLL_SelectRewardWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	RewardButton1 = Cast<UButton>(GetWidgetFromName(TEXT("RewardButton1")));
 	ensure(RewardButton1);
 	RewardButton1->OnClicked.AddDynamic(this, &ULLL_SelectRewardWidget::CheckButton);
 	
-	RewardButton2 = Cast<UButton>(GetWidgetFromName(TEXT("RewardButton2")));
 	ensure(RewardButton2);
 	RewardButton2->OnClicked.AddDynamic(this, &ULLL_SelectRewardWidget::CheckButton);
 	
-	RewardButton3 = Cast<UButton>(GetWidgetFromName(TEXT("RewardButton3")));
 	ensure(RewardButton3);
 	RewardButton3->OnClicked.AddDynamic(this, &ULLL_SelectRewardWidget::CheckButton);
 }
 
 void ULLL_SelectRewardWidget::SetRewardButton()
-{
+{   
 		
 }
 
@@ -38,7 +35,8 @@ void ULLL_SelectRewardWidget::CheckButton()
 		}
 	}
 #endif
-	//보상 관련 로직, 버튼 클릭 시 효과
 	SetIsEnabled(false);
 	SetVisibility(ESlateVisibility::Hidden);
+
+	//보상 관련 로직, 버튼 클릭 시 효과
 }

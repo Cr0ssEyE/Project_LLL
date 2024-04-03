@@ -27,5 +27,8 @@ public:
 
 protected:
 	virtual void InteractiveEvent() override;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UStaticMesh> GateMesh;
 	
 };
