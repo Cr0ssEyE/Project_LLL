@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -23,10 +24,13 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
 	ALLL_MonsterBaseAIController* MonsterAIController = CastChecked<ALLL_MonsterBaseAIController>(OwnerComp.GetAIOwner());
+	/*ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(MonsterAIController->GetPawn());
+	FVector Center = MonsterBase->GetActorLocation();
+	FVector Direction = MonsterBase->GetActorForwardVector();
+	float DetectDistance = MonsterBase->GetDetectDistance();
+	float HalfFieldOfViewRadian = FMath::DegreesToRadians(MonsterBase->GetFieldOfView() / 2.0f);
+	DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, DebugColor, false, 0.1f);*/
 	
-	TArray<AActor*> OutActors;
-	MonsterAIController->GetAIPerceptionComponent()->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), OutActors);
-
 	const ALLL_PlayerBase* BlackboardPlayer = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
 	bool IsHavePlayer = false;
 	if (IsValid(BlackboardPlayer))
@@ -40,6 +44,9 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 
 		IsHavePlayer = true;
 	}
+	
+	TArray<AActor*> OutActors;
+	MonsterAIController->GetAIPerceptionComponent()->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), OutActors);
 
 	bool IsInFieldOfView = false;
 	for (const auto OutActor : OutActors)
@@ -58,4 +65,14 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	}
 	
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, IsInFieldOfView);
+
+	if (!IsHavePlayer)
+	{
+		/*ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(MonsterAIController->GetPawn());
+		FVector Center = MonsterBase->GetActorLocation();
+		FVector Direction = MonsterBase->GetActorForwardVector();
+		float DetectDistance = MonsterBase->GetDetectDistance();
+		float HalfFieldOfViewRadian = FMath::DegreesToRadians(MonsterBase->GetFieldOfView() / 2.0f);
+		DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, DebugColor, false, 0.1f);*/
+	}
 }
