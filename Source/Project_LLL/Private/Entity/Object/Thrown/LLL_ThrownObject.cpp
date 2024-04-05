@@ -30,7 +30,7 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 		ProjectileMovement->bShouldBounce = false;
 		ProjectileMovement->ProjectileGravityScale = 0.0f;
 		ProjectileMovement->InitialSpeed = 0.0f;
-		ProjectileMovement->MaxSpeed = Speed = 1000.0f;
+		ProjectileMovement->MaxSpeed = 1000.0f;
 		ProjectileMovement->bRotationFollowsVelocity = true;
 		ProjectileMovement->Deactivate();
 	}
@@ -48,7 +48,7 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner)
 	SetOwner(NewOwner);
 
 	Activate();
-	ProjectileMovement->Velocity = GetActorForwardVector() * Speed;
+	ProjectileMovement->Velocity = GetActorForwardVector() * ProjectileMovement->MaxSpeed;
 	
 	FTimerHandle HideTimerHandle;
 	FTimerDelegate HideTimerDelegate;

@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
-#include "ULLL_ObjectAttributeSetBase.generated.h"
+#include "LLL_ObjectAttributeSetBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API UULLL_ObjectAttributeSetBase : public UAttributeSet
+class PROJECT_LLL_API ULLL_ObjectAttributeSetBase : public UAttributeSet
 {
 	GENERATED_BODY()
 	

@@ -24,7 +24,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	FORCEINLINE float GetSpeed() const { return Speed; }
 	FORCEINLINE UProjectileMovementComponent* GetProjectileComponent() { return ProjectileMovement; }
 	
 	virtual void Throw(AActor* NewOwner);
@@ -40,10 +39,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<const ULLL_ThrownObjectDataAsset> ThrownObjectDataAsset;
-	
-protected:
-	float Speed;
-
-	UPROPERTY(VisibleAnywhere)
-	float OffensePower;
 };
