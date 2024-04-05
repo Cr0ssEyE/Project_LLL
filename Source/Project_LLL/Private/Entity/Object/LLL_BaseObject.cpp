@@ -87,30 +87,3 @@ void ALLL_BaseObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
-void ALLL_BaseObject::DelayedDestroy(float Time)
-{
-	FTimerHandle DestroyTimerHandle;
-	FTimerDelegate DestroyTimerDelegate;
-	DestroyTimerDelegate.BindUObject(this, &ALLL_BaseObject::DestroyTimerCallback);
-	GetWorldTimerManager().SetTimer(DestroyTimerHandle, DestroyTimerDelegate, Time, false);
-}
-
-void ALLL_BaseObject::DelayedHide(float Time)
-{
-	FTimerHandle HideTimerHandle;
-	FTimerDelegate HideTimerDelegate;
-	HideTimerDelegate.BindUObject(this, &ALLL_BaseObject::HideTimerCallback);
-	GetWorldTimerManager().SetTimer(HideTimerHandle, HideTimerDelegate, Time, false);
-}
-
-void ALLL_BaseObject::DestroyTimerCallback()
-{
-	Destroy();
-}
-
-void ALLL_BaseObject::HideTimerCallback()
-{
-	SetActorHiddenInGame(true);
-}
-

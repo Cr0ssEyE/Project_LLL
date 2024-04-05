@@ -17,7 +17,6 @@
 ALLL_ThrownObject::ALLL_ThrownObject()
 {
 	BaseObjectDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_ThrownObjectDataAsset>(PATH_THROWN_OBJECT_DATA, EAssertionLevel::Check);
-	ThrownObjectDataAsset = Cast<ULLL_ThrownObjectDataAsset>(BaseObjectDataAsset);
 	
 	if (IsValid(BaseMesh))
 	{
@@ -37,50 +36,53 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 	}
 }
 
+void ALLL_ThrownObject::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ThrownObjectDataAsset = Cast<ULLL_ThrownObjectDataAsset>(BaseObjectDataAsset);
+}
+
 void ALLL_ThrownObject::Throw(AActor* NewOwner)
 {
 	SetOwner(NewOwner);
 
 	Activate();
 	ProjectileMovement->Velocity = GetActorForwardVector() * Speed;
-
-	DelayedHide(3.0f);
+	
+	FTimerHandle HideTimerHandle;
+	FTimerDelegate HideTimerDelegate;
+	HideTimerDelegate.BindUObject(this, &ALLL_ThrownObject::Deactivate);
+	GetWorldTimerManager().SetTimer(HideTimerHandle, HideTimerDelegate, 3.0f, false);
 }
 
 void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Other))
+	if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Other))
 	{
-		if (ALLL_RangedMonster* RangedMonster = Cast<ALLL_RangedMonster>(GetOwner()))
+		// GE 기반으로 플레이어에게 데미지
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, 1.0, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
 		{
-			// GE 기반으로 플레이어에게 데미지
-			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-			EffectContextHandle.AddSourceObject(this);
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, 1.0, EffectContextHandle);
-			if(EffectSpecHandle.IsValid())
-			{
-				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());
-			}
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());
+		}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterHitCheckDebug())
 			{
-				if (ProtoGameInstance->CheckMonsterHitCheckDebug())
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("투사체와 플레이어 충돌")));
-				}
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("투사체와 플레이어 충돌")));
 			}
-#endif
-
-			Deactivate();
 		}
+#endif
 	}
-	else
-	{
-		Deactivate();
-	}
+	
+	Deactivate();
 }
 
 void ALLL_ThrownObject::Activate()

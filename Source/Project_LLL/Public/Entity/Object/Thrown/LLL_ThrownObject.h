@@ -20,6 +20,10 @@ class PROJECT_LLL_API ALLL_ThrownObject : public ALLL_BaseObject, public ILLL_Ob
 public:
 	ALLL_ThrownObject();
 
+protected:
+	virtual void BeginPlay() override;
+
+public:
 	FORCEINLINE float GetSpeed() const { return Speed; }
 	FORCEINLINE UProjectileMovementComponent* GetProjectileComponent() { return ProjectileMovement; }
 	

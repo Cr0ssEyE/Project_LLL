@@ -10,11 +10,6 @@ void ULLL_MonsterBaseAnimInstance::NativeInitializeAnimation()
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
 }
 
-void ULLL_MonsterBaseAnimInstance::PlayAttackAnimation()
-{
-	Montage_Play(CharacterDataAsset->AttackAnimMontage);
-}
-
 void ULLL_MonsterBaseAnimInstance::PlayDamagedAnimation()
 {
 	Montage_Play(MonsterBaseDataAsset->DamagedAnimMontage);

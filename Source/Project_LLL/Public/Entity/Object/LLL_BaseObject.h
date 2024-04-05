@@ -42,10 +42,4 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_BaseObjectDataAsset> BaseObjectDataAsset;
-	
-protected:
-	virtual void DelayedDestroy(float Time);
-	virtual void DelayedHide(float Time);
-	virtual void DestroyTimerCallback();
-	virtual void HideTimerCallback();
 };
