@@ -9,7 +9,7 @@
 #include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Player/LLL_PlayerWireHandAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerWireHandAttributeSet.h"
 
 ULLL_PGA_WireHandRelease::ULLL_PGA_WireHandRelease()
 {

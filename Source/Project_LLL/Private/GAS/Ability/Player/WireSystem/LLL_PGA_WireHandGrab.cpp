@@ -5,7 +5,6 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -14,7 +13,7 @@
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Ability/Player/WireSystem/LLL_PGA_RushToWireHand.h"
-#include "GAS/Attribute/Player/LLL_PlayerWireHandAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerWireHandAttributeSet.h"
 
 ULLL_PGA_WireHandGrab::ULLL_PGA_WireHandGrab()
 {

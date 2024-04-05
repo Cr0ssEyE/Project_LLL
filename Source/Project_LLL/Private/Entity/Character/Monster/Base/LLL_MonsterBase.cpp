@@ -136,6 +136,7 @@ bool ALLL_MonsterBase::CanPlayAttackAnimation()
 		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
 		{
 			const UAnimMontage* AttackAnimMontage = Cast<ULLL_MGA_GroundStrike>(AbilitySpec->GetPrimaryInstance())->GetAbilityActionMontage();
+			const UAnimMontage* DamagedAnimMontage = MonsterBaseDataAsset->DamagedAnimMontage;
 	
 			if (IsValid(CharacterAnimInstance) && IsValid(AttackAnimMontage))
 			{
@@ -144,7 +145,7 @@ bool ALLL_MonsterBase::CanPlayAttackAnimation()
 					return false;
 				}
 
-				if (CharacterAnimInstance->Montage_IsPlaying(AttackAnimMontage))
+				if (CharacterAnimInstance->Montage_IsPlaying(DamagedAnimMontage))
 				{
 					return false;
 				}

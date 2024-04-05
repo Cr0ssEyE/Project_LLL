@@ -5,8 +5,6 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
-#include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
@@ -15,7 +13,7 @@
 #include "DataAsset/LLL_PlayerWireObjectDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Player/LLL_PlayerWireHandAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerWireHandAttributeSet.h"
 #include "Util/LLLConstructorHelper.h"
 
 

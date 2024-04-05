@@ -4,7 +4,7 @@
 #include "GAS/Ability/Player/ComboSystem/LLL_PGA_ChangeComboAmplify_ByCombo.h"
 
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 
 ULLL_PGA_ChangeComboAmplify_ByCombo::ULLL_PGA_ChangeComboAmplify_ByCombo()
 {

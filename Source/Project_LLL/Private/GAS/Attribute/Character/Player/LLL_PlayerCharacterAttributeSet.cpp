@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 
 #include "GameplayEffectExtension.h"
 #include "Constant/LLL_GameplayTags.h"

@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Attribute/Player/LLL_PlayerWireHandAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerWireHandAttributeSet.h"
 
 #include "GameplayEffectExtension.h"
 #include "Components/SphereComponent.h"

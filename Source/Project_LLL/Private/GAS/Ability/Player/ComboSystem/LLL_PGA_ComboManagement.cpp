@@ -4,7 +4,7 @@
 
 #include "Constant/LLL_GameplayTags.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 
 ULLL_PGA_ComboManagement::ULLL_PGA_ComboManagement()
 {
