@@ -4,6 +4,8 @@
 #include "GAS/Ability/Player/LLL_PGA_AttackHitCheck.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "GAS/Task/LLL_AT_Trace.h"
 
@@ -29,7 +31,8 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{
 		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
-
+		TWeakObjectPtr<AActor> gold = TargetDataHandle.Data[0]->GetActors()[0];
+		AActor* Actor = gold.Get();
 		// 맞은 액터 갯수만큼 콤보 수 증가
 		float Magnitude = TargetDataHandle.Data[0]->GetActors().Num();
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ComboStackEffect, CurrentLevel);
@@ -38,8 +41,8 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_COMBO_ADDITIVE, Magnitude);
 			ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
 		}
-		
 		BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect);
+		BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect);
 	}
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

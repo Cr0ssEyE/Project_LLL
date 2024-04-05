@@ -7,6 +7,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Util/LLLConstructorHelper.h"
 #include "Entity/Object/Interactive/LLL_GateObject.h"
+#include "Entity/Object/Breakable/LLL_BreakableObjectBase.h"
 #include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
 
 // Sets default values
@@ -17,9 +18,6 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 	RootBox->SetCollisionProfileName("NoCollision");
 	SetRootComponent(RootBox);
 	Stage = FLLLConstructorHelper::FindAndGetClass<AActor>(TEXT("/Script/Engine.Blueprint'/Game/Blueprints/MapTest/BP_MapTest1234.BP_MapTest1234_C'"), EAssertionLevel::Check);
-
-	GateClass = ALLL_GateObject::StaticClass();
-	GateIndex = 0;
 	// State Section
 	CurrentState = EStageState::READY;
 	StateChangeActions.Add(EStageState::READY, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetReady)));
@@ -45,7 +43,7 @@ void ALLL_MapGimmick::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CreateMapAndGate(0);
+	CreateMapAndGate();
 }
 
 void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -56,19 +54,16 @@ void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* Overlapped
 
 void ALLL_MapGimmick::CreateMapAndGate()
 {
+	
+	
 	AActor* StageActor = GetWorld()->SpawnActor<AActor>(Stage, RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
 	for (USceneComponent* ChildComponent : StageActor->GetRootComponent()->GetAttachChildren())
 	{
 		ULLL_GateSpawnPointComponent* SpawnPoint = Cast<ULLL_GateSpawnPointComponent>(ChildComponent);
-		if (!IsValid(SpawnPoint))
+		if (IsValid(SpawnPoint))
 		{
-			return;
-		}
-		AActor* GateActor = GetWorld()->SpawnActor<ALLL_GateObject>(GateClass, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
-		ALLL_GateObject* Gate = Cast<ALLL_GateObject>(GateActor);
-		if (Gate)
-		{
-			//Gate->GetRootComponent()->GetChildComponent(0);
+			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+			//GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 			Gates.Add(Gate);
 		}
 	}
@@ -79,9 +74,15 @@ void ALLL_MapGimmick::RandomMap()
 	
 }
 
+void ALLL_MapGimmick::OnGateTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                                UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	
+}
+
 void ALLL_MapGimmick::OpenGates(uint8 index)
 {
-	Gates[index]->SetActorRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+	
 }
 
 void ALLL_MapGimmick::CloseAllGates()

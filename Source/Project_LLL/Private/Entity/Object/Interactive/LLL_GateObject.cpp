@@ -6,7 +6,8 @@
 
 ALLL_GateObject::ALLL_GateObject()
 {
-	BaseMesh->SetStaticMesh(FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/MapTest/Meshes/SM_GateTest.SM_GateTest'"), EAssertionLevel::Check));
+	GateMesh = FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/MapTest/Meshes/SM_GateTest.SM_GateTest'"), EAssertionLevel::Check);
+	BaseMesh->SetStaticMesh(GateMesh);
 }
 
 void ALLL_GateObject::BeginPlay()

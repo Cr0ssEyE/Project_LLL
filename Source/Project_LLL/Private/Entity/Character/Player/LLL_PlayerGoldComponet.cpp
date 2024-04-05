@@ -1,0 +1,74 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Entity/Character/Player/LLL_PlayerGoldComponet.h"
+
+#include "UI/Player/LLL_PlayerGoldWidget.h"
+#include "Util/LLLConstructorHelper.h"
+
+// Sets default values for this component's properties
+ULLL_PlayerGoldComponet::ULLL_PlayerGoldComponet()
+{
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+	// off to improve performance if you don't need them.
+	PrimaryComponentTick.bCanEverTick = false;
+
+	// ...
+	Money = 0;
+	WidgetHideWaitTime = 3.0f;
+	IsShowWidget = false;
+	GoldWidget = CreateDefaultSubobject<ULLL_PlayerGoldWidget>(TEXT("GoldWidget"));
+	GoldWidgetClass = FLLLConstructorHelper::FindAndGetClass<ULLL_PlayerGoldWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Player/WBP_PlayerGoldWidget.WBP_PlayerGoldWidget_C'"), EAssertionLevel::Check);
+}
+
+
+// Called when the game starts
+void ULLL_PlayerGoldComponet::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// ...
+	if (IsValid(GoldWidgetClass))
+	{
+		GoldWidget = CastChecked<ULLL_PlayerGoldWidget>(CreateWidget(GetWorld(), GoldWidgetClass));
+		GoldWidget->AddToViewport();
+		GoldWidget->SetIsEnabled(false);
+	}
+}
+
+
+// Called every frame
+void ULLL_PlayerGoldComponet::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
+}
+
+void ULLL_PlayerGoldComponet::EnableInteractionWidget()
+{
+	if (!GoldWidget->GetIsEnabled())
+	{
+		GoldWidget->PlayVisibleAnimation();
+		GoldWidget->SetIsEnabled(true);
+		IsShowWidget = true;
+	}
+}
+
+void ULLL_PlayerGoldComponet::DisableInteractionWidget()
+{
+	GoldWidget->PlayHideAnimation();
+	GoldWidget->SetIsEnabled(false);
+	IsShowWidget = false;
+}
+
+void ULLL_PlayerGoldComponet::ShowWidget()
+{
+	GoldWidget->UpdateWidget(GetMoney());
+	GetWorld()->GetTimerManager().SetTimer(WidgetWaitHideTimerHandle, this, &ULLL_PlayerGoldComponet::DisableInteractionWidget, 0.1f, false, WidgetHideWaitTime);
+	if (!IsShowWidget)
+	{
+		EnableInteractionWidget();
+	}
+}
+

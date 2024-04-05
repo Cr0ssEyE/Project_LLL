@@ -3,20 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Object/Interactive/LLL_InteractiveObject.h"
-#include "LLL_GateObject.generated.h"
+#include "GameFramework/Actor.h"
+#include "LLL_RewardGimmick.generated.h"
 
-/**
- * 
- */
 UCLASS()
-class PROJECT_LLL_API ALLL_GateObject : public ALLL_InteractiveObject
+class PROJECT_LLL_API ALLL_RewardGimmick : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	ALLL_GateObject();
-	
+	// Sets default values for this actor's properties
+	ALLL_RewardGimmick();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -25,10 +23,4 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-protected:
-	virtual void InteractiveEvent() override;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UStaticMesh> GateMesh;
-	
 };
