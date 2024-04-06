@@ -5,6 +5,7 @@
 
 #include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 
 void ULLL_PlayerAnimInstance::NativeInitializeAnimation()
@@ -14,12 +15,31 @@ void ULLL_PlayerAnimInstance::NativeInitializeAnimation()
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
 }
 
-void ULLL_PlayerAnimInstance::AnimNotify_Step()
+void ULLL_PlayerAnimInstance::AnimNotify_LeftStep()
 {
-	Super::AnimNotify_Step();
+	Super::AnimNotify_LeftStep();
 	
-	FVector StartLocation = Character->GetActorLocation();
-	FVector EndLocation = StartLocation + FVector(0.0f, 0.0f, Character->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * -2.0f);
+	SetStepEventParameter(SOCKET_LEFT_FOOT);
+}
+
+void ULLL_PlayerAnimInstance::AnimNotify_RightStep()
+{
+	Super::AnimNotify_RightStep();
+
+	SetStepEventParameter(SOCKET_RIGHT_FOOT);
+}
+
+void ULLL_PlayerAnimInstance::SetStepEventParameter(FName FootSocketName) const
+{
+	if (!Character->GetMesh()->DoesSocketExist(FootSocketName))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("소켓이 존재하지 않음"));
+		
+		return;
+	}
+	
+	FVector StartLocation = Character->GetMesh()->GetSocketLocation(FootSocketName);
+	FVector EndLocation = StartLocation + FVector(0.0f, 0.0f, Character->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * -1.0f);
 	
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
