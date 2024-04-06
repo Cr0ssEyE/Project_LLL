@@ -14,3 +14,5 @@
 
 #define PATH_THROWN_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_ThrownObjectData'/Game/DataAsset/DA_ThrownObject.DA_ThrownObject'")
 #define PATH_INTERACTIVE_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_InteractiveObjectData'/Game/DataAsset/DA_InteractiveObject.DA_InteractiveObject'")
+
+#define PATH_MAP_DATA TEXT("/Script/Project_LLL.LLL_MapDataAsset'/Game/DataAsset/DA_Map.DA_Map'")

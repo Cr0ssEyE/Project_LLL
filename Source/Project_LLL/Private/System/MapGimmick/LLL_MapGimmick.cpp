@@ -5,6 +5,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_FilePath.h"
+#include "DataAsset/LLL_MapDataAsset.h"
 #include "Util/LLLConstructorHelper.h"
 #include "Entity/Object/Interactive/LLL_GateObject.h"
 #include "Entity/Object/Breakable/LLL_BreakableObjectBase.h"
@@ -17,7 +19,9 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 	RootBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	RootBox->SetCollisionProfileName("NoCollision");
 	SetRootComponent(RootBox);
-	Stage = FLLLConstructorHelper::FindAndGetClass<AActor>(TEXT("/Script/Engine.Blueprint'/Game/Blueprints/MapTest/BP_MapTest1234.BP_MapTest1234_C'"), EAssertionLevel::Check);
+
+	MapDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MapDataAsset>(PATH_MAP_DATA, EAssertionLevel::Check);
+	Stage = MapDataAsset->MapData[0];
 	// State Section
 	CurrentState = EStageState::READY;
 	StateChangeActions.Add(EStageState::READY, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetReady)));
@@ -63,7 +67,6 @@ void ALLL_MapGimmick::CreateMapAndGate()
 		if (IsValid(SpawnPoint))
 		{
 			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
-			//GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 			Gates.Add(Gate);
 		}
 	}
@@ -74,20 +77,12 @@ void ALLL_MapGimmick::RandomMap()
 	
 }
 
-void ALLL_MapGimmick::OnGateTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                                UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ALLL_MapGimmick::OpenAllGates()
 {
-	
-}
-
-void ALLL_MapGimmick::OpenGates(uint8 index)
-{
-	
-}
-
-void ALLL_MapGimmick::CloseAllGates()
-{
-	
+	for (auto Gate:Gates)
+	{
+		Gate->GateEnable();
+	}
 }
 
 void ALLL_MapGimmick::SetState(EStageState InNewState)
@@ -116,6 +111,16 @@ void ALLL_MapGimmick::SetChooseReward()
 }
 
 void ALLL_MapGimmick::SetChooseNext()
+{
+	
+}
+
+void ALLL_MapGimmick::OnOpponentDestroyed(AActor* DestroyedActor)
+{
+	
+}
+
+void ALLL_MapGimmick::OnOpponentSpawn()
 {
 	
 }
