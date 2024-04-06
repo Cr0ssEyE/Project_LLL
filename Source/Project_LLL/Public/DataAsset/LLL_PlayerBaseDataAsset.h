@@ -49,8 +49,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리")
 	float SpringArmLength;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 기울기")
-	float SpringArmAngle;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 회전값")
+	FRotator SpringArmAngle;
 
 	// 상호작용 관련(현재 처리하지 않고 있음)
 public:
