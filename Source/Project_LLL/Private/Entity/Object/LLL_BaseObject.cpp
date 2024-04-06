@@ -4,7 +4,6 @@
 #include "Entity/Object/LLL_BaseObject.h"
 
 #include "AbilitySystemComponent.h"
-#include "Components/BoxComponent.h"
 
 
 // Sets default values
@@ -74,7 +73,7 @@ void ALLL_BaseObject::BeginPlay()
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
-		FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(BaseObjectDataAsset->InitEffect, 1.0, EffectContextHandle);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(BaseObjectDataAsset->InitEffect, 1.0, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
