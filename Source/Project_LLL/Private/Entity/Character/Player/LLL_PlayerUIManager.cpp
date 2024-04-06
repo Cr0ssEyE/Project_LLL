@@ -6,44 +6,45 @@
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
+#include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/Player/LLL_InteractionWidget.h"
 #include "UI/Player/LLL_InventoryWidget.h"
 #include "UI/Player/LLL_PlayerStatusWidget.h"
+#include "UI/Player/LLL_SkillWidget.h"
 #include "UI/System/LLL_GamePauseWidget.h"
 
-// Sets default values for this component's properties
 ULLL_PlayerUIManager::ULLL_PlayerUIManager()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	PauseWidget = CreateDefaultSubobject<ULLL_GamePauseWidget>(TEXT("PauseWidget"));
-	InventoryWidget = CreateDefaultSubobject<ULLL_InventoryWidget>(TEXT("InventoryWidget"));
-	InteractionWidget = CreateDefaultSubobject<ULLL_InteractionWidget>(TEXT("InteractionWidget"));
-	PlayerStatusWidget = CreateDefaultSubobject<ULLL_PlayerStatusWidget>(TEXT("StatusWidget"));
 }
 
-
-// Called when the game starts
 void ULLL_PlayerUIManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	const ULLL_BaseCharacterDataAsset* CharacterDataAsset = CastChecked<ALLL_PlayerBase>(GetOwner())->GetCharacterDataAsset();
+	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetOwner());
+	const ULLL_BaseCharacterDataAsset* CharacterDataAsset = PlayerCharacter->GetCharacterDataAsset();
 	const ULLL_PlayerBaseDataAsset* PlayerBaseDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
-	PauseWidgetClass = PlayerBaseDataAsset->PauseWidgetClass;
+	
+	CharacterStatusWidgetClass = CharacterDataAsset->StatusWidgetClass;
+	GamePauseWidgetClass = PlayerBaseDataAsset->GamePauseWidgetClass;
 	InventoryWidgetClass = PlayerBaseDataAsset->InventoryWidgetClass;
 	InteractionWidgetClass = PlayerBaseDataAsset->InteractionWidgetClass;
-	PlayerStatusWidgetClass = PlayerBaseDataAsset->StatusWidgetClass;
+	SkillGaugeWidgetClass = PlayerBaseDataAsset->SkillGaugeWidgetClass;
 	
-	if(IsValid(PauseWidgetClass))
+	if(IsValid(CharacterStatusWidgetClass))
 	{
-		PauseWidget = CastChecked<ULLL_GamePauseWidget>(CreateWidget(GetWorld(), PauseWidgetClass));
-		PauseWidget->AddToViewport();
-		PauseWidget->SetVisibility(ESlateVisibility::Hidden);
-		PauseWidget->SetIsEnabled(false);
+		CharacterStatusWidget = CastChecked<ULLL_CharacterStatusWidget>(CreateWidget(GetWorld(), CharacterStatusWidgetClass));
+		CharacterStatusWidget->AddToViewport();
+	}
+	
+	if(IsValid(GamePauseWidgetClass))
+	{
+		GamePauseWidget = CastChecked<ULLL_GamePauseWidget>(CreateWidget(GetWorld(), GamePauseWidgetClass));
+		GamePauseWidget->AddToViewport();
+		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
+		GamePauseWidget->SetIsEnabled(false);
 	}
 
 	if(IsValid(InventoryWidgetClass))
@@ -59,37 +60,30 @@ void ULLL_PlayerUIManager::BeginPlay()
 		InteractionWidget->AddToViewport();
 		InteractionWidget->SetIsEnabled(false);
 	}
-	
-	if(IsValid(PlayerStatusWidgetClass))
+
+	if(IsValid(SkillGaugeWidgetClass))
 	{
-		PlayerStatusWidget = CastChecked<ULLL_PlayerStatusWidget>(CreateWidget(GetWorld(), PlayerStatusWidgetClass));
-		PlayerStatusWidget->AddToViewport();
+		SkillGaugeWidget = CastChecked<ULLL_SkillWidget>(CreateWidget(GetWorld(), SkillGaugeWidgetClass));
+		SkillGaugeWidget->AddToViewport();
 	}
-}
-
-
-// Called every frame
-void ULLL_PlayerUIManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
 void ULLL_PlayerUIManager::TogglePauseWidget(bool IsDead) const
 {
-	if(PauseWidget->GetIsEnabled())
+	if(GamePauseWidget->GetIsEnabled())
 	{
-		PauseWidget->SetVisibility(ESlateVisibility::Hidden);
-		PauseWidget->SetIsEnabled(false);
+		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
+		GamePauseWidget->SetIsEnabled(false);
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 	}
 	else
 	{
 		if(IsDead)
 		{
-			PauseWidget->SetupDeadStateLayout();
+			GamePauseWidget->SetupDeadStateLayout();
 		}
-		PauseWidget->SetVisibility(ESlateVisibility::Visible);
-		PauseWidget->SetIsEnabled(true);
+		GamePauseWidget->SetVisibility(ESlateVisibility::Visible);
+		GamePauseWidget->SetIsEnabled(true);
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), SMALL_NUMBER);
 	}
 }
@@ -133,25 +127,31 @@ void ULLL_PlayerUIManager::UpdateInteractionWidget(ALLL_InteractiveObject* Curre
 	InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
 }
 
-void ULLL_PlayerUIManager::UpdateStatusWidget(int MaxHealth, int CurrentHealth, int MaxShield, int CurrentShield) const
-{
-	// TODO: 체력 시스템 구현하고 만들기
-	PlayerStatusWidget->UpdateWidgetView(MaxHealth, CurrentHealth, MaxShield, CurrentShield);
-}
-
 void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible)
 {
 	if(Visible)
 	{
-		PauseWidget->SetVisibility(ESlateVisibility::Hidden);
+		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
 		InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
-		PlayerStatusWidget->SetVisibility(ESlateVisibility::Hidden);
+		CharacterStatusWidget->SetVisibility(ESlateVisibility::Hidden);
+		SkillGaugeWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
-		PauseWidget->SetVisibility(ESlateVisibility::Visible);
+		GamePauseWidget->SetVisibility(ESlateVisibility::Visible);
 		InventoryWidget->SetVisibility(ESlateVisibility::Visible);
-		PlayerStatusWidget->SetVisibility(ESlateVisibility::Visible);
+		CharacterStatusWidget->SetVisibility(ESlateVisibility::Visible);
+		SkillGaugeWidget->SetVisibility(ESlateVisibility::Visible);
 	}
+}
+
+void ULLL_PlayerUIManager::UpdateWidget()
+{
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwner());
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+
+	SkillGaugeWidget->UpdateWidgetView(PlayerAttributeSet);
+	
+	Super::UpdateWidget();
 }
 

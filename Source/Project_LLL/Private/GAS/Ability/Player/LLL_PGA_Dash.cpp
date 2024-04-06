@@ -8,7 +8,8 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
+#include "GameFramework/PawnMovementComponent.h"
+#include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
 
 ULLL_PGA_Dash::ULLL_PGA_Dash()
 {
@@ -32,7 +33,7 @@ void ULLL_PGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	
 	// ASC에 등록된 어트리뷰트 가져오고 GA에서 필요한 어트리뷰트 저장하기
 	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	const ULLL_PlayerAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerAttributeSet::StaticClass()));
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	if(IsValid(PlayerCharacter) && IsValid(PlayerAttributeSet))
 	{
 		DashSpeed = PlayerAttributeSet->GetDashSpeed();
@@ -96,11 +97,13 @@ void ULLL_PGA_Dash::InputPressed(const FGameplayAbilitySpecHandle Handle, const 
 
 void ULLL_PGA_Dash::DashActionEvent()
 {
+	// TODO: MovementComponent의 LaunchCharacter 기반 물리에서 위치 기반으로 변경
 	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
 	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	if(IsValid(PlayerCharacter) && bIsInputPressed && CurrentDashCount < MaxDashCount)
 	{
 		CurrentDashCount++;
+		PlayerCharacter->GetMovementComponent()->Velocity = FVector::Zero();
 		PlayerCharacter->LaunchCharacter(PlayerCharacter->GetActorForwardVector() * (DashSpeed * 1000.f), true, true);
 		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
 		// 애님 몽타주 처음부터 다시 실행하거나 특정 시간부터 실행 시키도록 하는게 상당히 귀찮아서 땜빵 처리

@@ -8,10 +8,11 @@
 #include "LLL_PlayerGoldComponet.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
 class ALLL_PlayerWireHand;
-class ULLL_PlayerAttributeSet;
+class ULLL_PlayerCharacterAttributeSet;
 class ULLL_PlayerWeaponComponent;
 class ULLL_PlayerAnimInstance;
 class ALLL_InteractiveObject;
@@ -20,11 +21,19 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 
+UENUM(BlueprintType)
+enum class ELabeled : uint8
+{
+	A,
+	B,
+	C
+};
+
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_PlayerBase : public ALLL_BaseCharacter
+class PROJECT_LLL_API ALLL_PlayerBase : public ALLL_BaseCharacter, public ILLL_PlayerDependencyInterface
 {
 	GENERATED_BODY()
 
@@ -35,6 +44,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void PossessedBy(AController* NewController) override;
 
 	// 외부 접근용
 public:
@@ -44,7 +54,9 @@ public:
 
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ALLL_PlayerWireHand* GetWireHand() const { return WireHandActor; }
+	
 	FVector GetMouseLocation() const;
+	void PlayerRotateToMouseCursor();
 	
 	// 카메라
 private:
@@ -74,12 +86,10 @@ private:
 	void InventoryAction(const FInputActionValue& Value);
 	void PauseAction(const FInputActionValue& Value);
 
-	void CharacterRotateToCursor();
-
 	// 데이터 에셋
 private:
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerBaseDataAsset> PlayerDataAsset;
+	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;
 	
 	// 상호작용 관련 변수
 private:
@@ -91,12 +101,22 @@ private:
 
 	UPROPERTY()
 	uint32 InteractionRange;
+	
+	void ParameterTest();
+
+	UPROPERTY(EditAnywhere, Category = "FMOD", meta = (ClampMin = "0", ClampMax = "1"))
+	float Continuous;
+
+	UPROPERTY(EditAnywhere, Category = "FMOD", meta = (ClampMin = "0", ClampMax = "3"))
+	int32 Discrete;
+
+	UPROPERTY(EditAnywhere, Category = "FMOD")
+	ELabeled Labeled;
 
 	// 상태 관련 함수
 protected:
 	virtual void Dead() override;
 	virtual void DeadMontageEndEvent() override;
-	virtual void Attack() override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)

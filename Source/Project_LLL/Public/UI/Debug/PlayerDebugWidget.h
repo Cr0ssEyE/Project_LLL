@@ -6,6 +6,7 @@
 #include "CharacterDebugWidget.h"
 #include "PlayerDebugWidget.generated.h"
 
+class UGameplayEffect;
 class UButton;
 class UCheckBox;
 /**
@@ -26,6 +27,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void PlayerDashCheckBoxEvent(bool value);
 
+	UFUNCTION(BlueprintCallable)
+	void PlayerWireActionCheckBoxEvent(bool value);
+	
 	UFUNCTION(BlueprintCallable)
 	void PlayerSkillCheckBoxEvent(bool value);
 
@@ -50,8 +54,18 @@ protected:
 	TObjectPtr<UCheckBox> PlayerSkillCheckBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UCheckBox> PlayerWireActionCheckBox;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> PlayerFillHealthButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> PlayerCoolDownResetButton;
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GAS", DisplayName = "플레이어 체력 회복 이펙트")
+	TSubclassOf<UGameplayEffect> FillHealthEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GAS", DisplayName = "플레이어 쿨다운 초기화 이펙트")
+	TSubclassOf<UGameplayEffect> ResetCoolDownEffect;
 };

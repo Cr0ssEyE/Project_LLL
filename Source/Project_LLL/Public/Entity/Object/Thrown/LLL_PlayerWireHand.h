@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "LLL_ThrownObject.h"
+#include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerWireHand.generated.h"
 
 class USphereComponent;
@@ -13,7 +14,7 @@ class ULLL_PlayerWireObjectDataAsset;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWireMovementCompleteDelegate);
 
 UCLASS()
-class PROJECT_LLL_API ALLL_PlayerWireHand : public ALLL_ThrownObject
+class PROJECT_LLL_API ALLL_PlayerWireHand : public ALLL_ThrownObject, public ILLL_PlayerDependencyInterface
 {
 	GENERATED_BODY()
 

@@ -24,8 +24,8 @@ public class Project_LLL : ModuleRules
 			"GameplayAbilities",
 			"GameplayTasks",
 			"GameplayTags",
-			"SpinePlugin",
-			"ProceduralMeshComponent"
+			"FMODStudio",
+			"PhysicsCore"
 		});
         
 		PrivateDependencyModuleNames.AddRange(new string[] 

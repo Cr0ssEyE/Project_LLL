@@ -25,9 +25,14 @@ protected:
 	virtual void OwnerLaunchToWireHand();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnReleasedCallBack();
+	virtual void OnCollidedCallBack();
 	
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "와이어 돌진 정지 거리")
+	float AbilityEndDistance;
+	
+	FVector TargetLocation;
+	
 	FVector Direction;
 
 	float RushSpeed;

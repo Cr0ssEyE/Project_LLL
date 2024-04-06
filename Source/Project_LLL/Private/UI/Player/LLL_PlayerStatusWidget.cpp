@@ -3,36 +3,32 @@
 
 #include "UI/Player/LLL_PlayerStatusWidget.h"
 
-#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
 
-void ULLL_PlayerStatusWidget::NativeConstruct()
+void ULLL_PlayerStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) const
 {
-	Super::NativeConstruct();
-	
-}
+	Super::UpdateWidgetView(CharacterAttributeSet);
 
-void ULLL_PlayerStatusWidget::UpdateWidgetView(float MaxHealth, float CurrentHealth, float MaxShield, float CurrentShield) const
-{
+	const float MaxHealth = CharacterAttributeSet->GetMaxHealth();
+	const float CurrentHealth = CharacterAttributeSet->GetCurrentHealth();
+	const float MaxShield = CharacterAttributeSet->GetMaxShield();
+	const float CurrentShield = CharacterAttributeSet->GetCurrentShield();
+
 	if(MaxHealth)
 	{
-		HealthGaugeBar->SetPercent(CurrentHealth / MaxHealth);
 		HealthTextBlock->SetText(FText::FromString(FString::FromInt(CurrentHealth).Append(TEXT(" / ")).Append(FString::FromInt(MaxHealth))));
 	}
 	else
 	{
-		HealthGaugeBar->SetPercent(0.f);
 		HealthTextBlock->SetText(FText::FromString(TEXT("!!! MAX HEALTH ERROR !!!")));
 	}
 	if(MaxShield)
 	{
-		ShieldGaugeBar->SetPercent(CurrentShield / MaxShield);
 		ShieldTextBlock->SetText(FText::FromString(FString::FromInt(CurrentShield).Append(TEXT(" / ")).Append(FString::FromInt(MaxShield))));
 	}
 	else
 	{
-		ShieldGaugeBar->SetPercent(0.f);
 		ShieldTextBlock->SetText(FText::FromString(TEXT("!!! MAX SHIELD ERROR !!!")));
 	}
 }
-

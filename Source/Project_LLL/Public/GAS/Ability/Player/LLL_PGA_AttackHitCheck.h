@@ -6,6 +6,7 @@
 #include "GAS/Ability/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_AttackHitCheck.generated.h"
 
+class ULLL_GA_KnockBack;
 class ALLL_TA_TraceBase;
 /**
  * 
@@ -24,17 +25,23 @@ protected:
 	UFUNCTION()
 	void OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 
+protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<UGameplayEffect> ComboStackEffect;
+
+	UPROPERTY(EditAnywhere, Category = "GAS")
+	TSubclassOf<UGameplayEffect> IncreaseSkillGaugeEffect;
 	
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<UGameplayEffect> AttackDamageEffect;
 
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<UGameplayEffect> GiveTagEffect;
-	
-	float CurrentLevel = 0;
 
+protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<ALLL_TA_TraceBase> TargetActorClass;
+
+	float CurrentLevel = 0;
+	
 };

@@ -38,6 +38,6 @@ public:
 	// 코드상에서 메시 타입 선택을 강제할지 알아서 선택할 수 있게 할지 고민...
 	// 작성자 개인 의견으로는 코드에서 강제하는 편이 낫다 생각합니다.
 	UPROPERTY(VisibleAnywhere, Category = "StaticMesh", DisplayName = "스켈레탈 메시 사용")
-	uint32 bIsUsingSkeletalMesh : 1;
+	uint8 bIsUsingSkeletalMesh : 1;
 	
 };

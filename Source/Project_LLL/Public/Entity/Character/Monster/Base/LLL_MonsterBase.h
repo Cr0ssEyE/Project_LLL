@@ -31,7 +31,7 @@ protected:
 	virtual void Dead() override;
 	
 public:
-	virtual void Attack() override;
+	void Attack();
 	virtual void Damaged() override;
 	
 	bool CanPlayAttackAnimation();
@@ -39,6 +39,9 @@ public:
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetComponent> MonsterStatusWidgetComponent;
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	float DetectDistance;

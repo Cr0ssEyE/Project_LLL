@@ -25,16 +25,11 @@ protected:
 
 protected:
 	virtual void ThrowHand(const FGameplayAbilityActorInfo* ActorInfo);
-	virtual void ReleaseHand(const FGameplayAbilityActorInfo* ActorInfo);
-
-	UFUNCTION(BlueprintCallable)
-	virtual void OnReachedCallBack();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnReleaseCompleteCallBack();
 	
 protected:
-	uint32 bIsAlreadyThrown : 1;
-	
-	uint32 bIsReleaseOnGoing : 1;
+	uint8 bIsAlreadyThrown : 1;
+
 };

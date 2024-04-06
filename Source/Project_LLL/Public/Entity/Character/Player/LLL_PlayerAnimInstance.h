@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacterAnimInstance.h"
 #include "LLL_PlayerAnimInstance.generated.h"
 
@@ -20,6 +21,16 @@ class PROJECT_LLL_API ULLL_PlayerAnimInstance : public ULLL_BaseCharacterAnimIns
 public:
 	FAttackHitCheckDelegate AttackHitCheckDelegate;
 	FAttackComboCheckDelegate AttackComboCheckDelegate;
+
+protected:
+	virtual void NativeInitializeAnimation() override;
+	virtual void AnimNotify_LeftStep() override;
+	virtual void AnimNotify_RightStep() override;
+
+	void SetStepEventParameter(FName FootSocketName) const;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;
 	
 private:
 	UFUNCTION(BlueprintCallable)
