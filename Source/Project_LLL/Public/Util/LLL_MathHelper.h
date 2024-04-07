@@ -20,10 +20,10 @@ public:
 		return CalculateResult;
 	}
 
-	static FVector GetPredictedLocation(const APawn* Owner, const APawn* Target, float Speed, float PredictionRate)
+	static FVector GetPredictedLocation(const APawn* Owner, const APawn* Target, float TargetSpeed, float PredictionRate)
 	{
 		const float Distance = Owner->GetDistanceTo(Target);
-		const FVector PredictedMove = Target->GetVelocity() * (Distance / Speed);
+		const FVector PredictedMove = Target->GetVelocity() * (Distance / TargetSpeed);
 		const FVector PredictedLocation = Target->GetActorLocation() + PredictedMove * PredictionRate;
 		return PredictedLocation;
 	}
