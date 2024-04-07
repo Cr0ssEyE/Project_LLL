@@ -58,7 +58,7 @@ protected:
 	void OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void CreateMapAndGate();
+	void CreateMap();
 
 	UFUNCTION()
 	void RandomMap();
@@ -69,10 +69,10 @@ private:
 
 // Gate Section
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class ALLL_GateObject> GateClass;
 
-	UPROPERTY(VisibleAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
 	TArray<TWeakObjectPtr<class ALLL_GateObject>> Gates;
 
 	TMap<FName, FVector> GateLocations;
@@ -97,11 +97,29 @@ protected:
 // Fight Section
 protected:
 	UPROPERTY(EditAnywhere, Category = Fight, Meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class ALLL_MonsterSpawner> MonsterSpawnerClass;
+	
+	UPROPERTY(EditAnywhere, Category = Fight, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class ALLL_MonsterSpawner> MonsterSpawner;
+	
+	UPROPERTY(EditAnywhere, Category = Fight, Meta = (AllowPrivateAccess = "true"))
 	float OpponentSpawnTime;
 
 	UFUNCTION()
 	void OnOpponentDestroyed(AActor* DestroyedActor);
-
-	FTimerHandle OpponentTimerHandle;
+	
 	void OnOpponentSpawn();
+
+// Reward Section
+protected:
+	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class ALLL_RewardObject> RewardObjectClass;
+	
+	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class ALLL_RewardObject> RewardObject;
+
+	UFUNCTION()
+	void RewardDestroyed(AActor* DestroyedActor);
+
+	void RewardSpawn();
 };
