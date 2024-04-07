@@ -8,6 +8,7 @@
 #include "Entity/Character/Player/LLL_PlayerGoldComponet.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
@@ -20,7 +21,7 @@ ALLL_BreakableObjectBase::ALLL_BreakableObjectBase()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	BaseMesh->SetStaticMesh(FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_Statue.SM_Statue'"), EAssertionLevel::Check));
+	BaseMesh->SetStaticMesh(FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_BREAKABLE_OBJECT_TEST_MESH, EAssertionLevel::Check));
 	SetRootComponent(BaseMesh);
 	
 	HitCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HitCollisionComponent"));
@@ -30,7 +31,7 @@ ALLL_BreakableObjectBase::ALLL_BreakableObjectBase()
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
 	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
-	InitEffect = FLLLConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'"), EAssertionLevel::Check);
+	InitEffect = FLLLConstructorHelper::FindAndGetClass<UGameplayEffect>(PATH_BREAKABLE_OBJECT_TEST_EFFECT, EAssertionLevel::Check);
 	ASC->RegisterGameplayTagEvent(TAG_GAS_SYSTEM_DROP_GOLD).AddUObject(this, &ALLL_BreakableObjectBase::DropGold);
 }
 

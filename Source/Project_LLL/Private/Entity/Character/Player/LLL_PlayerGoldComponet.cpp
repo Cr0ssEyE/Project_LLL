@@ -3,8 +3,10 @@
 
 #include "Entity/Character/Player/LLL_PlayerGoldComponet.h"
 
+#include "Constant/LLL_FilePath.h"
 #include "UI/Player/LLL_PlayerGoldWidget.h"
 #include "Util/LLLConstructorHelper.h"
+#include "DataAsset/LLL_GoldComponentDataAsset.h"
 
 // Sets default values for this component's properties
 ULLL_PlayerGoldComponet::ULLL_PlayerGoldComponet()
@@ -15,10 +17,12 @@ ULLL_PlayerGoldComponet::ULLL_PlayerGoldComponet()
 
 	// ...
 	Money = 0;
-	WidgetHideWaitTime = 3.0f;
+	
+	GoldComponentDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_GoldComponentDataAsset>(PATH_PLAYER_GOLDCOMPONENT_DATA, EAssertionLevel::Check);
+	WidgetHideWaitTime = GoldComponentDataAsset->WidgetHideWaitTime;
 	IsShowWidget = false;
 	GoldWidget = CreateDefaultSubobject<ULLL_PlayerGoldWidget>(TEXT("GoldWidget"));
-	GoldWidgetClass = FLLLConstructorHelper::FindAndGetClass<ULLL_PlayerGoldWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Player/WBP_PlayerGoldWidget.WBP_PlayerGoldWidget_C'"), EAssertionLevel::Check);
+	GoldWidgetClass = FLLLConstructorHelper::FindAndGetClass<ULLL_PlayerGoldWidget>(PATH_PLAYER_GOLD_UI_WIDGET, EAssertionLevel::Check);
 }
 
 

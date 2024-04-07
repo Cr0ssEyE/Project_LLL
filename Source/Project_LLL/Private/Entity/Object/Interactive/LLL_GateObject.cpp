@@ -2,11 +2,13 @@
 
 
 #include "Entity/Object/Interactive/LLL_GateObject.h"
+
+#include "Constant/LLL_FilePath.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_GateObject::ALLL_GateObject()
 {
-	GateMesh = FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/MapTest/Meshes/SM_GateTest.SM_GateTest'"), EAssertionLevel::Check);
+	GateMesh = FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_GATE_OBJECT_TEST_MESH, EAssertionLevel::Check);
 	BaseMesh->SetStaticMesh(GateMesh);
 }
 

@@ -7,6 +7,8 @@
 #include "LLL_PlayerGoldComponet.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerMoneyChangedDelegate, float);
+
+class ULLL_GoldComponentDataAsset;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECT_LLL_API ULLL_PlayerGoldComponet : public UActorComponent
 {
@@ -44,8 +46,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	uint8 WidgetHideWaitTime;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	bool IsShowWidget;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_GoldComponentDataAsset> GoldComponentDataAsset;
 
 	void EnableInteractionWidget();
 	void DisableInteractionWidget();

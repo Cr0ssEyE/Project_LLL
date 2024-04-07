@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
@@ -91,7 +92,7 @@ void ALLL_MonsterBase::Dead()
 {
 	Super::Dead();
 	//DropGold() -> GoldAttribute -> DropGoldStat -> player Gold up
-	DropGold(FGameplayTag::RequestGameplayTag(FName("System.Drop.Gold")), 0);
+	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
 	if (IsValid(MonsterBaseAIController))
 	{

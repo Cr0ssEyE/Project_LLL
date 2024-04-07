@@ -5,13 +5,15 @@
 #include "UI/System/LLL_SelectRewardWidget.h"
 #include <Util/LLLConstructorHelper.h>
 
+#include "Constant/LLL_FilePath.h"
+
 ALLL_RewardObject::ALLL_RewardObject()
 {
-	RewardMesh = FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_CornerFrame.SM_CornerFrame'"), EAssertionLevel::Check);
+	RewardMesh = FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_REWARD_OBJECT_TEST_MESH, EAssertionLevel::Check);
 	BaseMesh->SetStaticMesh(RewardMesh);
 
 	SelectRewardWidget = CreateDefaultSubobject<ULLL_SelectRewardWidget>(TEXT("GoldWidget"));
-	SelectRewardWidgetClass = FLLLConstructorHelper::FindAndGetClass<ULLL_SelectRewardWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Reward/WBP_SelectRewordWidget.WBP_SelectRewordWidget_C'"), EAssertionLevel::Check);
+	SelectRewardWidgetClass = FLLLConstructorHelper::FindAndGetClass<ULLL_SelectRewardWidget>(PATH_REWARD_UI_WIDGET, EAssertionLevel::Check);
 }
 
 void ALLL_RewardObject::BeginPlay()
