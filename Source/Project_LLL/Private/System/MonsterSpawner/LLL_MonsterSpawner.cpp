@@ -52,15 +52,12 @@ void ALLL_MonsterSpawner::BeginPlay()
 		SpawnPointGroupComponent = GetAttachParentActor()->GetRootComponent();
 	}
 	
-	if (GetAttachParentActor())
+	for (USceneComponent* ChildComponent : SpawnPointGroupComponent->GetAttachChildren())
 	{
-		for (USceneComponent* ChildComponent : SpawnPointGroupComponent->GetAttachChildren())
+		ULLL_MonsterSpawnPointComponent* SpawnPoint = Cast<ULLL_MonsterSpawnPointComponent>(ChildComponent);
+		if (IsValid(SpawnPoint))
 		{
-			ULLL_MonsterSpawnPointComponent* SpawnPoint = Cast<ULLL_MonsterSpawnPointComponent>(ChildComponent);
-			if (IsValid(SpawnPoint))
-			{
-				SpawnPoints.Add(SpawnPoint);
-			}
+			SpawnPoints.Add(SpawnPoint);
 		}
 	}
 }
