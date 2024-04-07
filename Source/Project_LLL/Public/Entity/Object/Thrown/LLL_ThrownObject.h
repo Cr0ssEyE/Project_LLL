@@ -8,6 +8,7 @@
 #include "Interface/LLL_ObjectPoolingObjectInterface.h"
 #include "LLL_ThrownObject.generated.h"
 
+class ULLL_ThrownObjectAttributeSet;
 class UProjectileMovementComponent;
 /**
  * 
@@ -36,6 +37,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_ThrownObjectAttributeSet> ThrownObjectAttributeSet;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<const ULLL_ThrownObjectDataAsset> ThrownObjectDataAsset;

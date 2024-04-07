@@ -4,21 +4,14 @@
 #include "Entity/Object/Thrown/LLL_ThrownObject.h"
 
 #include "AbilitySystemComponent.h"
-#include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
-#include "Constant/LLL_FilePath.h"
-#include "Engine/DamageEvents.h"
-#include "Entity/Character/Monster/Ranged/LLL_RangedMonster.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/ThrownObject/LLL_ThrownObjectAttributeSet.h"
-#include "Util/LLLConstructorHelper.h"
 
 ALLL_ThrownObject::ALLL_ThrownObject()
 {
-	BaseObjectDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_ThrownObjectDataAsset>(PATH_THROWN_OBJECT_DATA, EAssertionLevel::Check);
-	
 	if (IsValid(BaseMesh))
 	{
 		SetRootComponent(BaseMesh);
@@ -41,16 +34,8 @@ void ALLL_ThrownObject::BeginPlay()
 	Super::BeginPlay();
 
 	ThrownObjectDataAsset = Cast<ULLL_ThrownObjectDataAsset>(BaseObjectDataAsset);
-
-	const ULLL_ThrownObjectAttributeSet* ThrownObjectAttributeSet = Cast<ULLL_ThrownObjectAttributeSet>(ASC->GetAttributeSet(ULLL_ThrownObjectAttributeSet::StaticClass()));
-	if (IsValid(ThrownObjectAttributeSet))
-	{
-		ProjectileMovement->MaxSpeed = ThrownObjectAttributeSet->GetThrowSpeed();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("어튜리뷰트 초기화 실패"));
-	}
+	
+	ASC->AddSpawnedAttribute(ThrownObjectAttributeSet);
 }
 
 void ALLL_ThrownObject::Throw(AActor* NewOwner)
@@ -58,6 +43,7 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner)
 	SetOwner(NewOwner);
 
 	Activate();
+	ProjectileMovement->MaxSpeed = ThrownObjectAttributeSet->GetThrowSpeed();
 	ProjectileMovement->Velocity = GetActorForwardVector() * ProjectileMovement->MaxSpeed;
 	
 	FTimerHandle HideTimerHandle;

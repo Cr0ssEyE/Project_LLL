@@ -23,7 +23,7 @@ ALLL_PlayerWireHand::ALLL_PlayerWireHand()
 	BaseObjectDataAsset = Cast<ULLL_BaseObjectDataAsset>(WireObjectDataAsset);
 	HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh"));
 	HandCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-	WireHandAttributeSet = CreateDefaultSubobject<ULLL_PlayerWireHandAttributeSet>(TEXT("WireHandAttributeSet"));
+	ThrownObjectAttributeSet = CreateDefaultSubobject<ULLL_PlayerWireHandAttributeSet>(TEXT("WireHandAttributeSet"));
 
 	HandMesh->SetSkeletalMesh(WireObjectDataAsset->SkeletalMesh);
 	HandMesh->SetRelativeScale3D(WireObjectDataAsset->MeshScale);
@@ -52,12 +52,6 @@ void ALLL_PlayerWireHand::SetHiddenState()
 	ProjectileMovement->Deactivate();
 
 	SetActorLocation(GetOwner()->GetActorLocation());
-}
-
-void ALLL_PlayerWireHand::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-	ASC->AddSpawnedAttribute(WireHandAttributeSet);
 }
 
 void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)

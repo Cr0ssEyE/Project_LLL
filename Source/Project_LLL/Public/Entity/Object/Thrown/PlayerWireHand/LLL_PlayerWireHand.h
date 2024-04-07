@@ -38,8 +38,6 @@ public:
 	void SetHiddenState();
 	
 protected:
-	virtual void PostInitializeComponents() override;
-	
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
 	// 기본 컴포넌트 및 객체
