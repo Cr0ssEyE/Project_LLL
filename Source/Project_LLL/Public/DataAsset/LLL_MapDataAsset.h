@@ -23,5 +23,10 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Map", DisplayName = "상점 룸 위치")
 	uint8 StoreRoom;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "Monster", DisplayName = "몬스터 스포너")
+	TSubclassOf<class ALLL_MonsterSpawner> MonsterSpawnerClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Reward", DisplayName = "보상 오브젝트")
+	TSubclassOf<class ALLL_RewardObject> RewardObjectClass;
 };
