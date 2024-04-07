@@ -18,7 +18,7 @@ class PROJECT_LLL_API ALLL_GateObject : public ALLL_InteractiveObject
 public:
 	ALLL_GateObject();
 
-	FORCEINLINE void GateEnable() { IsGateEnabled = true; }; 
+	FORCEINLINE void GateEnable() { IsGateEnabled = true; }
 	
 protected:
 	// Called when the game starts or when spawned

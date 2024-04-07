@@ -22,7 +22,8 @@ enum class EStageState : uint8
 	READY = 0,
 	FIGHT,
 	REWARD,
-	NEXT
+	NEXT,
+	BURST
 };
 
 UCLASS()
@@ -43,6 +44,18 @@ protected:
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<class UBoxComponent> RootBox;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<class UBoxComponent> ReadyBox;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<class UBoxComponent> FightBox;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<class UBoxComponent> RewardBox;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<class UBoxComponent> NextBox;
 	// Stage Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = stage)
@@ -56,6 +69,18 @@ protected:
 
 	UFUNCTION()
 	void OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnReadyBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnFightBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnRewardBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnNextBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void CreateMap();
@@ -77,7 +102,7 @@ protected:
 
 	TMap<FName, FVector> GateLocations;
 
-	void OpenAllGates();
+	void EnableAllGates();
 
 // State Section
 protected:
@@ -114,9 +139,6 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class ALLL_RewardObject> RewardObjectClass;
-	
-	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class ALLL_RewardObject> RewardObject;
 
 	UFUNCTION()
 	void RewardDestroyed(AActor* DestroyedActor);

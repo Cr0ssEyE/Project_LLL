@@ -21,25 +21,13 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 
 	RootBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	RootBox->SetBoxExtent(FVector(5000.0f, 5000.0f, 500.0f));
-	RootBox->SetCollisionProfileName("OverlapAll");
-	//RootBox->OnComponentBeginOverlap.AddDynamic(this, &ALLL_MapGimmick::OnStageTriggerBeginOverlap);
+	RootBox->SetCollisionProfileName(TEXT("OverlapAll"));
+	RootBox->OnComponentBeginOverlap.AddDynamic(this, &ALLL_MapGimmick::OnStageTriggerBeginOverlap);
 	SetRootComponent(RootBox);
 
 	MapDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MapDataAsset>(PATH_MAP_DATA, EAssertionLevel::Check);
-	
-	
-	// State Section
-	CurrentState = EStageState::FIGHT;
-	StateChangeActions.Add(EStageState::READY, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetReady)));
-	StateChangeActions.Add(EStageState::FIGHT, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetFight)));
-	StateChangeActions.Add(EStageState::REWARD, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetChooseReward)));
-	StateChangeActions.Add(EStageState::NEXT, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetChooseNext)));
-	
-	//Fight Section	
-	MonsterSpawnerClass = FLLLConstructorHelper::FindAndGetClass<ALLL_MonsterSpawner>(TEXT("/Script/Engine.Blueprint'/Game/Blueprints/System/BP_MonsterSpawner.BP_MonsterSpawner_C'"), EAssertionLevel::Check);
 
-	//Reward Section
-	RewardObjectClass = FLLLConstructorHelper::FindAndGetClass<ALLL_RewardObject>(TEXT("/Script/CoreUObject.Class'/Script/Project_LLL.LLL_RewardObject'"), EAssertionLevel::Check);
+	CurrentState = EStageState::READY;
 }
 
 void ALLL_MapGimmick::OnConstruction(const FTransform& Transform)
@@ -52,11 +40,23 @@ void ALLL_MapGimmick::OnConstruction(const FTransform& Transform)
 void ALLL_MapGimmick::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	//Fight Section	
+	MonsterSpawnerClass = MapDataAsset->MonsterSpawnerClass;
+
+	//Reward Section
+	RewardObjectClass = MapDataAsset->RewardObjectClass;
 }
 
 void ALLL_MapGimmick::BeginPlay()
 {
 	Super::BeginPlay();
+	// State Section
+	StateChangeActions.Add(EStageState::READY, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetReady)));
+	StateChangeActions.Add(EStageState::FIGHT, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetFight)));
+	StateChangeActions.Add(EStageState::REWARD, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetChooseReward)));
+	StateChangeActions.Add(EStageState::NEXT, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetChooseNext)));
+	
 	RandomMap();
 	CreateMap();
 }
@@ -64,7 +64,7 @@ void ALLL_MapGimmick::BeginPlay()
 void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//SetState(EStageState::FIGHT);
+	SetState(EStageState::FIGHT);
 }
 
 void ALLL_MapGimmick::CreateMap()
@@ -79,16 +79,12 @@ void ALLL_MapGimmick::CreateMap()
 			Gates.Add(Gate);
 		}
 	}
+	
 	TArray<AActor*> ChildActors;
 	StageActor->GetAllChildActors(ChildActors, true);
-	//MonsterSpawner가 UChildActorComponent를 상속받은게 아니라 AActor를 상속받은 상태라서 해당 코드가 유효하지 않음 GetAllChildActor를 사용해볼것 
 	for (AActor* ChildActor : ChildActors)
 	{
 		MonsterSpawner = CastChecked<ALLL_MonsterSpawner>(ChildActor);
-		if (MonsterSpawner)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, FString::Printf(TEXT("Set MonsterSpawner")));
-		}
 	}
 }
 
@@ -99,7 +95,7 @@ void ALLL_MapGimmick::RandomMap()
 	Stage = MapDataAsset->MapData[Seed];
 }
 
-void ALLL_MapGimmick::OpenAllGates()
+void ALLL_MapGimmick::EnableAllGates()
 {
 	for (auto Gate:Gates)
 	{
@@ -124,24 +120,25 @@ void ALLL_MapGimmick::SetReady()
 
 void ALLL_MapGimmick::SetFight()
 {
+	RootBox->SetCollisionProfileName(TEXT("NoCollision"));
 	OnOpponentSpawn();
 }
 
 void ALLL_MapGimmick::SetChooseReward()
 {
-	SetState(EStageState::NEXT);
+	RootBox->SetCollisionProfileName(TEXT("NoCollision"));
 	RewardSpawn();
 }
 
 void ALLL_MapGimmick::SetChooseNext()
 {
-	OpenAllGates();
+	RootBox->SetCollisionProfileName(TEXT("NoCollision"));
+	EnableAllGates();
 }
 
 void ALLL_MapGimmick::OnOpponentDestroyed(AActor* DestroyedActor)
 {
 	SetState(EStageState::REWARD);
-	RewardSpawn();
 }
 
 void ALLL_MapGimmick::OnOpponentSpawn()
@@ -154,13 +151,13 @@ void ALLL_MapGimmick::OnOpponentSpawn()
 
 void ALLL_MapGimmick::RewardDestroyed(AActor* DestroyedActor)
 {
-	SetChooseReward();
+	SetState(EStageState::NEXT);
 }
 
 void ALLL_MapGimmick::RewardSpawn()
 {
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	RewardObject = GetWorld()->SpawnActor<ALLL_RewardObject>(RewardObjectClass->StaticClass(), Player->GetActorLocation(), Player->GetActorRotation());
+	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActor<ALLL_RewardObject>(RewardObjectClass, Player->GetActorLocation(), Player->GetActorRotation());
 	if (RewardObject)
 	{
 		RewardObject->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::RewardDestroyed);
