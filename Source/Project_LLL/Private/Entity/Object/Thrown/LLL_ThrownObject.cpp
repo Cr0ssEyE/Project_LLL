@@ -12,6 +12,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GAS/Attribute/Object/ThrownObject/LLL_ThrownObjectAttributeSet.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_ThrownObject::ALLL_ThrownObject()
@@ -30,7 +31,6 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 		ProjectileMovement->bShouldBounce = false;
 		ProjectileMovement->ProjectileGravityScale = 0.0f;
 		ProjectileMovement->InitialSpeed = 0.0f;
-		ProjectileMovement->MaxSpeed = 1000.0f;
 		ProjectileMovement->bRotationFollowsVelocity = true;
 		ProjectileMovement->Deactivate();
 	}
@@ -41,6 +41,16 @@ void ALLL_ThrownObject::BeginPlay()
 	Super::BeginPlay();
 
 	ThrownObjectDataAsset = Cast<ULLL_ThrownObjectDataAsset>(BaseObjectDataAsset);
+
+	const ULLL_ThrownObjectAttributeSet* ThrownObjectAttributeSet = Cast<ULLL_ThrownObjectAttributeSet>(ASC->GetAttributeSet(ULLL_ThrownObjectAttributeSet::StaticClass()));
+	if (IsValid(ThrownObjectAttributeSet))
+	{
+		ProjectileMovement->MaxSpeed = ThrownObjectAttributeSet->GetThrowSpeed();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("어튜리뷰트 초기화 실패"));
+	}
 }
 
 void ALLL_ThrownObject::Throw(AActor* NewOwner)

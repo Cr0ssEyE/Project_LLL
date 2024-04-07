@@ -63,14 +63,14 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 		{
 			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
 
-				if(GetCurrentHealth() == 0)
-				{
-					Character->Dead();
-				}
-				else
-				{
-					Character->Damaged();
-				}
+			if(GetCurrentHealth() == 0)
+			{
+				Character->Dead();
+			}
+			else
+			{
+				Character->Damaged();
+			}
 		}
 		OwnerCharacter->TakeDamageDelegate.Broadcast();
 	}

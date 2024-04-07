@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LLL_ThrownObject.h"
+#include "Entity/Object/Thrown/LLL_ThrownObject.h"
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerWireHand.generated.h"
 

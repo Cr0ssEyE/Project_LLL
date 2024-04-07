@@ -9,11 +9,11 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Ability/Player/WireSystem/LLL_PGA_RushToWireHand.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerWireHandAttributeSet.h"
+#include "GAS/Attribute/Object/ThrownObject/PlayerWireHand/LLL_PlayerWireHandAttributeSet.h"
 
 ULLL_PGA_WireHandGrab::ULLL_PGA_WireHandGrab()
 {

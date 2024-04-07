@@ -10,7 +10,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Ability/Player/WireSystem/LLL_PGA_ControlWireHand.h"

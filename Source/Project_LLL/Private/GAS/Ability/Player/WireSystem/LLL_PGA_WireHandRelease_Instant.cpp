@@ -4,7 +4,7 @@
 #include "GAS/Ability/Player/WireSystem/LLL_PGA_WireHandRelease_Instant.h"
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
 
 ULLL_PGA_WireHandRelease_Instant::ULLL_PGA_WireHandRelease_Instant()
 {

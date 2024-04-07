@@ -1,9 +1,8 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
 
-#include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -13,7 +12,7 @@
 #include "DataAsset/LLL_PlayerWireObjectDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerWireHandAttributeSet.h"
+#include "GAS/Attribute/Object/ThrownObject/PlayerWireHand/LLL_PlayerWireHandAttributeSet.h"
 #include "Util/LLLConstructorHelper.h"
 
 

@@ -1,11 +1,11 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Attribute/Character/Player/LLL_PlayerWireHandAttributeSet.h"
+#include "GAS/Attribute/Object/ThrownObject/PlayerWireHand/LLL_PlayerWireHandAttributeSet.h"
 
 #include "GameplayEffectExtension.h"
 #include "Components/SphereComponent.h"
-#include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
 
 ULLL_PlayerWireHandAttributeSet::ULLL_PlayerWireHandAttributeSet()
 {

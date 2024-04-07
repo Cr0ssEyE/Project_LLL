@@ -6,10 +6,10 @@
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerWireHandAttributeSet.h"
+#include "GAS/Attribute/Object/ThrownObject/PlayerWireHand/LLL_PlayerWireHandAttributeSet.h"
 
 ULLL_PGA_WireHandRelease::ULLL_PGA_WireHandRelease()
 {
@@ -84,7 +84,6 @@ bool ULLL_PGA_WireHandRelease::CheckOwnerAlreadyOverlapped()
 void ULLL_PGA_WireHandRelease::ReleaseToOwnerLocation()
 {
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
-	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
 
 	const FVector WorldLocation = PlayerWireHand->GetActorLocation();
 	PlayerWireHand->K2_DetachFromActor();
