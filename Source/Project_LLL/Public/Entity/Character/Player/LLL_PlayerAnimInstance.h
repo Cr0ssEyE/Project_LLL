@@ -24,8 +24,10 @@ public:
 
 protected:
 	virtual void NativeInitializeAnimation() override;
-	
-	virtual void AnimNotify_Step() override;
+	virtual void AnimNotify_LeftStep() override;
+	virtual void AnimNotify_RightStep() override;
+
+	void SetStepEventParameter(FName FootSocketName) const;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;

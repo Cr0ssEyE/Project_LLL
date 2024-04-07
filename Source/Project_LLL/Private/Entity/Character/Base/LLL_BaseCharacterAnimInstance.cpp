@@ -48,7 +48,17 @@ void ULLL_BaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsJumping = bIsFalling && (Velocity.Z > JumpingThreshold);
 }
 
-void ULLL_BaseCharacterAnimInstance::AnimNotify_Step()
+void ULLL_BaseCharacterAnimInstance::AnimNotify_LeftStep()
+{
+	ExecuteStepCue();
+}
+
+void ULLL_BaseCharacterAnimInstance::AnimNotify_RightStep()
+{
+	ExecuteStepCue();
+}
+
+void ULLL_BaseCharacterAnimInstance::ExecuteStepCue()
 {
 	UAbilitySystemComponent* ASC = Character->GetAbilitySystemComponent();
 	FGameplayEffectContextHandle CueContextHandle = ASC->MakeEffectContext();

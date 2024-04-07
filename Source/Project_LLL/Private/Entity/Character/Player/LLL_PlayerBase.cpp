@@ -47,7 +47,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		Camera->bUsePawnControlRotation = false;
 		
 		SpringArm->TargetArmLength = PlayerDataAsset->SpringArmLength;
-		SpringArm->SetRelativeRotation(FRotator(PlayerDataAsset->SpringArmAngle, 0.f, 0.f));
+		SpringArm->SetRelativeRotation(PlayerDataAsset->SpringArmAngle);
 		SpringArm->bDoCollisionTest = false;
 		SpringArm->bUsePawnControlRotation = false;
 		SpringArm->bInheritPitch = false;
@@ -248,7 +248,7 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 		MoveInputValue.Normalize();
 	}
 	
-	MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
+	MoveDirection = Camera->GetComponentRotation().RotateVector(FVector(MoveInputValue.X, MoveInputValue.Y, 0.f));
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	if(GetCharacterMovement()->IsWalking())
 	{
