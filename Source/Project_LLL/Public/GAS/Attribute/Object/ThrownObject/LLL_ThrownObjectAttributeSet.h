@@ -7,12 +7,6 @@
 #include "GAS/Attribute/Object/LLL_ObjectAttributeSetBase.h"
 #include "LLL_ThrownObjectAttributeSet.generated.h"
 
-#define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
-GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
-GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
-GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
-GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
-
 /**
  * 
  */
@@ -24,6 +18,7 @@ class PROJECT_LLL_API ULLL_ThrownObjectAttributeSet : public ULLL_ObjectAttribut
 public:
 	ATTRIBUTE_ACCESSORS(ULLL_ThrownObjectAttributeSet, OffensePower);
 	ATTRIBUTE_ACCESSORS(ULLL_ThrownObjectAttributeSet, ThrowSpeed);
+	ATTRIBUTE_ACCESSORS(ULLL_ThrownObjectAttributeSet, HideTimer);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
@@ -31,4 +26,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ThrowSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData HideTimer;
 };

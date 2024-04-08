@@ -49,7 +49,7 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner)
 	FTimerHandle HideTimerHandle;
 	FTimerDelegate HideTimerDelegate;
 	HideTimerDelegate.BindUObject(this, &ALLL_ThrownObject::Deactivate);
-	GetWorldTimerManager().SetTimer(HideTimerHandle, HideTimerDelegate, 3.0f, false);
+	GetWorldTimerManager().SetTimer(HideTimerHandle, HideTimerDelegate, ThrownObjectAttributeSet->GetHideTimer(), false);
 }
 
 void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
