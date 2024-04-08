@@ -14,6 +14,8 @@ ALLL_BaseObject::ALLL_BaseObject()
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+
+	SetRootComponent(BaseMesh);
 }
 
 void ALLL_BaseObject::PostLoad()
@@ -54,6 +56,11 @@ void ALLL_BaseObject::SetDefaultInformation()
 void ALLL_BaseObject::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(!IsValid(BaseObjectDataAsset))
+	{
+		return;
+	}
 	
 	if(IsValid(ASC))
 	{

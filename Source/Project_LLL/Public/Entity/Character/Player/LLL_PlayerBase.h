@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
+#include "LLL_PlayerAnimInstance.h"
+#include "LLL_PlayerGoldComponet.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "Interface/LLL_PlayerDependencyInterface.h"
@@ -115,4 +117,8 @@ private:
 protected:
 	virtual void Dead() override;
 	virtual void DeadMontageEndEvent() override;
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_PlayerGoldComponet> GoldComponet;
 };

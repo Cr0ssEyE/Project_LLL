@@ -24,3 +24,4 @@
 #define CP_INTERACTION TEXT("Interaction")
 #define CP_EVADE TEXT("Evade")
 #define CP_MONSTER_ATTACK TEXT("MonsterAttack")
+#define CP_STAGETRIGGER TEXT("StageTrigger")
