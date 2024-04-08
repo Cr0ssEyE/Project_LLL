@@ -45,8 +45,14 @@ void ALLL_MonsterSpawner::BeginPlay()
 			LastGroup = LoadDataTable->Group;
 		}
 	}
+
+	const USceneComponent* SpawnPointGroupComponent = GetRootComponent();
+	if (GetAttachParentActor())
+	{
+		SpawnPointGroupComponent = GetAttachParentActor()->GetRootComponent();
+	}
 	
-	for (USceneComponent* ChildComponent : GetRootComponent()->GetAttachChildren())
+	for (USceneComponent* ChildComponent : SpawnPointGroupComponent->GetAttachChildren())
 	{
 		ULLL_MonsterSpawnPointComponent* SpawnPoint = Cast<ULLL_MonsterSpawnPointComponent>(ChildComponent);
 		if (IsValid(SpawnPoint))

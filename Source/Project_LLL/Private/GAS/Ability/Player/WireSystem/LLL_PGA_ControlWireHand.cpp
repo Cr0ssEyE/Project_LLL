@@ -6,10 +6,9 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
 #include "Game/ProtoGameInstance.h"
-#include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Player/LLL_PlayerWireHandAttributeSet.h"
+#include "GAS/Attribute/Object/ThrownObject/PlayerWireHand/LLL_PlayerWireHandAttributeSet.h"
 
 ULLL_PGA_ControlWireHand::ULLL_PGA_ControlWireHand()
 {

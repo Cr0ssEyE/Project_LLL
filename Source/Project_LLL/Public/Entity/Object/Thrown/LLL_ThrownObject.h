@@ -8,6 +8,7 @@
 #include "Interface/LLL_ObjectPoolingObjectInterface.h"
 #include "LLL_ThrownObject.generated.h"
 
+class ULLL_ThrownObjectAttributeSet;
 class UProjectileMovementComponent;
 /**
  * 
@@ -20,7 +21,10 @@ class PROJECT_LLL_API ALLL_ThrownObject : public ALLL_BaseObject, public ILLL_Ob
 public:
 	ALLL_ThrownObject();
 
-	FORCEINLINE float GetSpeed() const { return Speed; }
+protected:
+	virtual void BeginPlay() override;
+
+public:
 	FORCEINLINE UProjectileMovementComponent* GetProjectileComponent() { return ProjectileMovement; }
 	
 	virtual void Throw(AActor* NewOwner);
@@ -33,13 +37,10 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_ThrownObjectAttributeSet> ThrownObjectAttributeSet;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<const ULLL_ThrownObjectDataAsset> ThrownObjectDataAsset;
-	
-protected:
-	float Speed;
-
-	UPROPERTY(VisibleAnywhere)
-	float OffensePower;
 };

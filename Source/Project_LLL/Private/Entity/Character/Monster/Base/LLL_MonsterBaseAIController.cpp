@@ -41,7 +41,7 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	AISenseConfig_Sight->DetectionByAffiliation.bDetectNeutrals = true;
 
 	AISenseConfig_Sight->SightRadius = MonsterDataAsset->DetectDistance;
-	AISenseConfig_Sight->LoseSightRadius =  MonsterDataAsset->DetectDistance * 1.1f;
+	AISenseConfig_Sight->LoseSightRadius =  MonsterDataAsset->DetectDistance;
 	AISenseConfig_Sight->PeripheralVisionAngleDegrees = MonsterDataAsset->FieldOfView / 2.0f;
 	
 	PerceptionComponent->ConfigureSense(*AISenseConfig_Sight);

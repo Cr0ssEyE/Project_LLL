@@ -15,8 +15,8 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "GAS/Ability/Monster/LLL_MGA_GroundStrike.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
-#include "GAS/Attribute/Monster/LLL_MonsterAttributeSet.h"
 #include "UI/LLL_CharacterStatusWidget.h"
 #include "Util/LLLConstructorHelper.h"
 
@@ -146,19 +146,30 @@ void ALLL_MonsterBase::Damaged()
 
 bool ALLL_MonsterBase::CanPlayAttackAnimation()
 {
-	if (IsValid(CharacterAnimInstance))
+	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
+	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK));
+	for (const auto AbilitySpecHandle : AbilitySpecHandles)
 	{
-		if (CharacterAnimInstance->Montage_IsPlaying(CharacterDataAsset->AttackAnimMontage))
+		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
 		{
-			return false;
-		}
+			const UAnimMontage* AttackAnimMontage = Cast<ULLL_MGA_GroundStrike>(AbilitySpec->GetPrimaryInstance())->GetAbilityActionMontage();
+			const UAnimMontage* DamagedAnimMontage = MonsterBaseDataAsset->DamagedAnimMontage;
+	
+			if (IsValid(CharacterAnimInstance) && IsValid(AttackAnimMontage))
+			{
+				if (CharacterAnimInstance->Montage_IsPlaying(AttackAnimMontage))
+				{
+					return false;
+				}
 
-		if (CharacterAnimInstance->Montage_IsPlaying(MonsterBaseDataAsset->DamagedAnimMontage))
-		{
-			return false;
-		}
+				if (CharacterAnimInstance->Montage_IsPlaying(DamagedAnimMontage))
+				{
+					return false;
+				}
 
-		return true;
+				return true;
+			}
+		}
 	}
 
 	return false;

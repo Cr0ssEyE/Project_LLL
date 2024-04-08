@@ -7,9 +7,11 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_ThrownObject.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Monster/RangedMonster/LLL_RangedMonsterAttributeSet.h"
-#include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "GAS/Attribute/Character/Monster/RangedMonster/LLL_RangedMonsterAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "GAS/Attribute/Object/ThrownObject/LLL_ThrownObjectAttributeSet.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
+#include "Util/LLL_MathHelper.h"
 
 void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -19,19 +21,16 @@ void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 	const ULLL_RangedMonsterDataAsset* RangedMonsterDataAsset = CastChecked<ULLL_RangedMonsterDataAsset>(RangedMonster->GetCharacterDataAsset());
 	const ULLL_RangedMonsterAttributeSet* RangedMonsterAttributeSet = CastChecked<ULLL_RangedMonsterAttributeSet>(RangedMonster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_RangedMonsterAttributeSet::StaticClass()));
 
-	ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(RangedMonster->GetObjectPoolingComponent()->GetActor(RangedMonsterDataAsset->ThrownObjectClass));
-	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(RangedMonster->GetObjectPoolingComponent()->GetActor(RangedMonsterDataAsset->ThrownObjectClass));
+
+	ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
-	if (IsValid(ThrownObject) && IsValid(PlayerBase))
+	if (IsValid(PlayerBase))
 	{
-		const float Speed = PlayerAttributeSet->GetMoveSpeed();
-		const float Distance = RangedMonster->GetDistanceTo(PlayerBase);
+		const FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(RangedMonster, PlayerBase, PlayerAttributeSet->GetMoveSpeed(), RangedMonsterAttributeSet->GetPredictionRate());
 		const FVector StartLocation = RangedMonster->GetActorLocation();
-		const FVector PredictedMove = PlayerBase->GetVelocity() * (Distance / Speed);
-		const FVector PredictedLocation = PlayerBase->GetActorLocation() + PredictedMove * RangedMonsterAttributeSet->GetPredictionRate();
 		const FVector PredictedDirection = (PredictedLocation - StartLocation).GetSafeNormal();
-		
 		const FRotator PredictedRotation = FRotationMatrix::MakeFromX(PredictedDirection).Rotator();
 	
 		ThrownObject->SetActorLocationAndRotation(StartLocation, PredictedRotation);
@@ -47,5 +46,6 @@ void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 		}
 #endif
 	}
+	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

@@ -19,7 +19,6 @@ class PROJECT_LLL_API ULLL_MonsterBaseAnimInstance : public ULLL_BaseCharacterAn
 public:
 	virtual void NativeInitializeAnimation() override;
 	
-	void PlayAttackAnimation();
 	void PlayDamagedAnimation();
 
 protected:

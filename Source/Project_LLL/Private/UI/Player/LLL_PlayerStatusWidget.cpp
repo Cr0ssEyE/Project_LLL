@@ -4,7 +4,7 @@
 #include "UI/Player/LLL_PlayerStatusWidget.h"
 
 #include "Components/TextBlock.h"
-#include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
+#include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 
 void ULLL_PlayerStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) const
 {

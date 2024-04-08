@@ -26,5 +26,8 @@
 #define TAG_GAS_WIRE_GRAB FGameplayTag::RequestGameplayTag(FName("Object.Wire.Action.Grab"))
 #define TAG_GAS_WIRE_STATE_GRABBED FGameplayTag::RequestGameplayTag(FName("Object.Wire.State.Grabbed"))
 
+// 몬스터 게임플레이 태그
+#define TAG_GAS_MONSTER_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Attack"))
+
 // 시스템 게임플레이 태그
 #define TAG_GAS_SYSTEM_DROP_GOLD FGameplayTag::RequestGameplayTag(FName("System.Drop.Gold"))

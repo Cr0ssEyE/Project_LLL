@@ -12,9 +12,9 @@
 
 #define PATH_MONSTER_SPAWN_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/MonsterSpawnData.MonsterSpawnData'")
 
-#define PATH_THROWN_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_ThrownObjectData'/Game/DataAsset/DA_ThrownObject.DA_ThrownObject'")
 #define PATH_INTERACTIVE_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_InteractiveObjectData'/Game/DataAsset/DA_InteractiveObject.DA_InteractiveObject'")
 
+#define PATH_ENERGYBLASTER_ENERGY_DATA TEXT("/Script/Project_LLL.LLL_EnergyBlasterEnergyDataAsset'/Game/DataAsset/DA_EnergyBlasterEnergy.DA_EnergyBlasterEnergy'")
 #define PATH_REWARD_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_CornerFrame.SM_CornerFrame'")
 #define PATH_REWARD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Reward/WBP_SelectRewordWidget.WBP_SelectRewordWidget_C'")
 

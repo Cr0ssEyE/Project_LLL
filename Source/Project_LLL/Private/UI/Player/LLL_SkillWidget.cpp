@@ -5,7 +5,7 @@
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "GAS/Attribute/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 
 void ULLL_SkillWidget::NativeConstruct()
 {

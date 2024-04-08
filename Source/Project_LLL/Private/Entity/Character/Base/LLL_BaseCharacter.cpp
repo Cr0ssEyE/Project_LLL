@@ -8,9 +8,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
-#include "Perception/AIPerceptionStimuliSourceComponent.h"
-#include "Perception/AISense_Sight.h"
+#include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 
 // Sets default values
 ALLL_BaseCharacter::ALLL_BaseCharacter()

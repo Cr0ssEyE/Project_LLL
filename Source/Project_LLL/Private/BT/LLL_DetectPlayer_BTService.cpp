@@ -6,8 +6,10 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/ProtoGameInstance.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISense_Sight.h"
 
@@ -23,10 +25,6 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
 	ALLL_MonsterBaseAIController* MonsterAIController = CastChecked<ALLL_MonsterBaseAIController>(OwnerComp.GetAIOwner());
-	
-	TArray<AActor*> OutActors;
-	MonsterAIController->GetAIPerceptionComponent()->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), OutActors);
-
 	const ALLL_PlayerBase* BlackboardPlayer = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
 	bool IsHavePlayer = false;
 	if (IsValid(BlackboardPlayer))
@@ -40,6 +38,9 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 
 		IsHavePlayer = true;
 	}
+	
+	TArray<AActor*> OutActors;
+	MonsterAIController->GetAIPerceptionComponent()->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), OutActors);
 
 	bool IsInFieldOfView = false;
 	for (const auto OutActor : OutActors)
@@ -58,4 +59,22 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	}
 	
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, IsInFieldOfView);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckMonsterAttackDebug())
+		{
+			if (!OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER))
+			{
+				const ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(MonsterAIController->GetPawn());
+				const FVector Center = MonsterBase->GetActorLocation();
+				const FVector Direction = MonsterBase->GetActorForwardVector();
+				const float DetectDistance = MonsterBase->GetDetectDistance();
+				const float HalfFieldOfViewRadian = FMath::DegreesToRadians(MonsterBase->GetFieldOfView() / 2.0f);
+				DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Red, false, 0.1f);
+			}
+		}
+	}
+#endif
 }
