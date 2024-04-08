@@ -6,7 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "LLL_MapGimmick.generated.h"
 
+class UBoxComponent;
+class ULLL_MapDataAsset;
+class ALLL_GateObject;
+class ALLL_RewardObject;
+class ALLL_MonsterSpawner;
+
 DECLARE_DELEGATE(FOnStageChangedDelegate);
+
 USTRUCT(BlueprintType)
 struct FStageChangedDelegateWrapper
 {
@@ -22,7 +29,8 @@ enum class EStageState : uint8
 	READY = 0,
 	FIGHT,
 	REWARD,
-	NEXT
+	NEXT,
+	BURST
 };
 
 UCLASS()
@@ -42,39 +50,43 @@ protected:
 	virtual void BeginPlay() override;
 	
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<class UBoxComponent> RootBox;
+	TObjectPtr<UBoxComponent> RootBox;
+	
 	// Stage Section
 protected:
+	UPROPERTY(VisibleAnywhere, Category = stage)
+	TObjectPtr<ULLL_MapDataAsset> MapDataAsset;
+	
 	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class AActor> Stage;
+	TSubclassOf<AActor> Stage;
 
 	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UBoxComponent> StageTrigger;
+	TObjectPtr<UBoxComponent> StageTrigger;
 
 	UFUNCTION()
 	void OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void CreateMapAndGate();
+	void CreateMap();
 
 	UFUNCTION()
 	void RandomMap();
 
+private:
+	UPROPERTY()
+	uint8 GateIndex;
+
 // Gate Section
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class ALLL_GateObject> GateClass;
+	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ALLL_GateObject> GateClass;
 
-	UPROPERTY(VisibleAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
-	TArray<TWeakObjectPtr<class ALLL_GateObject>> Gates;
+	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
+	TArray<TWeakObjectPtr<ALLL_GateObject>> Gates;
 
 	TMap<FName, FVector> GateLocations;
 
-	UFUNCTION()
-	void OnGateTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	void OpenGates(uint8 index);
-	void CloseAllGates();
+	void EnableAllGates();
 
 // State Section
 protected:
@@ -91,32 +103,29 @@ protected:
 	void SetChooseReward();
 	void SetChooseNext();
 
-/*// Fight Section
+// Fight Section
 protected:
 	UPROPERTY(EditAnywhere, Category = Fight, Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class AABCharacterNonPlayer> OpponentClass;
-
+	TSubclassOf<ALLL_MonsterSpawner> MonsterSpawnerClass;
+	
+	UPROPERTY(EditAnywhere, Category = Fight, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ALLL_MonsterSpawner> MonsterSpawner;
+	
 	UPROPERTY(EditAnywhere, Category = Fight, Meta = (AllowPrivateAccess = "true"))
 	float OpponentSpawnTime;
 
 	UFUNCTION()
 	void OnOpponentDestroyed(AActor* DestroyedActor);
-
-	FTimerHandle OpponentTimerHandle;
+	
 	void OnOpponentSpawn();
 
 // Reward Section
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class AABItemBox> RewardBoxClass;
-
-	UPROPERTY(VisibleAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
-	TArray<TWeakObjectPtr<class AABItemBox>> RewardBoxes;
-
-	TMap<FName, FVector> RewardBoxLocations;
+	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ALLL_RewardObject> RewardObjectClass;
 
 	UFUNCTION()
-	void OnRewardTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void RewardDestroyed(AActor* DestroyedActor);
 
-	void SpawnRewardBoxes();*/
+	void RewardSpawn();
 };
