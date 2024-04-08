@@ -31,7 +31,9 @@ void ALLL_RewardObject::BeginPlay()
 void ALLL_RewardObject::InteractiveEvent()
 {
 	Super::InteractiveEvent();
+	
 	SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 	SelectRewardWidget->SetIsEnabled(true);
+	
 	Destroy();
 }
