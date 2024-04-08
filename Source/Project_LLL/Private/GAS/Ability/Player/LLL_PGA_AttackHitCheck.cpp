@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "GAS/Ability/Share/LLL_GA_KnockBack.h"
 #include "GAS/Task/LLL_AT_Trace.h"
@@ -52,7 +53,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	}
 		
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect);
-	
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect);
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
