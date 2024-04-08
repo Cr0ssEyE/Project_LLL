@@ -25,7 +25,9 @@ public class Project_LLL : ModuleRules
 			"GameplayTasks",
 			"GameplayTags",
 			"FMODStudio",
-			"PhysicsCore"
+			"PhysicsCore",
+			"LevelSequence",
+			"MovieScene"
 		});
         
 		PrivateDependencyModuleNames.AddRange(new string[] 

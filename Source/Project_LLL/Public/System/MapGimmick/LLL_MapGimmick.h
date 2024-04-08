@@ -11,6 +11,9 @@ class ULLL_MapDataAsset;
 class ALLL_GateObject;
 class ALLL_RewardObject;
 class ALLL_MonsterSpawner;
+class ULevelSequencePlayer;
+class ULevelSequence;
+class ALevelSequenceActor;
 
 DECLARE_DELEGATE(FOnStageChangedDelegate);
 
@@ -128,4 +131,18 @@ protected:
 	void RewardDestroyed(AActor* DestroyedActor);
 
 	void RewardSpawn();
+
+//Sequence Section
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	TObjectPtr<ULevelSequencePlayer> LevelSequencePlayer;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	TObjectPtr<ULevelSequence> FadeInSequence;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	TObjectPtr<ULevelSequence> FadeOutSequence;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	TObjectPtr<ALevelSequenceActor> LevelSequenceActor;
 };

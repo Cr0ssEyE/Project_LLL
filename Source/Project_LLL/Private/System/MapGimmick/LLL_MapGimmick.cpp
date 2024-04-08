@@ -14,6 +14,8 @@
 #include "Entity/Object/Interactive/LLL_RewardObject.h"
 #include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawner.h"
+#include "LevelSequenceActor.h"
+#include "LevelSequencePlayer.h"
 
 // Sets default values
 ALLL_MapGimmick::ALLL_MapGimmick()
@@ -21,13 +23,18 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 
 	RootBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	RootBox->SetBoxExtent(FVector(5000.0f, 5000.0f, 500.0f));
-	RootBox->SetCollisionProfileName(TEXT("OverlapAll"));
+	RootBox->SetCollisionProfileName(CP_OVERLAPALL);
 	RootBox->OnComponentBeginOverlap.AddDynamic(this, &ALLL_MapGimmick::OnStageTriggerBeginOverlap);
 	SetRootComponent(RootBox);
 
 	MapDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MapDataAsset>(PATH_MAP_DATA, EAssertionLevel::Check);
 
 	CurrentState = EStageState::READY;
+
+	//Sequence Section
+	FadeInSequence = MapDataAsset->FadeIn;
+	FadeOutSequence = MapDataAsset->FadeOut;
+	LevelSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
 }
 
 void ALLL_MapGimmick::OnConstruction(const FTransform& Transform)
@@ -59,6 +66,16 @@ void ALLL_MapGimmick::BeginPlay()
 	
 	RandomMap();
 	CreateMap();
+
+	//Sequence Section
+	FMovieSceneSequencePlaybackSettings Settings;
+	Settings.bAutoPlay = false;
+	Settings.bPauseAtEnd = true;
+	Settings.bHideHud = true;
+	ALevelSequenceActor* SequenceActorPtr = LevelSequenceActor;
+
+	LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
+	LevelSequencePlayer->Play();
 }
 
 void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -91,7 +108,6 @@ void ALLL_MapGimmick::CreateMap()
 void ALLL_MapGimmick::RandomMap()
 {
 	uint32 Seed = FMath::RandRange(0, MapDataAsset->MapData.Num() - 1);
-	//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, FString::Printf(TEXT("Seed: %d"), Seed));
 	Stage = MapDataAsset->MapData[Seed];
 }
 
@@ -120,19 +136,19 @@ void ALLL_MapGimmick::SetReady()
 
 void ALLL_MapGimmick::SetFight()
 {
-	RootBox->SetCollisionProfileName(TEXT("NoCollision"));
+	RootBox->SetCollisionProfileName(CP_NOCOLLISION);
 	OnOpponentSpawn();
 }
 
 void ALLL_MapGimmick::SetChooseReward()
 {
-	RootBox->SetCollisionProfileName(TEXT("NoCollision"));
+	RootBox->SetCollisionProfileName(CP_NOCOLLISION);
 	RewardSpawn();
 }
 
 void ALLL_MapGimmick::SetChooseNext()
 {
-	RootBox->SetCollisionProfileName(TEXT("NoCollision"));
+	RootBox->SetCollisionProfileName(CP_NOCOLLISION);
 	EnableAllGates();
 }
 
@@ -156,6 +172,10 @@ void ALLL_MapGimmick::RewardDestroyed(AActor* DestroyedActor)
 
 void ALLL_MapGimmick::RewardSpawn()
 {
+	if (!GetWorld()->GetFirstPlayerController())
+	{
+		return;
+	}
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActor<ALLL_RewardObject>(RewardObjectClass, Player->GetActorLocation(), Player->GetActorRotation());
 	if (RewardObject)
