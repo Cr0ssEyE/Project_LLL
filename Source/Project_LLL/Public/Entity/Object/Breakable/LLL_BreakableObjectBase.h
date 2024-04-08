@@ -4,13 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "Entity/Object/LLL_BaseObject.h"
 #include "Interface/LLL_DropGoldInterface.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "GameFramework/Actor.h"
 #include "LLL_BreakableObjectBase.generated.h"
+
 DECLARE_MULTICAST_DELEGATE(FOnDropGoldDelegate)
+
 UCLASS()
-class PROJECT_LLL_API ALLL_BreakableObjectBase : public AActor, public IAbilitySystemInterface, public ILLL_DropGoldInterface
+class PROJECT_LLL_API ALLL_BreakableObjectBase : public ALLL_BaseObject, public ILLL_DropGoldInterface
 {
 	GENERATED_BODY()
 	
@@ -31,17 +34,11 @@ public:
 	FOnDropGoldDelegate GoldDelegate;
 
 protected:
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UStaticMeshComponent> BaseMesh;
-
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UCapsuleComponent> HitCollision;
 
 //GAS Part
 protected:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UAbilitySystemComponent> ASC;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
 	TSubclassOf<UGameplayEffect> InitEffect;
 	
