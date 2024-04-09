@@ -23,6 +23,11 @@ void ULLL_PlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
+	if (!IsValid(Character))
+	{
+		return;
+	}
+
 	const UAbilitySystemComponent* ASC = Character->GetAbilitySystemComponent();
 	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
 	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_PLAYER_DASH));
