@@ -62,8 +62,8 @@ void ULLL_PGA_RushToWireHand::ActivateAbility(const FGameplayAbilitySpecHandle H
 
 void ULLL_PGA_RushToWireHand::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
-	ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
+	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
+	const ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
 	
 	PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
@@ -95,9 +95,9 @@ void ULLL_PGA_RushToWireHand::EndAbility(const FGameplayAbilitySpecHandle Handle
 
 void ULLL_PGA_RushToWireHand::OwnerLaunchToWireHand()
 {
-	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
-	ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
-	float Distance2D = FVector::DistXY(TargetLocation, PlayerCharacter->GetActorLocation());
+	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
+	const ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
+	const float Distance2D = FVector::DistXY(TargetLocation, PlayerCharacter->GetActorLocation());
 	
 	if(RushSpeed <= 0.f || Distance2D < AbilityEndDistance)
 	{

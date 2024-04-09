@@ -26,8 +26,8 @@ void ULLL_PGA_GroundStrike::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		}
 	}
 #endif
-	
-	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(ActorInfo->AvatarActor.Get());
+
+	const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	if(!IsValid(PlayerCharacter))
 	{
 		return;
@@ -68,8 +68,8 @@ void ULLL_PGA_GroundStrike::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 		}
 	}
 #endif
-	
-	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(ActorInfo->AvatarActor.Get());
+
+	const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);

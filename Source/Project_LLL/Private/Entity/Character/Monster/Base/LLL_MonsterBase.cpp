@@ -40,10 +40,11 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 void ALLL_MonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	ASC->AddSpawnedAttribute(DropGoldAttributeSet);
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
-	FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(DropGoldEffect, 1.0, EffectContextHandle);
+	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(DropGoldEffect, 1.0, EffectContextHandle);
 	if(EffectSpecHandle.IsValid())
 	{
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
@@ -144,7 +145,7 @@ void ALLL_MonsterBase::Damaged()
 	}
 }
 
-bool ALLL_MonsterBase::CanPlayAttackAnimation()
+bool ALLL_MonsterBase::CanPlayAttackAnimation() const
 {
 	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
 	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK));

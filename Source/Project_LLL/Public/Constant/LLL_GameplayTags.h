@@ -15,6 +15,7 @@
 #define TAG_GAS_SKILL_GAUGE_SUBTRACTIVE FGameplayTag::RequestGameplayTag(FName("Character.Player.Event.SubtractSkillGauge"))
 
 // 플레이어 행동, 상태 관련 게임플레이 태그
+#define TAG_GAS_PLAYER_DASH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash"))
 #define TAG_GAS_PLAYER_WIRE_THROW FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Wire.Throw"))
 #define TAG_GAS_PLAYER_WIRE_RUSH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Wire.Rush"))
 #define TAG_GAS_PLAYER_WIRE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Wire.Attack"))

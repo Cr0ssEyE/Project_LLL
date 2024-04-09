@@ -17,13 +17,13 @@ void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	ALLL_RangedMonster* RangedMonster = CastChecked<ALLL_RangedMonster>(ActorInfo->AvatarActor);
+	ALLL_RangedMonster* RangedMonster = CastChecked<ALLL_RangedMonster>(GetAvatarActorFromActorInfo());
 	const ULLL_RangedMonsterDataAsset* RangedMonsterDataAsset = CastChecked<ULLL_RangedMonsterDataAsset>(RangedMonster->GetCharacterDataAsset());
 	const ULLL_RangedMonsterAttributeSet* RangedMonsterAttributeSet = CastChecked<ULLL_RangedMonsterAttributeSet>(RangedMonster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_RangedMonsterAttributeSet::StaticClass()));
 
 	ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(RangedMonster->GetObjectPoolingComponent()->GetActor(RangedMonsterDataAsset->ThrownObjectClass));
 
-	ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 	if (IsValid(PlayerBase))

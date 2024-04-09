@@ -73,11 +73,11 @@ void ULLL_PGA_WireHandThrow::EndAbility(const FGameplayAbilitySpecHandle Handle,
 void ULLL_PGA_WireHandThrow::ThrowToCursorLocation()
 {
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
-	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
+	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
 	const ULLL_PlayerWireHandAttributeSet* WireHandAttributeSet = CastChecked<ULLL_PlayerWireHandAttributeSet>(PlayerWireHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerWireHandAttributeSet::StaticClass()));
 	
 	TargetLocation = PlayerCharacter->GetMouseLocation();
-	float TargetDistance = FVector::DistXY(TargetLocation, PlayerCharacter->GetActorLocation());
+	const float TargetDistance = FVector::DistXY(TargetLocation, PlayerCharacter->GetActorLocation());
 	// 마우스 위치가 투척 최소거리 보다 가까운 거리일 경우 보정
 	if (TargetDistance < WireHandAttributeSet->GetMinimumThrowDistance())
 	{
@@ -124,11 +124,11 @@ void ULLL_PGA_WireHandThrow::CheckReached()
 	}
 	
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
-	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
+	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
 	const ULLL_PlayerWireHandAttributeSet* WireHandAttributeSet = CastChecked<ULLL_PlayerWireHandAttributeSet>(PlayerWireHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerWireHandAttributeSet::StaticClass()));
-	
-	float LocationDistance = FVector::Distance(PlayerWireHand->GetActorLocation(), TargetLocation);
-	float OwnerDistance = FVector::DistXY(PlayerWireHand->GetActorLocation(), PlayerCharacter->GetActorLocation());
+
+	const float LocationDistance = FVector::Distance(PlayerWireHand->GetActorLocation(), TargetLocation);
+	const float OwnerDistance = FVector::DistXY(PlayerWireHand->GetActorLocation(), PlayerCharacter->GetActorLocation());
 	
 	if (LocationDistance <= WireHandAttributeSet->GetCorrectionReachStateDistance())
 	{
