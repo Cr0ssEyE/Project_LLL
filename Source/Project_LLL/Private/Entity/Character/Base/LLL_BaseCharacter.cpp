@@ -83,8 +83,6 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationRoll = false;
-
-		AttackDistance = CharacterDataAsset->AttackDistance;
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		bIsSpawned = true;

@@ -9,6 +9,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 
 ULLL_CheckRange_BTService::ULLL_CheckRange_BTService()
 {
@@ -21,9 +22,9 @@ void ULLL_CheckRange_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	const ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
+	const ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
-	if (IsValid(MonsterBase) && IsValid(PlayerBase))
+	if (IsValid(PlayerBase))
 	{
 		const float Distance = MonsterBase->GetDistanceTo(PlayerBase);
 
@@ -37,8 +38,9 @@ void ULLL_CheckRange_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 			}
 		}
 #endif
-		
-		if (Distance <= MonsterBase->GetAttackDistance())
+
+		const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(MonsterBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+		if (Distance <= MonsterAttributeSet->GetAttackDistance())
 		{
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_RANGE, true);
 			return;

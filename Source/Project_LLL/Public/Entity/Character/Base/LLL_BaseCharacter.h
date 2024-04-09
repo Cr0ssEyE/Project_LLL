@@ -38,7 +38,6 @@ public:
 	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
-	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
 	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
 
 	// 플레이어
@@ -82,9 +81,6 @@ protected:
 	
 	// 캐릭터 공용 변수
 protected:
-	UPROPERTY(VisibleAnywhere)
-	float AttackDistance;
-
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
 

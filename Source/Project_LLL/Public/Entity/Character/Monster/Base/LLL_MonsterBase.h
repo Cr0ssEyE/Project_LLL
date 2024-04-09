@@ -21,9 +21,6 @@ class PROJECT_LLL_API ALLL_MonsterBase : public ALLL_BaseCharacter, public ILLL_
 public:
 	ALLL_MonsterBase();
 	
-	FORCEINLINE float GetDetectDistance() const { return DetectDistance; }
-	FORCEINLINE float GetFieldOfView() const { return FieldOfView; }
-	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	
@@ -31,7 +28,7 @@ protected:
 	virtual void Dead() override;
 	
 public:
-	void Attack();
+	void Attack() const;
 	virtual void Damaged() override;
 	
 	bool CanPlayAttackAnimation() const;
@@ -42,12 +39,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> MonsterStatusWidgetComponent;
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	float DetectDistance;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	float FieldOfView;
 
 public:
 	UFUNCTION()

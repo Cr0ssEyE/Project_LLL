@@ -52,13 +52,6 @@ public:
 	float TurnSpeed;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 공격 거리")
-	float AttackDistance;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 공격 크기")
-	float AttackRadius;
-
-public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
 	TSubclassOf<UGameplayEffect> InitEffect;
 	

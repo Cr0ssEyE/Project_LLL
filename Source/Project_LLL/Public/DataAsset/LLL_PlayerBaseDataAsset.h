@@ -52,11 +52,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 회전값")
 	FRotator SpringArmAngle;
 
-	// 상호작용 관련(현재 처리하지 않고 있음)
+	// 상호작용 관련
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "상호작용 거리")
-	float InteractionRange;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "마우스 입력시 위치 보정 처리 영역 반지름")
 	float MouseCursorCorrectRadius;
 	

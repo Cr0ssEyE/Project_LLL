@@ -10,6 +10,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISense_Sight.h"
 
@@ -70,8 +71,10 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 				const ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(MonsterAIController->GetPawn());
 				const FVector Center = MonsterBase->GetActorLocation();
 				const FVector Direction = MonsterBase->GetActorForwardVector();
-				const float DetectDistance = MonsterBase->GetDetectDistance();
-				const float HalfFieldOfViewRadian = FMath::DegreesToRadians(MonsterBase->GetFieldOfView() / 2.0f);
+
+				const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(MonsterBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+				const float DetectDistance = MonsterAttributeSet->GetDetectDistance();
+				const float HalfFieldOfViewRadian = FMath::DegreesToRadians(MonsterAttributeSet->GetFieldOfView() / 2.0f);
 				DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Red, false, 0.1f);
 			}
 		}

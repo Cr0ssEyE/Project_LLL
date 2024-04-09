@@ -8,6 +8,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 
 ULLL_FindPatrolPos_BTTaskNode::ULLL_FindPatrolPos_BTTaskNode()
 {
@@ -18,18 +19,16 @@ EBTNodeResult::Type ULLL_FindPatrolPos_BTTaskNode::ExecuteTask(UBehaviorTreeComp
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	const ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-	if (IsValid(MonsterBase))
+	const ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
+	const UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(MonsterBase->GetWorld());
+	if (IsValid(NavSystem))
 	{
-		const UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(MonsterBase->GetWorld());
-		if (IsValid(NavSystem))
+		FNavLocation PatrolPos;
+		const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(MonsterBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+		if (NavSystem->GetRandomPointInNavigableRadius(MonsterBase->GetActorLocation(), MonsterAttributeSet->GetFindPatrolPosRadius(), PatrolPos))
 		{
-			FNavLocation PatrolPos;
-			if (NavSystem->GetRandomPointInNavigableRadius(MonsterBase->GetActorLocation(), 400, PatrolPos))
-			{
-				OwnerComp.GetBlackboardComponent()->SetValueAsVector(BBKEY_PATROL_POS, PatrolPos.Location);
-				return EBTNodeResult::Succeeded;
-			}
+			OwnerComp.GetBlackboardComponent()->SetValueAsVector(BBKEY_PATROL_POS, PatrolPos.Location);
+			return EBTNodeResult::Succeeded;
 		}
 	}
 

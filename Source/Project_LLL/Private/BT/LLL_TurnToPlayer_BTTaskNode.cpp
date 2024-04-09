@@ -18,9 +18,9 @@ EBTNodeResult::Type ULLL_TurnToPlayer_BTTaskNode::ExecuteTask(UBehaviorTreeCompo
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	ALLL_MonsterBase* MonsterBase = Cast<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
+	ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
-	if (IsValid(MonsterBase) && IsValid(PlayerBase))
+	if (IsValid(PlayerBase))
 	{
 		FVector Direction = PlayerBase->GetActorLocation() - MonsterBase->GetActorLocation();
 		Direction.Z = 0.0f;
