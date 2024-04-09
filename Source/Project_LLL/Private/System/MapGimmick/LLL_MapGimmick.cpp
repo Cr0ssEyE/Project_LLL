@@ -86,7 +86,18 @@ void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* Overlapped
 
 void ALLL_MapGimmick::CreateMap()
 {
-	AActor* StageActor = GetWorld()->SpawnActor<AActor>(Stage, RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
+	if (StageActor && CurrentState == EStageState::NEXT)
+	{
+		StageActor->Destroy();
+	}
+	
+	if (Gates.Num() > 0)
+	{
+		DeleteGates = Gates;
+		Gates.Empty();
+	}
+	
+	StageActor = GetWorld()->SpawnActor<AActor>(Stage, RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
 	for (USceneComponent* ChildComponent : StageActor->GetRootComponent()->GetAttachChildren())
 	{
 		ULLL_GateSpawnPointComponent* SpawnPoint = Cast<ULLL_GateSpawnPointComponent>(ChildComponent);
@@ -97,18 +108,38 @@ void ALLL_MapGimmick::CreateMap()
 		}
 	}
 	
-	TArray<AActor*> ChildActors;
-	StageActor->GetAllChildActors(ChildActors, true);
-	for (AActor* ChildActor : ChildActors)
+	StageActor->GetAllChildActors(StageChildActors, true);
+	for (AActor* ChildActor : StageChildActors)
 	{
 		MonsterSpawner = CastChecked<ALLL_MonsterSpawner>(ChildActor);
 	}
+	RootBox->SetCollisionProfileName(CP_OVERLAPALL);
+	SetState(EStageState::READY);
 }
 
 void ALLL_MapGimmick::RandomMap()
 {
-	uint32 Seed = FMath::RandRange(0, MapDataAsset->MapData.Num() - 1);
+	Seed = FMath::RandRange(0, MapDataAsset->MapData.Num() - 1);
 	Stage = MapDataAsset->MapData[Seed];
+}
+
+void ALLL_MapGimmick::ChangeMap()
+{
+	RandomMap();
+	CreateMap();
+}
+
+void ALLL_MapGimmick::AllGatesDestroy()
+{
+	if (DeleteGates.Num() == 0)
+	{
+		return;
+	}
+	for	(auto Gate : DeleteGates)
+	{
+		Gate->Destroy();
+	}
+	DeleteGates.Empty();
 }
 
 void ALLL_MapGimmick::EnableAllGates()
@@ -116,6 +147,7 @@ void ALLL_MapGimmick::EnableAllGates()
 	for (auto Gate:Gates)
 	{
 		Gate->GateEnable();
+		Gate->GateOpenDelegate.AddUObject(this, &ALLL_MapGimmick::ChangeMap);
 	}
 }
 
@@ -131,11 +163,12 @@ void ALLL_MapGimmick::SetState(EStageState InNewState)
 
 void ALLL_MapGimmick::SetReady()
 {
-	
+	AllGatesDestroy();
 }
 
 void ALLL_MapGimmick::SetFight()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Fight 함수 실행")));
 	RootBox->SetCollisionProfileName(CP_NOCOLLISION);
 	OnOpponentSpawn();
 }

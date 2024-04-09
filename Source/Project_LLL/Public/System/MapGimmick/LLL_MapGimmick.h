@@ -66,6 +66,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent> StageTrigger;
 
+	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<AActor> StageActor;
+
+	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	TArray<AActor*> StageChildActors;
+
+	uint32 Seed;
+
 	UFUNCTION()
 	void OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -74,6 +82,9 @@ protected:
 
 	UFUNCTION()
 	void RandomMap();
+
+	UFUNCTION()
+	void ChangeMap();
 
 private:
 	UPROPERTY()
@@ -87,8 +98,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
 	TArray<TWeakObjectPtr<ALLL_GateObject>> Gates;
 
+	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
+	TArray<TWeakObjectPtr<ALLL_GateObject>> DeleteGates;
+
 	TMap<FName, FVector> GateLocations;
 
+	FTimerHandle GateDestroyHandel;
+	
+	UFUNCTION()
+	void AllGatesDestroy();
+	
 	void EnableAllGates();
 
 // State Section

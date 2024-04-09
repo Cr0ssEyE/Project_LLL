@@ -32,6 +32,8 @@ void ALLL_GateObject::InteractiveEvent()
 	Super::InteractiveEvent();
 	
 	OpenGate();
+	
+	GateOpenDelegate.Broadcast();
 }
 
 void ALLL_GateObject::OpenGate()

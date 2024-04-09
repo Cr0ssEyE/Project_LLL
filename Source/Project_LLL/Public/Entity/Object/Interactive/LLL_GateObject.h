@@ -7,9 +7,9 @@
 #include "GameFramework/RotatingMovementComponent.h"
 #include "LLL_GateObject.generated.h"
 
-/**
- * 
- */
+DECLARE_MULTICAST_DELEGATE(FOnGateOpenDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnGateDestroyDelegate);
+
 UCLASS()
 class PROJECT_LLL_API ALLL_GateObject : public ALLL_InteractiveObject
 {
@@ -28,6 +28,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	FOnGateOpenDelegate GateOpenDelegate;
+	FTimerHandle GateOpenTimerHandle;
 protected:
 	virtual void InteractiveEvent() override;
 
