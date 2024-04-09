@@ -42,7 +42,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		AttackActionInputDelayTime = PlayerAttributeSet->GetAttackActionInputDelayTime();
 		if(PlayerCharacter->GetCharacterMovement()->IsWalking())
 		{
-			PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+			// PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 		}
 	}
 	else
