@@ -37,7 +37,6 @@ public:
 public:
 	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
-	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
 	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
 
 	// 플레이어
@@ -47,6 +46,8 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
+
+	void MovementInit();
 	
 protected:
 	virtual void Tick(float DeltaTime) override;
@@ -86,15 +87,6 @@ protected:
 
 	// 이동 관련 변수
 protected:
-	UPROPERTY(VisibleAnywhere)
-	float AccelerateSpeed;
-
-	UPROPERTY(VisibleAnywhere)
-	float GroundFriction;
-
-	UPROPERTY(VisibleAnywhere)
-	float TurnSpeed;
-
 	UPROPERTY(VisibleAnywhere)
 	FVector MoveDirection;
 

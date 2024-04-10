@@ -37,31 +37,36 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	Labeled = ELabeled::A;
 
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
+	CameraDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_CameraDataAsset>(PATH_CAMERA_DATA, EAssertionLevel::Check);
+
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
-	if (IsValid(CharacterDataAsset))
-	{
-		GetCharacterMovement()->MaxFlySpeed = 10000.f;
-		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
-		
-		Camera->SetFieldOfView(PlayerDataAsset->CameraFOV);
-		Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-		Camera->bUsePawnControlRotation = false;
-		
-		SpringArm->TargetArmLength = PlayerDataAsset->SpringArmLength;
-		SpringArm->SetRelativeRotation(PlayerDataAsset->SpringArmAngle);
-		SpringArm->bDoCollisionTest = false;
-		SpringArm->bUsePawnControlRotation = false;
-		SpringArm->bInheritPitch = false;
-		SpringArm->bInheritYaw = false;
-		SpringArm->bInheritRoll = false;
-		SpringArm->SetUsingAbsoluteRotation(true);
-		SpringArm->SetupAttachment(RootComponent);
-	}
+
+	GetCharacterMovement()->MaxFlySpeed = 10000.f;
+	GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
+
+	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+	Camera->bUsePawnControlRotation = false;
+	
+	SpringArm->bDoCollisionTest = false;
+	SpringArm->bUsePawnControlRotation = false;
+	SpringArm->bInheritPitch = false;
+	SpringArm->bInheritYaw = false;
+	SpringArm->bInheritRoll = false;
+	SpringArm->SetUsingAbsoluteRotation(true);
+	SpringArm->SetupAttachment(RootComponent);
 }
 
 void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (IsValid(CameraDataAsset))
+	{
+		Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
+		
+		SpringArm->TargetArmLength = CameraDataAsset->SpringArmLength;
+		SpringArm->SetRelativeRotation(CameraDataAsset->SpringArmAngle);
+	}
 
 	WireHandActor = Cast<ALLL_PlayerWireHand>(GetWorld()->SpawnActor(ALLL_PlayerWireHand::StaticClass()));
 	WireHandActor->SetOwner(this);

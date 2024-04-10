@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "LLL_CheckRange_BTService.generated.h"
+#include "LLL_CheckAttackRange_BTService.generated.h"
 
 class ALLL_PlayerBase;
 class ALLL_MonsterBase;
@@ -12,12 +12,12 @@ class ALLL_MonsterBase;
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_CheckRange_BTService : public UBTService
+class PROJECT_LLL_API ULLL_CheckAttackRange_BTService : public UBTService
 {
 	GENERATED_BODY()
 
 public:
-	ULLL_CheckRange_BTService();
+	ULLL_CheckAttackRange_BTService();
 
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;

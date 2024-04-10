@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BT/LLL_CheckRange_BTService.h"
+#include "BT/LLL_CheckAttackRange_BTService.h"
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -11,14 +11,14 @@
 #include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 
-ULLL_CheckRange_BTService::ULLL_CheckRange_BTService()
+ULLL_CheckAttackRange_BTService::ULLL_CheckAttackRange_BTService()
 {
-	NodeName = TEXT("Check Range");
+	NodeName = TEXT("Check Attack Range");
 	Interval = 0.3f;
 	RandomDeviation = 0.1f;
 }
 
-void ULLL_CheckRange_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+void ULLL_CheckAttackRange_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 

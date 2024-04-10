@@ -41,17 +41,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스킬 게이지 UI")
 	TSubclassOf<ULLL_SkillWidget> SkillGaugeWidgetClass;
 
-	// 카메라 관련
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV")
-	float CameraFOV;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리")
-	float SpringArmLength;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 회전값")
-	FRotator SpringArmAngle;
-
 	// 상호작용 관련
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "마우스 입력시 위치 보정 처리 영역 반지름")
