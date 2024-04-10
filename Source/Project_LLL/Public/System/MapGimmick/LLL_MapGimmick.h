@@ -84,7 +84,7 @@ protected:
 	void RandomMap();
 
 	UFUNCTION()
-	void ChangeMap();
+	void ChangeMap(AActor* DestroyedActor);
 
 private:
 	UPROPERTY()
@@ -107,6 +107,9 @@ protected:
 	
 	UFUNCTION()
 	void AllGatesDestroy();
+
+	UFUNCTION()
+	void OnInteractionGate();
 	
 	void EnableAllGates();
 

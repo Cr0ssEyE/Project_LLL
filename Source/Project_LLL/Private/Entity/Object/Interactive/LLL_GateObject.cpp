@@ -33,7 +33,7 @@ void ALLL_GateObject::InteractiveEvent()
 	
 	OpenGate();
 	
-	GateOpenDelegate.Broadcast();
+	StageDestroyDelegate.Broadcast();
 }
 
 void ALLL_GateObject::OpenGate()

@@ -86,17 +86,6 @@ void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* Overlapped
 
 void ALLL_MapGimmick::CreateMap()
 {
-	if (StageActor && CurrentState == EStageState::NEXT)
-	{
-		StageActor->Destroy();
-	}
-	
-	if (Gates.Num() > 0)
-	{
-		DeleteGates = Gates;
-		Gates.Empty();
-	}
-	
 	StageActor = GetWorld()->SpawnActor<AActor>(Stage, RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
 	for (USceneComponent* ChildComponent : StageActor->GetRootComponent()->GetAttachChildren())
 	{
@@ -107,6 +96,7 @@ void ALLL_MapGimmick::CreateMap()
 			Gates.Add(Gate);
 		}
 	}
+	StageActor->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::ChangeMap);
 	
 	StageActor->GetAllChildActors(StageChildActors, true);
 	for (AActor* ChildActor : StageChildActors)
@@ -123,23 +113,30 @@ void ALLL_MapGimmick::RandomMap()
 	Stage = MapDataAsset->MapData[Seed];
 }
 
-void ALLL_MapGimmick::ChangeMap()
+void ALLL_MapGimmick::ChangeMap(AActor* DestroyedActor)
 {
+	AllGatesDestroy();
 	RandomMap();
 	CreateMap();
 }
 
 void ALLL_MapGimmick::AllGatesDestroy()
 {
-	if (DeleteGates.Num() == 0)
+	if (Gates.Num() == 0)
 	{
 		return;
 	}
-	for	(auto Gate : DeleteGates)
+	for	(auto Gate : Gates)
 	{
 		Gate->Destroy();
 	}
-	DeleteGates.Empty();
+	Gates.Empty();
+}
+
+void ALLL_MapGimmick::OnInteractionGate()
+{
+	StageChildActors.Empty();
+	StageActor->Destroy();
 }
 
 void ALLL_MapGimmick::EnableAllGates()
@@ -147,7 +144,7 @@ void ALLL_MapGimmick::EnableAllGates()
 	for (auto Gate:Gates)
 	{
 		Gate->GateEnable();
-		Gate->GateOpenDelegate.AddUObject(this, &ALLL_MapGimmick::ChangeMap);
+		Gate->StageDestroyDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
 	}
 }
 
@@ -163,12 +160,11 @@ void ALLL_MapGimmick::SetState(EStageState InNewState)
 
 void ALLL_MapGimmick::SetReady()
 {
-	AllGatesDestroy();
+	
 }
 
 void ALLL_MapGimmick::SetFight()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Fight 함수 실행")));
 	RootBox->SetCollisionProfileName(CP_NOCOLLISION);
 	OnOpponentSpawn();
 }
