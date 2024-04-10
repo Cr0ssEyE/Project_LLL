@@ -1,35 +1,45 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Ability/Share/LLL_GA_KnockBack.h"
+#include "GAS/Ability/Player/LLL_PGA_KnockBack.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemInterface.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
+#include "Constant/LLL_GameplayTags.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Melee/Orawave/LLL_Orawave.h"
+#include "Entity/Character/Monster/Ranged/EnergyBlaster/LLL_EnergyBlaster.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Task/LLL_AT_Trace.h"
+#include "GAS/Task/LLL_AT_WaitTargetData.h"
 #include "Util/LLL_MathHelper.h"
 
-ULLL_GA_KnockBack::ULLL_GA_KnockBack()
+ULLL_PGA_KnockBack::ULLL_PGA_KnockBack()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	KnockBackMultiplier = 1.f;
 }
 
-void ULLL_GA_KnockBack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void ULLL_PGA_KnockBack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	ULLL_AT_Trace* AttackTraceTask = ULLL_AT_Trace::CreateTask(this, TargetActorClass);
-	AttackTraceTask->TaskOnCompleteDelegate.AddDynamic(this, &ULLL_GA_KnockBack::OnTraceResultCallBack);
-	AttackTraceTask->ReadyForActivation();
+	
+	ULLL_AT_WaitTargetData* TargetDataTask = ULLL_AT_WaitTargetData::CreateTask(this, ALLL_MonsterBase::StaticClass(), false, false);
+	TargetDataTask->TargetDataReceivedDelegate.AddDynamic(this, &ULLL_PGA_KnockBack::OnTraceResultCallBack);
+	TargetDataTask->ReadyForActivation();
+	
+	UAbilityTask_WaitGameplayTagAdded* TraceEndTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, TAG_GAS_ATTACK_HIT_CHECK_COMPLETE);
+	TraceEndTask->Added.AddDynamic(this, &ULLL_PGA_KnockBack::OnTraceEndCallBack);
+	TraceEndTask->ReadyForActivation();
 }
 
-void ULLL_GA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
+void ULLL_PGA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
 	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}
 	
@@ -43,7 +53,7 @@ void ULLL_GA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataHa
 		{
 			const FVector LaunchDirection = (MovableActor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
 			MovableActor->GetMovementComponent()->Velocity = FVector::Zero();
-			MovableActor->LaunchCharacter(FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, PlayerCharacterAttributeSet->GetKnockBackPower()), true, true);
+			MovableActor->LaunchCharacter(FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, PlayerCharacterAttributeSet->GetKnockBackPower() * KnockBackMultiplier), true, true);
 		}
 
 		// 만약 넉백 당하지는 않지만 넉백 관련 이벤트가 있는 대상일 경우를 위해 위와 별도 처리
@@ -52,6 +62,9 @@ void ULLL_GA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataHa
 			BP_ApplyGameplayEffectToTarget(TargetDataHandle, KnockBackEffect);
 		}
 	}
-	
+}
+
+void ULLL_PGA_KnockBack::OnTraceEndCallBack()
+{
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

@@ -3,3 +3,7 @@
 
 #include "Game/LLL_GameInstance.h"
 
+ULLL_GameInstance::ULLL_GameInstance()
+{
+	
+}

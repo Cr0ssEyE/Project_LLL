@@ -12,5 +12,17 @@ UCLASS()
 class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
 {
 	GENERATED_BODY()
+
+public:
+	ULLL_GameInstance();
 	
+protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UMaterialParameterCollection> PlayerMPC;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UMaterialParameterCollection> ObjectMPC;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UMaterialParameterCollection> MonsterMPC;
 };

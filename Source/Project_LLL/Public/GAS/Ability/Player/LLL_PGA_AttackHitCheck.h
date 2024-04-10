@@ -7,7 +7,7 @@
 #include "LLL_PGA_AttackHitCheck.generated.h"
 
 class ULLL_AT_Trace;
-class ULLL_GA_KnockBack;
+class ULLL_PGA_KnockBack;
 class ALLL_TA_TraceBase;
 /**
  * 
