@@ -101,12 +101,24 @@ void ULLL_PGA_Dash::DashActionEvent()
 {
 	// TODO: MovementComponent의 LaunchCharacter 기반 물리에서 위치 기반으로 변경
 	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
+	
 	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	if(IsValid(PlayerCharacter) && bIsInputPressed && CurrentDashCount < MaxDashCount)
+	if (IsValid(PlayerCharacter) && bIsInputPressed && CurrentDashCount < MaxDashCount)
 	{
 		CurrentDashCount++;
 		PlayerCharacter->GetMovementComponent()->Velocity = FVector::Zero();
-		PlayerCharacter->LaunchCharacter(PlayerCharacter->GetActorForwardVector() * (DashSpeed * 1000.f), true, true);
+		
+		FVector LaunchDirection;
+		if (PlayerCharacter->GetMoveInputPressed())
+		{
+			LaunchDirection = PlayerCharacter->GetMoveInputDirection().GetSafeNormal2D();
+		}
+		else
+		{
+			LaunchDirection = PlayerCharacter->GetActorForwardVector().GetSafeNormal2D();
+		}
+		
+		PlayerCharacter->LaunchCharacter(LaunchDirection * (DashSpeed * 1000.f), true, true);
 		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
 		// 애님 몽타주 처음부터 다시 실행하거나 특정 시간부터 실행 시키도록 하는게 상당히 귀찮아서 땜빵 처리
 		PlayerCharacter->StopAnimMontage(DashAnimMontage);
@@ -115,8 +127,9 @@ void ULLL_PGA_Dash::DashActionEvent()
 		// 여기서 타이머 델리게이트로 호출해서 다음 입력까지 대기시간을 주면 대쉬를 연타했을 때 낭비를 줄이도록 할 수 있습니다.
 		StartDashInputWait();
 		bIsInputPressed = false;
+		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if(ProtoGameInstance->CheckPlayerDashDebug())
 			{
@@ -137,9 +150,9 @@ void ULLL_PGA_Dash::StartDashInputWait()
 void ULLL_PGA_Dash::EndDashInputWait()
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerDashDebug())
+		if (ProtoGameInstance->CheckPlayerDashDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("대쉬 어빌리티 종료")));
 		}

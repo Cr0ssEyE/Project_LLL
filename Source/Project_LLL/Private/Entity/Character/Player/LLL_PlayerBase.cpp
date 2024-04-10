@@ -28,7 +28,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	GoldComponet = CreateDefaultSubobject<ULLL_PlayerGoldComponet>(TEXT("PlayerGoldComponent"));
+	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponet>(TEXT("PlayerGoldComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributes"));
 	
@@ -115,8 +115,10 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	SubSystem->ClearAllMappings();
 	SubSystem->AddMappingContext(PlayerDataAsset->PlayerInputMappingContext, 0);
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
-	
+
+	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SetMoveInputPressed, true);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::SetMoveInputPressed, false);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction, EAbilityInputName::Skill);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->ControlWireInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::WireAction, EAbilityInputName::Wire);
@@ -256,10 +258,19 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	
 	MoveDirection = Camera->GetComponentRotation().RotateVector(FVector(MoveInputValue.X, MoveInputValue.Y, 0.f));
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
-	if(GetCharacterMovement()->IsWalking())
+	if (GetCharacterMovement()->IsWalking())
 	{
 		AddMovementInput(MoveDirection, 1.f);
 	}
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerMovementDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("이동 입력 방향: %f, %f"), MoveDirection.X, MoveDirection.Y));
+		}
+	}
+#endif
 }
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputName InputName)

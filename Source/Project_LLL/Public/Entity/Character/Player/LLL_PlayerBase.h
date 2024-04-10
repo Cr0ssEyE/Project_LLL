@@ -52,6 +52,8 @@ public:
 	void AddInteractableObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
 
+	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
+	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ALLL_PlayerWireHand* GetWireHand() const { return WireHandActor; }
 	
@@ -121,7 +123,12 @@ protected:
 	virtual void Dead() override;
 	virtual void DeadMontageEndEvent() override;
 
+	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
+	// 상태 관련 변수
+protected:
+	uint8 bIsMoveInputPressed : 1;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerGoldComponet> GoldComponet;
+	TObjectPtr<ULLL_PlayerGoldComponet> GoldComponent;
 };
