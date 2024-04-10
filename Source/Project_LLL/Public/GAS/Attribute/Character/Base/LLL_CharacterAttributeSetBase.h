@@ -35,6 +35,9 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, OffensePower);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, MoveSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, ReceiveDamage);
+	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, AccelerateSpeed);
+	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, GroundFriction);
+	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, TurnSpeed);
 	
 	// 캐릭터 기본 어트리뷰트 데이터
 protected:
@@ -50,11 +53,20 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxShield;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute", DisplayName = "asdf")
 	FGameplayAttributeData OffensePower;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MoveSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData AccelerateSpeed;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData GroundFriction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData TurnSpeed;
 	
 	// 간접 접근을 위한 메타 어트리뷰트 데이터
 protected:
