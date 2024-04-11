@@ -5,7 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "Util/LLLConstructorHelper.h"
-#include "Entity/Character/Player/LLL_PlayerGoldComponet.h"
+#include "Entity/Character/Player/LLL_PlayerGoldComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
@@ -67,7 +67,7 @@ void ALLL_BreakableObjectBase::DropGold(const FGameplayTag tag, int32 data)
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	for (UActorComponent* ChildComponent : Player->GetComponents())
 	{
-		ULLL_PlayerGoldComponet* GoldComponet = Cast<ULLL_PlayerGoldComponet>(ChildComponent);
+		ULLL_PlayerGoldComponent* GoldComponet = Cast<ULLL_PlayerGoldComponent>(ChildComponent);
 		if(IsValid(GoldComponet))
 		{
 			GoldComponet->IncreaseMoney(GoldData);

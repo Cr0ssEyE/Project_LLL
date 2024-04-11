@@ -6,6 +6,7 @@
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 #include "LLL_RewardObject.generated.h"
 
+class ULLL_SelectRewardWidget;
 /**
  * 
  */
@@ -26,8 +27,8 @@ protected:
 	TObjectPtr<UStaticMesh> RewardMesh;
 
 	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<class ULLL_SelectRewardWidget> SelectRewardWidgetClass;
+	TSubclassOf<ULLL_SelectRewardWidget> SelectRewardWidgetClass;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<class ULLL_SelectRewardWidget> SelectRewardWidget;
+	TObjectPtr<ULLL_SelectRewardWidget> SelectRewardWidget;
 };

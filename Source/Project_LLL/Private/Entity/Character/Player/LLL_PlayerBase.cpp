@@ -31,7 +31,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponet>(TEXT("PlayerGoldComponent"));
+	GoldComponet = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributes"));
 	
@@ -433,7 +433,7 @@ void ALLL_PlayerBase::Dead()
 	DisableInput(Cast<APlayerController>(GetController()));
 }
 
-void ALLL_PlayerBase::DeadMontageEndEvent()
+void ALLL_PlayerBase::DeadTimerCallback()
 {
 	// Super::DeadMontageEndEvent();
 	PlayerUIManager->TogglePauseWidget(bIsDead);

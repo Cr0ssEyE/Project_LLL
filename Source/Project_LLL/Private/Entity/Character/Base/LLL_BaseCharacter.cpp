@@ -94,10 +94,6 @@ void ALLL_BaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(CharacterAnimInstance))
-	{
-		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
-	}
 
 	if(IsValid(ASC))
 	{
@@ -174,6 +170,11 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	}
 }
 
+void ALLL_BaseCharacter::Damaged()
+{
+	UE_LOG(LogTemp, Log, TEXT("%s 피격"), *GetName())
+}
+
 void ALLL_BaseCharacter::Dead()
 {
 	if (bIsDead)
@@ -181,16 +182,22 @@ void ALLL_BaseCharacter::Dead()
 		return;
 	}
 
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CharacterAnimInstance->PlayDeadAnimation();
+	GetCharacterMovement()->SetMovementMode(MOVE_None);
+
+	CharacterAnimInstance->StopAllMontages(1.0f);
+	GetCapsuleComponent()->SetCollisionProfileName(CP_DEAD_BODY);
+	GetMesh()->SetCollisionProfileName(CP_DEAD_BODY);
+	GetMesh()->SetSimulatePhysics(true);
+	
+	FTimerHandle HideTimerHandle;
+	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_BaseCharacter::DeadTimerCallback, 3.0f, false);
 	
 	bIsDead = true;
 
 	CharacterDeadDelegate.Broadcast(this);
 }
 
-void ALLL_BaseCharacter::DeadMontageEndEvent()
+void ALLL_BaseCharacter::DeadTimerCallback()
 {
 	// TODO: 화면 페이드, 결과창 출력 등등. 임시로 Destroy 처리
 	Destroy();
