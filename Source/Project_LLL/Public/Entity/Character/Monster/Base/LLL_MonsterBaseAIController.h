@@ -10,6 +10,7 @@ class UAISenseConfig_Sight;
 class ALLL_BaseCharacter;
 class ALLL_MonsterBase;
 class ULLL_MonsterBaseDataAsset;
+
 /**
  * 
  */
@@ -21,11 +22,15 @@ class PROJECT_LLL_API ALLL_MonsterBaseAIController : public AAIController
 public:
 	ALLL_MonsterBaseAIController();
 
-public:
+protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
+public:
 	UFUNCTION()
 	void SetPlayer();
+
+protected:
+	void AISenseInit();
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ALLL_MonsterBase> Monster;

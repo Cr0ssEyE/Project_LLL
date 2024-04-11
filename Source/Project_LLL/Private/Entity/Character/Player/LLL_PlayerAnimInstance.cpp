@@ -3,16 +3,45 @@
 
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 
+#include "AbilitySystemComponent.h"
 #include "FMODAudioComponent.h"
+#include "GameplayAbilitySpecHandle.h"
 #include "Components/CapsuleComponent.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "GAS/Ability/Player/LLL_PGA_Dash.h"
 
 void ULLL_PlayerAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
+}
+
+void ULLL_PlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+{
+	Super::NativeUpdateAnimation(DeltaSeconds);
+
+	if (!IsValid(Character))
+	{
+		return;
+	}
+
+	const UAbilitySystemComponent* ASC = Character->GetAbilitySystemComponent();
+	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
+	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_PLAYER_DASH));
+	for (const auto AbilitySpecHandle : AbilitySpecHandles)
+	{
+		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
+		{
+			const UAnimMontage* DashAnimMontage = Cast<ULLL_PGA_Dash>(AbilitySpec->GetPrimaryInstance())->GetDashAnimMontage();
+			if (IsValid(DashAnimMontage))
+			{
+				bIsDashing = Montage_IsPlaying(DashAnimMontage);
+			}
+		}
+	}
 }
 
 void ULLL_PlayerAnimInstance::AnimNotify_LeftStep()
@@ -27,6 +56,12 @@ void ULLL_PlayerAnimInstance::AnimNotify_RightStep()
 	Super::AnimNotify_RightStep();
 
 	SetStepEventParameter(SOCKET_RIGHT_FOOT);
+}
+
+void ULLL_PlayerAnimInstance::PlayDeadAnimation()
+{
+	StopAllMontages(0.0f);
+	Montage_Play(PlayerDataAsset->DeadAnimMontage);
 }
 
 void ULLL_PlayerAnimInstance::SetStepEventParameter(FName FootSocketName) const

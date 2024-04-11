@@ -16,6 +16,8 @@ class PROJECT_LLL_API ULLL_PGA_Dash : public ULLL_PlayerGameplayAbilityBase
 
 public:
 	ULLL_PGA_Dash();
+
+	FORCEINLINE UAnimMontage* GetDashAnimMontage() const { return DashAnimMontage; }
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;

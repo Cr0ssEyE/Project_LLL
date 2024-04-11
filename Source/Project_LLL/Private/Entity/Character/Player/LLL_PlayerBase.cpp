@@ -13,6 +13,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 #include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
@@ -28,7 +29,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	GoldComponet = CreateDefaultSubobject<ULLL_PlayerGoldComponet>(TEXT("PlayerGoldComponent"));
+	GoldComponet = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributes"));
 	
@@ -37,31 +38,42 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	Labeled = ELabeled::A;
 
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
+	CameraDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_CameraDataAsset>(PATH_CAMERA_DATA, EAssertionLevel::Check);
+
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
-	if (IsValid(CharacterDataAsset))
-	{
-		GetCharacterMovement()->MaxFlySpeed = 10000.f;
-		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
-		
-		Camera->SetFieldOfView(PlayerDataAsset->CameraFOV);
-		Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-		Camera->bUsePawnControlRotation = false;
-		
-		SpringArm->TargetArmLength = PlayerDataAsset->SpringArmLength;
-		SpringArm->SetRelativeRotation(PlayerDataAsset->SpringArmAngle);
-		SpringArm->bDoCollisionTest = false;
-		SpringArm->bUsePawnControlRotation = false;
-		SpringArm->bInheritPitch = false;
-		SpringArm->bInheritYaw = false;
-		SpringArm->bInheritRoll = false;
-		SpringArm->SetUsingAbsoluteRotation(true);
-		SpringArm->SetupAttachment(RootComponent);
-	}
+
+	GetCharacterMovement()->MaxFlySpeed = 10000.f;
+	GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
+
+	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+	Camera->bUsePawnControlRotation = false;
+	
+	SpringArm->bDoCollisionTest = false;
+	SpringArm->bUsePawnControlRotation = false;
+	SpringArm->bInheritPitch = false;
+	SpringArm->bInheritYaw = false;
+	SpringArm->bInheritRoll = false;
+	SpringArm->SetUsingAbsoluteRotation(true);
+	SpringArm->SetupAttachment(RootComponent);
 }
 
 void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (IsValid(CharacterAnimInstance))
+	{
+		PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
+		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DestroyHandle);
+	}
+
+	if (IsValid(CameraDataAsset))
+	{
+		Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
+		
+		SpringArm->TargetArmLength = CameraDataAsset->SpringArmLength;
+		SpringArm->SetRelativeRotation(CameraDataAsset->SpringArmAngle);
+	}
 
 	WireHandActor = Cast<ALLL_PlayerWireHand>(GetWorld()->SpawnActor(ALLL_PlayerWireHand::StaticClass()));
 	WireHandActor->SetOwner(this);
@@ -382,9 +394,12 @@ void ALLL_PlayerBase::Dead()
 	// TODO: 목숨 같은거 생기면 사이에 추가하기
 	
 	DisableInput(Cast<APlayerController>(GetController()));
+
+	PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
+	PlayerAnimInstance->PlayDeadAnimation();
 }
 
-void ALLL_PlayerBase::DeadMontageEndEvent()
+void ALLL_PlayerBase::DestroyHandle()
 {
 	// Super::DeadMontageEndEvent();
 	PlayerUIManager->TogglePauseWidget(bIsDead);

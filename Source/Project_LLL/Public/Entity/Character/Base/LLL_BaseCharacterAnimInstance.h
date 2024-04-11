@@ -10,7 +10,6 @@
 class ALLL_BaseCharacter;
 class UCharacterMovementComponent;
 
-DECLARE_MULTICAST_DELEGATE(FDeadMotionEndedDelegate)
 /**
  * 
  */
@@ -21,10 +20,6 @@ class PROJECT_LLL_API ULLL_BaseCharacterAnimInstance : public UAnimInstance
 
 public:
 	ULLL_BaseCharacterAnimInstance();
-
-	void PlayDeadAnimation();
-
-	FDeadMotionEndedDelegate DeadMotionEndedDelegate;
 
 protected:
 	virtual void NativeInitializeAnimation() override;
@@ -37,9 +32,6 @@ protected:
 	virtual void AnimNotify_RightStep();
 
 	void ExecuteStepCue();
-
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_DeadMotionEnded() { DeadMotionEndedDelegate.Broadcast(); }
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	uint8 bIsIdle : 1;

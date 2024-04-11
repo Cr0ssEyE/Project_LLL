@@ -37,8 +37,6 @@ public:
 public:
 	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
-	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
-	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
 	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
 
 	// 플레이어
@@ -48,6 +46,8 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
+
+	void MovementInit();
 	
 protected:
 	virtual void Tick(float DeltaTime) override;
@@ -55,7 +55,7 @@ protected:
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Damaged() {}
+	virtual void Damaged();
 	virtual void Dead();
 
 	// 상태 체크용 변수
@@ -83,22 +83,10 @@ protected:
 	// 캐릭터 공용 변수
 protected:
 	UPROPERTY(VisibleAnywhere)
-	float AttackDistance;
-
-	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
 
 	// 이동 관련 변수
 protected:
-	UPROPERTY(VisibleAnywhere)
-	float AccelerateSpeed;
-
-	UPROPERTY(VisibleAnywhere)
-	float GroundFriction;
-
-	UPROPERTY(VisibleAnywhere)
-	float TurnSpeed;
-
 	UPROPERTY(VisibleAnywhere)
 	FVector MoveDirection;
 
@@ -117,7 +105,7 @@ protected:
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 
 protected:
-	virtual void DeadMontageEndEvent();
+	virtual void DestroyHandle();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수

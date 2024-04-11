@@ -34,21 +34,20 @@ void ULLL_GA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataHa
 	}
 	
 	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-	FVector AvatarLocation = CurrentActorInfo->AvatarActor->GetActorLocation();
+	const FVector AvatarLocation = CurrentActorInfo->AvatarActor->GetActorLocation();
 	for (auto Actor : TargetDataHandle.Data[0]->GetActors())
 	{
 		// 초기 구현은 MovementComponent의 LaunchCharacter 기반 물리 넉백으로 구현. 추후 방향성에 따른 수정 예정
 		ACharacter* MovableActor = Cast<ACharacter>(Actor);
 		if (MovableActor)
 		{
-			FVector LaunchDirection = (MovableActor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
+			const FVector LaunchDirection = (MovableActor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
 			MovableActor->GetMovementComponent()->Velocity = FVector::Zero();
 			MovableActor->LaunchCharacter(FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, PlayerCharacterAttributeSet->GetKnockBackPower()), true, true);
 		}
 
 		// 만약 넉백 당하지는 않지만 넉백 관련 이벤트가 있는 대상일 경우를 위해 위와 별도 처리
-		IAbilitySystemInterface* GASActor = Cast<IAbilitySystemInterface>(MovableActor);
-		if (GASActor)
+		if (Cast<IAbilitySystemInterface>(MovableActor))
 		{
 			BP_ApplyGameplayEffectToTarget(TargetDataHandle, KnockBackEffect);
 		}

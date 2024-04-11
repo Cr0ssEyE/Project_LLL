@@ -74,17 +74,12 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 			CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 		}
 
-		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = CharacterDataAsset->AccelerateSpeed;
-		GetCharacterMovement()->GroundFriction = GroundFriction = CharacterDataAsset->GroundFriction;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->RotationRate = FRotator(0.f, CharacterDataAsset->TurnSpeed * 360.f, 0.f);
 		GetCharacterMovement()->FallingLateralFriction = 3.0f;
 
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationRoll = false;
-
-		AttackDistance = CharacterDataAsset->AttackDistance;
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		bIsSpawned = true;
@@ -98,10 +93,6 @@ void ALLL_BaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(CharacterAnimInstance))
-	{
-		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
-	}
 
 	if(IsValid(ASC))
 	{
@@ -137,6 +128,17 @@ void ALLL_BaseCharacter::BeginPlay()
 
 		UpdateWidgetDelegate.Broadcast();
 	}
+
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_BaseCharacter::MovementInit);
+}
+
+void ALLL_BaseCharacter::MovementInit()
+{
+	const ULLL_CharacterAttributeSetBase* CharacterAttributeSetBase = CastChecked<ULLL_CharacterAttributeSetBase>(ASC->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
+	
+	GetCharacterMovement()->MaxAcceleration = CharacterAttributeSetBase->GetAccelerateSpeed();
+	GetCharacterMovement()->GroundFriction = CharacterAttributeSetBase->GetGroundFriction();
+	GetCharacterMovement()->RotationRate = FRotator(0.f, CharacterAttributeSetBase->GetTurnSpeed() * 360.f, 0.f);
 }
 
 // Called every frame
@@ -167,6 +169,11 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	}
 }
 
+void ALLL_BaseCharacter::Damaged()
+{
+	UE_LOG(LogTemp, Log, TEXT("%s 피격"), *GetName())
+}
+
 void ALLL_BaseCharacter::Dead()
 {
 	if (bIsDead)
@@ -174,16 +181,17 @@ void ALLL_BaseCharacter::Dead()
 		return;
 	}
 
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CharacterAnimInstance->PlayDeadAnimation();
+	CharacterAnimInstance->StopAllMontages(1.0f);
+
+	GetCapsuleComponent()->SetCollisionProfileName(CP_DEAD_BODY);
+	GetMesh()->SetCollisionProfileName(CP_DEAD_BODY);
 	
 	bIsDead = true;
 
 	CharacterDeadDelegate.Broadcast(this);
 }
 
-void ALLL_BaseCharacter::DeadMontageEndEvent()
+void ALLL_BaseCharacter::DestroyHandle()
 {
 	// TODO: 화면 페이드, 결과창 출력 등등. 임시로 Destroy 처리
 	Destroy();

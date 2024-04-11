@@ -41,22 +41,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스킬 게이지 UI")
 	TSubclassOf<ULLL_SkillWidget> SkillGaugeWidgetClass;
 
-	// 카메라 관련
+	// 애니메이션 관련
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV")
-	float CameraFOV;
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
+	TObjectPtr<UAnimMontage> DeadAnimMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리")
-	float SpringArmLength;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 회전값")
-	FRotator SpringArmAngle;
-
-	// 상호작용 관련(현재 처리하지 않고 있음)
+	// 상호작용 관련
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "상호작용 거리")
-	float InteractionRange;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "마우스 입력시 위치 보정 처리 영역 반지름")
 	float MouseCursorCorrectRadius;
 	
