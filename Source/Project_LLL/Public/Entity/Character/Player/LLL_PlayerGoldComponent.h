@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "LLL_PlayerGoldComponet.generated.h"
+#include "LLL_PlayerGoldComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerMoneyChangedDelegate, float);
 
 class ULLL_GoldComponentDataAsset;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECT_LLL_API ULLL_PlayerGoldComponet : public UActorComponent
+class PROJECT_LLL_API ULLL_PlayerGoldComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	ULLL_PlayerGoldComponet();
+	ULLL_PlayerGoldComponent();
 
 	FOnPlayerMoneyChangedDelegate FOnMoneyChanged;
 	FORCEINLINE void IncreaseMoney(const float InMoney) { Money += InMoney; FOnMoneyChanged.Broadcast(GetMoney()); ShowWidget(); }

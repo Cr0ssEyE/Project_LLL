@@ -55,7 +55,7 @@ protected:
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Damaged() {}
+	virtual void Damaged();
 	virtual void Dead();
 
 	// 상태 체크용 변수
@@ -105,7 +105,7 @@ protected:
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 
 protected:
-	virtual void DeadMontageEndEvent();
+	virtual void DeadTimerCallback();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수

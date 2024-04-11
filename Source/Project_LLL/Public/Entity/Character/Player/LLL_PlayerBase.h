@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
-#include "LLL_PlayerGoldComponet.h"
+#include "LLL_PlayerGoldComponent.h"
 #include "DataAsset/LLL_CameraDataAsset.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
@@ -119,9 +119,9 @@ private:
 	// 상태 관련 함수
 protected:
 	virtual void Dead() override;
-	virtual void DeadMontageEndEvent() override;
+	virtual void DeadTimerCallback() override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerGoldComponet> GoldComponet;
+	TObjectPtr<ULLL_PlayerGoldComponent> GoldComponet;
 };
