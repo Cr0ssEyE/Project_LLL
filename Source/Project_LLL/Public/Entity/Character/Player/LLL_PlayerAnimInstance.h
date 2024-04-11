@@ -24,10 +24,14 @@ public:
 
 protected:
 	virtual void NativeInitializeAnimation() override;
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	virtual void AnimNotify_LeftStep() override;
 	virtual void AnimNotify_RightStep() override;
 
 	void SetStepEventParameter(FName FootSocketName) const;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Character")
+	uint8 bIsDashing : 1;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;

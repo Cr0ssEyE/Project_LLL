@@ -40,23 +40,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "모델링 사이즈", meta=(DisplayPriority=1))
 	FVector MeshSize = FVector::OneVector;
-	
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "기본 가속도")
-	float AccelerateSpeed;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "지면 마찰력")
-	float GroundFriction;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", DisplayName = "방향전환 속도")
-	float TurnSpeed;
-
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 공격 거리")
-	float AttackDistance;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Status", DisplayName = "기본 공격 크기")
-	float AttackRadius;
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")

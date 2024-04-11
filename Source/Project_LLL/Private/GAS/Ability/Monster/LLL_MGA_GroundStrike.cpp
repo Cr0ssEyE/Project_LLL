@@ -11,7 +11,7 @@ void ULLL_MGA_GroundStrike::ActivateAbility(const FGameplayAbilitySpecHandle Han
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	const ALLL_MonsterBase* MonsterCharacter = Cast<ALLL_MonsterBase>(ActorInfo->AvatarActor.Get());
+	const ALLL_MonsterBase* MonsterCharacter = Cast<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
 	if(!IsValid(MonsterCharacter))
 	{
 		return;

@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
-#include "LLL_PlayerAnimInstance.h"
 #include "LLL_PlayerGoldComponet.h"
+#include "DataAsset/LLL_CameraDataAsset.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "Interface/LLL_PlayerDependencyInterface.h"
@@ -90,6 +90,9 @@ private:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<const ULLL_CameraDataAsset> CameraDataAsset;
 	
 	// 상호작용 관련 변수
 private:

@@ -74,17 +74,12 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 			CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 		}
 
-		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = CharacterDataAsset->AccelerateSpeed;
-		GetCharacterMovement()->GroundFriction = GroundFriction = CharacterDataAsset->GroundFriction;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->RotationRate = FRotator(0.f, CharacterDataAsset->TurnSpeed * 360.f, 0.f);
 		GetCharacterMovement()->FallingLateralFriction = 3.0f;
 
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationRoll = false;
-
-		AttackDistance = CharacterDataAsset->AttackDistance;
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		bIsSpawned = true;
@@ -137,6 +132,17 @@ void ALLL_BaseCharacter::BeginPlay()
 
 		UpdateWidgetDelegate.Broadcast();
 	}
+
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_BaseCharacter::MovementInit);
+}
+
+void ALLL_BaseCharacter::MovementInit()
+{
+	const ULLL_CharacterAttributeSetBase* CharacterAttributeSetBase = CastChecked<ULLL_CharacterAttributeSetBase>(ASC->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
+	
+	GetCharacterMovement()->MaxAcceleration = CharacterAttributeSetBase->GetAccelerateSpeed();
+	GetCharacterMovement()->GroundFriction = CharacterAttributeSetBase->GetGroundFriction();
+	GetCharacterMovement()->RotationRate = FRotator(0.f, CharacterAttributeSetBase->GetTurnSpeed() * 360.f, 0.f);
 }
 
 // Called every frame

@@ -79,8 +79,8 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 		}
 	}
 #endif
-	
-	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+
+	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	if(IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
@@ -95,7 +95,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
 	Super::InputPressed(Handle, ActorInfo, ActivationInfo);
-	float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(WaitInputTimerHandle);
+	const float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(WaitInputTimerHandle);
 	if(CurrentComboAction < MaxAttackAction && ElapsedTime > AttackActionInputDelayTime)
 	{
 		bIsInputPressed = true;

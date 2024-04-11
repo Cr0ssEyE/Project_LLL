@@ -40,10 +40,11 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 void ALLL_MonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	ASC->AddSpawnedAttribute(DropGoldAttributeSet);
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
-	FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(DropGoldEffect, 1.0, EffectContextHandle);
+	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(DropGoldEffect, 1.0, EffectContextHandle);
 	if(EffectSpecHandle.IsValid())
 	{
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
@@ -56,9 +57,6 @@ void ALLL_MonsterBase::BeginPlay()
 	MonsterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
 	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
 	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
-	DetectDistance = MonsterBaseDataAsset->DetectDistance;
-	FieldOfView = MonsterBaseDataAsset->FieldOfView;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -101,7 +99,7 @@ void ALLL_MonsterBase::Dead()
 	
 }
 
-void ALLL_MonsterBase::Attack()
+void ALLL_MonsterBase::Attack() const
 {
 	int32 index = FMath::RandRange(0, MonsterBaseDataAsset->ActiveGameplayAbility.Num() - 1);
 	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromClass(MonsterBaseDataAsset->ActiveGameplayAbility[index]);
@@ -144,7 +142,7 @@ void ALLL_MonsterBase::Damaged()
 	}
 }
 
-bool ALLL_MonsterBase::CanPlayAttackAnimation()
+bool ALLL_MonsterBase::CanPlayAttackAnimation() const
 {
 	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
 	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK));

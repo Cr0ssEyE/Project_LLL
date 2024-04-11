@@ -8,6 +8,7 @@
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 
@@ -40,11 +41,7 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	AISenseConfig_Sight->DetectionByAffiliation.bDetectFriendlies = true;
 	AISenseConfig_Sight->DetectionByAffiliation.bDetectNeutrals = true;
 
-	AISenseConfig_Sight->SightRadius = MonsterDataAsset->DetectDistance;
-	AISenseConfig_Sight->LoseSightRadius =  MonsterDataAsset->DetectDistance;
-	AISenseConfig_Sight->PeripheralVisionAngleDegrees = MonsterDataAsset->FieldOfView / 2.0f;
-	
-	PerceptionComponent->ConfigureSense(*AISenseConfig_Sight);
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBaseAIController::AISenseInit);
 }
 
 void ALLL_MonsterBaseAIController::SetPlayer()
@@ -54,4 +51,15 @@ void ALLL_MonsterBaseAIController::SetPlayer()
 	{
 		BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
 	}
+}
+
+void ALLL_MonsterBaseAIController::AISenseInit()
+{
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+	
+	AISenseConfig_Sight->SightRadius = MonsterAttributeSet->GetDetectDistance();
+	AISenseConfig_Sight->LoseSightRadius =  MonsterAttributeSet->GetDetectDistance();
+	AISenseConfig_Sight->PeripheralVisionAngleDegrees = MonsterAttributeSet->GetFieldOfView() / 2.0f;
+
+	PerceptionComponent->ConfigureSense(*AISenseConfig_Sight);
 }

@@ -59,7 +59,7 @@ void ULLL_PGA_ComboManagement::EndAbility(const FGameplayAbilitySpecHandle Handl
 		}
 	}
 
-	FGameplayTagContainer SkillGaugeAmplifyByComboTag(TAG_GAS_COMBO_CHECK_AMPLIFY);
+	const FGameplayTagContainer SkillGaugeAmplifyByComboTag(TAG_GAS_COMBO_CHECK_AMPLIFY);
 	GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(SkillGaugeAmplifyByComboTag);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
@@ -74,7 +74,7 @@ void ULLL_PGA_ComboManagement::ComboTimerTick()
 		{
 			CurrentComboStackDuration = MaxComboStackDuration;
 		}
-		FGameplayTagContainer SkillGaugeAmplifyByComboTag(TAG_GAS_COMBO_CHECK_AMPLIFY);
+		const FGameplayTagContainer SkillGaugeAmplifyByComboTag(TAG_GAS_COMBO_CHECK_AMPLIFY);
 		GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(SkillGaugeAmplifyByComboTag);
 	}
 	else

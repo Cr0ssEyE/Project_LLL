@@ -32,7 +32,7 @@ void ULLL_PGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 #endif
 	
 	// ASC에 등록된 어트리뷰트 가져오고 GA에서 필요한 어트리뷰트 저장하기
-	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	const ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	if(IsValid(PlayerCharacter) && IsValid(PlayerAttributeSet))
 	{
@@ -61,8 +61,8 @@ void ULLL_PGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 		}
 	}
 #endif
-	
-	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+
+	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	if(IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
@@ -70,15 +70,17 @@ void ULLL_PGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	CurrentDashCount = 0;
 	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
 	WaitInputTimerHandle.Invalidate();
+	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void ULLL_PGA_Dash::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
 	Super::InputPressed(Handle, ActorInfo, ActivationInfo);
+	
 	// FTimerHandle.IsValid = 타이머가 실행중인 경우라고 봐도 됩니다.
 	// 해당 코드에서 타이머가 실행중인 경우 = 첫 대쉬 입력이 들어오고 입력이 더 안들어오나 확인하는 중
-	float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(WaitInputTimerHandle);
+	const float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(WaitInputTimerHandle);
 	if(CurrentDashCount < MaxDashCount && ElapsedTime > DashReActionTime)
 	{
 		bIsInputPressed = true;
