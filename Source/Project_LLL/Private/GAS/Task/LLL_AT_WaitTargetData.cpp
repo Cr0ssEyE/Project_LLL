@@ -3,7 +3,6 @@
 
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
 
-#include "AbilitySystemInterface.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 
 ULLL_AT_WaitTargetData::ULLL_AT_WaitTargetData()

@@ -23,6 +23,13 @@
 #define TAG_GAS_PLAYER_WIRE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Wire.Attack"))
 #define TAG_GAS_PLAYER_WIRE_RETURN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.WireReturned"))
 
+// 플레이어 부가 효과 구분용 게임플레이 태그
+#define TAG_GAS_PERKS_ATTACK FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Attack")
+#define TAG_GAS_PERKS_DASH FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Dash")
+#define TAG_GAS_PERKS_SKILL FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Skill")
+#define TAG_GAS_PERKS_STAT FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Stat")
+#define TAG_GAS_PERKS_WIRE FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Wire")
+
 // 와이어 게임플레이 태그
 #define TAG_GAS_WIRE_THROW FGameplayTag::RequestGameplayTag(FName("Object.Wire.Action.Throw"))
 #define TAG_GAS_WIRE_RELEASE FGameplayTag::RequestGameplayTag(FName("Object.Wire.Action.Release"))

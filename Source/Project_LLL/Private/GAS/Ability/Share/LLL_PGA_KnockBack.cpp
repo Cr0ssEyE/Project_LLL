@@ -8,8 +8,6 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Entity/Character/Monster/Melee/Orawave/LLL_Orawave.h"
-#include "Entity/Character/Monster/Ranged/EnergyBlaster/LLL_EnergyBlaster.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
