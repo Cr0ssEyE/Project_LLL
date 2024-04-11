@@ -17,6 +17,7 @@
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Ability/Monster/LLL_MGA_GroundStrike.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/LLL_CharacterStatusWidget.h"
 #include "Util/LLLConstructorHelper.h"
@@ -99,8 +100,20 @@ void ALLL_MonsterBase::Dead()
 		MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
 	}
 
-	GetCharacterMovement()->SetMovementMode(MOVE_None);
 	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
+
+	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	if (IsValid(PlayerBase))
+	{
+		FVector ImpulseDirection = PlayerBase->GetActorForwardVector();
+		ImpulseDirection.Normalize();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		const float ImpulseStrength = PlayerAttributeSet->GetImpulseStrength();
+		const FVector FinalImpulse = ImpulseDirection * ImpulseStrength * 100.0f;
+		
+		GetMesh()->AddImpulseToAllBodiesBelow(FinalImpulse);
+	}
 
 	MonsterStatusWidgetComponent->SetHiddenInGame(true);
 	
