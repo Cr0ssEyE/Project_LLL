@@ -102,8 +102,6 @@ protected:
 	TArray<TWeakObjectPtr<ALLL_GateObject>> DeleteGates;
 
 	TMap<FName, FVector> GateLocations;
-
-	FTimerHandle GateDestroyHandel;
 	
 	UFUNCTION()
 	void AllGatesDestroy();
