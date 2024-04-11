@@ -101,6 +101,8 @@ void ALLL_MonsterBase::Dead()
 
 	GetCharacterMovement()->SetMovementMode(MOVE_None);
 	GetMesh()->SetSimulatePhysics(true);
+
+	MonsterStatusWidgetComponent->SetHiddenInGame(true);
 	
 	FTimerHandle HideTimerHandle;
 	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_MonsterBase::DestroyHandle, 3.0f, false);
