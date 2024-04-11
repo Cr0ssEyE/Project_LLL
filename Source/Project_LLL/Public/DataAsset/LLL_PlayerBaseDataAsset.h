@@ -41,6 +41,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스킬 게이지 UI")
 	TSubclassOf<ULLL_SkillWidget> SkillGaugeWidgetClass;
 
+	// 애니메이션 관련
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
+	TObjectPtr<UAnimMontage> DeadAnimMontage;
+
 	// 상호작용 관련
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "마우스 입력시 위치 보정 처리 영역 반지름")

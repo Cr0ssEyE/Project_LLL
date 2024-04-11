@@ -181,22 +181,17 @@ void ALLL_BaseCharacter::Dead()
 		return;
 	}
 
-	GetCharacterMovement()->SetMovementMode(MOVE_None);
-
 	CharacterAnimInstance->StopAllMontages(1.0f);
+
 	GetCapsuleComponent()->SetCollisionProfileName(CP_DEAD_BODY);
 	GetMesh()->SetCollisionProfileName(CP_DEAD_BODY);
-	GetMesh()->SetSimulatePhysics(true);
-	
-	FTimerHandle HideTimerHandle;
-	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_BaseCharacter::DeadTimerCallback, 3.0f, false);
 	
 	bIsDead = true;
 
 	CharacterDeadDelegate.Broadcast(this);
 }
 
-void ALLL_BaseCharacter::DeadTimerCallback()
+void ALLL_BaseCharacter::DestroyHandle()
 {
 	// TODO: 화면 페이드, 결과창 출력 등등. 임시로 Destroy 처리
 	Destroy();

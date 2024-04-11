@@ -10,7 +10,6 @@
 class ALLL_BaseCharacter;
 class UCharacterMovementComponent;
 
-DECLARE_MULTICAST_DELEGATE(FDeadMotionEndedDelegate)
 /**
  * 
  */

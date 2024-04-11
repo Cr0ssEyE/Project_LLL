@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "LLL_BaseCharacterUIManager.generated.h"
 
-
 class ULLL_CharacterWidgetComponent;
 class ULLL_CharacterStatusWidget;
 
