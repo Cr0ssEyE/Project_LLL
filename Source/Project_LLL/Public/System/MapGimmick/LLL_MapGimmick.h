@@ -98,9 +98,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
 	TArray<TWeakObjectPtr<ALLL_GateObject>> Gates;
 
-	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
-	TArray<TWeakObjectPtr<ALLL_GateObject>> DeleteGates;
-
 	TMap<FName, FVector> GateLocations;
 	
 	UFUNCTION()
