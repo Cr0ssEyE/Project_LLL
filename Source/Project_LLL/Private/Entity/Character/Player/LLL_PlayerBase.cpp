@@ -12,11 +12,13 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 #include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
 #include "Enumeration/LLL_AbilityKeyHelper.h"
+#include "Game/LLL_AbilityManageSubSystem.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -83,6 +85,16 @@ void ALLL_PlayerBase::BeginPlay()
 				SkillSpec.InputID = static_cast<int32>(SkillAbility.Key);
 				ASC->GiveAbility(SkillSpec);
 			}
+		}
+	}
+	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
+	if (IsValid(AbilityManageSubSystem))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Silver, FString::Printf(TEXT("서브 시스템 생성 확인")));
+		TArray<TSubclassOf<UGameplayEffect>> Effects = AbilityManageSubSystem->FindPlayerEffectsByTag(this, FGameplayTagContainer(TAG_GAS_COMBO_ADDITIVE));
+		if (!Effects.IsEmpty())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("이게 되네")));
 		}
 	}
 }
@@ -255,8 +267,10 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	{
 		MoveInputValue.Normalize();
 	}
-	
-	MoveDirection = Camera->GetComponentRotation().RotateVector(FVector(MoveInputValue.X, MoveInputValue.Y, 0.f));
+
+	FRotator CameraRotation = Camera->GetComponentRotation();
+	CameraRotation.Pitch = CameraRotation.Roll = 0.f;
+	MoveDirection = CameraRotation.RotateVector(FVector(MoveInputValue.X, MoveInputValue.Y, 0.f));
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	if (GetCharacterMovement()->IsWalking())
 	{
@@ -277,6 +291,7 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputNa
 {
 	int32 InputID = static_cast<int32>(InputName);
 	FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID);
+	
 	if(DashSpec)
 	{
 		DashSpec->InputPressed = true;
@@ -378,6 +393,7 @@ void ALLL_PlayerBase::PlayerRotateToMouseCursor()
 	FVector ViewDirection = (MouseWorldLocation - GetActorLocation()).GetSafeNormal();
 	ViewDirection.Z = 0.f;
 	SetActorRotation(ViewDirection.Rotation());
+	
 }
 
 void ALLL_PlayerBase::ParameterTest()

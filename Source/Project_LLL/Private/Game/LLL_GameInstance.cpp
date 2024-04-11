@@ -3,6 +3,8 @@
 
 #include "Game/LLL_GameInstance.h"
 
+#include "Game/LLL_AbilityManageSubSystem.h"
+
 ULLL_GameInstance::ULLL_GameInstance()
 {
 	

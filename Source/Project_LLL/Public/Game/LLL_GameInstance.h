@@ -25,4 +25,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> MonsterMPC;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UMaterialParameterCollection> InterfaceMPC;
+	
 };
