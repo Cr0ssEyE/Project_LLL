@@ -128,6 +128,7 @@ void ALLL_MonsterBase::Damaged()
 	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(MonsterBaseAnimInstance))
 	{
+		MonsterBaseAnimInstance->StopAllMontages(1.0f);
 		MonsterBaseAnimInstance->PlayDamagedAnimation();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
