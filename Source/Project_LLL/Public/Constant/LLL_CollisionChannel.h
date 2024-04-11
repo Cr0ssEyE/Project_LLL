@@ -24,5 +24,7 @@
 #define CP_INTERACTION TEXT("Interaction")
 #define CP_EVADE TEXT("Evade")
 #define CP_MONSTER_ATTACK TEXT("MonsterAttack")
+#define CP_NOCOLLISION TEXT("NoCollision")
+#define CP_OVERLAPALL TEXT("OverlapAll")
 #define CP_STAGE_TRIGGER TEXT("StageTrigger")
 #define CP_DEAD_BODY TEXT("DeadBody")
