@@ -26,9 +26,6 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PlayerBaseDataAsset : public ULLL_BaseCharacterDataAsset
 {
 	GENERATED_BODY()
-
-public:
-	ULLL_PlayerBaseDataAsset();
 	
 	// UI 관련 
 public:
