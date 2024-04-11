@@ -14,6 +14,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 #include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
@@ -62,6 +63,12 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (IsValid(CharacterAnimInstance))
+	{
+		PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
+		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DestroyHandle);
+	}
 
 	if (IsValid(CameraDataAsset))
 	{
@@ -431,9 +438,12 @@ void ALLL_PlayerBase::Dead()
 	// TODO: 목숨 같은거 생기면 사이에 추가하기
 	
 	DisableInput(Cast<APlayerController>(GetController()));
+
+	PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
+	PlayerAnimInstance->PlayDeadAnimation();
 }
 
-void ALLL_PlayerBase::DeadTimerCallback()
+void ALLL_PlayerBase::DestroyHandle()
 {
 	// Super::DeadMontageEndEvent();
 	PlayerUIManager->TogglePauseWidget(bIsDead);

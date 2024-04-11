@@ -15,6 +15,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Ability/Monster/LLL_MGA_GroundStrike.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/LLL_CharacterStatusWidget.h"
@@ -97,6 +98,12 @@ void ALLL_MonsterBase::Dead()
 	{
 		MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
 	}
+
+	GetCharacterMovement()->SetMovementMode(MOVE_None);
+	GetMesh()->SetSimulatePhysics(true);
+	
+	FTimerHandle HideTimerHandle;
+	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_MonsterBase::DestroyHandle, 3.0f, false);
 }
 
 void ALLL_MonsterBase::Attack() const

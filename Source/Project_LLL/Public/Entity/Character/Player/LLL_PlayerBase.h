@@ -78,6 +78,9 @@ private:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerUIManager> PlayerUIManager;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_PlayerAnimInstance> PlayerAnimInstance;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ALLL_PlayerWireHand> WireHandActor;
@@ -127,7 +130,7 @@ private:
 	// 상태 관련 함수
 protected:
 	virtual void Dead() override;
-	virtual void DeadTimerCallback() override;
+	virtual void DestroyHandle() override;
 
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
 	// 상태 관련 변수

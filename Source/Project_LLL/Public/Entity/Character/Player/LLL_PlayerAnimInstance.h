@@ -10,6 +10,8 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FAttackHitCheckDelegate, bool)
 DECLARE_MULTICAST_DELEGATE_OneParam(FAttackComboCheckDelegate, bool)
+DECLARE_MULTICAST_DELEGATE(FDeadMotionEndedDelegate)
+
 /**
  * 
  */
@@ -21,6 +23,7 @@ class PROJECT_LLL_API ULLL_PlayerAnimInstance : public ULLL_BaseCharacterAnimIns
 public:
 	FAttackHitCheckDelegate AttackHitCheckDelegate;
 	FAttackComboCheckDelegate AttackComboCheckDelegate;
+	FDeadMotionEndedDelegate DeadMotionEndedDelegate;
 
 protected:
 	virtual void NativeInitializeAnimation() override;
@@ -28,7 +31,14 @@ protected:
 	virtual void AnimNotify_LeftStep() override;
 	virtual void AnimNotify_RightStep() override;
 
+public:
+	void PlayDeadAnimation();
+
+protected:
 	void SetStepEventParameter(FName FootSocketName) const;
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void AnimNotify_DeadMotionEnded() { DeadMotionEndedDelegate.Broadcast(); }
 
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	uint8 bIsDashing : 1;
