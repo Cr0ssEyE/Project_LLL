@@ -11,6 +11,9 @@ class ULLL_MapDataAsset;
 class ALLL_GateObject;
 class ALLL_RewardObject;
 class ALLL_MonsterSpawner;
+class ULevelSequencePlayer;
+class ULevelSequence;
+class ALevelSequenceActor;
 
 DECLARE_DELEGATE(FOnStageChangedDelegate);
 
@@ -63,6 +66,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent> StageTrigger;
 
+	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<AActor> StageActor;
+
+	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	TArray<AActor*> StageChildActors;
+
+	uint32 Seed;
+
 	UFUNCTION()
 	void OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -71,6 +82,9 @@ protected:
 
 	UFUNCTION()
 	void RandomMap();
+
+	UFUNCTION()
+	void ChangeMap(AActor* DestroyedActor);
 
 private:
 	UPROPERTY()
@@ -83,9 +97,13 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
 	TArray<TWeakObjectPtr<ALLL_GateObject>> Gates;
+	
+	UFUNCTION()
+	void AllGatesDestroy();
 
-	TMap<FName, FVector> GateLocations;
-
+	UFUNCTION()
+	void OnInteractionGate();
+	
 	void EnableAllGates();
 
 // State Section
@@ -128,4 +146,18 @@ protected:
 	void RewardDestroyed(AActor* DestroyedActor);
 
 	void RewardSpawn();
+
+//Sequence Section
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	TObjectPtr<ULevelSequencePlayer> LevelSequencePlayer;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	TObjectPtr<ULevelSequence> FadeInSequence;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	TObjectPtr<ULevelSequence> FadeOutSequence;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	TObjectPtr<ALevelSequenceActor> LevelSequenceActor;
 };
