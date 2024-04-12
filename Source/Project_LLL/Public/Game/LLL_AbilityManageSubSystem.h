@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "Enumeration/LLL_AbilitySystemEnumHelper.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "LLL_AbilityManageSubSystem.generated.h"
 
-enum class EEffectOwnerType : uint8;
 class ULLL_ExtendedGameplayEffect;
 class UGameplayEffect;
 class UAbilitySystemComponent;
@@ -32,50 +32,49 @@ public:
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
-		
+	
 	// 유틸리티 모음?
 public:
-	void LoadEffectsFromPath(TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>>& Container, FName Path);
-	
-	UFUNCTION(BlueprintCallable)
-	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> FindEffectsFromDataSet(TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>>& DataSet, const FGameplayTagContainer& EffectTag, bool HasMatching = false);
-	
+	void LoadEffectsFromPath(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& Container, FName PrimaryTypes);
+
 	// 어빌리티 OR 스탯 부여
 public:
 	UFUNCTION(BlueprintCallable)
-	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> FindEffectsByTag(EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching = false);
+	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FindEffectsByTag(EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching = false);
 	
 	UFUNCTION(BlueprintCallable)
-	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> FindAttributeAccessEffectsByTag(EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching = false);
+	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FindAttributeAccessEffectsByTag(EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching = false);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> FindAbilityGrantEffectsByTag(EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching = false);
+	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FindAbilityGrantEffectsByTag(EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching = false);
 
 private:
-	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>>& GetDataSetByOwner(EEffectOwnerType Owner);
+	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& GetDataSetByOwner(EEffectOwnerType Owner);
 	
+	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FindEffectsFromDataSet(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& DataSet, const FGameplayTagContainer& EffectTag, bool HasMatching = false);
+
 private:
 	/** 플레이어에게 게임 진행 도중 일시적으로 어빌리티 OR 스탯을 부여하기 위해 사용하는 이펙트 모음. ex: 보상 \n
 	/GAS/Effects/Character/Player 폴더 내부의 모든 ULLL_ExtendedGameplayEffect를 가져와 저장
 	**/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player", DisplayName = "플레이어 이펙트 리스트", meta=(AllowPrivateAccess=true))
-	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> PlayerGameplayEffects;
+	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> PlayerGameplayEffects;
 
 	/** 몬스터에게 게임 진행 도중 일시적으로 어빌리티 OR 스탯을 부여하기 위해 사용하는 이펙트 모음. ex: 강화 몬스터 \n
 	/GAS/Effects/Character/Monster 폴더 내부의 모든 ULLL_ExtendedGameplayEffect를 가져와 저장
 	**/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Monster", DisplayName = "몬스터 이펙트 리스트", meta=(AllowPrivateAccess=true))
-	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> MonsterGameplayEffects;
+	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> MonsterGameplayEffects;
 
 	/** 오브젝트에게 게임 진행 도중 일시적으로 어빌리티 OR 스탯 등을 부여하기 위해 사용하는 이펙트 모음. ex: 부숴지는 오브젝트 \n
 	/GAS/Effects/Character/Object 폴더 내부의 모든 ULLL_ExtendedGameplayEffect를 가져와 저장
 	**/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Object", DisplayName = "오브젝트 이펙트 리스트", meta=(AllowPrivateAccess=true))
-	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> ObjectGameplayEffects;
+	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> ObjectGameplayEffects;
 
 	/** 두 분류 이상이 겹쳐서 사용 가능한 이펙트 모음 ex: 골드 드랍 \n
 	/GAS/Effects/Character/Share 폴더 내부의 모든 ULLL_ExtendedGameplayEffect를 가져와 저장
 	**/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Share", DisplayName = "범용 이펙트 리스트", meta=(AllowPrivateAccess=true))
-	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> ShareableGameplayEffects;
+	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> ShareableGameplayEffects;
 };

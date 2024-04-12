@@ -94,13 +94,13 @@ void ALLL_PlayerBase::BeginPlay()
 	if (IsValid(AbilityManageSubSystem))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Silver, FString::Printf(TEXT("서브 시스템 생성 확인")));
-		TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> Effects = AbilityManageSubSystem->FindEffectsByTag(EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), false);
+		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> Effects = AbilityManageSubSystem->FindEffectsByTag(EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), false);
 		if (!Effects.IsEmpty())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("이게 되네")));
 			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(this);
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(Effects[0], 1.0, EffectContextHandle);
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(Effects[0].Get(), 1.0, EffectContextHandle);
 			if(EffectSpecHandle.IsValid())
 			{
 				ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
