@@ -7,11 +7,8 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "LLL_AbilityManageSubSystem.generated.h"
 
-/**
- * 전반적인 어빌리티를 관리하는 서브시스템.
- * 코드만 적어놓고 별도로 생성이나 초기화 처리를 하지 않아도 인스턴스에서 불러올 수 있음. 왜지???
- */
-
+enum class EEffectOwnerType : uint8;
+class ULLL_ExtendedGameplayEffect;
 class UGameplayEffect;
 class UAbilitySystemComponent;
 class ULLL_ObjectEffectStorageDataAsset;
@@ -20,7 +17,10 @@ class ULLL_EffectStorageDataAsset;
 class ALLL_BaseObject;
 class ALLL_MonsterBase;
 class ALLL_PlayerBase;
-struct FGameplayTagContainer;
+
+/**
+  어빌리티 관련 기능을 수행하는 서브시스템
+ **/
 
 UCLASS()
 class PROJECT_LLL_API ULLL_AbilityManageSubSystem : public UGameInstanceSubsystem
@@ -35,30 +35,47 @@ public:
 		
 	// 유틸리티 모음?
 public:
-	void LoadEffectsFromPath(TArray<TSubclassOf<UGameplayEffect>>& Container, FName Path);
-	TArray<TSubclassOf<UGameplayEffect>> FindEffectsByTag(TArray<TSubclassOf<UGameplayEffect>>& DataSet, const FGameplayTagContainer& EffectTag);
+	void LoadEffectsFromPath(TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>>& Container, FName Path);
+	
+	UFUNCTION(BlueprintCallable)
+	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> FindEffectsFromDataSet(TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>>& DataSet, const FGameplayTagContainer& EffectTag, bool HasMatching = false);
 	
 	// 어빌리티 OR 스탯 부여
 public:
-	TArray<TSubclassOf<UGameplayEffect>> FindPlayerEffectsByTag(ALLL_PlayerBase* TargetPlayer, const FGameplayTagContainer& EffectTag);
-	TArray<TSubclassOf<UGameplayEffect>> FindMonsterEffectsByTag(ALLL_MonsterBase* TargetMonster, const FGameplayTagContainer& EffectTag);
-	TArray<TSubclassOf<UGameplayEffect>> FindObjectEffectsByTag(ALLL_BaseObject* TargetObject, const FGameplayTagContainer& EffectTag);
-	TArray<TSubclassOf<UGameplayEffect>> FindShareableEffectsByTag(const FGameplayTagContainer& EffectTag);
+	UFUNCTION(BlueprintCallable)
+	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> FindEffectsByTag(EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching = false);
 	
-protected:
-	// 플레이어에게 게임 진행 도중 일시적으로 어빌리티 OR 스탯을 부여하기 위해 사용하는 이펙트 모음. ex: 보상
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player", DisplayName = "플레이어 이펙트 리스트")
-	TArray<TSubclassOf<UGameplayEffect>> PlayerGameplayEffects;
+	UFUNCTION(BlueprintCallable)
+	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> FindAttributeAccessEffectsByTag(EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching = false);
 
-	// 몬스터에게 게임 진행 도중 일시적으로 어빌리티 OR 스탯을 부여하기 위해 사용하는 이펙트 모음. ex: 강화 몬스터
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Monster", DisplayName = "플레이어 이펙트 리스트")
-	TArray<TSubclassOf<UGameplayEffect>> MonsterGameplayEffects;
+	UFUNCTION(BlueprintCallable)
+	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> FindAbilityGrantEffectsByTag(EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching = false);
 
-	// 오브젝트에게 게임 진행 도중 일시적으로 어빌리티 OR 스탯 등을 부여하기 위해 사용하는 이펙트 모음. ex: 부숴지는 오브젝트 중
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Object", DisplayName = "플레이어 이펙트 리스트")
-	TArray<TSubclassOf<UGameplayEffect>> ObjectGameplayEffects;
+private:
+	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>>& GetDataSetByOwner(EEffectOwnerType Owner);
+	
+private:
+	/** 플레이어에게 게임 진행 도중 일시적으로 어빌리티 OR 스탯을 부여하기 위해 사용하는 이펙트 모음. ex: 보상 \n
+	/GAS/Effects/Character/Player 폴더 내부의 모든 ULLL_ExtendedGameplayEffect를 가져와 저장
+	**/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player", DisplayName = "플레이어 이펙트 리스트", meta=(AllowPrivateAccess=true))
+	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> PlayerGameplayEffects;
 
-	// 두 분류 이상이 겹쳐서 사용 가능한 이펙트 모음 ex: 골드 드랍
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Share", DisplayName = "범용 이펙트 리스트")
-	TArray<TSubclassOf<UGameplayEffect>> ShareableGameplayEffects;
+	/** 몬스터에게 게임 진행 도중 일시적으로 어빌리티 OR 스탯을 부여하기 위해 사용하는 이펙트 모음. ex: 강화 몬스터 \n
+	/GAS/Effects/Character/Monster 폴더 내부의 모든 ULLL_ExtendedGameplayEffect를 가져와 저장
+	**/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Monster", DisplayName = "몬스터 이펙트 리스트", meta=(AllowPrivateAccess=true))
+	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> MonsterGameplayEffects;
+
+	/** 오브젝트에게 게임 진행 도중 일시적으로 어빌리티 OR 스탯 등을 부여하기 위해 사용하는 이펙트 모음. ex: 부숴지는 오브젝트 \n
+	/GAS/Effects/Character/Object 폴더 내부의 모든 ULLL_ExtendedGameplayEffect를 가져와 저장
+	**/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Object", DisplayName = "오브젝트 이펙트 리스트", meta=(AllowPrivateAccess=true))
+	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> ObjectGameplayEffects;
+
+	/** 두 분류 이상이 겹쳐서 사용 가능한 이펙트 모음 ex: 골드 드랍 \n
+	/GAS/Effects/Character/Share 폴더 내부의 모든 ULLL_ExtendedGameplayEffect를 가져와 저장
+	**/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Share", DisplayName = "범용 이펙트 리스트", meta=(AllowPrivateAccess=true))
+	TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> ShareableGameplayEffects;
 };

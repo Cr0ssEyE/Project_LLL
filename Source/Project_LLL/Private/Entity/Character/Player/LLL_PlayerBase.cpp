@@ -17,7 +17,6 @@
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 #include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
-#include "Enumeration/LLL_AbilityKeyHelper.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -25,6 +24,8 @@
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLLConstructorHelper.h"
+#include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "GAS/LLL_ExtendedGameplayEffect.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
@@ -87,14 +88,23 @@ void ALLL_PlayerBase::BeginPlay()
 			}
 		}
 	}
+	
+	// 서브시스템 접근 테스트용
 	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
 	if (IsValid(AbilityManageSubSystem))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Silver, FString::Printf(TEXT("서브 시스템 생성 확인")));
-		TArray<TSubclassOf<UGameplayEffect>> Effects = AbilityManageSubSystem->FindPlayerEffectsByTag(this, FGameplayTagContainer(TAG_GAS_COMBO_ADDITIVE));
+		TArray<TSubclassOf<ULLL_ExtendedGameplayEffect>> Effects = AbilityManageSubSystem->FindEffectsByTag(EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), false);
 		if (!Effects.IsEmpty())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("이게 되네")));
+			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+			EffectContextHandle.AddSourceObject(this);
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(Effects[0], 1.0, EffectContextHandle);
+			if(EffectSpecHandle.IsValid())
+			{
+				ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+			}
 		}
 	}
 }

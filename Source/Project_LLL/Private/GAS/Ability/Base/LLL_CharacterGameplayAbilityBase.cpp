@@ -3,6 +3,8 @@
 
 #include "GAS/Ability/Base/LLL_CharacterGameplayAbilityBase.h"
 
+#include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+
 ULLL_CharacterGameplayAbilityBase::ULLL_CharacterGameplayAbilityBase()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;

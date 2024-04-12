@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 
-#define PATH_PLAYER_EFFECTS_FOLDER TEXT("/Game/GAS/Effects/Character/Player/")
-#define PATH_MONSTER_EFFECTS_FOLDER TEXT("/Game/GAS/Effects/Character/Monster/")
-#define PATH_OBJECT_EFFECTS_FOLDER TEXT("/Game/GAS/Effects/Object/")
-#define PATH_SHARE_EFFECTS_FOLDER TEXT("/Game/GAS/Effects/Share/")
+#define PATH_PLAYER_EFFECTS_FOLDER TEXT("/Game/GAS/Effects/Character/Player")
+#define PATH_MONSTER_EFFECTS_FOLDER TEXT("/Game/GAS/Effects/Character/Monster")
+#define PATH_OBJECT_EFFECTS_FOLDER TEXT("/Game/GAS/Effects/Object")
+#define PATH_SHARE_EFFECTS_FOLDER TEXT("/Game/GAS/Effects/Share")
 
 #define PATH_PLAYER_DATA TEXT("/Script/Project_LLL.LLL_PlayerBaseDataAsset'/Game/DataAsset/DA_Player.DA_Player'")
 #define PATH_PLAYER_WIRE_DATA TEXT("/Script/Project_LLL.LLL_PlayerWireObjectDataAsset'/Game/DataAsset/DA_PlayerWire.DA_PlayerWire'")

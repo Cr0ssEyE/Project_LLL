@@ -13,6 +13,7 @@
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Task/LLL_AT_Trace.h"
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
+#include "Interface/LLL_KnockBackInterface.h"
 #include "Util/LLL_MathHelper.h"
 
 ULLL_PGA_KnockBack::ULLL_PGA_KnockBack()
@@ -47,7 +48,7 @@ void ULLL_PGA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataH
 	{
 		// 초기 구현은 MovementComponent의 LaunchCharacter 기반 물리 넉백으로 구현. 추후 방향성에 따른 수정 예정
 		ACharacter* MovableActor = Cast<ACharacter>(Actor);
-		if (MovableActor)
+		if (MovableActor && Cast<ILLL_KnockBackInterface>(MovableActor))
 		{
 			const FVector LaunchDirection = (MovableActor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
 			MovableActor->GetMovementComponent()->Velocity = FVector::Zero();

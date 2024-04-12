@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
-#include "Enumeration/LLL_EffectApplyTargetHelper.h"
 #include "LLL_CharacterGameplayAbilityBase.generated.h"
+
+enum class EEffectApplyTarget : uint8;
 
 /**
  * 
