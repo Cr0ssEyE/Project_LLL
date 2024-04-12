@@ -15,8 +15,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GAS/Ability/Monster/LLL_MGA_GroundStrike.h"
+#include "GAS/Ability/Monster/LLL_MGA_Attack.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/LLL_CharacterStatusWidget.h"
@@ -123,12 +122,13 @@ void ALLL_MonsterBase::Dead()
 
 void ALLL_MonsterBase::Attack() const
 {
-	const int32 index = FMath::RandRange(0, MonsterBaseDataAsset->ActiveGameplayAbility.Num() - 1);
-	if (const FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromClass(MonsterBaseDataAsset->ActiveGameplayAbility[index]))
+	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
+	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK));
+	for (const auto AbilitySpecHandle : AbilitySpecHandles)
 	{
-		if (!SkillSpec->IsActive())
+		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
 		{
-			if (ASC->TryActivateAbility(SkillSpec->Handle))
+			if (ASC->TryActivateAbility(AbilitySpec->Handle))
 			{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 				if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -172,8 +172,7 @@ bool ALLL_MonsterBase::CanPlayAttackAnimation() const
 	{
 		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
 		{
-			const UAnimMontage* AttackAnimMontage = Cast<ULLL_MGA_GroundStrike>(AbilitySpec->GetPrimaryInstance())->GetAbilityActionMontage();
-			const UAnimMontage* DamagedAnimMontage = MonsterBaseDataAsset->DamagedAnimMontage;
+			const UAnimMontage* AttackAnimMontage = Cast<ULLL_MGA_Attack>(AbilitySpec->GetPrimaryInstance())->GetAttackMontage();
 	
 			if (IsValid(CharacterAnimInstance) && IsValid(AttackAnimMontage))
 			{
@@ -182,14 +181,21 @@ bool ALLL_MonsterBase::CanPlayAttackAnimation() const
 					return false;
 				}
 
-				if (CharacterAnimInstance->Montage_IsPlaying(DamagedAnimMontage))
-				{
-					return false;
-				}
-
 				return true;
 			}
 		}
+	}
+
+	return false;
+}
+
+bool ALLL_MonsterBase::IsDamaged() const
+{
+	const UAnimMontage* DamagedAnimMontage = MonsterBaseDataAsset->DamagedAnimMontage;
+
+	if (CharacterAnimInstance->Montage_IsPlaying(DamagedAnimMontage))
+	{
+		return true;
 	}
 
 	return false;

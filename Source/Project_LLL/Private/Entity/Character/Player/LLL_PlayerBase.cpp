@@ -34,7 +34,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	GoldComponet = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
-	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributes"));
+	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
 	
 	Continuous = 0.0f;
 	Discrete = 0;
@@ -313,10 +313,8 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	
-	if(DashSpec)
+	const int32 InputID = static_cast<int32>(InputName);
+	if(FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
 		DashSpec->InputPressed = true;
 		if (DashSpec->IsActive())
@@ -332,9 +330,8 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputNa
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	if(AttackSpec)
+	const int32 InputID = static_cast<int32>(InputName);
+	if(FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
 		AttackSpec->InputPressed = true;
 		if (AttackSpec->IsActive())
@@ -350,9 +347,8 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 
 void ALLL_PlayerBase::WireAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* WireSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	if(WireSpec)
+	const int32 InputID = static_cast<int32>(InputName);
+	if(const FGameplayAbilitySpec* WireSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
 		ASC->TryActivateAbility(WireSpec->Handle);
 	}

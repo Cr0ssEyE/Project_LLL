@@ -19,7 +19,7 @@ EBTNodeResult::Type ULLL_Attack_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	const ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-	if (MonsterBase->CanPlayAttackAnimation())
+	if (MonsterBase->CanPlayAttackAnimation() && !MonsterBase->IsDamaged())
 	{
 		MonsterBase->Attack();
 	}

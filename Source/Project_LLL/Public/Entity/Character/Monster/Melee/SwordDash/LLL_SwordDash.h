@@ -3,25 +3,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DataAsset/LLL_OrawaveDataAsset.h"
+#include "DataAsset/LLL_SwordDashDataAsset.h"
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
-#include "Interface/LLL_KnockBackInterface.h"
-#include "LLL_Orawave.generated.h"
+#include "LLL_SwordDash.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_Orawave : public ALLL_MeleeMonster, public ILLL_KnockBackInterface
+class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster
 {
 	GENERATED_BODY()
 
 public:
-	ALLL_Orawave();
+	ALLL_SwordDash();
+
+	void Dash();
 
 protected:
 	virtual void BeginPlay() override;
-	
+
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_OrawaveDataAsset> OrawaveDataAsset;
+	TObjectPtr<const ULLL_SwordDashDataAsset> SwordDashDataAsset;
 };

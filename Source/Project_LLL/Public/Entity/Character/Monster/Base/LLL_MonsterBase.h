@@ -32,6 +32,7 @@ public:
 	virtual void Damaged() override;
 	
 	bool CanPlayAttackAnimation() const;
+	bool IsDamaged() const;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
