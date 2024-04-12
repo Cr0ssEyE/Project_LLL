@@ -18,7 +18,7 @@ ULLL_PlayerGoldComponent::ULLL_PlayerGoldComponent()
 	// ...
 	Money = 0;
 	
-	GoldComponentDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_GoldComponentDataAsset>(PATH_PLAYER_GOLDCOMPONENT_DATA, EAssertionLevel::Check);
+	GoldComponentDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_GoldComponentDataAsset>(PATH_PLAYER_GOLD_COMPONENT_DATA, EAssertionLevel::Check);
 	WidgetHideWaitTime = GoldComponentDataAsset->WidgetHideWaitTime;
 	IsShowWidget = false;
 	GoldWidget = CreateDefaultSubobject<ULLL_PlayerGoldWidget>(TEXT("GoldWidget"));
