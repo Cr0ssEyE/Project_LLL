@@ -134,6 +134,7 @@ TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& ULLL_AbilityManageSubSystem:
 		checkNoEntry();
 	}
 	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>* EmptyArray = new TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>;
+	ensure(false);
 	return *EmptyArray;
 }
 
@@ -141,10 +142,9 @@ TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> ULLL_AbilityManageSubSystem::
 {
 	FStreamableManager& StreamableManager = UAssetManager::GetStreamableManager();
 	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FilteredDataSet;
-	TArray<FSoftObjectPath> DataPaths;
+
 	for (auto Data : DataSet)
 	{
-		DataPaths.Emplace(Data.ToSoftObjectPath());
 		if (Data.IsPending())
 		{
 			// Data.LoadSynchronous();
@@ -169,7 +169,6 @@ TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> ULLL_AbilityManageSubSystem::
 		{
 			FilteredDataSet.Emplace(Data);
 		}
-		StreamableManager.Unload(Data.ToSoftObjectPath());
 	}
 	return FilteredDataSet;
 }
