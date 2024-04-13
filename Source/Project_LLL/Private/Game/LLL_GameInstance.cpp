@@ -3,9 +3,19 @@
 
 #include "Game/LLL_GameInstance.h"
 
-#include "Game/LLL_AbilityManageSubSystem.h"
+#include "Interface/LLL_PlayerDependencyInterface.h"
 
 ULLL_GameInstance::ULLL_GameInstance()
 {
 	
+}
+
+void ULLL_GameInstance::AssignPlayerDependencyActors(AActor* Actor)
+{
+	ILLL_PlayerDependencyActorInterface* PlayerDependencyActor = Cast<ILLL_PlayerDependencyActorInterface>(Actor);
+	if (PlayerDependencyActor)
+	{
+		PlayerDependencyActors.Emplace(Actor);
+		PlayerActorAssignedDelegate.Broadcast(Actor);
+	}
 }

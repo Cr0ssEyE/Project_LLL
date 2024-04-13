@@ -5,9 +5,14 @@
 #include "CoreMinimal.h"
 #include "LLL_GameInstance.generated.h"
 
+class ILLL_PlayerDependencyActorInterface;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerActorAssignedDelegate, AActor*, AssignedActor);
+
 /**
  * 
  */
+
 UCLASS()
 class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
 {
@@ -15,6 +20,18 @@ class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
 
 public:
 	ULLL_GameInstance();
+
+	FORCEINLINE TArray<TSoftObjectPtr<AActor>>& GetPlayerDependencyActors() { return PlayerDependencyActors; }
+
+	// 플레이어 관련 객체들은 월드 스폰시 불릿 타임 영향을 받지 않도록 인터페이스 상속 및 등록 필요.
+	void AssignPlayerDependencyActors(AActor* Actor);
+
+public:
+	FPlayerActorAssignedDelegate PlayerActorAssignedDelegate;
+	
+protected:
+	UPROPERTY()
+	TArray<TSoftObjectPtr<AActor>> PlayerDependencyActors;
 	
 protected:
 	UPROPERTY(VisibleAnywhere)

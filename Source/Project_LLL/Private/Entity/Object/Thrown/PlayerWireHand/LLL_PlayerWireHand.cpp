@@ -11,6 +11,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "DataAsset/LLL_PlayerWireObjectDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Game/LLL_GameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/ThrownObject/PlayerWireHand/LLL_PlayerWireHandAttributeSet.h"
 #include "Util/LLLConstructorHelper.h"
@@ -83,4 +84,9 @@ void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 		SetHiddenState();
 		ReleaseCompleteDelegate.Broadcast();
 	}
+}
+
+void ALLL_PlayerWireHand::AssignToInstance()
+{
+	GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->AssignPlayerDependencyActors(this);
 }
