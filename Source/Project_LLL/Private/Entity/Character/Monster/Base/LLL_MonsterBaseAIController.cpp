@@ -3,6 +3,7 @@
 
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 
+#include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
@@ -27,8 +28,6 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	Monster = CastChecked<ALLL_MonsterBase>(InPawn);
 	MonsterDataAsset = CastChecked<ULLL_MonsterBaseDataAsset>(Monster->GetCharacterDataAsset());
 	
-	Monster->TakeDamageDelegate.AddDynamic(this, &ALLL_MonsterBaseAIController::SetPlayer);
-	
 	// 블랙보드와 행동트리 할당
 	UBlackboardComponent* NewBlackboardComponent = GetBlackboardComponent();
 	if (UseBlackboard(MonsterDataAsset->BlackBoard, NewBlackboardComponent))
@@ -42,15 +41,7 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	AISenseConfig_Sight->DetectionByAffiliation.bDetectNeutrals = true;
 
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBaseAIController::AISenseInit);
-}
-
-void ALLL_MonsterBaseAIController::SetPlayer()
-{
-	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-	if (IsValid(Player))
-	{
-		BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
-	}
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBaseAIController::MontageDelegateInit);
 }
 
 void ALLL_MonsterBaseAIController::AISenseInit()
@@ -62,4 +53,35 @@ void ALLL_MonsterBaseAIController::AISenseInit()
 	AISenseConfig_Sight->PeripheralVisionAngleDegrees = MonsterAttributeSet->GetFieldOfView() / 2.0f;
 
 	PerceptionComponent->ConfigureSense(*AISenseConfig_Sight);
+}
+
+void ALLL_MonsterBaseAIController::MontageDelegateInit()
+{
+	Monster->GetCharacterAnimInstance()->OnMontageStarted.AddDynamic(this, &ALLL_MonsterBaseAIController::StartDamagedHandle);
+	Monster->GetCharacterAnimInstance()->OnMontageEnded.AddDynamic(this, &ALLL_MonsterBaseAIController::EndDamagedHandle);
+}
+
+void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
+{
+	if (Montage == MonsterDataAsset->DamagedAnimMontage)
+	{
+		BrainComponent->StopLogic("Monster Is Damaged");
+	}
+}
+
+void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (Montage == MonsterDataAsset->DamagedAnimMontage)
+	{
+		BrainComponent->StartLogic();
+
+		if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
+		{
+			ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+			if (IsValid(Player))
+			{
+				BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
+			}
+		}
+	}
 }
