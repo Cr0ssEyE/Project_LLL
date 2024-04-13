@@ -8,6 +8,7 @@
 #include "DataAsset/LLL_CameraDataAsset.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "Game/LLL_AbilityManageSubSystem.h"
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
@@ -46,6 +47,11 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 
+	FAsyncLoadEffectDelegate AsyncLoadEffectDelegate;
+
+	UFUNCTION()
+	void DelegateReceiveTest(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& Effects);
+	
 	// 외부 접근용
 public:
 	// TODO: GAS로 전환

@@ -88,6 +88,17 @@ void ALLL_PlayerBase::BeginPlay()
 			}
 		}
 	}
+	
+	// 서브시스템 접근 테스트용
+	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
+	if (IsValid(AbilityManageSubSystem))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Silver, FString::Printf(TEXT("서브 시스템 생성 확인")));
+		// AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_PlayerBase::DelegateReceiveTest);
+		FAsyncLoadEffectDelegate Delegate;
+		Delegate.AddDynamic(this, &ALLL_PlayerBase::DelegateReceiveTest);
+		AbilityManageSubSystem->ASyncLoadEffectsByTag(Delegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), true);
+	}
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -141,6 +152,21 @@ void ALLL_PlayerBase::PossessedBy(AController* NewController)
 	{
 		PlayerController->SetAudioListenerOverride(GetRootComponent(), FVector::ZeroVector, FRotator::ZeroRotator);
 	}
+}
+
+void ALLL_PlayerBase::DelegateReceiveTest(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& Effects)
+{
+	for (auto Effect : Effects)
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(Effect.Get(), 1.0, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Silver, FString::Printf(TEXT("비동기 로딩 확인")));
 }
 
 void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
