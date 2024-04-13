@@ -18,6 +18,8 @@ class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster
 public:
 	ALLL_SwordDash();
 
+	void Dash();
+
 protected:
 	virtual void BeginPlay() override;
 
