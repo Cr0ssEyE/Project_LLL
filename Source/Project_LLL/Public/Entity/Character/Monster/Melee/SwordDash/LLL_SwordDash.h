@@ -5,20 +5,21 @@
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_SwordDashDataAsset.h"
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
+#include "Interface/LLL_DashMonsterInterface.h"
 #include "LLL_SwordDash.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster
+class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster, public ILLL_DashMonsterInterface
 {
 	GENERATED_BODY()
 
 public:
 	ALLL_SwordDash();
 
-	void Dash();
+	virtual void Dash() override;
 
 protected:
 	virtual void BeginPlay() override;

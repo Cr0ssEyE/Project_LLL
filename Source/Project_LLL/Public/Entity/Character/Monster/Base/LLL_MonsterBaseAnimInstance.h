@@ -16,12 +16,4 @@ class PROJECT_LLL_API ULLL_MonsterBaseAnimInstance : public ULLL_BaseCharacterAn
 {
 	GENERATED_BODY()
 
-public:
-	virtual void NativeInitializeAnimation() override;
-	
-	void PlayDamagedAnimation();
-
-protected:
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 };

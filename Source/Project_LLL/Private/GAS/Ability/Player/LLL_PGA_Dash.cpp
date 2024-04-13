@@ -101,7 +101,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 {
 	// TODO: MovementComponent의 LaunchCharacter 기반 물리에서 위치 기반으로 변경
 	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
-	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	if(IsValid(PlayerCharacter) && bIsInputPressed && CurrentDashCount < MaxDashCount)
 	{
 		CurrentDashCount++;

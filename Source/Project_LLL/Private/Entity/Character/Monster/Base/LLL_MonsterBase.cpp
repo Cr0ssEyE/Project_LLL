@@ -150,7 +150,7 @@ void ALLL_MonsterBase::Damaged()
 	if (IsValid(MonsterBaseAnimInstance))
 	{
 		MonsterBaseAnimInstance->StopAllMontages(1.0f);
-		MonsterBaseAnimInstance->PlayDamagedAnimation();
+		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -184,18 +184,6 @@ bool ALLL_MonsterBase::CanPlayAttackAnimation() const
 				return true;
 			}
 		}
-	}
-
-	return false;
-}
-
-bool ALLL_MonsterBase::IsDamaged() const
-{
-	const UAnimMontage* DamagedAnimMontage = MonsterBaseDataAsset->DamagedAnimMontage;
-
-	if (CharacterAnimInstance->Montage_IsPlaying(DamagedAnimMontage))
-	{
-		return true;
 	}
 
 	return false;

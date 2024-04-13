@@ -25,12 +25,15 @@ public:
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
-public:
-	UFUNCTION()
-	void SetPlayer();
-
 protected:
 	void AISenseInit();
+	void MontageDelegateInit();
+
+	UFUNCTION()
+	void StartDamagedHandle(UAnimMontage* Montage);
+
+	UFUNCTION()
+	void EndDamagedHandle(UAnimMontage* Montage, bool bInterrupted);
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ALLL_MonsterBase> Monster;
