@@ -41,9 +41,6 @@ void ULLL_PGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		MaxDashCount = PlayerAttributeSet->GetMaxDashCount();
 	}
 	bIsInputPressed = true;
-
-	ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
-	PlayerAnimInstance->SetDash(true);
 	
 	DashActionEvent();
 }
@@ -135,6 +132,9 @@ void ULLL_PGA_Dash::DashActionEvent()
 		// 여기서 타이머 델리게이트로 호출해서 다음 입력까지 대기시간을 주면 대쉬를 연타했을 때 낭비를 줄이도록 할 수 있습니다.
 		StartDashInputWait();
 		bIsInputPressed = false;
+
+		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
+		PlayerAnimInstance->SetDash(true);
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

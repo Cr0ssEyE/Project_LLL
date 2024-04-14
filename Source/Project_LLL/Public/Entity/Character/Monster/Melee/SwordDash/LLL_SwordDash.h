@@ -19,11 +19,18 @@ class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster, public ILLL_Das
 public:
 	ALLL_SwordDash();
 
-	virtual void Dash() override;
-
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	virtual void Dash() override;
+
+	FORCEINLINE virtual void SetDash(bool IsDashing) override { bIsDashing = IsDashing; }
+	FORCEINLINE virtual bool IsDashing() override { return bIsDashing; }
+
+protected:
+	uint8 bIsDashing : 1;
+	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_SwordDashDataAsset> SwordDashDataAsset;
 };

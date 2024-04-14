@@ -441,6 +441,6 @@ void ALLL_PlayerBase::Dead()
 
 void ALLL_PlayerBase::DestroyHandle()
 {
-	// Super::DeadMontageEndEvent();
+	// Super::DestroyHandle();
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }

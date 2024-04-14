@@ -33,5 +33,9 @@ void ULLL_Dash_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	ILLL_DashMonsterInterface* DashMonster = Cast<ILLL_DashMonsterInterface>(OwnerComp.GetAIOwner()->GetPawn());
+	if (DashMonster && !DashMonster->IsDashing())
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 }

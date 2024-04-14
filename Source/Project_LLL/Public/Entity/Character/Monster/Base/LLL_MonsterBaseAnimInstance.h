@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacterAnimInstance.h"
 #include "LLL_MonsterBaseAnimInstance.generated.h"
 
