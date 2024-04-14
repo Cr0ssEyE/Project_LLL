@@ -17,6 +17,15 @@ ALLL_SwordDash::ALLL_SwordDash()
 
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_SwordDashDataAsset>(PATH_SWORD_DASH_DATA, EAssertionLevel::Check);
 	AIControllerClass = ALLL_SwordDashAIController::StaticClass();
+
+	bIsDashing = false;
+}
+
+void ALLL_SwordDash::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SwordDashDataAsset = Cast<ULLL_SwordDashDataAsset>(MeleeMonsterDataAsset);
 }
 
 void ALLL_SwordDash::Dash()
@@ -29,6 +38,8 @@ void ALLL_SwordDash::Dash()
 		{
 			if (ASC->TryActivateAbility(AbilitySpec->Handle))
 			{
+				bIsDashing = true;
+				
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 				if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 				{
@@ -41,11 +52,4 @@ void ALLL_SwordDash::Dash()
 			}
 		}
 	}
-}
-
-void ALLL_SwordDash::BeginPlay()
-{
-	Super::BeginPlay();
-
-	SwordDashDataAsset = Cast<ULLL_SwordDashDataAsset>(MeleeMonsterDataAsset);
 }
