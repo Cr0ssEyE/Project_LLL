@@ -27,11 +27,12 @@ public:
 
 protected:
 	virtual void NativeInitializeAnimation() override;
-	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	virtual void AnimNotify_LeftStep() override;
 	virtual void AnimNotify_RightStep() override;
 
 public:
+	FORCEINLINE void SetDash(bool IsDashing) { bIsDashing = IsDashing; }
+	
 	void PlayDeadAnimation();
 
 protected:

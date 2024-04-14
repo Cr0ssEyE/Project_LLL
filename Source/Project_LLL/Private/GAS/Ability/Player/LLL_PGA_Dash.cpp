@@ -6,6 +6,7 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/PawnMovementComponent.h"
@@ -40,6 +41,10 @@ void ULLL_PGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		MaxDashCount = PlayerAttributeSet->GetMaxDashCount();
 	}
 	bIsInputPressed = true;
+
+	ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
+	PlayerAnimInstance->SetDash(true);
+	
 	DashActionEvent();
 }
 
@@ -70,6 +75,9 @@ void ULLL_PGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	CurrentDashCount = 0;
 	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
 	WaitInputTimerHandle.Invalidate();
+
+	ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
+	PlayerAnimInstance->SetDash(false);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

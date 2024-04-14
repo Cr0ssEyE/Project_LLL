@@ -15,23 +15,16 @@ ULLL_Dash_BTTaskNode::ULLL_Dash_BTTaskNode()
 EBTNodeResult::Type ULLL_Dash_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
-	if (ILLL_DashMonsterInterface* DashMonster = Cast<ILLL_DashMonsterInterface>(OwnerComp.GetAIOwner()->GetPawn()))
-	{
-		DashMonster->Dash();
-	}
-	else
+
+	ILLL_DashMonsterInterface* DashMonster = Cast<ILLL_DashMonsterInterface>(OwnerComp.GetAIOwner()->GetPawn());
+	if (!DashMonster)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("대시할 수 있는 몬스터가 아닙니다"));
 		
 		return EBTNodeResult::Failed;
 	}
-	
-	return EBTNodeResult::InProgress;
-}
 
-void ULLL_Dash_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
-{
-	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+	DashMonster->Dash();
 
-	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	return EBTNodeResult::Succeeded;
 }
