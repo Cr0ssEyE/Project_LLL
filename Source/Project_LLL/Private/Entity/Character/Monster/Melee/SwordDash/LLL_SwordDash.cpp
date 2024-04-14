@@ -22,7 +22,7 @@ ALLL_SwordDash::ALLL_SwordDash()
 void ALLL_SwordDash::Dash()
 {
 	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
-	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_SWORD_DASH_ATTACK));
+	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_SWORD_DASH_DASH));
 	for (const auto AbilitySpecHandle : AbilitySpecHandles)
 	{
 		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
