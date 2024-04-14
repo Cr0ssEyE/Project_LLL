@@ -38,6 +38,7 @@ public:
 	void SetHiddenState();
 	
 protected:
+	virtual void BeginPlay() override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 	// 플레이어 오브젝트 인터페이스 구현

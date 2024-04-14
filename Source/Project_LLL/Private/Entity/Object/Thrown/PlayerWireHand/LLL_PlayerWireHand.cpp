@@ -55,6 +55,13 @@ void ALLL_PlayerWireHand::SetHiddenState()
 	SetActorLocation(GetOwner()->GetActorLocation());
 }
 
+void ALLL_PlayerWireHand::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	AssignToInstance();
+}
+
 void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);

@@ -21,12 +21,13 @@ class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
 public:
 	ULLL_GameInstance();
 
+	// 플레이어 관련 객체 저장 및 관리용
+public:
 	FORCEINLINE TArray<TSoftObjectPtr<AActor>>& GetPlayerDependencyActors() { return PlayerDependencyActors; }
-
+	
 	// 플레이어 관련 객체들은 월드 스폰시 불릿 타임 영향을 받지 않도록 인터페이스 상속 및 등록 필요.
 	void AssignPlayerDependencyActors(AActor* Actor);
-
-public:
+	
 	FPlayerActorAssignedDelegate PlayerActorAssignedDelegate;
 	
 protected:
