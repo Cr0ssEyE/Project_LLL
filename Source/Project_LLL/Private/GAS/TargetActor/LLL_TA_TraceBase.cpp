@@ -44,6 +44,17 @@ void ALLL_TA_TraceBase::SetTraceInfo(const ESelectTraceTarget NewTraceTarget, co
 	}
 }
 
+void ALLL_TA_TraceBase::SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes, float Distance, float FieldOfView)
+{
+	TraceTarget = NewTraceTarget;
+	BaseShape = NewShapeTypes;
+	if (Distance > 0 && FieldOfView > 0)
+	{
+		ConeDistance = Distance;
+		ConeFieldOfView = FieldOfView;
+	}
+}
+
 void ALLL_TA_TraceBase::StartTargeting(UGameplayAbility* Ability)
 {
 	Super::StartTargeting(Ability);
@@ -55,7 +66,7 @@ void ALLL_TA_TraceBase::ConfirmTargetingAndContinue()
 {
 	if (SourceActor)
 	{
-		FGameplayAbilityTargetDataHandle DataHandle = MakeTargetData();
+		const FGameplayAbilityTargetDataHandle DataHandle = MakeTargetData();
 		TargetDataReadyDelegate.Broadcast(DataHandle);
 	}
 }
@@ -72,6 +83,9 @@ FGameplayAbilityTargetDataHandle ALLL_TA_TraceBase::MakeTargetData() const
 		break;
 	case ESelectShapeTypes::Sphere:
 		TraceShape = FCollisionShape::MakeSphere(SphereRadius);
+		break;
+	case ESelectShapeTypes::Cone:
+		TraceShape = FCollisionShape::MakeSphere(ConeDistance);
 		break;
 	default:
 		checkNoEntry();
