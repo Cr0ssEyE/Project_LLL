@@ -87,7 +87,12 @@ void ALLL_MonsterSpawner::SpawnMonster()
 {
 	CurrentWave++;
 	
-	CurrentGroup = FMath::RandRange(1, LastGroup);
+	CurrentGroup++;
+	if (CurrentGroup > LastGroup)
+	{
+		CurrentGroup -= LastGroup;
+	}
+	
 	int32 SpawnPointNum = 0;
 
 	for (const ULLL_MonsterSpawnPointComponent* SpawnPoint : SpawnPoints)
