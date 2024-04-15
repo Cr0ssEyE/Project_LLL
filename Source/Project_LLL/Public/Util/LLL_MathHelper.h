@@ -27,6 +27,22 @@ public:
 		const FVector PredictedLocation = Target->GetActorLocation() + PredictedMove * PredictionRate;
 		return PredictedLocation;
 	}
+
+	static bool IsInFieldOfView(const APawn* Owner, const APawn* Target, float FieldOfView)
+	{
+		FVector DirectionToTarget = Target->GetActorLocation() - Owner->GetActorLocation();
+		DirectionToTarget.Normalize();
+
+		const FVector OwnerForwardVector = Owner->GetActorForwardVector();
+		const float DotProduct = FVector::DotProduct(OwnerForwardVector, DirectionToTarget);
+
+		if (FMath::Acos(DotProduct) <= FMath::DegreesToRadians(FieldOfView / 2.0f))
+		{
+			return true;
+		}
+
+		return false;
+	}
 	// 플레이어
 public:
 	static float CalculateSkillGaugeIncrement(const float BaseValue, const float ComboAmplify, const float ItemAmplify)
