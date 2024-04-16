@@ -21,20 +21,34 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(SwordDash->GetAbilitySystemComponent()->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
 	//Monster->LaunchCharacter(Monster->GetActorForwardVector() * MonsterAttributeSet->GetAttackDistance(), true, true);
 
-	//FHitResult Result;
+	FHitResult Result;
 	const FVector SweepStartLocation =  SwordDash->GetActorLocation();
-	//const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetActorForwardVector() * TraceEndLocation;
+	const FVector SweepEndLocation = SweepStartLocation + SwordDash->GetActorForwardVector() * SwordDashAttributeSet->GetMaxDashDistance();
 	FQuat SweepQuat = SwordDash->GetActorQuat();
+	ECollisionChannel TraceChannel = ECC_WALL_ONLY;
+
+	UCapsuleComponent* Capsule = SwordDash->GetCapsuleComponent();
+	float x = Capsule->GetScaledCapsuleRadius() * 2.0f;
+	float y = Capsule->GetScaledCapsuleHalfHeight() * 2.0f;
+	float z = SwordDashAttributeSet->GetMaxDashDistance();
+	FVector BoxExtents = FVector(x, y, z);
+	FCollisionShape TraceShape = FCollisionShape::MakeBox(BoxExtents);
 		
-	/*GetWorld()->SweepSingleByChannel(
+	GetWorld()->SweepSingleByChannel(
 		Result,
 		SweepStartLocation,
 		SweepEndLocation,
 		SweepQuat,
 		TraceChannel,
-		TraceShape,
-		Params);*/
+		TraceShape);
 
+	FVector DashLocation = SweepEndLocation;
+	if (AActor* HitActor = Result.GetActor())
+	{
+		DashLocation = Result.Location;
+	}
+	SwordDash->SetActorLocation(DashLocation);
+	
 	ILLL_DashMonsterInterface* DashMonster = CastChecked<ILLL_DashMonsterInterface>(SwordDash);
 	DashMonster->SetDash(true);
 	
