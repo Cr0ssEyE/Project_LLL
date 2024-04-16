@@ -10,7 +10,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTargetDataDelegate, const FGameplayAbilityTargetDataHandle&, Handle);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROJECT_LLL_API ULLL_BaseASC : public UAbilitySystemComponent, public ILLL_PlayerDependencyInterface
+class PROJECT_LLL_API ULLL_BaseASC : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 
