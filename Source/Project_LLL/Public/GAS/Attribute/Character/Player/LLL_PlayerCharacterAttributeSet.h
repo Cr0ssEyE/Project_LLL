@@ -106,6 +106,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData SkillGaugeAmplifyByItem;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ConsumeSkillGaugeAmount;
+	
 	// 스킬 관련
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")

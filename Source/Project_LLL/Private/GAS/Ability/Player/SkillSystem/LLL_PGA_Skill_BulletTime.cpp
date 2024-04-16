@@ -6,7 +6,9 @@
 #include "AbilitySystemComponent.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "Game/LLL_GameInstance.h"
+#include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 
 ULLL_PGA_Skill_BulletTime::ULLL_PGA_Skill_BulletTime()
@@ -23,9 +25,7 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 	{
 		SkillDuration = PlayerCharacterAttributeSet->GetBulletTimeDuration();
 		WorldDecelerationRate = PlayerCharacterAttributeSet->GetBulletTimeWorldDecelerationRate();
-		PlayerAccelerationRate = 1.0f / WorldDecelerationRate;
-		GetWorld()->GetWorldSettings()->SetTimeDilation(WorldDecelerationRate);
-
+		
 		if (!IsValid(BulletTimeActivateSequenceActor))
 		{
 			BulletTimeActivateSequenceActor = GetWorld()->SpawnActorDeferred<ALevelSequenceActor>(ALevelSequenceActor::StaticClass(), FTransform::Identity);
@@ -37,62 +37,77 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 			BulletTimeActivateSequenceActor->SetSequence(BulletTimeActivateSequence);
 			BulletTimeActivateSequenceActor->FinishSpawning(FTransform::Identity);
 		}
-		
-		ULLL_GameInstance* Instance = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>();
-		TArray<TSoftObjectPtr<AActor>> PlayerDependencyActors = Instance->GetPlayerDependencyActors();
-		for (auto PlayerActor : PlayerDependencyActors)
-		{
-			if (!PlayerActor.IsPending())
-			{
-				PlayerActor.LoadSynchronous()->CustomTimeDilation = PlayerAccelerationRate;
-			}
-		}
-		BulletTimeActivateSequenceActor->CustomTimeDilation = PlayerAccelerationRate;
-		BulletTimeActivateSequenceActor->GetSequencePlayer()->SetPlayRate(PlayerAccelerationRate);
+
+		TraceBulletTimeEffectedActors();
 		BulletTimeActivateSequenceActor->GetSequencePlayer()->Play();
+
+		GetWorld()->GetTimerManager().SetTimer(AbilityDurationTimerHandle, this, &ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack, SkillDuration, false);
+	}
+	else
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("불릿타임 스킬 발동 취소됨. 시퀀스 또는 어트리뷰트 셋 접근 유효하지 않음")));
+		}
+#endif
 		
-		Instance->PlayerActorAssignedDelegate.AddDynamic(this, &ULLL_PGA_Skill_BulletTime::PlayerActorAssignedCallBack);
-		
-		GetWorld()->GetTimerManager().SetTimer(AbilityDurationTimerHandle, this, &ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack, SkillDuration * WorldDecelerationRate, false);
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	}
 }
 
 void ULLL_PGA_Skill_BulletTime::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	GetWorld()->GetWorldSettings()->SetTimeDilation(1.0f);
-	ULLL_GameInstance* Instance = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>();
-	if (IsValid(Instance))
-	{
-		Instance->PlayerActorAssignedDelegate.RemoveDynamic(this, &ULLL_PGA_Skill_BulletTime::PlayerActorAssignedCallBack);
-	}
-
 	if (bWasCancelled)
 	{
 		BulletTimeEndedCallBack();
 	}
 	
-	TArray<TSoftObjectPtr<AActor>> PlayerDependencyActors = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetPlayerDependencyActors();
-	for (auto PlayerActor : PlayerDependencyActors)
-	{
-		if (!PlayerActor.IsPending())
-		{
-			PlayerActor.Get()->CustomTimeDilation = 1.0f;
-		}
-	}
-
 	SkillDuration = WorldDecelerationRate = PlayerAccelerationRate = 0.f;
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void ULLL_PGA_Skill_BulletTime::PlayerActorAssignedCallBack(AActor* Actor)
+void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 {
-	Actor->CustomTimeDilation = PlayerAccelerationRate;
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams Params;
+	FVector SweepLocation = GetCurrentActorInfo()->AvatarActor->GetActorLocation();
+
+	// 귀찮아서 매직넘버 처리.
+	GetWorld()->SweepMultiByProfile(
+		HitResults,
+		SweepLocation,
+		SweepLocation,
+		FQuat::Identity,
+		CP_BULLET_TIME_INFLUENCED,
+		FCollisionShape::MakeBox(FVector(10000.f, 10000.f, 1000.f)),
+		Params
+		);
+
+	if (HitResults.IsEmpty())
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckPlayerSkillDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("불릿타임 스킬에 어떤 액터도 영향받지 않음")));
+			}
+		}
+#endif
+		
+		return;
+	}
+
+	for (auto HitResult : HitResults)
+	{
+		BulletTimeEffectedActors.Emplace(HitResult.GetActor());
+		HitResult.GetActor()->CustomTimeDilation = WorldDecelerationRate;
+	}
 }
 
 void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 {
-	GetWorld()->GetWorldSettings()->SetTimeDilation(1.0f);
-	
 	if (GetWorld()->GetTimerManager().IsTimerActive(AbilityDurationTimerHandle))
 	{
 		AbilityDurationTimerHandle.Invalidate();
@@ -123,6 +138,15 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 			BulletTimeDeActivateSequenceActor->GetSequencePlayer()->Play();
 		}
 	}
+
+	for (auto Actor : BulletTimeEffectedActors)
+	{
+		if (Actor.IsValid())
+		{
+			Actor.Get()->CustomTimeDilation = 1.0f;
+		}
+	}
+	BulletTimeEffectedActors.Empty();
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

@@ -10,12 +10,3 @@ ULLL_GameInstance::ULLL_GameInstance()
 	
 }
 
-void ULLL_GameInstance::AssignPlayerDependencyActors(AActor* Actor)
-{
-	ILLL_PlayerDependencyActorInterface* PlayerDependencyActor = Cast<ILLL_PlayerDependencyActorInterface>(Actor);
-	if (PlayerDependencyActor)
-	{
-		PlayerDependencyActors.Emplace(Actor);
-		PlayerActorAssignedDelegate.Broadcast(Actor);
-	}
-}

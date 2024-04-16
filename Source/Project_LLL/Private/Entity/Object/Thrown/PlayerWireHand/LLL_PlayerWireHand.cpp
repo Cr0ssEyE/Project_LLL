@@ -58,8 +58,6 @@ void ALLL_PlayerWireHand::SetHiddenState()
 void ALLL_PlayerWireHand::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	AssignToInstance();
 }
 
 void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -91,9 +89,4 @@ void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 		SetHiddenState();
 		ReleaseCompleteDelegate.Broadcast();
 	}
-}
-
-void ALLL_PlayerWireHand::AssignToInstance()
-{
-	GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->AssignPlayerDependencyActors(this);
 }

@@ -65,10 +65,6 @@ public:
 	
 	FVector GetMouseLocation() const;
 	void PlayerRotateToMouseCursor();
-
-	// 플레이어 오브젝트 인터페이스 구현
-private:
-	void AssignToInstance() override;
 	
 	// 카메라
 private:

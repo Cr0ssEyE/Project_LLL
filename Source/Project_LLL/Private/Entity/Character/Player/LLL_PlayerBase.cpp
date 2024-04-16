@@ -416,11 +416,6 @@ void ALLL_PlayerBase::PlayerRotateToMouseCursor()
 	
 }
 
-void ALLL_PlayerBase::AssignToInstance()
-{
-	GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->AssignPlayerDependencyActors(this);
-}
-
 void ALLL_PlayerBase::ParameterTest()
 {
 	Continuous = 1.0f;

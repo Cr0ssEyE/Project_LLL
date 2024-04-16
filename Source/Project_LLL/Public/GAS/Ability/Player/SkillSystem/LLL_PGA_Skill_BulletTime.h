@@ -24,11 +24,12 @@ public:
 
 protected:
 	UFUNCTION()
-	void PlayerActorAssignedCallBack(AActor* Actor);
+	void TraceBulletTimeEffectedActors();
 
 	UFUNCTION()
 	void BulletTimeEndedCallBack();
-	
+
+	// 효과 관련
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "불릿타임 효과 발동 시퀀스")
 	TObjectPtr<ULevelSequence> BulletTimeActivateSequence;
@@ -36,14 +37,17 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "불릿타임 효과 종료 시퀀스")
 	TObjectPtr<ULevelSequence> BulletTimeDeActivateSequence;
 
-protected:
-	FTimerHandle AbilityDurationTimerHandle;
-	
 	UPROPERTY()
 	TObjectPtr<ALevelSequenceActor> BulletTimeActivateSequenceActor;
 
 	UPROPERTY()
 	TObjectPtr<ALevelSequenceActor> BulletTimeDeActivateSequenceActor;
+
+	UPROPERTY()
+	TArray<TWeakObjectPtr<AActor>> BulletTimeEffectedActors;
+	
+protected:
+	FTimerHandle AbilityDurationTimerHandle;
 	
 	float SkillDuration;
 	float WorldDecelerationRate;
