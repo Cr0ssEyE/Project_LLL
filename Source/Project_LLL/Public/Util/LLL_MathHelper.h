@@ -14,7 +14,7 @@ public:
 		return CalculateResult;
 	}
 
-	static FVector CalculateLaunchVelocity(const FVector Direction, const float Multiply)
+	static FVector CalculateLaunchVelocity(const FVector& Direction, const float Multiply)
 	{
 		const FVector CalculateResult = Direction * Multiply * 10.f;
 		return CalculateResult;
