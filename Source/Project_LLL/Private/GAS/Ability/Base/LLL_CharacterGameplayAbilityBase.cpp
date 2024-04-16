@@ -3,6 +3,8 @@
 
 #include "GAS/Ability/Base/LLL_CharacterGameplayAbilityBase.h"
 
+#include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+
 ULLL_CharacterGameplayAbilityBase::ULLL_CharacterGameplayAbilityBase()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
@@ -16,6 +18,17 @@ void ULLL_CharacterGameplayAbilityBase::PreActivate(const FGameplayAbilitySpecHa
 	{
 		K2_CommitAbilityCost();
 	}
+
+	if(!OnActivateEffects.IsEmpty())
+	{
+		for (auto OnActivateEffect : OnActivateEffects)
+		{
+			if(IsValid(OnActivateEffect.Key) && OnActivateEffect.Value == EEffectApplyTarget::Self)
+			{
+				BP_ApplyGameplayEffectToOwner(OnActivateEffect.Key);
+			}
+		}
+	}
 }
 
 void ULLL_CharacterGameplayAbilityBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -24,6 +37,17 @@ void ULLL_CharacterGameplayAbilityBase::EndAbility(const FGameplayAbilitySpecHan
 	if(CurrentActorInfo)
 	{
 		K2_CommitAbilityCooldown();
+	}
+
+	if(!OnEndedEffects.IsEmpty())
+	{
+		for (auto EndedEffect : OnEndedEffects)
+		{
+			if(IsValid(EndedEffect.Key) && EndedEffect.Value == EEffectApplyTarget::Self)
+			{
+				BP_ApplyGameplayEffectToOwner(EndedEffect.Key);
+			}
+		}
 	}
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);

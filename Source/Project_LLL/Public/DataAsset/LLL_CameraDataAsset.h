@@ -15,6 +15,9 @@ class PROJECT_LLL_API ULLL_CameraDataAsset : public UDataAsset
 	GENERATED_BODY()
 
 public:
+	ULLL_CameraDataAsset();
+	
+public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV")
 	float CameraFOV;
 

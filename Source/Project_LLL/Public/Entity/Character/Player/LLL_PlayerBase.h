@@ -8,6 +8,7 @@
 #include "DataAsset/LLL_CameraDataAsset.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "Game/LLL_AbilityManageSubSystem.h"
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
@@ -46,12 +47,19 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 
+	FAsyncLoadEffectDelegate AsyncLoadEffectDelegate;
+
+	UFUNCTION()
+	void DelegateReceiveTest(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& Effects);
+	
 	// 외부 접근용
 public:
 	// TODO: GAS로 전환
 	void AddInteractableObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
 
+	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
+	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ALLL_PlayerWireHand* GetWireHand() const { return WireHandActor; }
 	
@@ -121,7 +129,12 @@ protected:
 	virtual void Dead() override;
 	virtual void DeadMontageEndEvent() override;
 
+	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
+	// 상태 관련 변수
+protected:
+	uint8 bIsMoveInputPressed : 1;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerGoldComponet> GoldComponet;
+	TObjectPtr<ULLL_PlayerGoldComponet> GoldComponent;
 };
