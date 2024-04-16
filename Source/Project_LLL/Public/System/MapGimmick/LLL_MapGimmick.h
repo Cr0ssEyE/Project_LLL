@@ -14,6 +14,7 @@ class ALLL_MonsterSpawner;
 class ULevelSequencePlayer;
 class ULevelSequence;
 class ALevelSequenceActor;
+class ULLL_ShoppingMapComponent;
 
 DECLARE_DELEGATE(FOnStageChangedDelegate);
 
@@ -71,6 +72,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
 	TArray<AActor*> StageChildActors;
+
+	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ULLL_ShoppingMapComponent> ShoppingMapComponent;
 
 	uint32 Seed;
 

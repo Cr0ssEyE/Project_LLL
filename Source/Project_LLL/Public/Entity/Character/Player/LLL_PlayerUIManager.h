@@ -13,6 +13,7 @@ class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;
 class ULLL_GamePauseWidget;
+class ULLL_SelectRewardWidget;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECT_LLL_API ULLL_PlayerUIManager : public ULLL_BaseCharacterUIManager
@@ -37,6 +38,7 @@ public:
 	FORCEINLINE ULLL_GamePauseWidget* GetGamePauseWidget() const { return GamePauseWidget; }
 	FORCEINLINE ULLL_InventoryWidget* GetInventoryWidget() const { return InventoryWidget; }
 	FORCEINLINE ULLL_InteractionWidget* GetInteractionWidget() const { return InteractionWidget; }
+	FORCEINLINE ULLL_SelectRewardWidget* GetSelectRewardWidget() const { return SelectRewardWidget; }
 
 protected:
 	virtual void UpdateWidget() override;
@@ -65,4 +67,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_SkillWidget> SkillGaugeWidget;
+
+	UPROPERTY(VisibleAnywhere)
+	TSubclassOf<ULLL_SelectRewardWidget> SelectRewardWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_SelectRewardWidget> SelectRewardWidget;
 };

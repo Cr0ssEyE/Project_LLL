@@ -16,6 +16,7 @@
 #include "System/MonsterSpawner/LLL_MonsterSpawner.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
+#include "System/MapGimmick/LLL_ShoppingMapComponent.h"
 
 // Sets default values
 ALLL_MapGimmick::ALLL_MapGimmick()
@@ -87,8 +88,13 @@ void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* Overlapped
 void ALLL_MapGimmick::CreateMap()
 {
 	StageActor = GetWorld()->SpawnActor<AActor>(Stage, RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
+	
 	for (USceneComponent* ChildComponent : StageActor->GetRootComponent()->GetAttachChildren())
 	{
+		if (!IsValid(ShoppingMapComponent))
+		{
+			ShoppingMapComponent = Cast<ULLL_ShoppingMapComponent>(ChildComponent);
+		}
 		ULLL_GateSpawnPointComponent* SpawnPoint = Cast<ULLL_GateSpawnPointComponent>(ChildComponent);
 		if (IsValid(SpawnPoint))
 		{
@@ -96,7 +102,15 @@ void ALLL_MapGimmick::CreateMap()
 			Gates.Add(Gate);
 		}
 	}
+
 	StageActor->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::ChangeMap);
+	
+	if (IsValid(ShoppingMapComponent))
+	{
+		ShoppingMapComponent->SetProducts();
+		SetState(EStageState::NEXT);
+		return;
+	}
 	
 	StageActor->GetAllChildActors(StageChildActors, true);
 	for (AActor* ChildActor : StageChildActors)
