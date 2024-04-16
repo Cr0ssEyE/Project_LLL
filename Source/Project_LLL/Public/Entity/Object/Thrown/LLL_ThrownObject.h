@@ -25,7 +25,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	FORCEINLINE UProjectileMovementComponent* GetProjectileComponent() { return ProjectileMovement; }
+	FORCEINLINE UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovementComponent; }
 	
 	virtual void Throw(AActor* NewOwner);
 
@@ -36,7 +36,7 @@ protected:
 
 protected:
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
+	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_ThrownObjectAttributeSet> ThrownObjectAttributeSet;

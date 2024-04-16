@@ -115,7 +115,7 @@ void ULLL_PGA_WireHandGrab::GrabTargetEntity()
 	
 	BP_ApplyGameplayEffectToTarget(UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(PlayerWireHand->GetGrabbedActor()), GrabTargetApplyEffect);
 	
-	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileComponent();
+	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileMovementComponent();
 	WireHandProjectile->Velocity = FVector::Zero();
 	WireHandProjectile->Deactivate();
 

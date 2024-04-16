@@ -98,7 +98,7 @@ void ULLL_PGA_WireHandThrow::ThrowToCursorLocation()
 	HandMesh->SetHiddenInGame(false);
 	HandMesh->SetAnimation(ThrowAnim);
 	
-	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileComponent();
+	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileMovementComponent();
 	WireHandProjectile->Activate();
 	WireHandProjectile->Velocity = ThrowDirection * WireHandAttributeSet->GetThrowSpeed();
 	

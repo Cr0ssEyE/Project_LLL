@@ -48,8 +48,8 @@ void ALLL_PlayerWireHand::SetHiddenState()
 	HandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HandMesh->SetHiddenInGame(true);
 	
-	ProjectileMovement->Velocity = FVector::Zero();
-	ProjectileMovement->Deactivate();
+	ProjectileMovementComponent->Velocity = FVector::Zero();
+	ProjectileMovementComponent->Deactivate();
 
 	SetActorLocation(GetOwner()->GetActorLocation());
 }

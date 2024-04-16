@@ -17,7 +17,7 @@ ALLL_SwordDash::ALLL_SwordDash()
 
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_SwordDashDataAsset>(PATH_SWORD_DASH_DATA, EAssertionLevel::Check);
 	AIControllerClass = ALLL_SwordDashAIController::StaticClass();
-
+	
 	bIsDashing = false;
 }
 
@@ -28,7 +28,17 @@ void ALLL_SwordDash::BeginPlay()
 	SwordDashDataAsset = Cast<ULLL_SwordDashDataAsset>(MeleeMonsterDataAsset);
 }
 
-void ALLL_SwordDash::Dash()
+void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+
+	if (bIsDashing)
+	{
+		UE_LOG(LogTemp, Log, TEXT("%s : 대시 중 피격"), *OtherActor->GetName());
+	}
+}
+
+void ALLL_SwordDash::Dash() const
 {
 	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
 	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_SWORD_DASH_DASH));
