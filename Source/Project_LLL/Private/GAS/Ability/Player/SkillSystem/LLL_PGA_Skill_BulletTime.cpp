@@ -23,6 +23,8 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetCurrentActorInfo()->AbilitySystemComponent->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	if (IsValid(PlayerCharacterAttributeSet) && IsValid(BulletTimeActivateSequence))
 	{
+		ActorSpawnedDelegateHandle = GetWorld()->AddOnActorSpawnedHandler(WorldActorSpawnedDelegate.CreateUObject(this, &ULLL_PGA_Skill_BulletTime::OnBulletTimeEffectedActorSpawnCheck));
+	
 		SkillDuration = PlayerCharacterAttributeSet->GetBulletTimeDuration();
 		WorldDecelerationRate = PlayerCharacterAttributeSet->GetBulletTimeWorldDecelerationRate();
 		
@@ -62,6 +64,8 @@ void ULLL_PGA_Skill_BulletTime::EndAbility(const FGameplayAbilitySpecHandle Hand
 	{
 		BulletTimeEndedCallBack();
 	}
+	GetWorld()->RemoveOnActorSpawnedHandler(ActorSpawnedDelegateHandle);
+	ActorSpawnedDelegateHandle.Reset();
 	
 	SkillDuration = WorldDecelerationRate = PlayerAccelerationRate = 0.f;
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
@@ -149,4 +153,14 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 	BulletTimeEffectedActors.Empty();
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+void ULLL_PGA_Skill_BulletTime::OnBulletTimeEffectedActorSpawnCheck(AActor* Actor)
+{
+	const ECollisionResponse Response = Actor->GetComponentsCollisionResponseToChannel(ECC_ENTITY_CHECK);
+	if (Response == ECR_Overlap)
+	{
+		Actor->CustomTimeDilation = WorldDecelerationRate;
+		BulletTimeEffectedActors.Emplace(Actor);
+	}
 }

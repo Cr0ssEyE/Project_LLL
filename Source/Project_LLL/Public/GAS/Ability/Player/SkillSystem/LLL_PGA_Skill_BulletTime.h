@@ -29,6 +29,9 @@ protected:
 	UFUNCTION()
 	void BulletTimeEndedCallBack();
 
+	UFUNCTION()
+	void OnBulletTimeEffectedActorSpawnCheck(AActor* Actor);
+	
 	// 효과 관련
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "불릿타임 효과 발동 시퀀스")
@@ -45,6 +48,10 @@ protected:
 
 	UPROPERTY()
 	TArray<TWeakObjectPtr<AActor>> BulletTimeEffectedActors;
+
+	FOnActorSpawned::FDelegate WorldActorSpawnedDelegate;
+
+	FDelegateHandle ActorSpawnedDelegateHandle;
 	
 protected:
 	FTimerHandle AbilityDurationTimerHandle;

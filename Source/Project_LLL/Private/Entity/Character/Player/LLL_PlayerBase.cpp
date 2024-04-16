@@ -99,9 +99,6 @@ void ALLL_PlayerBase::BeginPlay()
 		Delegate.AddDynamic(this, &ALLL_PlayerBase::DelegateReceiveTest);
 		AbilityManageSubSystem->ASyncLoadEffectsByTag(Delegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), true);
 	}
-
-	// 플레이어 관련 객체들은 월드 스폰시 불릿 타임 영향을 받지 않도록 인터페이스 상속 및 등록 필요.
-	AssignToInstance();
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
