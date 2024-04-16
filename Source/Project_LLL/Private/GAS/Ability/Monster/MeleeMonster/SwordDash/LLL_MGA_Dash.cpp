@@ -37,7 +37,7 @@ void ULLL_MGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
 	if (ILLL_DashMonsterInterface* DashMonster = Cast<ILLL_DashMonsterInterface>(Monster))
 	{
-		Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
+		Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_DASH);
 		DashMonster->SetDash(false);
 	}
 	

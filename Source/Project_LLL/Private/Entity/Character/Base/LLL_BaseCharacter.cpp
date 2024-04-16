@@ -184,8 +184,8 @@ void ALLL_BaseCharacter::Dead()
 
 	CharacterAnimInstance->StopAllMontages(1.0f);
 
-	GetCapsuleComponent()->SetCollisionProfileName(CP_DEAD_BODY);
-	GetMesh()->SetCollisionProfileName(CP_DEAD_BODY);
+	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
+	GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
 	
 	bIsDead = true;
 
