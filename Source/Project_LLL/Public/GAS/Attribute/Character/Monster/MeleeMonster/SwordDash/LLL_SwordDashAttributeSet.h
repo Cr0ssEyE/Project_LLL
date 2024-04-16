@@ -13,5 +13,15 @@ UCLASS()
 class PROJECT_LLL_API ULLL_SwordDashAttributeSet : public ULLL_MeleeMonsterAttributeSet
 {
 	GENERATED_BODY()
+
+public:
+	ATTRIBUTE_ACCESSORS(ULLL_SwordDashAttributeSet, MinDashDistance);
+	ATTRIBUTE_ACCESSORS(ULLL_SwordDashAttributeSet, MaxDashDistance);
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MinDashDistance;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MaxDashDistance;
 };

@@ -18,7 +18,7 @@ ALLL_MonsterSpawner::ALLL_MonsterSpawner()
 	MonsterSpawnDataTable = FLLLConstructorHelper::FindAndGetObject<UDataTable>(PATH_MONSTER_SPAWN_DATA, EAssertionLevel::Check);
 	
 	DetectBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
-	DetectBox->SetCollisionObjectType(ECC_PLAYER_HIT);
+	DetectBox->SetCollisionProfileName(CP_INTERACTION);
 	
 	SetRootComponent(DetectBox);
 }

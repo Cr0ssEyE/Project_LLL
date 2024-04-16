@@ -24,13 +24,8 @@ protected:
 
 public:
 	virtual void Dash() override;
-
-	FORCEINLINE virtual void SetDash(bool IsDashing) override { bIsDashing = IsDashing; }
-	FORCEINLINE virtual bool IsDashing() override { return bIsDashing; }
-
-protected:
-	uint8 bIsDashing : 1;
 	
+protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_SwordDashDataAsset> SwordDashDataAsset;
 };
