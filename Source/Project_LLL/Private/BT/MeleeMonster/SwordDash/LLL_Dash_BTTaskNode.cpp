@@ -16,7 +16,7 @@ EBTNodeResult::Type ULLL_Dash_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& Ow
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	ALLL_SwordDash* SwordDash = Cast<ALLL_SwordDash>(OwnerComp.GetAIOwner()->GetPawn());
+	const ALLL_SwordDash* SwordDash = Cast<ALLL_SwordDash>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!IsValid(SwordDash))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("대시할 수 있는 몬스터가 아닙니다"));
@@ -33,7 +33,7 @@ void ULLL_Dash_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	ALLL_SwordDash* SwordDash = Cast<ALLL_SwordDash>(OwnerComp.GetAIOwner()->GetPawn());
+	const ALLL_SwordDash* SwordDash = Cast<ALLL_SwordDash>(OwnerComp.GetAIOwner()->GetPawn());
 	if (IsValid(SwordDash) && !SwordDash->IsDashing())
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
