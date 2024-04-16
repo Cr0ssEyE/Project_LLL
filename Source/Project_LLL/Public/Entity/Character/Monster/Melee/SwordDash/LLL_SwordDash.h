@@ -7,7 +7,7 @@
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
 #include "LLL_SwordDash.generated.h"
 
-class UProjectileMovementComponent;
+class UBoxComponent;
 /**
  * 
  */
@@ -24,7 +24,10 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+	void DashDamageRangeBoxInit();
 
 public:
 	void Dash() const;
@@ -32,6 +35,9 @@ public:
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_SwordDashDataAsset> SwordDashDataAsset;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UBoxComponent> DashDamageRangeBox;
 
 	uint8 bIsDashing : 1;
 };

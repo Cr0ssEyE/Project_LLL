@@ -24,7 +24,7 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	FHitResult StaticResult;
 	FHitResult PlayerResult;
 	const FVector SweepStartLocation = SwordDash->GetActorLocation();
-	FVector SweepEndLocation = SweepStartLocation + SwordDash->GetActorForwardVector() * SwordDashAttributeSet->GetMaxDashDistance();
+	FVector SweepEndLocation = SweepStartLocation + SwordDash->GetActorForwardVector() * SwordDashAttributeSet->GetDashDistance();
 	FQuat SweepQuat = SwordDash->GetActorQuat();
 	ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
 	ECollisionChannel PlayerTraceChannel = ECC_PLAYER;
