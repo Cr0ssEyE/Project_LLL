@@ -54,13 +54,13 @@ void ALLL_RewardObject::InteractiveEvent()
 {
 	Super::InteractiveEvent();
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	ULLL_PlayerGoldComponet* PlayerGoldComponet = Player->GetGoldComponet();
-	if (bIsProduct && PlayerGoldComponet->GetMoney() < Price)
+	ULLL_PlayerGoldComponent* PlayerGoldComponent = Player->GetGoldComponent();
+	if (bIsProduct && PlayerGoldComponent->GetMoney() < Price)
 	{
 		//구매 불가능 UI 생성
 		return;
 	}
-	PlayerGoldComponet->DecreaseMoney(Price);
+	PlayerGoldComponent->DecreaseMoney(Price);
 	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
 	SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 	SelectRewardWidget->SetIsEnabled(true);

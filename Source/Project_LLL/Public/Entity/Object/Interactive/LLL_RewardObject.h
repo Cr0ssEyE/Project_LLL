@@ -48,11 +48,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_ProductObjectPriceWidget> PriceWidget;
-	
-protected:
-	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<ULLL_SelectRewardWidget> SelectRewardWidgetClass;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_SelectRewardWidget> SelectRewardWidget;
 };
