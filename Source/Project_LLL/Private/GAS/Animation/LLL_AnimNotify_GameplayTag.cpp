@@ -16,8 +16,7 @@ void ULLL_AnimNotify_GameplayTag::Notify(USkeletalMeshComponent* MeshComp, UAnim
 
 	if (MeshComp)
 	{
-		AActor* OwnerActor = MeshComp->GetOwner();
-		if (OwnerActor)
+		if (AActor* OwnerActor = MeshComp->GetOwner())
 		{
 			FGameplayEventData PayloadData;
 			PayloadData.EventMagnitude = NotifyLevel;

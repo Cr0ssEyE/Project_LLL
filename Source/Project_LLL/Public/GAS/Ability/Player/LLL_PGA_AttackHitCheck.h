@@ -6,8 +6,8 @@
 #include "GAS/Ability/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_AttackHitCheck.generated.h"
 
-class ULLL_GA_KnockBack;
 class ALLL_TA_TraceBase;
+
 /**
  * 
  */

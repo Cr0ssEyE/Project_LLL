@@ -13,6 +13,7 @@ UCLASS()
 class PROJECT_LLL_API ULLL_GoldComponentDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
+	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget", DisplayName = "UI 노출 시간")
 	uint8 WidgetHideWaitTime;

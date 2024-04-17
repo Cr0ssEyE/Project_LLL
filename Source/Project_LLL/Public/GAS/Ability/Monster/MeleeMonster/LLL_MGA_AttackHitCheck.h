@@ -7,6 +7,7 @@
 #include "LLL_MGA_AttackHitCheck.generated.h"
 
 class ALLL_TA_TraceBase;
+
 /**
  * 
  */

@@ -27,7 +27,7 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
-	void DashDamageRangeBoxInit();
+	void DashDamageRangeBoxInit() const;
 
 public:
 	void Dash() const;

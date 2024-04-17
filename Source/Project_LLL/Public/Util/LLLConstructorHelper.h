@@ -4,10 +4,6 @@
 
 #include "CoreMinimal.h"
 
-/**
- * 
- */
-
 UENUM()
 enum class EAssertionLevel : uint8
 {
@@ -16,6 +12,9 @@ enum class EAssertionLevel : uint8
 	Check,
 };
 
+/**
+ * 
+ */
 class PROJECT_LLL_API FLLLConstructorHelper
 {
 public:

@@ -6,7 +6,6 @@
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "FMODAudioComponent.h"
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -29,13 +28,9 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	GoldComponet = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
+	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
-	
-	Continuous = 0.0f;
-	Discrete = 0;
-	Labeled = ELabeled::A;
 
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	CameraDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_CameraDataAsset>(PATH_CAMERA_DATA, EAssertionLevel::Check);
@@ -145,7 +140,7 @@ void ALLL_PlayerBase::PossessedBy(AController* NewController)
 	}
 }
 
-void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
+void ALLL_PlayerBase::AddInteractiveObject(ALLL_InteractiveObject* Object)
 {
 	InteractiveObjects.Emplace(Object);
 	PlayerUIManager->EnableInteractionWidget();
@@ -156,7 +151,7 @@ void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
 	PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
 }
 
-void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject)
+void ALLL_PlayerBase::RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject)
 {
 	if (!InteractiveObjects.IsEmpty())
 	{
@@ -180,6 +175,7 @@ void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObj
 				break;
 			}
 		}
+		
 		if(!InteractiveObjects.IsEmpty())
 		{
 			PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
@@ -367,21 +363,10 @@ void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::PlayerRotateToMouseCursor()
 {
-	FVector MouseWorldLocation = GetMouseLocation();
+	const FVector MouseWorldLocation = GetMouseLocation();
 	FVector ViewDirection = (MouseWorldLocation - GetActorLocation()).GetSafeNormal();
 	ViewDirection.Z = 0.f;
 	SetActorRotation(ViewDirection.Rotation());
-}
-
-void ALLL_PlayerBase::ParameterTest()
-{
-	Continuous = 1.0f;
-	Discrete = 3;
-	Labeled = ELabeled::C;
-	
-	FModAudioComponent->SetParameter(FName("Continuous"), Continuous);
-	FModAudioComponent->SetParameter(FName("Discrete"), Discrete);
-	FModAudioComponent->SetParameter(FName("Labeled"), static_cast<float>(Labeled));
 }
 
 void ALLL_PlayerBase::Dead()

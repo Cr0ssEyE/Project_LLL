@@ -6,8 +6,6 @@
 #include "BehaviorTree/BTService.h"
 #include "LLL_DetectPlayer_BTService.generated.h"
 
-class ALLL_MonsterBase;
-class ALLL_PlayerBase;
 /**
  * 
  */

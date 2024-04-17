@@ -4,14 +4,12 @@
 #include "GAS/TargetActor/LLL_TA_SweepMultiTrace.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Engine/DamageEvents.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "Util/LLL_DebugDrawHelper.h"
 #include "Util/LLL_MathHelper.h"
 
-// Sets default values
 ALLL_TA_SweepMultiTrace::ALLL_TA_SweepMultiTrace()
 {
 	

@@ -7,6 +7,7 @@
 #include "LLL_GA_KnockBack.generated.h"
 
 class ALLL_TA_TraceBase;
+
 /**
  * 
  */

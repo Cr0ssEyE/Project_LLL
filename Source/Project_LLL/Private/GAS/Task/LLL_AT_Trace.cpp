@@ -8,6 +8,7 @@
 
 ULLL_AT_Trace::ULLL_AT_Trace()
 {
+	
 }
 
 ULLL_AT_Trace* ULLL_AT_Trace::CreateTask(UGameplayAbility* OwningAbility, TSubclassOf<ALLL_TA_TraceBase> TargetActorClass)
@@ -53,10 +54,9 @@ void ULLL_AT_Trace::SpawnAndInitializeTargetActor()
 	}
 }
 
-void ULLL_AT_Trace::FinalizeTargetActor()
+void ULLL_AT_Trace::FinalizeTargetActor() const
 {
-	UAbilitySystemComponent* ASC = AbilitySystemComponent.Get();
-	if (ASC)
+	if (UAbilitySystemComponent* ASC = AbilitySystemComponent.Get(); IsValid(ASC))
 	{
 		const FTransform SpawnTransform = ASC->GetAvatarActor()->GetTransform();
 		SpawnedTargetActor->FinishSpawning(SpawnTransform);

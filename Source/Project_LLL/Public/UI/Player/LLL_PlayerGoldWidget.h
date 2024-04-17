@@ -13,7 +13,6 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PlayerGoldWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
 	
 public:
 	virtual void NativeConstruct() override;

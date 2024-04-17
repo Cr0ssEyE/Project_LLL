@@ -91,6 +91,7 @@ void ULLL_PGA_ComboManagement::ComboTimerTick()
 			BP_ApplyGameplayEffectToOwner(ComboDivideEffect);
 		}
 	}
+	
 	CurrentComboCount = PlayerAttributes->GetCurrentComboCount();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ComboManagement::ComboTimerTick);
 	// TODO: UI 연결
