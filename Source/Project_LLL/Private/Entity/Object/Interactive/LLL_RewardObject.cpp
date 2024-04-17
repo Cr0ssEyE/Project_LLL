@@ -3,11 +3,10 @@
 
 #include "Entity/Object/Interactive/LLL_RewardObject.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
-#include <Util/LLLConstructorHelper.h>
+#include "Util/LLLConstructorHelper.h"
 
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_FilePath.h"
-#include "DataAsset/LLL_RewardObjectDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "UI/Object/LLL_ProductObjectPriceWidget.h"
@@ -62,7 +61,6 @@ void ALLL_RewardObject::InteractiveEvent()
 		return;
 	}
 	PlayerGoldComponet->DecreaseMoney(Price);
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("PlayerGold %f"), PlayerGoldComponet->GetMoney()));
 	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
 	SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 	SelectRewardWidget->SetIsEnabled(true);

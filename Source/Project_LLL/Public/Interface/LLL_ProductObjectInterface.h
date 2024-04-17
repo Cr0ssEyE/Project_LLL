@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "LLL_ProductObjcetInterface.generated.h"
+#include "LLL_ProductObjectInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class ULLL_ProductObjcetInterface : public UInterface
+class ULLL_ProductObjectInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,7 +16,7 @@ class ULLL_ProductObjcetInterface : public UInterface
 /**
  * 
  */
-class PROJECT_LLL_API ILLL_ProductObjcetInterface
+class PROJECT_LLL_API ILLL_ProductObjectInterface
 {
 	GENERATED_BODY()
 

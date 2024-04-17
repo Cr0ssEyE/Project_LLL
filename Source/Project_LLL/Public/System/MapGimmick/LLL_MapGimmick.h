@@ -58,22 +58,22 @@ protected:
 	
 	// Stage Section
 protected:
-	UPROPERTY(VisibleAnywhere, Category = stage)
+	UPROPERTY(VisibleAnywhere, Category = "stage")
 	TObjectPtr<ULLL_MapDataAsset> MapDataAsset;
 	
-	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> Stage;
 
-	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent> StageTrigger;
 
-	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<AActor> StageActor;
 
-	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TArray<AActor*> StageChildActors;
 
-	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_ShoppingMapComponent> ShoppingMapComponent;
 
 	uint32 Seed;
