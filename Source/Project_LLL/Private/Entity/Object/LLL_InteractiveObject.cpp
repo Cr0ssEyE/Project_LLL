@@ -29,7 +29,7 @@ void ALLL_InteractiveObject::BeginPlay()
 void ALLL_InteractiveObject::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	if(ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor))
+	if (ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor))
 	{
 		PlayerCharacter->AddInteractiveObject(this);
 	}
@@ -38,7 +38,7 @@ void ALLL_InteractiveObject::NotifyActorBeginOverlap(AActor* OtherActor)
 void ALLL_InteractiveObject::NotifyActorEndOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorEndOverlap(OtherActor);
-	if(ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor))
+	if (ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor))
 	{
 		PlayerCharacter->RemoveInteractiveObject(this);
 	}
@@ -49,7 +49,7 @@ void ALLL_InteractiveObject::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckObjectCollisionDebug())
 		{

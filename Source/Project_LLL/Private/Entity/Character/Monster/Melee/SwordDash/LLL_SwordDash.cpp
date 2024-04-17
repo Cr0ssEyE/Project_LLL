@@ -96,24 +96,16 @@ void ALLL_SwordDash::DashDamageRangeBoxInit() const
 
 void ALLL_SwordDash::Dash() const
 {
-	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
-	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_SWORD_DASH_DASH));
-	for (const auto AbilitySpecHandle : AbilitySpecHandles)
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_SWORD_DASH_DASH)))
 	{
-		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
-		{
-			if (ASC->TryActivateAbility(AbilitySpec->Handle))
-			{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-				if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-				{
-					if (ProtoGameInstance->CheckMonsterAttackDebug())
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 대시 수행"), *GetName()));
-					}
-				}
-#endif
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
 			}
 		}
+#endif
 	}
 }
