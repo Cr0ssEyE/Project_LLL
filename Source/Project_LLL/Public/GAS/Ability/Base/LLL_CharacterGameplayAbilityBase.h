@@ -15,6 +15,9 @@ class PROJECT_LLL_API ULLL_CharacterGameplayAbilityBase : public UGameplayAbilit
 {
 	GENERATED_BODY()
 
+public:
+	ULLL_CharacterGameplayAbilityBase();
+
 protected:
 	virtual void PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;

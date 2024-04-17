@@ -4,7 +4,6 @@
 #include "Entity/Object/LLL_BaseObject.h"
 
 #include "AbilitySystemComponent.h"
-#include "Components/BoxComponent.h"
 
 
 // Sets default values
@@ -15,6 +14,8 @@ ALLL_BaseObject::ALLL_BaseObject()
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+
+	SetRootComponent(BaseMesh);
 }
 
 void ALLL_BaseObject::PostLoad()
@@ -55,6 +56,11 @@ void ALLL_BaseObject::SetDefaultInformation()
 void ALLL_BaseObject::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(!IsValid(BaseObjectDataAsset))
+	{
+		return;
+	}
 	
 	if(IsValid(ASC))
 	{
@@ -74,7 +80,7 @@ void ALLL_BaseObject::BeginPlay()
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
-		FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(BaseObjectDataAsset->InitEffect, 1.0, EffectContextHandle);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(BaseObjectDataAsset->InitEffect, 1.0, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
@@ -87,30 +93,3 @@ void ALLL_BaseObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
-void ALLL_BaseObject::DelayedDestroy(float Time)
-{
-	FTimerHandle DestroyTimerHandle;
-	FTimerDelegate DestroyTimerDelegate;
-	DestroyTimerDelegate.BindUObject(this, &ALLL_BaseObject::DestroyTimerCallback);
-	GetWorldTimerManager().SetTimer(DestroyTimerHandle, DestroyTimerDelegate, Time, false);
-}
-
-void ALLL_BaseObject::DelayedHide(float Time)
-{
-	FTimerHandle HideTimerHandle;
-	FTimerDelegate HideTimerDelegate;
-	HideTimerDelegate.BindUObject(this, &ALLL_BaseObject::HideTimerCallback);
-	GetWorldTimerManager().SetTimer(HideTimerHandle, HideTimerDelegate, Time, false);
-}
-
-void ALLL_BaseObject::DestroyTimerCallback()
-{
-	Destroy();
-}
-
-void ALLL_BaseObject::HideTimerCallback()
-{
-	SetActorHiddenInGame(true);
-}
-

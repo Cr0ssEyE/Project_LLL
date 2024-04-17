@@ -14,6 +14,9 @@ class PROJECT_LLL_API ULLL_MGA_GroundStrike : public ULLL_MonsterGameplayAbility
 {
 	GENERATED_BODY()
 
+public:
+	UAnimMontage* GetAbilityActionMontage() const { return AbilityActionMontage; }
+
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	

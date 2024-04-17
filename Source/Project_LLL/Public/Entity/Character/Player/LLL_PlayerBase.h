@@ -4,12 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
+#include "LLL_PlayerAnimInstance.h"
+#include "LLL_PlayerGoldComponet.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
 class ALLL_PlayerWireHand;
-class ULLL_PlayerAttributeSet;
+class ULLL_PlayerCharacterAttributeSet;
 class ULLL_PlayerWeaponComponent;
 class ULLL_PlayerAnimInstance;
 class ALLL_InteractiveObject;
@@ -30,7 +33,7 @@ enum class ELabeled : uint8
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_PlayerBase : public ALLL_BaseCharacter
+class PROJECT_LLL_API ALLL_PlayerBase : public ALLL_BaseCharacter, public ILLL_PlayerDependencyInterface
 {
 	GENERATED_BODY()
 
@@ -114,4 +117,8 @@ private:
 protected:
 	virtual void Dead() override;
 	virtual void DeadMontageEndEvent() override;
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_PlayerGoldComponet> GoldComponet;
 };

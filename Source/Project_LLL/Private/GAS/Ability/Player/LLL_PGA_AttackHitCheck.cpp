@@ -4,7 +4,10 @@
 #include "GAS/Ability/Player/LLL_PGA_AttackHitCheck.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "GAS/Ability/Share/LLL_GA_KnockBack.h"
 #include "GAS/Task/LLL_AT_Trace.h"
 
 ULLL_PGA_AttackHitCheck::ULLL_PGA_AttackHitCheck()
@@ -26,20 +29,31 @@ void ULLL_PGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle H
 
 void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
-	if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
+	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{
-		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
-
-		// 맞은 액터 갯수만큼 콤보 수 증가
-		float Magnitude = TargetDataHandle.Data[0]->GetActors().Num();
-		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ComboStackEffect, CurrentLevel);
-		if (EffectSpecHandle.IsValid())
-		{
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_COMBO_ADDITIVE, Magnitude);
-			ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
-		}
-		
-		BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect);
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
 	}
+	
+	// 맞은 액터 갯수만큼 콤보 수 증가
+	const int Magnitude = TargetDataHandle.Data[0]->GetActors().Num();
+	const FGameplayEffectSpecHandle ComboEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ComboStackEffect, CurrentLevel);
+	if (ComboEffectSpecHandle.IsValid())
+	{
+		ComboEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_COMBO_ADDITIVE, Magnitude);
+		ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, ComboEffectSpecHandle);
+	}
+
+	// 맞은 액터 갯수만큼 스킬 게이지 증가
+	const FGameplayEffectSpecHandle SkillGaugeEffectSpecHandle = MakeOutgoingGameplayEffectSpec(IncreaseSkillGaugeEffect, CurrentLevel);
+	if (SkillGaugeEffectSpecHandle.IsValid())
+	{
+		SkillGaugeEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_SKILL_GAUGE_ADDITIVE, Magnitude);
+		ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, SkillGaugeEffectSpecHandle);
+	}
+		
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect);
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect);
+	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

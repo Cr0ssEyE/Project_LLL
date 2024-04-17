@@ -6,7 +6,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_OrawaveDataAsset.h"
 #include "Entity/Character/Monster/Melee/Orawave/LLL_OrawaveAIController.h"
-#include "GAS/Attribute/Monster/MeleeMonster/Orawave/LLL_OrawaveAttributeSet.h"
+#include "GAS/Attribute/Character/Monster/MeleeMonster/Orawave/LLL_OrawaveAttributeSet.h"
 #include "Util/LLLConstructorHelper.h"
 
 ALLL_Orawave::ALLL_Orawave()

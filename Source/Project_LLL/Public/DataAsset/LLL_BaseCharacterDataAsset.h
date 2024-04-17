@@ -32,9 +32,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "애님 블루프린트", meta=(DisplayPriority=1))
 	TSoftClassPtr<UAnimInstance> AnimInstance;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "공격 애님 몽타주")
-	TObjectPtr<UAnimMontage> AttackAnimMontage;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
 	TObjectPtr<UAnimMontage> DeadAnimMontage;
 	

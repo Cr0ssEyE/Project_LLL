@@ -4,7 +4,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacterUIManager.h"
 
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
-#include "GAS/Attribute/Base/LLL_CharacterAttributeSetBase.h"
+#include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 #include "UI/LLL_CharacterStatusWidget.h"
 
 
@@ -23,7 +23,7 @@ void ULLL_BaseCharacterUIManager::BeginPlay()
 	Super::BeginPlay();
 	
 	ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwner());
-	Character->UpdateWidgetDelegate.AddUObject(this, &ULLL_BaseCharacterUIManager::UpdateStatusWidget);
+	Character->UpdateWidgetDelegate.AddDynamic(this, &ULLL_BaseCharacterUIManager::UpdateWidget);
 }
 
 
@@ -35,7 +35,7 @@ void ULLL_BaseCharacterUIManager::TickComponent(float DeltaTime, ELevelTick Tick
 	// ...
 }
 
-void ULLL_BaseCharacterUIManager::UpdateStatusWidget()
+void ULLL_BaseCharacterUIManager::UpdateWidget()
 {
 	const ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwner());
 	const ULLL_CharacterAttributeSetBase* CharacterAttributeSet = CastChecked<ULLL_CharacterAttributeSetBase>(Character->GetAbilitySystemComponent()->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));

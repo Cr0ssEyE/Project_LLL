@@ -8,9 +8,12 @@
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
+#include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Player/LLL_PlayerWireHandAttributeSet.h"
+#include "GAS/Ability/Player/WireSystem/LLL_PGA_RushToWireHand.h"
+#include "GAS/Attribute/Object/ThrownObject/PlayerWireHand/LLL_PlayerWireHandAttributeSet.h"
 
 ULLL_PGA_WireHandGrab::ULLL_PGA_WireHandGrab()
 {
@@ -38,8 +41,22 @@ void ULLL_PGA_WireHandGrab::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	PlayerWireHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_WireHandGrab::OnReleasedCallBack);
 	
 	GrabElapsedTime = 0.f;
-	MaxGrabDuration = PlayerWireHand->GetWireHandAttributeSet()->GetGrabDuration();
-	GrabTargetEntity();
+
+	const ULLL_PlayerWireHandAttributeSet* WireHandAttributeSet = CastChecked<ULLL_PlayerWireHandAttributeSet>(PlayerWireHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerWireHandAttributeSet::StaticClass()));
+	
+	MaxGrabDuration = WireHandAttributeSet->GetGrabDuration();
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandGrab::GrabTargetEntity);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerWireActionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 그랩 동작")));
+		}
+	}
+#endif
 }
 
 void ULLL_PGA_WireHandGrab::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -49,8 +66,8 @@ void ULLL_PGA_WireHandGrab::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	PlayerWireHand->K2_DetachFromActor(EDetachmentRule::KeepWorld);
 	PlayerWireHand->SetGrabbedActor(nullptr);
 	
-	const FGameplayTagContainer ReleaseHandTags(TAG_GAS_WIRE_RELEASE);
-	GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(ReleaseHandTags);
+	// const FGameplayTagContainer ReleaseHandTags(TAG_GAS_WIRE_RELEASE);
+	// GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(ReleaseHandTags);
 	
 	GrabElapsedTime = 0.f;
 	MaxGrabDuration = 0.f;
@@ -87,7 +104,6 @@ bool ULLL_PGA_WireHandGrab::TryGrabAroundEntity(const FGameplayAbilitySpecHandle
 void ULLL_PGA_WireHandGrab::GrabTargetEntity()
 {
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
-
 	USphereComponent* WireHandCollision = PlayerWireHand->GetCollisionComponent();
 	USkeletalMeshComponent* HandMesh = PlayerWireHand->GetHandMesh();
 	
@@ -101,6 +117,9 @@ void ULLL_PGA_WireHandGrab::GrabTargetEntity()
 	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileComponent();
 	WireHandProjectile->Velocity = FVector::Zero();
 	WireHandProjectile->Deactivate();
+
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
+	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_PLAYER_WIRE_RUSH));
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandGrab::CheckGrabbedTime);
 }
@@ -109,6 +128,7 @@ void ULLL_PGA_WireHandGrab::CheckGrabbedTime()
 {
 	if(MaxGrabDuration <= 0.f)
 	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
@@ -117,7 +137,17 @@ void ULLL_PGA_WireHandGrab::CheckGrabbedTime()
 	if(GrabElapsedTime >= MaxGrabDuration)
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerWireActionDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 그랩 유지시간 종료")));
+			}
+		}
+#endif
 	}
+	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandGrab::CheckGrabbedTime);
 }
 

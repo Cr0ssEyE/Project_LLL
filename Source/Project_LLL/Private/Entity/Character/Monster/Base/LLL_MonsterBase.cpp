@@ -9,11 +9,16 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "GAS/Ability/Monster/LLL_MGA_GroundStrike.h"
+#include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/LLL_CharacterStatusWidget.h"
+#include "Util/LLLConstructorHelper.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
@@ -26,12 +31,24 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
+	DropGoldEffect = FLLLConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'"), EAssertionLevel::Check);
+	
 }
 
 void ALLL_MonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
-
+	ASC->AddSpawnedAttribute(DropGoldAttributeSet);
+	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);
+	FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(DropGoldEffect, 1.0, EffectContextHandle);
+	if(EffectSpecHandle.IsValid())
+	{
+		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+	}
+	
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
 
 	MonsterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
@@ -74,12 +91,14 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 void ALLL_MonsterBase::Dead()
 {
 	Super::Dead();
-
+	//DropGold() -> GoldAttribute -> DropGoldStat -> player Gold up
+	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
 	if (IsValid(MonsterBaseAIController))
 	{
 		MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
 	}
+	
 }
 
 void ALLL_MonsterBase::Attack()
@@ -127,19 +146,30 @@ void ALLL_MonsterBase::Damaged()
 
 bool ALLL_MonsterBase::CanPlayAttackAnimation()
 {
-	if (IsValid(CharacterAnimInstance))
+	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
+	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK));
+	for (const auto AbilitySpecHandle : AbilitySpecHandles)
 	{
-		if (CharacterAnimInstance->Montage_IsPlaying(CharacterDataAsset->AttackAnimMontage))
+		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
 		{
-			return false;
-		}
+			const UAnimMontage* AttackAnimMontage = Cast<ULLL_MGA_GroundStrike>(AbilitySpec->GetPrimaryInstance())->GetAbilityActionMontage();
+			const UAnimMontage* DamagedAnimMontage = MonsterBaseDataAsset->DamagedAnimMontage;
+	
+			if (IsValid(CharacterAnimInstance) && IsValid(AttackAnimMontage))
+			{
+				if (CharacterAnimInstance->Montage_IsPlaying(AttackAnimMontage))
+				{
+					return false;
+				}
 
-		if (CharacterAnimInstance->Montage_IsPlaying(MonsterBaseDataAsset->DamagedAnimMontage))
-		{
-			return false;
-		}
+				if (CharacterAnimInstance->Montage_IsPlaying(DamagedAnimMontage))
+				{
+					return false;
+				}
 
-		return true;
+				return true;
+			}
+		}
 	}
 
 	return false;
@@ -158,6 +188,30 @@ void ALLL_MonsterBase::ToggleAIHandle(bool value)
 		else
 		{
 			BrainComponent->PauseLogic(TEXT("AI Debug Is Deactivated"));
+		}
+	}
+}
+
+void ALLL_MonsterBase::DropGold(const FGameplayTag tag, int32 data)
+{
+	float GoldData = DropGoldAttributeSet->GetDropGoldStat();
+
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	for (UActorComponent* ChildComponent : Player->GetComponents())
+	{
+		ULLL_PlayerGoldComponet* GoldComponet = Cast<ULLL_PlayerGoldComponet>(ChildComponent);
+		if(IsValid(GoldComponet))
+		{
+			GoldComponet->IncreaseMoney(GoldData);
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+			if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+			{
+				if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("PlayerGold %f"), GoldComponet->GetMoney()));
+				}
+			}
+#endif
 		}
 	}
 }

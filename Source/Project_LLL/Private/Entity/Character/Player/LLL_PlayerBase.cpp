@@ -12,16 +12,15 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
-#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
-#include "Entity/Object/Thrown/LLL_PlayerWireHand.h"
+#include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
 #include "Enumeration/LLL_AbilityKeyHelper.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "GAS/Attribute/Player/LLL_PlayerAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLLConstructorHelper.h"
 
@@ -29,19 +28,19 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	GoldComponet = CreateDefaultSubobject<ULLL_PlayerGoldComponet>(TEXT("PlayerGoldComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
-	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerAttributeSet>(TEXT("PlayerAttributes"));
+	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributes"));
 	
 	Continuous = 0.0f;
 	Discrete = 0;
 	Labeled = ELabeled::A;
-	
+
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
 	if (IsValid(CharacterDataAsset))
 	{
 		GetCharacterMovement()->MaxFlySpeed = 10000.f;
-		
 		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 		
 		Camera->SetFieldOfView(PlayerDataAsset->CameraFOV);
@@ -49,12 +48,13 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 		Camera->bUsePawnControlRotation = false;
 		
 		SpringArm->TargetArmLength = PlayerDataAsset->SpringArmLength;
-		SpringArm->SetRelativeRotation(FRotator(PlayerDataAsset->SpringArmAngle, 0.f, 0.f));
+		SpringArm->SetRelativeRotation(PlayerDataAsset->SpringArmAngle);
 		SpringArm->bDoCollisionTest = false;
 		SpringArm->bUsePawnControlRotation = false;
 		SpringArm->bInheritPitch = false;
 		SpringArm->bInheritYaw = false;
 		SpringArm->bInheritRoll = false;
+		SpringArm->SetUsingAbsoluteRotation(true);
 		SpringArm->SetupAttachment(RootComponent);
 	}
 }
@@ -185,29 +185,59 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
-	if (bool bResult = GetWorld()->LineTraceSingleByChannel(
+	bool bResult = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
 		MouseWorldLocation,
 		MouseWorldLocation + MouseWorldDirection * 10000.f,
 		ECC_WorldStatic
-	))
+	);
+	
+	if (!bResult)
 	{
+		return FVector::Zero();
+	}
+	
+	FVector TrueMouseWorldLocation = HitResult.ImpactPoint;
+	
+	HitResult.Init();
+	bResult = false;
+	bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		TrueMouseWorldLocation,
+		TrueMouseWorldLocation,
+		FQuat::Identity,
+		ECC_ENEMY_HIT,
+		FCollisionShape::MakeSphere(PlayerDataAsset->MouseCursorCorrectRadius),
+		Params
+		);
+	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug() || ProtoGameInstance->CheckPlayerWireActionDebug())
 		{
-			if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+			DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
+			DrawDebugPoint(GetWorld(), TrueMouseWorldLocation, 10.f, FColor::Red, false, 3.f);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("마우스 월드 좌표: %f, %f, %f"), TrueMouseWorldLocation.X, TrueMouseWorldLocation.Y, TrueMouseWorldLocation.Z));
+			if(bResult)
 			{
-				DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
-				DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10.f, FColor::Red, false, 3.f);
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("마우스 월드 좌표: %f, %f, %f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z));
+				DrawDebugSphere(GetWorld(), TrueMouseWorldLocation, PlayerDataAsset->MouseCursorCorrectRadius, 16, FColor::Green, false, 2.f);
+			}
+			else
+			{
+				DrawDebugSphere(GetWorld(), TrueMouseWorldLocation, PlayerDataAsset->MouseCursorCorrectRadius, 16, FColor::Red, false, 2.f);
 			}
 		}
-#endif
-		
-		FVector TrueMouseWorldLocation = HitResult.ImpactPoint;
-		return TrueMouseWorldLocation;
 	}
-	return FVector::Zero();
+#endif
+	
+	if(bResult)
+	{
+		FVector CorrectedMouseLocation = HitResult.GetActor()->GetActorLocation();
+		return CorrectedMouseLocation;
+	}
+	
+	return TrueMouseWorldLocation;
 }
 
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
@@ -219,22 +249,12 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 		MoveInputValue.Normalize();
 	}
 	
-	MoveDirection = FVector(MoveInputValue.X, MoveInputValue.Y, 0.f);
+	MoveDirection = Camera->GetComponentRotation().RotateVector(FVector(MoveInputValue.X, MoveInputValue.Y, 0.f));
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	if(GetCharacterMovement()->IsWalking())
 	{
 		AddMovementInput(MoveDirection, 1.f);
 	}
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-	{
-		if (ProtoGameInstance->CheckPlayerMovementDebug())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("플레이어 캐릭터 방향 X: %f, Y: %f"), MoveDirection.X, MoveDirection.Y));
-		}
-	}
-#endif
 }
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputName InputName)
@@ -279,35 +299,26 @@ void ALLL_PlayerBase::WireAction(const FInputActionValue& Value, EAbilityInputNa
 	FGameplayAbilitySpec* WireSpec = ASC->FindAbilitySpecFromInputID(InputID);
 	if(WireSpec)
 	{
-		if (WireSpec->IsActive() && WireHandActor->GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_WIRE_STATE_GRABBED))
-		{
-			FGameplayTagContainer RushTag(TAG_GAS_PLAYER_WIRE_RUSH);
-			ASC->TryActivateAbilitiesByTag(RushTag);
-		}
-		else
-		{
-			ASC->TryActivateAbility(WireSpec->Handle);
-		}
+		ASC->TryActivateAbility(WireSpec->Handle);
 	}
 }
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	if(SkillSpec)
-	{
-		PlayerRotateToMouseCursor();
-		SkillSpec->InputPressed = true;
-		if (SkillSpec->IsActive())
-		{
-			ASC->AbilitySpecInputPressed(*SkillSpec);
-		}
-		else
-		{
-			ASC->TryActivateAbility(SkillSpec->Handle);
-		}
-	}
+	// int32 InputID = static_cast<int32>(InputName);
+	// FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID);
+	// if(SkillSpec)
+	// {
+	// 	SkillSpec->InputPressed = true;
+	// 	if (SkillSpec->IsActive())
+	// 	{
+	// 		ASC->AbilitySpecInputPressed(*SkillSpec);
+	// 	}
+	// 	else
+	// 	{
+	// 		ASC->TryActivateAbility(SkillSpec->Handle);
+	// 	}
+	// }
 }
 
 void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
