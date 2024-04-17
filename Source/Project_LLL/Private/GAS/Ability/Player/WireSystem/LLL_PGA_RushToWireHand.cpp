@@ -29,7 +29,7 @@ void ULLL_PGA_RushToWireHand::ActivateAbility(const FGameplayAbilitySpecHandle H
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
-	ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
+	const ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 	PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Flying);

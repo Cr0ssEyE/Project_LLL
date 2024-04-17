@@ -88,7 +88,7 @@ void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
-void ALLL_SwordDash::DashDamageRangeBoxInit()
+void ALLL_SwordDash::DashDamageRangeBoxInit() const
 {
 	const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(ASC->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
 	DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), SwordDashAttributeSet->GetDashDamageRange(), SwordDashAttributeSet->GetDashDamageRange()));

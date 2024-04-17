@@ -30,9 +30,9 @@ public:
 	void ToggleInventoryWidget() const;
 	void EnableInteractionWidget() const;
 	void DisableInteractionWidget() const;
-	void UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject, int Num) const;
+	void UpdateInteractionWidget(const ALLL_InteractiveObject* CurrentObject, int Num) const;
 
-	void SetAllWidgetVisibility(const bool Visible);
+	void SetAllWidgetVisibility(const bool Visible) const;
 
 	FORCEINLINE ULLL_GamePauseWidget* GetGamePauseWidget() const { return GamePauseWidget; }
 	FORCEINLINE ULLL_InventoryWidget* GetInventoryWidget() const { return InventoryWidget; }

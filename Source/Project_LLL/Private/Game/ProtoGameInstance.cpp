@@ -3,7 +3,3 @@
 
 #include "Game/ProtoGameInstance.h"
 
-UProtoGameInstance::UProtoGameInstance()
-{
-	
-}

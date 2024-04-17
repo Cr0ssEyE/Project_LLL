@@ -5,11 +5,8 @@
 
 #include "AbilitySystemComponent.h"
 
-
-// Sets default values
 ALLL_BaseObject::ALLL_BaseObject()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
@@ -52,7 +49,6 @@ void ALLL_BaseObject::SetDefaultInformation()
 	}
 }
 
-// Called when the game starts or when spawned
 void ALLL_BaseObject::BeginPlay()
 {
 	Super::BeginPlay();
@@ -86,10 +82,4 @@ void ALLL_BaseObject::BeginPlay()
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 	}
-}
-
-// Called every frame
-void ALLL_BaseObject::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }

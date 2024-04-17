@@ -6,8 +6,6 @@
 #include "GAS/Ability/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_ControlWireHand.generated.h"
 
-class ALLL_PlayerWireHand;
-class ALLL_PlayerBase;
 /**
  * 
  */
@@ -31,5 +29,4 @@ protected:
 	
 protected:
 	uint8 bIsAlreadyThrown : 1;
-
 };

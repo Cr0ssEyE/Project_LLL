@@ -6,11 +6,8 @@
 #include "Abilities/GameplayAbility.h"
 #include "Constant/LLL_CollisionChannel.h"
 
-
-// Sets default values
 ALLL_TA_TraceBase::ALLL_TA_TraceBase()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 

@@ -44,7 +44,7 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBaseAIController::MontageDelegateInit);
 }
 
-void ALLL_MonsterBaseAIController::AISenseInit()
+void ALLL_MonsterBaseAIController::AISenseInit() const
 {
 	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 	

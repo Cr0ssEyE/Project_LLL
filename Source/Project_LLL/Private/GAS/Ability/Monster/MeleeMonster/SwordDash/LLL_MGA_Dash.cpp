@@ -39,6 +39,7 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		SweepQuat,
 		StaticTraceChannel,
 		TraceShape);
+	
 	GetWorld()->SweepSingleByChannel(
 		PlayerResult,
 		SweepStartLocation,

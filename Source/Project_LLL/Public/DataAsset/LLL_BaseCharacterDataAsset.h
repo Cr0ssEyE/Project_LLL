@@ -7,11 +7,10 @@
 #include "Engine/DataAsset.h"
 #include "LLL_BaseCharacterDataAsset.generated.h"
 
-class UGameplayCueNotify_Burst;
 class ULLL_CharacterStatusWidget;
-class ULLL_PlayerStatusWidget;
 class UGameplayEffect;
 class UGameplayAbility;
+
 /**
  * 
  */
