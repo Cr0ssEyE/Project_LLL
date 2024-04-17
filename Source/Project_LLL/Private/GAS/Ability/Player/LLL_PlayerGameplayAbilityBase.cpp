@@ -9,7 +9,7 @@ bool ULLL_PlayerGameplayAbilityBase::CanActivateAbility(const FGameplayAbilitySp
 {
 	const bool Result = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 
-	const ILLL_PlayerDependencyInterface* PlayerActor = Cast<ILLL_PlayerDependencyInterface>(CurrentActorInfo->AvatarActor);
+	const ILLL_PlayerDependencyActorInterface* PlayerActor = Cast<ILLL_PlayerDependencyActorInterface>(CurrentActorInfo->AvatarActor);
 	if(!PlayerActor)
 	{
 		return false;

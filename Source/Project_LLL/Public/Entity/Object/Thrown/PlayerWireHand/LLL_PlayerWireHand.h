@@ -14,7 +14,7 @@ class ULLL_PlayerWireObjectDataAsset;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWireMovementCompleteDelegate);
 
 UCLASS()
-class PROJECT_LLL_API ALLL_PlayerWireHand : public ALLL_ThrownObject, public ILLL_PlayerDependencyInterface
+class PROJECT_LLL_API ALLL_PlayerWireHand : public ALLL_ThrownObject, public ILLL_PlayerDependencyActorInterface
 {
 	GENERATED_BODY()
 
@@ -38,8 +38,9 @@ public:
 	void SetHiddenState();
 	
 protected:
+	virtual void BeginPlay() override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-	
+
 	// 기본 컴포넌트 및 객체
 protected:
 	UPROPERTY(VisibleAnywhere)

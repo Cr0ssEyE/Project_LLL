@@ -4,6 +4,7 @@
 #include "GAS/Ability/Player/LLL_PGA_AttackBase.h"
 
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MonatgeSectionName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
@@ -89,6 +90,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 		GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
 		WaitInputTimerHandle.Invalidate();
 	}
+	GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -96,7 +98,7 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 {
 	Super::InputPressed(Handle, ActorInfo, ActivationInfo);
 	const float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(WaitInputTimerHandle);
-	if(CurrentComboAction < MaxAttackAction && ElapsedTime > AttackActionInputDelayTime)
+	if(ElapsedTime > AttackActionInputDelayTime)
 	{
 		bIsInputPressed = true;
 		SetNextAttackAction();
@@ -118,10 +120,16 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
 	WaitInputTimerHandle.Invalidate();
 	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	if(IsValid(PlayerCharacter) && bIsInputPressed && CurrentComboAction < MaxAttackAction)
+	if(IsValid(PlayerCharacter) && bIsInputPressed)
 	{
+		if(CurrentComboAction == MaxAttackAction)
+		{
+			CurrentComboAction = 0;
+		}
+		
 		PlayerCharacter->PlayerRotateToMouseCursor();
 		MontageJumpToSection(*FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
+		GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
 		StartAttackInputWait();
 		bIsInputPressed = false;
 

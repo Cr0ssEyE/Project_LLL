@@ -23,7 +23,7 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 
 	RootBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	RootBox->SetBoxExtent(FVector(5000.0f, 5000.0f, 500.0f));
-	RootBox->SetCollisionProfileName(CP_OVERLAPALL);
+	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
 	RootBox->OnComponentBeginOverlap.AddDynamic(this, &ALLL_MapGimmick::OnStageTriggerBeginOverlap);
 	SetRootComponent(RootBox);
 
@@ -103,7 +103,7 @@ void ALLL_MapGimmick::CreateMap()
 	{
 		MonsterSpawner = CastChecked<ALLL_MonsterSpawner>(ChildActor);
 	}
-	RootBox->SetCollisionProfileName(CP_OVERLAPALL);
+	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
 	SetState(EStageState::READY);
 }
 
@@ -165,19 +165,19 @@ void ALLL_MapGimmick::SetReady()
 
 void ALLL_MapGimmick::SetFight()
 {
-	RootBox->SetCollisionProfileName(CP_NOCOLLISION);
+	RootBox->SetCollisionProfileName(CP_NO_COLLISION);
 	OnOpponentSpawn();
 }
 
 void ALLL_MapGimmick::SetChooseReward()
 {
-	RootBox->SetCollisionProfileName(CP_NOCOLLISION);
+	RootBox->SetCollisionProfileName(CP_NO_COLLISION);
 	RewardSpawn();
 }
 
 void ALLL_MapGimmick::SetChooseNext()
 {
-	RootBox->SetCollisionProfileName(CP_NOCOLLISION);
+	RootBox->SetCollisionProfileName(CP_NO_COLLISION);
 	EnableAllGates();
 }
 

@@ -21,8 +21,9 @@ class PROJECT_LLL_API ULLL_AT_Trace : public UAbilityTask
 public:
 	ULLL_AT_Trace();
 
+	// bIsTraceSingleTick이 false인 경우: OwningAbility가 종료되거나 따로 EndTask를 호출하기 전 까지 Task가 유지됨
 	UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
-	static ULLL_AT_Trace* CreateTask(UGameplayAbility* OwningAbility, TSubclassOf<ALLL_TA_TraceBase> TargetActorClass);
+	static ULLL_AT_Trace* CreateTask(UGameplayAbility* OwningAbility, TSubclassOf<ALLL_TA_TraceBase> TargetActorClass, bool TraceSingleTick = true);
 	
 	virtual void Activate() override;
 	virtual void OnDestroy(bool bInOwnerFinished) override;
@@ -44,4 +45,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<ALLL_TA_TraceBase> SpawnedTargetActor;
+
+	UPROPERTY()
+	TSet<AActor*> IgnoreActors;
+
+	uint8 bIsTraceSingleTick : 1;
 };

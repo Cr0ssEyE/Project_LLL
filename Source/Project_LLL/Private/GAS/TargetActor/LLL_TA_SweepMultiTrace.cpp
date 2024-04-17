@@ -34,8 +34,9 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 	{
 		SweepQuat *= FQuat(FVector::RightVector, FMath::DegreesToRadians(-90.0f));
 	}
-
-	const FCollisionQueryParams Params(SCENE_QUERY_STAT(ALLL_TA_SweepMultiTrace), false, SourceActor);
+	
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(ALLL_TA_SweepMultiTrace), false, SourceActor);
+	Params.AddIgnoredActors(IgnoreActors.Array());
 	
 	GetWorld()->SweepMultiByChannel(
 		Results,

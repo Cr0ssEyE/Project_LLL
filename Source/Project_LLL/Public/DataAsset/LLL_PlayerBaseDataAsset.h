@@ -26,7 +26,7 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PlayerBaseDataAsset : public ULLL_BaseCharacterDataAsset
 {
 	GENERATED_BODY()
-
+	
 	// UI 관련 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "일시정지 UI")

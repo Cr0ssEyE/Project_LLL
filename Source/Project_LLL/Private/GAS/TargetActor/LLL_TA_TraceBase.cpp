@@ -55,6 +55,11 @@ void ALLL_TA_TraceBase::SetTraceInfo(const ESelectTraceTarget NewTraceTarget, co
 	}
 }
 
+void ALLL_TA_TraceBase::SetIgnoreInfo(TSet<AActor*> Actors)
+{
+	IgnoreActors.Append(Actors);
+}
+
 void ALLL_TA_TraceBase::StartTargeting(UGameplayAbility* Ability)
 {
 	Super::StartTargeting(Ability);

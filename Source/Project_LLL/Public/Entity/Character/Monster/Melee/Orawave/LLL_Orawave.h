@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_OrawaveDataAsset.h"
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
+#include "Interface/LLL_KnockBackInterface.h"
 #include "LLL_Orawave.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_Orawave : public ALLL_MeleeMonster
+class PROJECT_LLL_API ALLL_Orawave : public ALLL_MeleeMonster, public ILLL_KnockBackInterface
 {
 	GENERATED_BODY()
 

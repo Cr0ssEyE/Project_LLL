@@ -4,6 +4,11 @@
 
 #include "CoreMinimal.h"
 
+#define PATH_PLAYER_EFFECTS TEXT("PlayerEffects")
+#define PATH_MONSTER_EFFECTS TEXT("MonsterEffects")
+#define PATH_OBJECT_EFFECTS TEXT("ObjectEffects")
+#define PATH_SHARE_EFFECTS TEXT("ShareEffects")
+
 #define PATH_PLAYER_DATA TEXT("/Script/Project_LLL.LLL_PlayerBaseDataAsset'/Game/DataAsset/DA_Player.DA_Player'")
 #define PATH_PLAYER_WIRE_DATA TEXT("/Script/Project_LLL.LLL_PlayerWireObjectDataAsset'/Game/DataAsset/DA_PlayerWire.DA_PlayerWire'")
 
