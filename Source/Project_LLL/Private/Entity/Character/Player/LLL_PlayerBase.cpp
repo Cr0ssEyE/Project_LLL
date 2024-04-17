@@ -157,7 +157,7 @@ void ALLL_PlayerBase::PossessedBy(AController* NewController)
 	APlayerController* PlayerController = Cast<APlayerController>(NewController);
 	if (IsValid(PlayerController))
 	{
-		PlayerController->SetAudioListenerOverride(GetRootComponent(), FVector::ZeroVector, FRotator::ZeroRotator);
+		PlayerController->SetAudioListenerOverride(SpringArm, FVector::ZeroVector, FRotator::ZeroRotator);
 	}
 }
 

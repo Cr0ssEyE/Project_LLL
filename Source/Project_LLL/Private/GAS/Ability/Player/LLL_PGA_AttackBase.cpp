@@ -3,6 +3,7 @@
 
 #include "GAS/Ability/Player/LLL_PGA_AttackBase.h"
 
+#include "FMODAudioComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MonatgeSectionName.h"
@@ -34,7 +35,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	}
 #endif
 	
-	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	if(IsValid(PlayerCharacter) && IsValid(PlayerAttributeSet) && IsValid(AttackAnimMontage))
 	{
@@ -53,6 +54,10 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	}
 
 	PlayerCharacter->PlayerRotateToMouseCursor();
+	PlayerCharacter->GetFModAudioComponent()->SetParameter(FName("SFX_Player_Attack_Count"), CurrentComboAction);
+	// 해야할꺼
+	// - 열거형 파라미터 재정의
+	// - 이벤트 이름 데이터 에셋에서 관리
 	
 	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackAnimMontage, 1.f, *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 	MontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);

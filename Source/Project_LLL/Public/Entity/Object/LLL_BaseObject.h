@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "LLL_BaseObject.generated.h"
 
+class UFMODAudioComponent;
 class UBoxComponent;
 
 UCLASS()
@@ -20,6 +21,7 @@ public:
 	ALLL_BaseObject();
 
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
+	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
 	
 protected:
 	// Called when the game starts or when spawned
@@ -36,6 +38,9 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
