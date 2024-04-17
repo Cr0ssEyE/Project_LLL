@@ -56,7 +56,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	PlayerCharacter->PlayerRotateToMouseCursor();
 	PlayerCharacter->GetFModAudioComponent()->SetParameter(FName("SFX_Player_Attack_Count"), CurrentComboAction);
 	// 해야할꺼
-	// - 열거형 파라미터 재정의
+	// - 열거형 파라미터 재정의 (해결)
 	// - 이벤트 이름 데이터 에셋에서 관리
 	
 	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackAnimMontage, 1.f, *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));

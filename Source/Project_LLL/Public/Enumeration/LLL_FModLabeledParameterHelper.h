@@ -3,9 +3,10 @@
 #include "CoreMinimal.h"
 
 UENUM(BlueprintType)
-enum class EPlayerFootstepsSurface : uint8
+enum class ESFX_Player_Walk_Material : uint8
 {
-	Carpet,
+	Dirt,
 	Grass,
-	WoodFloor
+	Wood,
+	Steel
 };

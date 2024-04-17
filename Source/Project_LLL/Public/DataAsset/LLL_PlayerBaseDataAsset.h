@@ -6,7 +6,7 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
-enum class EPlayerFootstepsSurface : uint8;
+enum class ESFX_Player_Walk_Material : uint8;
 class ULLL_SkillWidget;
 class ULLL_PlayerWireObjectDataAsset;
 enum class EAbilityInputName;
@@ -93,5 +93,5 @@ public:
 	FName StepEventParameterName;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
-	TMap<TEnumAsByte<EPhysicalSurface>, EPlayerFootstepsSurface> StepEventParameterProperties;
+	TMap<TEnumAsByte<EPhysicalSurface>, ESFX_Player_Walk_Material> StepEventParameterProperties;
 };
