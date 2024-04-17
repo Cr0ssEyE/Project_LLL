@@ -171,7 +171,7 @@ void ALLL_PlayerBase::DelegateReceiveTest(TArray<TSoftClassPtr<ULLL_ExtendedGame
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Silver, FString::Printf(TEXT("비동기 로딩 확인")));
 }
 
-void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
+void ALLL_PlayerBase::AddInteractiveObject(ALLL_InteractiveObject* Object)
 {
 	InteractiveObjects.Emplace(Object);
 	PlayerUIManager->EnableInteractionWidget();
