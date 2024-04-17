@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
-#include "LLL_PlayerGoldComponet.h"
+#include "LLL_PlayerGoldComponent.h"
 #include "DataAsset/LLL_CameraDataAsset.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
@@ -78,6 +78,9 @@ private:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerUIManager> PlayerUIManager;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_PlayerAnimInstance> PlayerAnimInstance;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ALLL_PlayerWireHand> WireHandActor;
@@ -127,7 +130,7 @@ private:
 	// 상태 관련 함수
 protected:
 	virtual void Dead() override;
-	virtual void DeadMontageEndEvent() override;
+	virtual void DestroyHandle() override;
 
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
 	// 상태 관련 변수
@@ -136,5 +139,5 @@ protected:
 	
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerGoldComponet> GoldComponent;
+	TObjectPtr<ULLL_PlayerGoldComponent> GoldComponent;
 };

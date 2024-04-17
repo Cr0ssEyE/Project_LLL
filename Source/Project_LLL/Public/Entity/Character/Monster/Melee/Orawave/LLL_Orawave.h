@@ -23,5 +23,5 @@ protected:
 	virtual void BeginPlay() override;
 	
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_OrawaveDataAsset> OrawaveMeleeDataAsset;
+	TObjectPtr<const ULLL_OrawaveDataAsset> OrawaveDataAsset;
 };

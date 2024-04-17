@@ -14,12 +14,6 @@ ULLL_BaseCharacterAnimInstance::ULLL_BaseCharacterAnimInstance()
 	JumpingThreshold = 100.0f;
 }
 
-void ULLL_BaseCharacterAnimInstance::PlayDeadAnimation()
-{
-	StopAllMontages(0.0f);
-	Montage_Play(CharacterDataAsset->DeadAnimMontage);
-}
-
 void ULLL_BaseCharacterAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();

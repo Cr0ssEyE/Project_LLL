@@ -14,6 +14,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/LLL_InteractiveObject.h"
 #include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
@@ -31,9 +32,9 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponet>(TEXT("PlayerGoldComponent"));
+	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
-	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributes"));
+	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
 	
 	Continuous = 0.0f;
 	Discrete = 0;
@@ -62,6 +63,12 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (IsValid(CharacterAnimInstance))
+	{
+		PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
+		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DestroyHandle);
+	}
 
 	if (IsValid(CameraDataAsset))
 	{
@@ -306,10 +313,8 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	
-	if(DashSpec)
+	const int32 InputID = static_cast<int32>(InputName);
+	if(FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
 		DashSpec->InputPressed = true;
 		if (DashSpec->IsActive())
@@ -325,9 +330,8 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputNa
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	if(AttackSpec)
+	const int32 InputID = static_cast<int32>(InputName);
+	if(FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
 		AttackSpec->InputPressed = true;
 		if (AttackSpec->IsActive())
@@ -343,9 +347,8 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 
 void ALLL_PlayerBase::WireAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* WireSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	if(WireSpec)
+	const int32 InputID = static_cast<int32>(InputName);
+	if(const FGameplayAbilitySpec* WireSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
 		ASC->TryActivateAbility(WireSpec->Handle);
 	}
@@ -431,10 +434,13 @@ void ALLL_PlayerBase::Dead()
 	// TODO: 목숨 같은거 생기면 사이에 추가하기
 	
 	DisableInput(Cast<APlayerController>(GetController()));
+
+	PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
+	PlayerAnimInstance->PlayDeadAnimation();
 }
 
-void ALLL_PlayerBase::DeadMontageEndEvent()
+void ALLL_PlayerBase::DestroyHandle()
 {
-	// Super::DeadMontageEndEvent();
+	// Super::DestroyHandle();
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }

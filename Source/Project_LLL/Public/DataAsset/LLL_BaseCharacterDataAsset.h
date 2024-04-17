@@ -31,9 +31,6 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "애님 블루프린트", meta=(DisplayPriority=1))
 	TSoftClassPtr<UAnimInstance> AnimInstance;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
-	TObjectPtr<UAnimMontage> DeadAnimMontage;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "충돌 사이즈(높이, 반지름)", meta=(DisplayPriority=1))
 	FVector2D CollisionSize;
