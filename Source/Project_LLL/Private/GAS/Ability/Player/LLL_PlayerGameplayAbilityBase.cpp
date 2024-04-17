@@ -7,9 +7,9 @@
 
 bool ULLL_PlayerGameplayAbilityBase::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
-	bool Result = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+	const bool Result = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 
-	const ILLL_PlayerDependencyInterface* PlayerActor = Cast<ILLL_PlayerDependencyInterface>(CurrentActorInfo->AvatarActor);
+	const ILLL_PlayerDependencyActorInterface* PlayerActor = Cast<ILLL_PlayerDependencyActorInterface>(CurrentActorInfo->AvatarActor);
 	if(!PlayerActor)
 	{
 		return false;

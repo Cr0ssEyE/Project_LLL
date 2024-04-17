@@ -47,17 +47,6 @@ void ULLL_PGA_ComboManagement::EndAbility(const FGameplayAbilitySpecHandle Handl
 		}
 	}
 #endif
-	
-	if(!OnEndedEffects.IsEmpty())
-	{
-		for (auto EndedEffect : OnEndedEffects)
-		{
-			if(IsValid(EndedEffect.Key) && EndedEffect.Value == EEffectApplyTarget::Self)
-			{
-				BP_ApplyGameplayEffectToOwner(EndedEffect.Key);
-			}
-		}
-	}
 
 	const FGameplayTagContainer SkillGaugeAmplifyByComboTag(TAG_GAS_COMBO_CHECK_AMPLIFY);
 	GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(SkillGaugeAmplifyByComboTag);

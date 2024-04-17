@@ -8,6 +8,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 
 // Sets default values
@@ -17,7 +18,7 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	bIsDead = false;
 
-	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+	ASC = CreateDefaultSubobject<ULLL_BaseASC>(TEXT("AbilitySystem"));
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	
 	FModAudioComponent->SetupAttachment(RootComponent);
@@ -93,10 +94,6 @@ void ALLL_BaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(CharacterAnimInstance))
-	{
-		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
-	}
 
 	if(IsValid(ASC))
 	{
@@ -173,6 +170,11 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	}
 }
 
+void ALLL_BaseCharacter::Damaged()
+{
+	UE_LOG(LogTemp, Log, TEXT("%s 피격"), *GetName())
+}
+
 void ALLL_BaseCharacter::Dead()
 {
 	if (bIsDead)
@@ -180,16 +182,17 @@ void ALLL_BaseCharacter::Dead()
 		return;
 	}
 
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CharacterAnimInstance->PlayDeadAnimation();
+	CharacterAnimInstance->StopAllMontages(1.0f);
+
+	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
+	GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
 	
 	bIsDead = true;
 
 	CharacterDeadDelegate.Broadcast(this);
 }
 
-void ALLL_BaseCharacter::DeadMontageEndEvent()
+void ALLL_BaseCharacter::DestroyHandle()
 {
 	// TODO: 화면 페이드, 결과창 출력 등등. 임시로 Destroy 처리
 	Destroy();

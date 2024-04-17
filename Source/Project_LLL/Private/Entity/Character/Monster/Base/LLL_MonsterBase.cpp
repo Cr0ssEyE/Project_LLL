@@ -15,7 +15,8 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Ability/Monster/LLL_MGA_GroundStrike.h"
+#include "GAS/Ability/Monster/LLL_MGA_Attack.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/LLL_CharacterStatusWidget.h"
 #include "Util/LLLConstructorHelper.h"
@@ -89,37 +90,49 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 void ALLL_MonsterBase::Dead()
 {
 	Super::Dead();
-	//DropGold() -> GoldAttribute -> DropGoldStat -> player Gold up
+	
 	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
+	
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
 	if (IsValid(MonsterBaseAIController))
 	{
 		MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
 	}
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
+
+	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	if (IsValid(PlayerBase))
+	{
+		FVector ImpulseDirection = PlayerBase->GetActorForwardVector();
+		ImpulseDirection.Normalize();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		const float ImpulseStrength = PlayerAttributeSet->GetImpulseStrength();
+		const FVector FinalImpulse = ImpulseDirection * ImpulseStrength * 100.0f;
+		
+		GetMesh()->AddImpulseToAllBodiesBelow(FinalImpulse);
+	}
+
+	MonsterStatusWidgetComponent->SetHiddenInGame(true);
 	
+	FTimerHandle HideTimerHandle;
+	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_MonsterBase::DestroyHandle, 3.0f, false);
 }
 
 void ALLL_MonsterBase::Attack() const
 {
-	int32 index = FMath::RandRange(0, MonsterBaseDataAsset->ActiveGameplayAbility.Num() - 1);
-	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromClass(MonsterBaseDataAsset->ActiveGameplayAbility[index]);
-	if (SkillSpec)
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK)))
 	{
-		if (!SkillSpec->IsActive())
-		{
-			if (ASC->TryActivateAbility(SkillSpec->Handle))
-			{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-				if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-				{
-					if (ProtoGameInstance->CheckMonsterAttackDebug())
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
-					}
-				}
-#endif
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
 			}
 		}
+#endif
 	}
 }
 
@@ -128,7 +141,8 @@ void ALLL_MonsterBase::Damaged()
 	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(MonsterBaseAnimInstance))
 	{
-		MonsterBaseAnimInstance->PlayDamagedAnimation();
+		MonsterBaseAnimInstance->StopAllMontages(1.0f);
+		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -150,17 +164,11 @@ bool ALLL_MonsterBase::CanPlayAttackAnimation() const
 	{
 		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
 		{
-			const UAnimMontage* AttackAnimMontage = Cast<ULLL_MGA_GroundStrike>(AbilitySpec->GetPrimaryInstance())->GetAbilityActionMontage();
-			const UAnimMontage* DamagedAnimMontage = MonsterBaseDataAsset->DamagedAnimMontage;
+			const UAnimMontage* AttackAnimMontage = Cast<ULLL_MGA_Attack>(AbilitySpec->GetPrimaryInstance())->GetAttackMontage();
 	
 			if (IsValid(CharacterAnimInstance) && IsValid(AttackAnimMontage))
 			{
 				if (CharacterAnimInstance->Montage_IsPlaying(AttackAnimMontage))
-				{
-					return false;
-				}
-
-				if (CharacterAnimInstance->Montage_IsPlaying(DamagedAnimMontage))
 				{
 					return false;
 				}
@@ -192,21 +200,21 @@ void ALLL_MonsterBase::ToggleAIHandle(bool value)
 
 void ALLL_MonsterBase::DropGold(const FGameplayTag tag, int32 data)
 {
-	float GoldData = DropGoldAttributeSet->GetDropGoldStat();
+	const float GoldData = DropGoldAttributeSet->GetDropGoldStat();
 
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	for (UActorComponent* ChildComponent : Player->GetComponents())
 	{
-		ULLL_PlayerGoldComponet* GoldComponet = Cast<ULLL_PlayerGoldComponet>(ChildComponent);
-		if(IsValid(GoldComponet))
+		ULLL_PlayerGoldComponent* GoldComponent = Cast<ULLL_PlayerGoldComponent>(ChildComponent);
+		if(IsValid(GoldComponent))
 		{
-			GoldComponet->IncreaseMoney(GoldData);
+			GoldComponent->IncreaseMoney(GoldData);
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 			{
 				if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("PlayerGold %f"), GoldComponet->GetMoney()));
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("PlayerGold %f"), GoldComponent->GetMoney()));
 				}
 			}
 #endif

@@ -39,7 +39,7 @@ void ALLL_BaseObject::OnConstruction(const FTransform& Transform)
 void ALLL_BaseObject::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
+	
 	SetDefaultInformation();
 }
 
