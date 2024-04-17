@@ -6,9 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "LLL_PlayerGoldWidget.generated.h"
 
-/**
- * 
- */
+class UTextBlock;
+
+
 UCLASS()
 class PROJECT_LLL_API ULLL_PlayerGoldWidget : public UUserWidget
 {
@@ -24,7 +24,7 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidget))
-	TObjectPtr<class UTextBlock> GoldTextBlock;
+	TObjectPtr<UTextBlock> GoldTextBlock;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> VisibleGold;

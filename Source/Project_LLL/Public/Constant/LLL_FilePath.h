@@ -26,6 +26,7 @@
 #define PATH_ENERGYBLASTER_ENERGY_DATA TEXT("/Script/Project_LLL.LLL_EnergyBlasterEnergyDataAsset'/Game/DataAsset/DA_EnergyBlasterEnergy.DA_EnergyBlasterEnergy'")
 #define PATH_REWARD_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_CornerFrame.SM_CornerFrame'")
 #define PATH_REWARD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Reward/WBP_SelectRewordWidget.WBP_SelectRewordWidget_C'")
+#define PATH_REWARD_OBJECT_TEST_DATA TEXT("/Script/Project_LLL.LLL_RewardObjectDataAsset'/Game/DataAsset/DA_RewardObject.DA_RewardObject'")
 
 #define PATH_GATE_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/MapTest/Meshes/SM_GateTest.SM_GateTest'")
 
