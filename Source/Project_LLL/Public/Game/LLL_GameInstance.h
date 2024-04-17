@@ -8,6 +8,7 @@
 /**
  * 
  */
+
 UCLASS()
 class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
 {
@@ -15,7 +16,7 @@ class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
 
 public:
 	ULLL_GameInstance();
-	
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> PlayerMPC;

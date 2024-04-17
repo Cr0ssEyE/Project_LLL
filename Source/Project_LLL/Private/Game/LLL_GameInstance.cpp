@@ -3,9 +3,10 @@
 
 #include "Game/LLL_GameInstance.h"
 
-#include "Game/LLL_AbilityManageSubSystem.h"
+#include "Interface/LLL_PlayerDependencyInterface.h"
 
 ULLL_GameInstance::ULLL_GameInstance()
 {
 	
 }
+

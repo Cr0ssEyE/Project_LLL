@@ -8,7 +8,7 @@
 
 // This class does not need to be modified.
 UINTERFACE()
-class ULLL_PlayerDependencyInterface : public UInterface
+class ULLL_PlayerDependencyActorInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,7 +16,7 @@ class ULLL_PlayerDependencyInterface : public UInterface
 /**
  * 
  */
-class PROJECT_LLL_API ILLL_PlayerDependencyInterface
+class PROJECT_LLL_API ILLL_PlayerDependencyActorInterface
 {
 	GENERATED_BODY()
 

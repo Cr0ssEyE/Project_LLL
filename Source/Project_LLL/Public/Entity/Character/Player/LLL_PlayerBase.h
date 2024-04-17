@@ -34,7 +34,7 @@ enum class ELabeled : uint8
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_PlayerBase : public ALLL_BaseCharacter, public ILLL_PlayerDependencyInterface
+class PROJECT_LLL_API ALLL_PlayerBase : public ALLL_BaseCharacter, public ILLL_PlayerDependencyActorInterface
 {
 	GENERATED_BODY()
 
