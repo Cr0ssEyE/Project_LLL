@@ -61,11 +61,11 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	MontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
 	MontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
 	MontageTask->ReadyForActivation();
+	
+	StartAttackInputWait();
 
 	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
 	PlayerCharacter->GetFModAudioComponent()->SetParameter(AttackEventParameterName, CurrentComboAction - 1);
-	
-	StartAttackInputWait();
 }
 
 void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -139,11 +139,11 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 		MontageJumpToSection(*FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 		GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
 		
-		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
-		PlayerCharacter->GetFModAudioComponent()->SetParameter(FName("SFX_Player_Attack_Count"), CurrentComboAction - 1);
-		
 		StartAttackInputWait();
 		bIsInputPressed = false;
+
+		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
+		PlayerCharacter->GetFModAudioComponent()->SetParameter(FName("SFX_Player_Attack_Count"), CurrentComboAction - 1);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

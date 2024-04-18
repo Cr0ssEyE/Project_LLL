@@ -12,6 +12,7 @@
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/ThrownObject/PlayerWireHand/LLL_PlayerWireHandAttributeSet.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 ULLL_PGA_WireHandThrow::ULLL_PGA_WireHandThrow()
 {
@@ -73,21 +74,21 @@ void ULLL_PGA_WireHandThrow::EndAbility(const FGameplayAbilitySpecHandle Handle,
 void ULLL_PGA_WireHandThrow::ThrowToCursorLocation()
 {
 	ALLL_PlayerWireHand* PlayerWireHand = CastChecked<ALLL_PlayerWireHand>(CurrentActorInfo->AvatarActor);
-	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
 	const ULLL_PlayerWireHandAttributeSet* WireHandAttributeSet = CastChecked<ULLL_PlayerWireHandAttributeSet>(PlayerWireHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerWireHandAttributeSet::StaticClass()));
 	
-	TargetLocation = PlayerCharacter->GetMouseLocation();
-	const float TargetDistance = FVector::DistXY(TargetLocation, PlayerCharacter->GetActorLocation());
+	TargetLocation = Player->GetMouseLocation();
+	const float TargetDistance = FVector::DistXY(TargetLocation, Player->GetActorLocation());
 	// 마우스 위치가 투척 최소거리 보다 가까운 거리일 경우 보정
 	if (TargetDistance < WireHandAttributeSet->GetMinimumThrowDistance())
 	{
 		TargetLocation *= WireHandAttributeSet->GetMinimumThrowDistance() / TargetDistance;
 	}
-	TargetLocation.Z = PlayerCharacter->GetActorLocation().Z;
+	TargetLocation.Z = Player->GetActorLocation().Z;
 	
-	const FVector ThrowDirection = PlayerCharacter->GetActorForwardVector();
+	const FVector ThrowDirection = Player->GetActorForwardVector();
 
-	PlayerWireHand->SetActorLocationAndRotation(PlayerCharacter->GetActorLocation(), ThrowDirection.Rotation());
+	PlayerWireHand->SetActorLocationAndRotation(Player->GetActorLocation(), ThrowDirection.Rotation());
 	PlayerWireHand->SetActorRotation(ThrowDirection.Rotation());
 	
 	USphereComponent* WireHandCollision = PlayerWireHand->GetCollisionComponent();
@@ -103,6 +104,8 @@ void ULLL_PGA_WireHandThrow::ThrowToCursorLocation()
 	WireHandProjectile->Velocity = ThrowDirection * WireHandAttributeSet->GetThrowSpeed();
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandThrow::CheckReached);
+
+	FLLL_ExecuteCueHelper::ExecuteCue(Player, WireHandThrowCueTag);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

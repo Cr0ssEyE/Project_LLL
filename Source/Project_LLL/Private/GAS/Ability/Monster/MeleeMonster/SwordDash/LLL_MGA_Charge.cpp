@@ -14,12 +14,12 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	ALLL_SwordDash* SwordDash = CastChecked<ALLL_SwordDash>(GetAvatarActorFromActorInfo());
 	SwordDash->SetCharge(true);
 
-	FLLL_ExecuteCueHelper::ExecuteCue(SwordDash, ChargeCueTag);
-
 	const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(SwordDash->GetAbilitySystemComponent()->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
 
 	FTimerHandle ChargeTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(ChargeTimerHandle, this, &ULLL_MGA_Charge::OnCompleteCallBack, SwordDashAttributeSet->GetChargeTimer());
+
+	FLLL_ExecuteCueHelper::ExecuteCue(SwordDash, ChargeCueTag);
 }
 
 void ULLL_MGA_Charge::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
