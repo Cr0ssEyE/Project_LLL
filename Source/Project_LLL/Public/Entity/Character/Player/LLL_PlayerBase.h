@@ -54,6 +54,7 @@ public:
 	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ALLL_PlayerWireHand* GetWireHand() const { return WireHandActor; }
+	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	
 	FVector GetMouseLocation() const;
 	void PlayerRotateToMouseCursor();

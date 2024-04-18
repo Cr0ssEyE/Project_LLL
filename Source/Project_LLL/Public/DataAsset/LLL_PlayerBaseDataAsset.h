@@ -7,13 +7,17 @@
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
 enum class EPlayerFootstepsSurface : uint8;
-class UInputAction;
-class UInputMappingContext;
-enum class EAbilityInputName;
 class ULLL_SkillWidget;
+class ULLL_PlayerWireObjectDataAsset;
+enum class EAbilityInputName;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
+class ULLL_PlayerStatusWidget;
 class ULLL_GamePauseWidget;
+class ULLL_PlayerAnimInstance;
+class ULLL_SelectRewardWidget;
+class UInputAction;
+class UInputMappingContext;
 
 /**
  * 
@@ -37,6 +41,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스킬 게이지 UI")
 	TSubclassOf<ULLL_SkillWidget> SkillGaugeWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "보상 선택 UI")
+	TSubclassOf<ULLL_SelectRewardWidget> SelectRewardWidgetClass;
+	
 	// 애니메이션 관련
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
