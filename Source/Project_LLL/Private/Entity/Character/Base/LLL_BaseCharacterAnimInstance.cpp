@@ -49,10 +49,10 @@ void ULLL_BaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void ULLL_BaseCharacterAnimInstance::AnimNotify_LeftStep()
 {
-	FLLL_ExecuteCueHelper::ExecuteCue(this, Character->GetAbilitySystemComponent(), CharacterDataAsset->StepCueTag);
+	FLLL_ExecuteCueHelper::ExecuteCue(Character, CharacterDataAsset->StepCueTag);
 }
 
 void ULLL_BaseCharacterAnimInstance::AnimNotify_RightStep()
 {
-	FLLL_ExecuteCueHelper::ExecuteCue(this, Character->GetAbilitySystemComponent(), CharacterDataAsset->StepCueTag);
+	FLLL_ExecuteCueHelper::ExecuteCue(Character, CharacterDataAsset->StepCueTag);
 }

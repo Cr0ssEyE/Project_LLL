@@ -173,7 +173,7 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 
 void ALLL_BaseCharacter::Damaged()
 {
-	FLLL_ExecuteCueHelper::ExecuteCue(this, ASC, CharacterDataAsset->DamagedCueTag);
+	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DamagedCueTag);
 }
 
 void ALLL_BaseCharacter::Dead()

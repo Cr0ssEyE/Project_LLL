@@ -131,7 +131,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 		PlayerCharacter->StopAnimMontage(DashAnimMontage);
 		PlayerCharacter->PlayAnimMontage(DashAnimMontage);
 
-		FLLL_ExecuteCueHelper::ExecuteCue(this, PlayerCharacter->GetAbilitySystemComponent(), DashCueTag);
+		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, DashCueTag);
 		
 		// 여기서 타이머 델리게이트로 호출해서 다음 입력까지 대기시간을 주면 대쉬를 연타했을 때 낭비를 줄이도록 할 수 있습니다.
 		StartDashInputWait();

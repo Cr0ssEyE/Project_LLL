@@ -62,7 +62,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	MontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
 	MontageTask->ReadyForActivation();
 
-	FLLL_ExecuteCueHelper::ExecuteCue(this, PlayerCharacter->GetAbilitySystemComponent(), AttackCueTag);
+	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
 	PlayerCharacter->GetFModAudioComponent()->SetParameter(AttackEventParameterName, CurrentComboAction - 1);
 	
 	StartAttackInputWait();
@@ -139,7 +139,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 		MontageJumpToSection(*FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 		GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
 		
-		FLLL_ExecuteCueHelper::ExecuteCue(this, PlayerCharacter->GetAbilitySystemComponent(), FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.Player.Attack")));
+		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
 		PlayerCharacter->GetFModAudioComponent()->SetParameter(FName("SFX_Player_Attack_Count"), CurrentComboAction - 1);
 		
 		StartAttackInputWait();
