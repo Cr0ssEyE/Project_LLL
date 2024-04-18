@@ -19,16 +19,16 @@ public:
 	virtual void NativeConstruct() override;
 	void UpdateWidget(float InGold) const;
 
-	FORCEINLINE void PlayVisibleAnimation() { PlayAnimation(VisibleGold); }
-	FORCEINLINE void PlayHideAnimation() { PlayAnimation(InvisibleGold); }
+	FORCEINLINE void PlayShowInitGoldAnimation() { PlayAnimation(ShowInitGoldAnimation); }
+	FORCEINLINE void PlayHideInitGoldAnimation() { PlayAnimation(HideInitGoldAnimation); }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidget))
 	TObjectPtr<UTextBlock> GoldTextBlock;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> VisibleGold;
+	TObjectPtr<UWidgetAnimation> ShowInitGoldAnimation;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> InvisibleGold;
+	TObjectPtr<UWidgetAnimation> HideInitGoldAnimation;
 };

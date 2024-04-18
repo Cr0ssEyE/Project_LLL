@@ -49,30 +49,28 @@ void ULLL_PlayerGoldComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
-void ULLL_PlayerGoldComponent::EnableInteractionWidget()
+void ULLL_PlayerGoldComponent::PlayShowInitGoldWidgetAnim()
 {
-	if (!GoldWidget->GetIsEnabled())
+	if (WidgetWaitHideTimerHandle.IsValid())
 	{
-		GoldWidget->PlayVisibleAnimation();
-		GoldWidget->SetIsEnabled(true);
-		IsShowWidget = true;
+		return;
 	}
+	GoldWidget->PlayShowInitGoldAnimation();
+	
 }
 
-void ULLL_PlayerGoldComponent::DisableInteractionWidget()
+void ULLL_PlayerGoldComponent::PlayHideInitGoldWidgetAnim()
 {
-	GoldWidget->PlayHideAnimation();
-	GoldWidget->SetIsEnabled(false);
-	IsShowWidget = false;
+	GoldWidget->PlayHideInitGoldAnimation();
 }
 
 void ULLL_PlayerGoldComponent::ShowWidget()
 {
 	GoldWidget->UpdateWidget(GetMoney());
-	GetWorld()->GetTimerManager().SetTimer(WidgetWaitHideTimerHandle, this, &ULLL_PlayerGoldComponent::DisableInteractionWidget, 0.1f, false, WidgetHideWaitTime);
+	GetWorld()->GetTimerManager().SetTimer(WidgetWaitHideTimerHandle, this, &ULLL_PlayerGoldComponent::PlayHideInitGoldWidgetAnim, 0.1f, false, WidgetHideWaitTime);
 	if (!IsShowWidget)
 	{
-		EnableInteractionWidget();
+		PlayShowInitGoldWidgetAnim();
 	}
 }
 

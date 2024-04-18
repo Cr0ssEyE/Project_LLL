@@ -8,6 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerMoneyChangedDelegate, float);
 
+class ULLL_PlayerGoldWidget;
 class ULLL_GoldComponentDataAsset;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECT_LLL_API ULLL_PlayerGoldComponent : public UActorComponent
@@ -36,10 +37,10 @@ protected:
 	float Money;
 
 	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<class ULLL_PlayerGoldWidget> GoldWidgetClass;
+	TSubclassOf<ULLL_PlayerGoldWidget> GoldWidgetClass;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<class ULLL_PlayerGoldWidget> GoldWidget;
+	TObjectPtr<ULLL_PlayerGoldWidget> GoldWidget;
 
 	FTimerHandle WidgetWaitHideTimerHandle;
 
@@ -52,7 +53,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_GoldComponentDataAsset> GoldComponentDataAsset;
 
-	void EnableInteractionWidget();
-	void DisableInteractionWidget();
+	void PlayShowInitGoldWidgetAnim();
+	void PlayHideInitGoldWidgetAnim();
 	void ShowWidget(); 
 };
