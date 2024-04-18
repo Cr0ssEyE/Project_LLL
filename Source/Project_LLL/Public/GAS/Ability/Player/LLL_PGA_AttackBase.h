@@ -42,4 +42,11 @@ protected:
 	uint32 MaxAttackAction;
 	
 	uint8 bIsInputPressed : 1;
+
+protected:
+	UPROPERTY(EditAnywhere, DisplayName = "공격 이벤트 태그", meta=(Categories = "GameplayCue"))
+	FGameplayTag AttackCueTag;
+
+	UPROPERTY(EditDefaultsOnly, DisplayName = "공격 이벤트 파라미터 이름")
+	FName AttackEventParameterName;
 };

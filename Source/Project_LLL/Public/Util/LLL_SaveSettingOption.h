@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "LLLSaveSettingOption.generated.h"
+#include "LLL_SaveSettingOption.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLLSaveSettingOption : public USaveGame
+class PROJECT_LLL_API ULLL_SaveSettingOption : public USaveGame
 {
 	GENERATED_BODY()
 public:
-	ULLLSaveSettingOption();
+	ULLL_SaveSettingOption();
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	FString SaveFileName;

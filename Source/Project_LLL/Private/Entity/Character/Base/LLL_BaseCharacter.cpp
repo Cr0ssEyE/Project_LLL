@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 // Sets default values
 ALLL_BaseCharacter::ALLL_BaseCharacter()
@@ -172,7 +173,7 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 
 void ALLL_BaseCharacter::Damaged()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s 피격"), *GetName())
+	FLLL_ExecuteCueHelper::ExecuteCue(this, ASC, CharacterDataAsset->DamagedCueTag);
 }
 
 void ALLL_BaseCharacter::Dead()

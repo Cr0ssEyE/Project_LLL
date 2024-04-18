@@ -11,6 +11,7 @@
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 ULLL_PGA_AttackBase::ULLL_PGA_AttackBase()
 {
@@ -54,15 +55,14 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	}
 
 	PlayerCharacter->PlayerRotateToMouseCursor();
-	PlayerCharacter->GetFModAudioComponent()->SetParameter(FName("SFX_Player_Attack_Count"), CurrentComboAction);
-	// 해야할꺼
-	// - 열거형 파라미터 재정의 (해결)
-	// - 이벤트 이름 데이터 에셋에서 관리
 	
 	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackAnimMontage, 1.f, *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 	MontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
 	MontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
 	MontageTask->ReadyForActivation();
+
+	FLLL_ExecuteCueHelper::ExecuteCue(this, PlayerCharacter->GetAbilitySystemComponent(), AttackCueTag);
+	PlayerCharacter->GetFModAudioComponent()->SetParameter(AttackEventParameterName, CurrentComboAction - 1);
 	
 	StartAttackInputWait();
 }
@@ -102,6 +102,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
 	Super::InputPressed(Handle, ActorInfo, ActivationInfo);
+	
 	const float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(WaitInputTimerHandle);
 	if(ElapsedTime > AttackActionInputDelayTime)
 	{
@@ -133,8 +134,13 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 		}
 		
 		PlayerCharacter->PlayerRotateToMouseCursor();
+		
 		MontageJumpToSection(*FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 		GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
+		
+		FLLL_ExecuteCueHelper::ExecuteCue(this, PlayerCharacter->GetAbilitySystemComponent(), FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.Player.Attack")));
+		PlayerCharacter->GetFModAudioComponent()->SetParameter(FName("SFX_Player_Attack_Count"), CurrentComboAction - 1);
+		
 		StartAttackInputWait();
 		bIsInputPressed = false;
 

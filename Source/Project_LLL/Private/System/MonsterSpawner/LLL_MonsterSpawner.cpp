@@ -11,11 +11,11 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawnPointComponent.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 ALLL_MonsterSpawner::ALLL_MonsterSpawner()
 {
-	MonsterSpawnDataTable = FLLLConstructorHelper::FindAndGetObject<UDataTable>(PATH_MONSTER_SPAWN_DATA, EAssertionLevel::Check);
+	MonsterSpawnDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_MONSTER_SPAWN_DATA, EAssertionLevel::Check);
 	
 	DetectBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	DetectBox->SetCollisionObjectType(ECC_PLAYER_HIT);

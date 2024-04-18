@@ -9,7 +9,7 @@
 #include "DataAsset/LLL_InteractiveObjectDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 // Sets default values
 ALLL_InteractiveObject::ALLL_InteractiveObject()

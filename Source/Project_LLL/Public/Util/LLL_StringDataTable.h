@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-#include "LLLStringDataTable.generated.h"
+#include "LLL_StringDataTable.generated.h"
 
 /**
  * 
@@ -21,7 +21,7 @@ struct FStringDataTable : public FTableRowBase
 };
 
 UCLASS()
-class PROJECT_LLL_API ULLLStringDataTable : public UDataTable
+class PROJECT_LLL_API ULLL_StringDataTable : public UDataTable
 {
 	GENERATED_BODY()
 	

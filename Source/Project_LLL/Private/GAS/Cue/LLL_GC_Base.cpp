@@ -20,13 +20,14 @@ bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCue
 		{
 			FModAudioComponent = Character->GetFModAudioComponent();
 		}
-		else if (Object)
+		else if (IsValid(Object))
 		{
 			FModAudioComponent = Object->GetFModAudioComponent();
 		}
 
 		if (IsValid(FModAudioComponent))
 		{
+			FModAudioComponent->Release();
 			FModAudioComponent->Event = FModEvent;
 			FModAudioComponent->Play();
 		}

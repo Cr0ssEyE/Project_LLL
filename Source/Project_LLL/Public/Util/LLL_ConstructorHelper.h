@@ -16,7 +16,7 @@ enum class EAssertionLevel : uint8
 	Check,
 };
 
-class PROJECT_LLL_API FLLLConstructorHelper
+class PROJECT_LLL_API FLLL_ConstructorHelper
 {
 public:
 	template <class T>
