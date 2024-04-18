@@ -20,7 +20,10 @@ public:
 	ALLL_SwordDash();
 
 	FORCEINLINE void SetDash(bool IsDashing) { bIsDashing = IsDashing; }
+	FORCEINLINE void SetCharge(bool IsCharging) { bIsCharging = IsCharging; }
+	
 	FORCEINLINE bool IsDashing() const { return bIsDashing; }
+	FORCEINLINE bool IsCharging() const { return bIsCharging; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -31,6 +34,7 @@ protected:
 
 public:
 	void Dash() const;
+	void Charge() const;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -40,4 +44,5 @@ protected:
 	TObjectPtr<UBoxComponent> DashDamageRangeBox;
 
 	uint8 bIsDashing : 1;
+	uint8 bIsCharging : 1;
 };

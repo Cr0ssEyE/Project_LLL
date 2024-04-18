@@ -6,6 +6,7 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+enum class ESFX_Player_Walk_Material : uint8;
 enum class EPlayerFootstepsSurface : uint8;
 class UInputAction;
 class UInputMappingContext;

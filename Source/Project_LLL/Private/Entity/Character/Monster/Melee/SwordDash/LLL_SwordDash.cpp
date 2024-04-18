@@ -27,6 +27,7 @@ ALLL_SwordDash::ALLL_SwordDash()
 	DashDamageRangeBox->SetupAttachment(RootComponent);
 	
 	bIsDashing = false;
+	bIsCharging = false;
 }
 
 void ALLL_SwordDash::BeginPlay()
@@ -103,7 +104,23 @@ void ALLL_SwordDash::Dash() const
 		{
 			if (ProtoGameInstance->CheckMonsterAttackDebug())
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 대시 수행"), *GetName()));
+			}
+		}
+#endif
+	}
+}
+
+void ALLL_SwordDash::Charge() const
+{
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_SWORD_DASH_CHARGE)))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
 			}
 		}
 #endif

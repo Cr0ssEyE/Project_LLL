@@ -15,7 +15,7 @@
 
 ALLL_BreakableObjectBase::ALLL_BreakableObjectBase()
 {
-	BaseMesh->SetStaticMesh(FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_BREAKABLE_OBJECT_TEST_MESH, EAssertionLevel::Check));
+	BaseMesh->SetStaticMesh(FLLL_ConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_BREAKABLE_OBJECT_TEST_MESH, EAssertionLevel::Check));
 	SetRootComponent(BaseMesh);
 	
 	HitCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HitCollisionComponent"));

@@ -10,7 +10,7 @@
 
 ALLL_EnergyBlasterEnergy::ALLL_EnergyBlasterEnergy()
 {
-	BaseObjectDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_EnergyBlasterEnergyDataAsset>(PATH_ENERGY_BLASTER_ENERGY_DATA, EAssertionLevel::Check);
+	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_EnergyBlasterEnergyDataAsset>(PATH_ENERGY_BLASTER_ENERGY_DATA, EAssertionLevel::Check);
 
 	ThrownObjectAttributeSet = CreateDefaultSubobject<ULLL_EnergyBlasterEnergyAttributeSet>(TEXT("EnergyBlasterEnergyAttributeSet"));
 }
