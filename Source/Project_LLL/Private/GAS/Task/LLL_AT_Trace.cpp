@@ -8,12 +8,14 @@
 
 ULLL_AT_Trace::ULLL_AT_Trace()
 {
+	bIsTraceSingleTick = true;
 }
 
-ULLL_AT_Trace* ULLL_AT_Trace::CreateTask(UGameplayAbility* OwningAbility, TSubclassOf<ALLL_TA_TraceBase> TargetActorClass)
+ULLL_AT_Trace* ULLL_AT_Trace::CreateTask(UGameplayAbility* OwningAbility, TSubclassOf<ALLL_TA_TraceBase> TargetActorClass, bool TraceSingleTick)
 {
 	ULLL_AT_Trace* NewTask = NewAbilityTask<ULLL_AT_Trace>(OwningAbility);
 	NewTask->TargetActorClass = TargetActorClass;
+	NewTask->bIsTraceSingleTick = TraceSingleTick;
 	return NewTask;
 }
 
@@ -49,6 +51,7 @@ void ULLL_AT_Trace::SpawnAndInitializeTargetActor()
 	
 	if (SpawnedTargetActor)
 	{
+		SpawnedTargetActor->SetIgnoreInfo(IgnoreActors);
 		SpawnedTargetActor->TargetDataReadyDelegate.AddUObject(this, &ULLL_AT_Trace::OnTraceCompletedCallBack);
 	}
 }
@@ -74,5 +77,17 @@ void ULLL_AT_Trace::OnTraceCompletedCallBack(const FGameplayAbilityTargetDataHan
 		TaskOnCompleteDelegate.Broadcast(DataHandle);
 	}
 
-	EndTask();
+	if (DataHandle.Data[0]->GetActors().Num() > 0)
+	{
+		TArray<TWeakObjectPtr<AActor>> TraceActors = DataHandle.Data[0]->GetActors();
+		for(auto Actor : TraceActors)
+		{
+			IgnoreActors.Emplace(Actor.Get());
+		}
+	}
+	
+	if(bIsTraceSingleTick)
+	{
+		EndTask();
+	}
 }

@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_EnergyBlasterDataAsset.h"
 #include "Entity/Character/Monster/Ranged/LLL_RangedMonster.h"
+#include "Interface/LLL_KnockBackInterface.h"
 #include "LLL_EnergyBlaster.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_EnergyBlaster : public ALLL_RangedMonster
+class PROJECT_LLL_API ALLL_EnergyBlaster : public ALLL_RangedMonster, public ILLL_KnockBackInterface
 {
 	GENERATED_BODY()
 

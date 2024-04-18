@@ -10,7 +10,7 @@
 
 ALLL_EnergyBlaster::ALLL_EnergyBlaster()
 {
-	CharacterAttributeSet = CreateDefaultSubobject<ULLL_EnergyBlasterAttributeSet>(TEXT("EnergyBlasterAttributes"));
+	CharacterAttributeSet = CreateDefaultSubobject<ULLL_EnergyBlasterAttributeSet>(TEXT("EnergyBlasterAttributeSet"));
 	
 	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_EnergyBlasterDataAsset>(PATH_ENERGYBLASTER_DATA, EAssertionLevel::Check);
 	AIControllerClass = ALLL_EnergyBlasterAIController::StaticClass();

@@ -6,7 +6,8 @@
 #include "GAS/Ability/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_AttackHitCheck.generated.h"
 
-class ULLL_GA_KnockBack;
+class ULLL_AT_Trace;
+class ULLL_PGA_KnockBack;
 class ALLL_TA_TraceBase;
 /**
  * 
@@ -22,9 +23,14 @@ public:
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	
 	UFUNCTION()
 	void OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 
+	UFUNCTION()
+	void OnTraceEndCallBack();
+	
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<UGameplayEffect> ComboStackEffect;
@@ -42,6 +48,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<ALLL_TA_TraceBase> TargetActorClass;
 
+	UPROPERTY()
+	TObjectPtr<ULLL_AT_Trace> TraceTask;
+	
 	float CurrentLevel = 0;
 	
 };

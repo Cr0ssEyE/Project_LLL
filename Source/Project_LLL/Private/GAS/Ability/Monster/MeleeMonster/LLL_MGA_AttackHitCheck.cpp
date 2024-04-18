@@ -23,5 +23,6 @@ void ULLL_MGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 
 		BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect);
 	}
+	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

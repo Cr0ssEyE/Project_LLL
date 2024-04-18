@@ -19,31 +19,6 @@ void ULLL_PlayerAnimInstance::NativeInitializeAnimation()
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
 }
 
-void ULLL_PlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
-{
-	Super::NativeUpdateAnimation(DeltaSeconds);
-
-	if (!IsValid(Character))
-	{
-		return;
-	}
-
-	const UAbilitySystemComponent* ASC = Character->GetAbilitySystemComponent();
-	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
-	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_PLAYER_DASH));
-	for (const auto AbilitySpecHandle : AbilitySpecHandles)
-	{
-		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
-		{
-			const UAnimMontage* DashAnimMontage = Cast<ULLL_PGA_Dash>(AbilitySpec->GetPrimaryInstance())->GetDashAnimMontage();
-			if (IsValid(DashAnimMontage))
-			{
-				bIsDashing = Montage_IsPlaying(DashAnimMontage);
-			}
-		}
-	}
-}
-
 void ULLL_PlayerAnimInstance::AnimNotify_LeftStep()
 {
 	Super::AnimNotify_LeftStep();
