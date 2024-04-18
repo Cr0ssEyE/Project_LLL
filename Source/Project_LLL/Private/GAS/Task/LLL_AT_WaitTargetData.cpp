@@ -49,7 +49,12 @@ void ULLL_AT_WaitTargetData::OnTargetDataReceivedCallBack(const FGameplayAbility
 	UClass* ActorClass = RequiredActorClass;
 	for(const auto Target : TargetDataHandle.Data[0]->GetActors())
 	{
-		if (Target->IsA(ActorClass))
+		if (!Target.IsValid())
+		{
+			continue;
+		}
+		
+		if (Target.Get()->IsA(ActorClass))
 		{
 			DataHasRequiredClass = true;
 		}
