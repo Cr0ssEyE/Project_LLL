@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "FMODAudioComponent.h"
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -101,6 +102,9 @@ void ALLL_PlayerBase::BeginPlay()
 		Delegate.AddDynamic(this, &ALLL_PlayerBase::DelegateReceiveTest);
 		AbilityManageSubSystem->ASyncLoadEffectsByTag(Delegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), true);
 	}
+
+	FModAudioComponent->SetEvent(PlayerDataAsset->Stage1AMB);
+	FModAudioComponent->Play();
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)

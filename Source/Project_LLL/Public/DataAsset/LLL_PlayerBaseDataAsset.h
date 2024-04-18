@@ -6,6 +6,7 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+class UFMODEvent;
 enum class ESFX_Player_Walk_Material : uint8;
 enum class EPlayerFootstepsSurface : uint8;
 class UInputAction;
@@ -91,4 +92,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
 	TMap<TEnumAsByte<EPhysicalSurface>, ESFX_Player_Walk_Material> StepEventParameterProperties;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "스테이지 1 배경음")
+	TObjectPtr<UFMODEvent> Stage1AMB;
 };
