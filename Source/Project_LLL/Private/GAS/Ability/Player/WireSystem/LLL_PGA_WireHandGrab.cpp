@@ -115,11 +115,11 @@ void ULLL_PGA_WireHandGrab::GrabTargetEntity()
 	
 	BP_ApplyGameplayEffectToTarget(UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(PlayerWireHand->GetGrabbedActor()), GrabTargetApplyEffect);
 	
-	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileComponent();
+	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileMovementComponent();
 	WireHandProjectile->Velocity = FVector::Zero();
 	WireHandProjectile->Deactivate();
 
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(PlayerWireHand->GetOwner());
 	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_PLAYER_WIRE_RUSH));
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandGrab::CheckGrabbedTime);

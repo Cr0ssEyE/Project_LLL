@@ -19,6 +19,7 @@ ULLL_PGA_AttackBase::ULLL_PGA_AttackBase()
 	CurrentComboAction = 0;
 	AttackActionIntervalTime = 0.f;
 	AttackActionInputDelayTime = 0.f;
+	MaxAttackAction = 0;
 	bIsInputPressed = false;
 }
 

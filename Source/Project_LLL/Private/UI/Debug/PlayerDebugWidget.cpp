@@ -84,7 +84,7 @@ void UPlayerDebugWidget::PlayerFillHealthButtonEvent()
 void UPlayerDebugWidget::PlayerCoolDownResetButtonEvent()
 {
 	// TODO: 플레이어 클래스 만들고 처리
-	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	if(!IsValid(Player))
 	{
 		return;

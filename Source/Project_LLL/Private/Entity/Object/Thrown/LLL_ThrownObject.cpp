@@ -18,14 +18,14 @@ ALLL_ThrownObject::ALLL_ThrownObject()
 		BaseMesh->SetCollisionProfileName(CP_MONSTER_ATTACK);
 	}
 	
-	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-	if (ProjectileMovement)
+	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
+	if (IsValid(ProjectileMovementComponent))
 	{
-		ProjectileMovement->bShouldBounce = false;
-		ProjectileMovement->ProjectileGravityScale = 0.0f;
-		ProjectileMovement->InitialSpeed = 0.0f;
-		ProjectileMovement->bRotationFollowsVelocity = true;
-		ProjectileMovement->Deactivate();
+		ProjectileMovementComponent->bShouldBounce = false;
+		ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
+		ProjectileMovementComponent->InitialSpeed = 0.0f;
+		ProjectileMovementComponent->bRotationFollowsVelocity = true;
+		ProjectileMovementComponent->Deactivate();
 	}
 }
 
@@ -43,8 +43,8 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner)
 	SetOwner(NewOwner);
 
 	Activate();
-	ProjectileMovement->MaxSpeed = ThrownObjectAttributeSet->GetThrowSpeed();
-	ProjectileMovement->Velocity = GetActorForwardVector() * ProjectileMovement->MaxSpeed;
+	ProjectileMovementComponent->MaxSpeed = ThrownObjectAttributeSet->GetThrowSpeed();
+	ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
 	
 	FTimerHandle HideTimerHandle;
 	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_ThrownObject::Deactivate, ThrownObjectAttributeSet->GetHideTimer(), false);
@@ -56,7 +56,6 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 
 	if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Other))
 	{
-		// GE 기반으로 플레이어에게 데미지
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, 1.0, EffectContextHandle);
@@ -82,12 +81,12 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 void ALLL_ThrownObject::Activate()
 {
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	ProjectileMovement->Activate();
+	ProjectileMovementComponent->Activate();
 }
 
 void ALLL_ThrownObject::Deactivate()
 {
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	ProjectileMovement->Deactivate();
+	ProjectileMovementComponent->Deactivate();
 	SetActorHiddenInGame(true);
 }

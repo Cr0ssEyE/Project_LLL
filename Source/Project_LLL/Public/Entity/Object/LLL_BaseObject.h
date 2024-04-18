@@ -9,7 +9,6 @@
 #include "LLL_BaseObject.generated.h"
 
 class UFMODAudioComponent;
-class UBoxComponent;
 
 UCLASS()
 class PROJECT_LLL_API ALLL_BaseObject : public AActor, public IAbilitySystemInterface
@@ -30,10 +29,6 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 protected:
 	UPROPERTY(VisibleAnywhere)

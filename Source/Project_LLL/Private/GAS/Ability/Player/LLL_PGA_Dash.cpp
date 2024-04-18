@@ -112,6 +112,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 	if (IsValid(PlayerCharacter) && bIsInputPressed && CurrentDashCount < MaxDashCount)
 	{
 		CurrentDashCount++;
+		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
 		PlayerCharacter->GetMovementComponent()->Velocity = FVector::Zero();
 		
 		FVector LaunchDirection;

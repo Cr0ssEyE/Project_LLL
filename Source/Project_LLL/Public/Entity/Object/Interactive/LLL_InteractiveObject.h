@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DataAsset/LLL_InteractiveObjectDataAsset.h"
 #include "Entity/Object/LLL_BaseObject.h"
 #include "GameFramework/Actor.h"
 #include "Interface/LLL_InteractiveEntityInterface.h"
 #include "LLL_InteractiveObject.generated.h"
+
+class UBoxComponent;
 
 UCLASS()
 class PROJECT_LLL_API ALLL_InteractiveObject : public ALLL_BaseObject, public ILLL_InteractiveEntityInterface
@@ -15,14 +16,12 @@ class PROJECT_LLL_API ALLL_InteractiveObject : public ALLL_BaseObject, public IL
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ALLL_InteractiveObject();
 	
 	virtual void Tick(float DeltaTime) override;
 	virtual void InteractiveEvent() override;
 	
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;

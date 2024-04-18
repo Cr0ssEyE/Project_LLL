@@ -13,22 +13,13 @@ ALLL_GateObject::ALLL_GateObject()
 	IsGateEnabled = false;
 }
 
-void ALLL_GateObject::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void ALLL_GateObject::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 void ALLL_GateObject::InteractiveEvent()
 {
 	if(!IsGateEnabled)
 	{
 		return;
 	}
+	
 	Super::InteractiveEvent();
 	
 	OpenGate();

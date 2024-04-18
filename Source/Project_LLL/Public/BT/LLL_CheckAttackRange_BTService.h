@@ -6,8 +6,6 @@
 #include "BehaviorTree/BTService.h"
 #include "LLL_CheckAttackRange_BTService.generated.h"
 
-class ALLL_PlayerBase;
-class ALLL_MonsterBase;
 /**
  * 
  */

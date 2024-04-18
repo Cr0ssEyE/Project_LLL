@@ -26,7 +26,7 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
 protected:
-	void AISenseInit();
+	void AISenseInit() const;
 	void MontageDelegateInit();
 
 	UFUNCTION()

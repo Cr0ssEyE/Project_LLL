@@ -21,7 +21,7 @@ public:
 	FOnPlayerMoneyChangedDelegate FOnMoneyChanged;
 	FORCEINLINE void IncreaseMoney(const float InMoney) { Money += InMoney; FOnMoneyChanged.Broadcast(GetMoney()); ShowWidget(); }
 	FORCEINLINE void DecreaseMoney(const float OutMoney) { Money = Money - OutMoney >= 0 ? Money - OutMoney : 0; FOnMoneyChanged.Broadcast(GetMoney()); ShowWidget();}
-	FORCEINLINE const float GetMoney() { return Money; }
+	FORCEINLINE float GetMoney() const { return Money; }
 
 protected:
 	// Called when the game starts

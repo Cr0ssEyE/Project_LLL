@@ -6,18 +6,14 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
-enum class ESFX_Player_Walk_Material : uint8;
-class ULLL_SkillWidget;
-class ULLL_PlayerWireObjectDataAsset;
-enum class EAbilityInputName;
-class ULLL_InteractionWidget;
-class ULLL_InventoryWidget;
-class ULLL_PlayerStatusWidget;
-class ULLL_GamePauseWidget;
-class ULLL_PlayerAnimInstance;
+enum class EPlayerFootstepsSurface : uint8;
 class UInputAction;
 class UInputMappingContext;
-class UGameplayAbility;
+enum class EAbilityInputName;
+class ULLL_SkillWidget;
+class ULLL_InteractionWidget;
+class ULLL_InventoryWidget;
+class ULLL_GamePauseWidget;
 
 /**
  * 

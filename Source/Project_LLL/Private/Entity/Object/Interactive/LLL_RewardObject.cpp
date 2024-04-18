@@ -2,10 +2,10 @@
 
 
 #include "Entity/Object/Interactive/LLL_RewardObject.h"
-#include "UI/System/LLL_SelectRewardWidget.h"
-#include <Util/LLL_ConstructorHelper.h>
 
+#include "UI/System/LLL_SelectRewardWidget.h"
 #include "Constant/LLL_FilePath.h"
+#include "Util/LLLConstructorHelper.h"
 
 ALLL_RewardObject::ALLL_RewardObject()
 {
@@ -19,6 +19,7 @@ ALLL_RewardObject::ALLL_RewardObject()
 void ALLL_RewardObject::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	if (IsValid(SelectRewardWidgetClass))
 	{
 		SelectRewardWidget = CastChecked<ULLL_SelectRewardWidget>(CreateWidget(GetWorld(), SelectRewardWidgetClass));

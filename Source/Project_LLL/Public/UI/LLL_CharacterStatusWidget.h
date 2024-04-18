@@ -9,6 +9,7 @@
 class ULLL_CharacterAttributeSetBase;
 class UTextBlock;
 class UProgressBar;
+
 /**
  * 
  */

@@ -16,8 +16,6 @@
 #include "GAS/Attribute/Object/ThrownObject/PlayerWireHand/LLL_PlayerWireHandAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
-
-// Sets default values
 ALLL_PlayerWireHand::ALLL_PlayerWireHand()
 {
 	ULLL_PlayerWireObjectDataAsset* WireObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerWireObjectDataAsset>(PATH_PLAYER_WIRE_DATA, EAssertionLevel::Check);
@@ -49,8 +47,8 @@ void ALLL_PlayerWireHand::SetHiddenState()
 	HandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HandMesh->SetHiddenInGame(true);
 	
-	ProjectileMovement->Velocity = FVector::Zero();
-	ProjectileMovement->Deactivate();
+	ProjectileMovementComponent->Velocity = FVector::Zero();
+	ProjectileMovementComponent->Deactivate();
 
 	SetActorLocation(GetOwner()->GetActorLocation());
 }
@@ -63,8 +61,8 @@ void ALLL_PlayerWireHand::BeginPlay()
 void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	
-	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(OtherActor);
+
+	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(OtherActor);
 	if(IsValid(Monster) && HandCollision->GetCollisionObjectType() == ECC_ENEMY_HIT)
 	{
 		if(bIsGrabbed)
@@ -73,7 +71,7 @@ void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 		}
 		
 		// PGA_WireHandGrab
-		FGameplayTagContainer GrabTag(TAG_GAS_WIRE_GRAB);
+		const FGameplayTagContainer GrabTag(TAG_GAS_WIRE_GRAB);
 		if(ASC->TryActivateAbilitiesByTag(GrabTag))
 		{
 			GrabbedActor = OtherActor;
@@ -83,7 +81,7 @@ void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
 		}
 	}
 
-	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor);
+	const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor);
 	if(IsValid(PlayerCharacter) && HandCollision->GetCollisionObjectType() == ECC_PLAYER_CHECK)
 	{
 		SetHiddenState();

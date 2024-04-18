@@ -19,7 +19,7 @@ ULLL_PlayerCharacterAttributeSet::ULLL_PlayerCharacterAttributeSet() :
 
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
 	if (!IsValid(Player))
 	{
 		return;
@@ -104,7 +104,7 @@ void ULLL_PlayerCharacterAttributeSet::TryStartComboManagement(const FGameplayEf
 	SetCurrentComboCount(FMath::Clamp(GetCurrentComboCount(), 0.f, GetMaxComboCount()));
 	
 	UAbilitySystemComponent* OwnerASC = GetOwningAbilitySystemComponentChecked();
-	FGameplayTagContainer ComboManagementTag(TAG_GAS_COMBO_MANAGEMENT);
+	const FGameplayTagContainer ComboManagementTag(TAG_GAS_COMBO_MANAGEMENT);
 	OwnerASC->TryActivateAbilitiesByTag(ComboManagementTag);
 }
 	

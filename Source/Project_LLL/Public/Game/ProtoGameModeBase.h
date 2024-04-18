@@ -16,5 +16,4 @@ class PROJECT_LLL_API ALLL_ProtoGameModeBase : public AGameModeBase
 
 public:
 	ALLL_ProtoGameModeBase();
-	
 };

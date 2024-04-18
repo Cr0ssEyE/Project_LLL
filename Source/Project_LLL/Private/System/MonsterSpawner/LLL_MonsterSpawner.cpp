@@ -18,7 +18,7 @@ ALLL_MonsterSpawner::ALLL_MonsterSpawner()
 	MonsterSpawnDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_MONSTER_SPAWN_DATA, EAssertionLevel::Check);
 	
 	DetectBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
-	DetectBox->SetCollisionObjectType(ECC_PLAYER_HIT);
+	DetectBox->SetCollisionProfileName(CP_INTERACTION);
 	
 	SetRootComponent(DetectBox);
 }
@@ -87,7 +87,12 @@ void ALLL_MonsterSpawner::SpawnMonster()
 {
 	CurrentWave++;
 	
-	CurrentGroup = FMath::RandRange(1, LastGroup);
+	CurrentGroup++;
+	if (CurrentGroup > LastGroup)
+	{
+		CurrentGroup -= LastGroup;
+	}
+	
 	int32 SpawnPointNum = 0;
 
 	for (const ULLL_MonsterSpawnPointComponent* SpawnPoint : SpawnPoints)
