@@ -33,8 +33,11 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	float Money;
+
+	UPROPERTY(EditDefaultsOnly)
+	float BeforeMoneyData;
 
 	UPROPERTY(EditDefaultsOnly)
 	float InitMoney;
@@ -47,8 +50,10 @@ protected:
 
 	FTimerHandle WidgetWaitHideTimerHandle;
 
+	FTimerHandle MoneyTextChangHandle;
+
 	UPROPERTY(VisibleAnywhere)
-	uint8 WidgetHideWaitTime;
+	float WidgetHideWaitTime;
 
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsShowWidget;
@@ -58,5 +63,6 @@ protected:
 
 	void PlayShowInitGoldWidgetAnim();
 	void PlayHideInitGoldWidgetAnim();
+	void SetMoneyData();
 	void ShowWidget(); 
 };

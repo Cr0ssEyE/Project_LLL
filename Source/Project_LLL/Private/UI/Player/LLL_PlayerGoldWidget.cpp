@@ -11,7 +11,14 @@ void ULLL_PlayerGoldWidget::NativeConstruct()
 
 void ULLL_PlayerGoldWidget::UpdateInitWidget(float InGold) const
 {
-	InitGoldTextBlock->SetText(FText::FromString(FString::FromInt(InGold)));
+	if (InGold > 0)
+	{
+		InitGoldTextBlock->SetText(FText::FromString(FString(TEXT("+")).Append(FString::FromInt(InGold))));
+	}
+	else
+	{
+		InitGoldTextBlock->SetText(FText::FromString(FString::FromInt(InGold)));
+	}
 }
 
 void ULLL_PlayerGoldWidget::UpdateGoldWidget(float TotalGold) const

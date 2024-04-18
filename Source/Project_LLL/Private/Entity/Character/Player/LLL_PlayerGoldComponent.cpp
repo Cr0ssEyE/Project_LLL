@@ -17,6 +17,7 @@ ULLL_PlayerGoldComponent::ULLL_PlayerGoldComponent()
 
 	// ...
 	Money = 0;
+	BeforeMoneyData = 0;
 	InitMoney = 0;
 	GoldComponentDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_GoldComponentDataAsset>(PATH_PLAYER_GOLD_COMPONENT_DATA, EAssertionLevel::Check);
 	WidgetHideWaitTime = GoldComponentDataAsset->WidgetHideWaitTime;
@@ -28,7 +29,6 @@ ULLL_PlayerGoldComponent::ULLL_PlayerGoldComponent()
 
 void ULLL_PlayerGoldComponent::IncreaseMoney(const float InMoney)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString::Printf(TEXT("IncreaseMoney : %d"), bIsShowWidget));
 	if (bIsShowWidget == 1)
 	{
 		InitMoney += InMoney;
@@ -39,14 +39,13 @@ void ULLL_PlayerGoldComponent::IncreaseMoney(const float InMoney)
 		InitMoney = InMoney;
 	}
 	GoldWidget->UpdateInitWidget(InitMoney);
-	Money += InMoney; 
+	Money += InMoney;
 	FOnMoneyChanged.Broadcast(GetMoney()); 
 	ShowWidget();
 }
 
 void ULLL_PlayerGoldComponent::DecreaseMoney(const float OutMoney)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString::Printf(TEXT("DecreaseMoney : %d"), bIsShowWidget));
 	if (bIsShowWidget == 1)
 	{
 		InitMoney -= OutMoney;
@@ -88,7 +87,6 @@ void ULLL_PlayerGoldComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void ULLL_PlayerGoldComponent::PlayShowInitGoldWidgetAnim()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString::Printf(TEXT("PlayShowInitGoldWidgetAnim() : %d"), bIsShowWidget));
 	if (bIsShowWidget == 1)
 	{
 		return;
@@ -99,16 +97,41 @@ void ULLL_PlayerGoldComponent::PlayShowInitGoldWidgetAnim()
 
 void ULLL_PlayerGoldComponent::PlayHideInitGoldWidgetAnim()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString::Printf(TEXT("PlayHideInitGoldWidgetAnim() : %d"), bIsShowWidget));
 	bIsShowWidget = 0;
 	GoldWidget->PlayHideInitGoldAnimation();
-	GoldWidget->UpdateGoldWidget(GetMoney());
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString::Printf(TEXT("PlayHideInitGoldWidgetAnim() : %d"), bIsShowWidget));
+	
+	// 30프레임 기준 1프레임마다 호출
+	GetWorld()->GetTimerManager().SetTimer(MoneyTextChangHandle, this, &ULLL_PlayerGoldComponent::SetMoneyData, 0.03f, true);
+}
+
+void ULLL_PlayerGoldComponent::SetMoneyData()
+{
+	if (InitMoney > 0)
+	{
+		BeforeMoneyData += 1;
+		GoldWidget->UpdateGoldWidget(BeforeMoneyData);
+		
+		if (BeforeMoneyData >= Money)
+		{
+			GetWorld()->GetTimerManager().ClearTimer(MoneyTextChangHandle);
+			GoldWidget->UpdateGoldWidget(Money);
+		}
+	}
+	else
+	{
+		BeforeMoneyData -= 1;
+		GoldWidget->UpdateGoldWidget(BeforeMoneyData);
+
+		if (BeforeMoneyData <= Money)
+		{
+			GetWorld()->GetTimerManager().ClearTimer(MoneyTextChangHandle);
+			GoldWidget->UpdateGoldWidget(Money);
+		}
+	}
 }
 
 void ULLL_PlayerGoldComponent::ShowWidget()
 {
-	GoldWidget->UpdateInitWidget(GetMoney());
 	PlayShowInitGoldWidgetAnim();
 	GetWorld()->GetTimerManager().SetTimer(WidgetWaitHideTimerHandle, this, &ULLL_PlayerGoldComponent::PlayHideInitGoldWidgetAnim, 0.1f, false, WidgetHideWaitTime);
 }
