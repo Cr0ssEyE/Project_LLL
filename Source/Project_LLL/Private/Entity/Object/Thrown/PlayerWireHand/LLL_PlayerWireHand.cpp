@@ -11,7 +11,6 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "DataAsset/LLL_PlayerWireObjectDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Game/LLL_GameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/ThrownObject/PlayerWireHand/LLL_PlayerWireHandAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"

@@ -5,7 +5,7 @@
 
 #include "FMODAudioComponent.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
-#include "Entity/Object/LLL_BaseObject.h"
+#include "Entity/Object/Base/LLL_BaseObject.h"
 
 bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCueParameters& Parameters) const
 {

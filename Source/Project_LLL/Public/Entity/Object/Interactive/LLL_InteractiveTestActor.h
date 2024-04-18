@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LLL_InteractiveObject.h"
+#include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "LLL_InteractiveTestActor.generated.h"
 
 UCLASS()

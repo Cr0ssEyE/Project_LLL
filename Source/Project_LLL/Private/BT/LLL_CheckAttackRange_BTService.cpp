@@ -9,7 +9,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
+#include "GAS/Attribute/Character/Monster/Base/LLL_MonsterAttributeSet.h"
 
 ULLL_CheckAttackRange_BTService::ULLL_CheckAttackRange_BTService()
 {

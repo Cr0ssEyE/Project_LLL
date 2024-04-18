@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Object/Interactive/LLL_InteractiveObject.h"
+#include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "LLL_GateObject.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnStageDestroyDelegate);

@@ -8,7 +8,7 @@
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
+#include "GAS/Attribute/Character/Monster/Base/LLL_MonsterAttributeSet.h"
 
 ULLL_TurnToPlayer_BTTaskNode::ULLL_TurnToPlayer_BTTaskNode()
 {

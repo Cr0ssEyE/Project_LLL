@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_SwordDashDataAsset.h"
-#include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
+#include "Entity/Character/Monster/Melee/Base/LLL_MeleeMonster.h"
 #include "LLL_SwordDash.generated.h"
 
 class UBoxComponent;

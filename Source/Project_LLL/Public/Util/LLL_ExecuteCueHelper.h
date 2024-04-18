@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
-#include "Entity/Object/LLL_BaseObject.h"
+#include "Entity/Object/Base/LLL_BaseObject.h"
 
 class PROJECT_LLL_API FLLL_ExecuteCueHelper
 {

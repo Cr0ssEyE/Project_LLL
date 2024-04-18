@@ -4,7 +4,7 @@
 #include "Entity/Character/Player/LLL_PlayerGoldComponent.h"
 
 #include "Constant/LLL_FilePath.h"
-#include "UI/Player/LLL_PlayerGoldWidget.h"
+#include "UI/Entity/Character/Player/LLL_PlayerGoldWidget.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "DataAsset/LLL_GoldComponentDataAsset.h"
 

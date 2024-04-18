@@ -5,13 +5,13 @@
 
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Interactive/LLL_InteractiveObject.h"
+#include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/Player/LLL_InteractionWidget.h"
-#include "UI/Player/LLL_InventoryWidget.h"
-#include "UI/Player/LLL_PlayerStatusWidget.h"
-#include "UI/Player/LLL_SkillWidget.h"
+#include "UI/Entity/Character/Player/LLL_InteractionWidget.h"
+#include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
+#include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
+#include "UI/Entity/Character/Player/LLL_SkillWidget.h"
 #include "UI/System/LLL_GamePauseWidget.h"
 
 ULLL_PlayerUIManager::ULLL_PlayerUIManager()

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Attribute/Character/Monster/MeleeMonster/LLL_MeleeMonsterAttributeSet.h"
+#include "GAS/Attribute/Character/Monster/MeleeMonster/Base/LLL_MeleeMonsterAttributeSet.h"
 #include "LLL_SwordDashAttributeSet.generated.h"
 
 /**

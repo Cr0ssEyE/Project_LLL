@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Ability/Monster/LLL_MonsterGameplayAbilityBase.h"
+#include "GAS/Ability/Monster/Base/LLL_MonsterGameplayAbilityBase.h"
 #include "LLL_MGA_Charge.generated.h"
 
 /**

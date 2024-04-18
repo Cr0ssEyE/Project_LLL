@@ -15,7 +15,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
-#include "Entity/Object/Interactive/LLL_InteractiveObject.h"
+#include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
 #include "Game/ProtoGameInstance.h"

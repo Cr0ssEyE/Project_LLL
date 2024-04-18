@@ -15,10 +15,10 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Ability/Monster/LLL_MGA_Attack.h"
+#include "GAS/Ability/Monster/Base/LLL_MGA_Attack.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
-#include "UI/LLL_CharacterStatusWidget.h"
+#include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()

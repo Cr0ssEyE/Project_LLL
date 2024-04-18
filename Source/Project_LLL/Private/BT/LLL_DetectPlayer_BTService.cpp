@@ -10,7 +10,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
+#include "GAS/Attribute/Character/Monster/Base/LLL_MonsterAttributeSet.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISense_Sight.h"
 
