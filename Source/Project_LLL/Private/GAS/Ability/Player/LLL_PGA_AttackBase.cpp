@@ -143,7 +143,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 		bIsInputPressed = false;
 
 		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
-		PlayerCharacter->GetFModAudioComponent()->SetParameter(FName("SFX_Player_Attack_Count"), CurrentComboAction - 1);
+		PlayerCharacter->GetFModAudioComponent()->SetParameter(AttackEventParameterName, CurrentComboAction - 1);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
