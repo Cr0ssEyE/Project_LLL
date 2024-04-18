@@ -20,8 +20,8 @@ public:
 	ULLL_PlayerGoldComponent();
 
 	FOnPlayerMoneyChangedDelegate FOnMoneyChanged;
-	FORCEINLINE void IncreaseMoney(const float InMoney) { Money += InMoney; FOnMoneyChanged.Broadcast(GetMoney()); ShowWidget(); }
-	FORCEINLINE void DecreaseMoney(const float OutMoney) { Money = Money - OutMoney >= 0 ? Money - OutMoney : 0; FOnMoneyChanged.Broadcast(GetMoney()); ShowWidget();}
+	void IncreaseMoney(const float InMoney);
+	void DecreaseMoney(const float OutMoney);
 	FORCEINLINE const float GetMoney() { return Money; }
 
 protected:
@@ -36,6 +36,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	float Money;
 
+	UPROPERTY(EditDefaultsOnly)
+	float InitMoney;
+
 	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<ULLL_PlayerGoldWidget> GoldWidgetClass;
 
@@ -48,7 +51,7 @@ protected:
 	uint8 WidgetHideWaitTime;
 
 	UPROPERTY(EditDefaultsOnly)
-	bool IsShowWidget;
+	uint8 bIsShowWidget;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_GoldComponentDataAsset> GoldComponentDataAsset;

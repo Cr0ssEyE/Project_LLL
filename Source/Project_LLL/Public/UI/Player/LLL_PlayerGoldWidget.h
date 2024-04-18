@@ -17,7 +17,8 @@ class PROJECT_LLL_API ULLL_PlayerGoldWidget : public UUserWidget
 	
 public:
 	virtual void NativeConstruct() override;
-	void UpdateWidget(float InGold) const;
+	void UpdateInitWidget(float InGold) const;
+	void UpdateGoldWidget(float TotalGold) const;
 
 	FORCEINLINE void PlayShowInitGoldAnimation() { PlayAnimation(ShowInitGoldAnimation); }
 	FORCEINLINE void PlayHideInitGoldAnimation() { PlayAnimation(HideInitGoldAnimation); }
@@ -25,6 +26,9 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidget))
 	TObjectPtr<UTextBlock> GoldTextBlock;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidget))
+	TObjectPtr<UTextBlock> InitGoldTextBlock;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> ShowInitGoldAnimation;

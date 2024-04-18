@@ -60,10 +60,10 @@ void ALLL_RewardObject::InteractiveEvent()
 		//구매 불가능 UI 생성
 		return;
 	}
-	PlayerGoldComponent->DecreaseMoney(Price);
+	
 	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
 	SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 	SelectRewardWidget->SetIsEnabled(true);
-	
+	PlayerGoldComponent->DecreaseMoney(Price);
 	Destroy();
 }

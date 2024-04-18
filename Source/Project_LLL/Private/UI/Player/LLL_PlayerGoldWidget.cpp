@@ -7,10 +7,14 @@
 void ULLL_PlayerGoldWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	//GoldTextBlock = Cast<UTextBlock>(GetWidgetFromName(FName(FString::Printf("GoldText"))));
 }
 
-void ULLL_PlayerGoldWidget::UpdateWidget(float InGold) const
+void ULLL_PlayerGoldWidget::UpdateInitWidget(float InGold) const
 {
-	GoldTextBlock->SetText(FText::FromString(FString::FromInt(InGold)));
+	InitGoldTextBlock->SetText(FText::FromString(FString::FromInt(InGold)));
+}
+
+void ULLL_PlayerGoldWidget::UpdateGoldWidget(float TotalGold) const
+{
+	GoldTextBlock->SetText(FText::FromString(FString::FromInt(TotalGold)));
 }
