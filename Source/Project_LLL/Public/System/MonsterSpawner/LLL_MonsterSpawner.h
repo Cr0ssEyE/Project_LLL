@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "System/Base/LLL_SystemBase.h"
 #include "LLL_MonsterSpawner.generated.h"
 
 class ALLL_MonsterBase;
@@ -17,7 +18,7 @@ DECLARE_MULTICAST_DELEGATE(FMonsterSpawnerDestroyDelegate)
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_MonsterSpawner : public AActor
+class PROJECT_LLL_API ALLL_MonsterSpawner : public ALLL_SystemBase
 {
 	GENERATED_BODY()
 

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BT/LLL_DetectPlayer_BTService.h"
+#include "BT/Base/LLL_DetectPlayer_BTService.h"
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
