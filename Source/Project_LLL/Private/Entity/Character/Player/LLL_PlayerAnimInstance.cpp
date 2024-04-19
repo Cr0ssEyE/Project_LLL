@@ -6,7 +6,9 @@
 #include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_MeshSocketName.h"
+#include "DataTable/LLL_FModParameterDataTable.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "Enumeration/LLL_FModParameterHelper.h"
 
 void ULLL_PlayerAnimInstance::NativeInitializeAnimation()
 {
@@ -66,7 +68,13 @@ void ULLL_PlayerAnimInstance::SetStepEventParameter(FName FootSocketName) const
 	{
 		if (HitResult.PhysMaterial->SurfaceType == StepEventParameterProperty.Key)
 		{
-			Character->GetFModAudioComponent()->SetParameter(PlayerDataAsset->StepEventParameterName, static_cast<float>(StepEventParameterProperty.Value));
+			for (auto FModParameterData : Character->GetFModParameterDataArray())
+			{
+				if (FModParameterData.Parameter == EFModParameter::PlayerWalkMaterialParameter)
+				{
+					Character->GetFModAudioComponent()->SetParameter(FModParameterData.Name, static_cast<float>(StepEventParameterProperty.Value));
+				}
+			}
 		}
 	}
 }

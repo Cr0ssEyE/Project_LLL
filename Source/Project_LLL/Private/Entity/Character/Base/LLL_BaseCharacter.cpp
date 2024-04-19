@@ -6,10 +6,13 @@
 #include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "DataTable/LLL_FModParameterDataTable.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
+#include "Util/LLL_ConstructorHelper.h"
 #include "Util/LLL_ExecuteCueHelper.h"
 
 // Sets default values
@@ -18,6 +21,8 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bIsDead = false;
+
+	FModParameterDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_FMOD_PARAMETER_NAME_DATA, EAssertionLevel::Check);
 
 	ASC = CreateDefaultSubobject<ULLL_BaseASC>(TEXT("AbilitySystem"));
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
@@ -86,6 +91,17 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		bIsSpawned = true;
 #endif
+	}
+
+	TArray<FFModParameterDataTable*> LoadDataArray;
+	FModParameterDataTable->GetAllRows<FFModParameterDataTable>(TEXT("Failed To Load FMod Parameter Name Data Tables"), LoadDataArray);
+
+	for (const FFModParameterDataTable* LoadData : LoadDataArray)
+	{
+		FFModParameterDataTable TempData;
+		TempData.Parameter = LoadData->Parameter;
+		TempData.Name = LoadData->Name;
+		FModParameterDataArray.Emplace(TempData);
 	}
 }
 
@@ -191,6 +207,8 @@ void ALLL_BaseCharacter::Dead()
 	bIsDead = true;
 
 	CharacterDeadDelegate.Broadcast(this);
+
+	FModAudioComponent->Stop();
 }
 
 void ALLL_BaseCharacter::DestroyHandle()
