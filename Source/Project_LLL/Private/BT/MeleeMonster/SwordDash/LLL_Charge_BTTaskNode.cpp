@@ -4,11 +4,11 @@
 #include "BT/MeleeMonster/SwordDash/LLL_Charge_BTTaskNode.h"
 
 #include "AIController.h"
-#include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDash.h"
+#include "Interface/LLL_ChargeMonsterInterface.h"
 
 ULLL_Charge_BTTaskNode::ULLL_Charge_BTTaskNode()
 {
-	NodeName = TEXT("Charge (SwordDash)");
+	NodeName = TEXT("Charge");
 	bNotifyTick = true;
 }
 
@@ -16,15 +16,15 @@ EBTNodeResult::Type ULLL_Charge_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	const ALLL_SwordDash* SwordDash = Cast<ALLL_SwordDash>(OwnerComp.GetAIOwner()->GetPawn());
-	if (!IsValid(SwordDash))
+	const ILLL_ChargeMonsterInterface* ChargeMonster = Cast<ILLL_ChargeMonsterInterface>(OwnerComp.GetAIOwner()->GetPawn());
+	if (!ChargeMonster)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("차지할 수 있는 몬스터가 아닙니다"));
 		
 		return EBTNodeResult::Failed;
 	}
 
-	SwordDash->Charge();
+	ChargeMonster->Charge();
 
 	return EBTNodeResult::InProgress;
 }
@@ -33,8 +33,8 @@ void ULLL_Charge_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	const ALLL_SwordDash* SwordDash = Cast<ALLL_SwordDash>(OwnerComp.GetAIOwner()->GetPawn());
-	if (IsValid(SwordDash) && !SwordDash->IsCharging())
+	const ILLL_ChargeMonsterInterface* ChargeMonster = Cast<ILLL_ChargeMonsterInterface>(OwnerComp.GetAIOwner()->GetPawn());
+	if (ChargeMonster && !ChargeMonster->IsCharging())
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}

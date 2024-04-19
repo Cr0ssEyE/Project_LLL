@@ -25,9 +25,6 @@ ALLL_SwordDash::ALLL_SwordDash()
 	DashDamageRangeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	DashDamageRangeBox->SetCollisionProfileName(CP_INTERACTION);
 	DashDamageRangeBox->SetupAttachment(RootComponent);
-	
-	bIsDashing = false;
-	bIsCharging = false;
 }
 
 void ALLL_SwordDash::BeginPlay()

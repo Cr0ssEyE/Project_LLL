@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_SwordDashDataAsset.h"
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
+#include "Interface/LLL_ChargeMonsterInterface.h"
+#include "Interface/LLL_DashMonsterInterface.h"
 #include "LLL_SwordDash.generated.h"
 
 class UBoxComponent;
@@ -12,18 +14,12 @@ class UBoxComponent;
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster
+class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster, public ILLL_DashMonsterInterface, public ILLL_ChargeMonsterInterface
 {
 	GENERATED_BODY()
 
 public:
 	ALLL_SwordDash();
-
-	FORCEINLINE void SetDash(bool IsDashing) { bIsDashing = IsDashing; }
-	FORCEINLINE void SetCharge(bool IsCharging) { bIsCharging = IsCharging; }
-	
-	FORCEINLINE bool IsDashing() const { return bIsDashing; }
-	FORCEINLINE bool IsCharging() const { return bIsCharging; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -33,8 +29,8 @@ protected:
 	void DashDamageRangeBoxInit() const;
 
 public:
-	void Dash() const;
-	void Charge() const;
+	virtual void Dash() const override;
+	virtual void Charge() const override;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -42,7 +38,4 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UBoxComponent> DashDamageRangeBox;
-
-	uint8 bIsDashing : 1;
-	uint8 bIsCharging : 1;
 };
