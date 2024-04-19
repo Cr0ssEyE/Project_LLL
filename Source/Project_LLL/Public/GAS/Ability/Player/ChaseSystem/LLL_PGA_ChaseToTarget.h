@@ -25,6 +25,9 @@ protected:
 	virtual void OwnerLaunchToChaseHand();
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	TObjectPtr<UAnimMontage> AbilityActionMontage;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "와이어 돌진 정지 거리")
 	float AbilityEndDistance;
 	

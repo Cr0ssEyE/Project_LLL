@@ -4,11 +4,13 @@
 #include "GAS/Ability/Player/ChaseSystem/LLL_PGA_ChaseToTarget.h"
 
 #include "AbilitySystemComponent.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_MonatgeSectionName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
@@ -43,6 +45,12 @@ void ULLL_PGA_ChaseToTarget::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	Direction = (TargetLocation - PlayerCharacter->GetActorLocation()).GetSafeNormal();
 	RushSpeed = PlayerAttributeSet->GetRushSpeed();
 
+	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("SkillMontage"), AbilityActionMontage, 1.0f, SECTION_FLY);
+	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_ChaseToTarget::OnCompleteCallBack);
+	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_ChaseToTarget::OnInterruptedCallBack);
+
+	PlayMontageTask->ReadyForActivation();
+	
 	UAbilityTask_WaitGameplayTagAdded* WaitTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, TAG_GAS_COLLIDE_WALL);
 	WaitTask->Added.AddDynamic(this, &ULLL_PGA_ChaseToTarget::OnCompleteCallBack);
 	WaitTask->ReadyForActivation();
