@@ -111,6 +111,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 	if (IsValid(PlayerCharacter) && bIsInputPressed && CurrentDashCount < MaxDashCount)
 	{
 		CurrentDashCount++;
+		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
 		PlayerCharacter->GetMovementComponent()->Velocity = FVector::Zero();
 		
 		FVector LaunchDirection;
@@ -124,7 +125,6 @@ void ULLL_PGA_Dash::DashActionEvent()
 		}
 		
 		PlayerCharacter->LaunchCharacter(LaunchDirection * (DashSpeed * 1000.f), true, true);
-		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
 		// 애님 몽타주 처음부터 다시 실행하거나 특정 시간부터 실행 시키도록 하는게 상당히 귀찮아서 땜빵 처리
 		PlayerCharacter->StopAnimMontage(DashAnimMontage);
 		PlayerCharacter->PlayAnimMontage(DashAnimMontage);

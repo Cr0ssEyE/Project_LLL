@@ -10,6 +10,10 @@
 
 ULLL_BaseCharacterAnimInstance::ULLL_BaseCharacterAnimInstance()
 {
+	bIsIdle = true;
+	bIsFalling = false;
+	bIsJumping = false;
+	GroundSpeed = 0.0f;
 	MovingThreshold = 3.0f;
 	JumpingThreshold = 100.0f;
 }
@@ -52,7 +56,7 @@ void ULLL_BaseCharacterAnimInstance::AnimNotify_RightStep()
 	ExecuteStepCue();
 }
 
-void ULLL_BaseCharacterAnimInstance::ExecuteStepCue()
+void ULLL_BaseCharacterAnimInstance::ExecuteStepCue() const
 {
 	UAbilitySystemComponent* ASC = Character->GetAbilitySystemComponent();
 	FGameplayEffectContextHandle CueContextHandle = ASC->MakeEffectContext();

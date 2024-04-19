@@ -17,19 +17,15 @@ class PROJECT_LLL_API ALLL_BreakableObjectBase : public ALLL_BaseObject, public 
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
+public:
 	ALLL_BreakableObjectBase();
 
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
+	
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	
+public:
 	virtual void DropGold(const FGameplayTag tag, int32 data) override;
 	FOnDropGoldDelegate GoldDelegate;
 

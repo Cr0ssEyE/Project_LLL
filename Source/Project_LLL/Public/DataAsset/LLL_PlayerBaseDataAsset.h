@@ -18,7 +18,6 @@ class ULLL_PlayerAnimInstance;
 class ULLL_SelectRewardWidget;
 class UInputAction;
 class UInputMappingContext;
-class UGameplayAbility;
 
 /**
  * 

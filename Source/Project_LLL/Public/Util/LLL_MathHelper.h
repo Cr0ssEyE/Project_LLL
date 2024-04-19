@@ -14,18 +14,39 @@ public:
 		return CalculateResult;
 	}
 
-	static FVector CalculateLaunchVelocity(const FVector Direction, const float Multiply)
+	static FVector CalculateLaunchVelocity(const FVector& Direction, const float Multiply)
 	{
 		const FVector CalculateResult = Direction * Multiply * 10.f;
 		return CalculateResult;
 	}
 
-	static FVector GetPredictedLocation(const APawn* Owner, const APawn* Target, float TargetSpeed, float PredictionRate)
+	static FVector GetPredictedLocation(const AActor* Owner, const AActor* Target, float TargetSpeed, float PredictionRate)
 	{
 		const float Distance = Owner->GetDistanceTo(Target);
 		const FVector PredictedMove = Target->GetVelocity() * (Distance / TargetSpeed);
 		const FVector PredictedLocation = Target->GetActorLocation() + PredictedMove * PredictionRate;
 		return PredictedLocation;
+	}
+
+	static bool IsInFieldOfView(const AActor* Owner, const AActor* Target, float Distance, float FieldOfView)
+	{
+		if (Distance < Owner->GetDistanceTo(Target))
+		{
+			return false;
+		}
+		
+		FVector DirectionToTarget = Target->GetActorLocation() - Owner->GetActorLocation();
+		DirectionToTarget.Normalize();
+
+		const FVector OwnerForwardVector = Owner->GetActorForwardVector();
+		const float DotProduct = FVector::DotProduct(OwnerForwardVector, DirectionToTarget);
+
+		if (FMath::Acos(DotProduct) > FMath::DegreesToRadians(FieldOfView / 2.0f))
+		{
+			return false;
+		}
+
+		return true;
 	}
 	// 플레이어
 public:

@@ -22,14 +22,6 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 
-UENUM(BlueprintType)
-enum class ELabeled : uint8
-{
-	A,
-	B,
-	C
-};
-
 /**
  * 
  */
@@ -55,8 +47,8 @@ public:
 	// 외부 접근용
 public:
 	// TODO: GAS로 전환
-	void AddInteractableObject(ALLL_InteractiveObject* Object);
-	void RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject);
+	void AddInteractiveObject(ALLL_InteractiveObject* Object);
+	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
 	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
@@ -116,17 +108,6 @@ private:
 
 	UPROPERTY()
 	uint32 InteractionRange;
-	
-	void ParameterTest();
-
-	UPROPERTY(EditAnywhere, Category = "FMOD", meta = (ClampMin = "0", ClampMax = "1"))
-	float Continuous;
-
-	UPROPERTY(EditAnywhere, Category = "FMOD", meta = (ClampMin = "0", ClampMax = "3"))
-	int32 Discrete;
-
-	UPROPERTY(EditAnywhere, Category = "FMOD")
-	ELabeled Labeled;
 
 	// 상태 관련 함수
 protected:

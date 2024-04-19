@@ -10,6 +10,9 @@ class ULevelSequence;
 class ALLL_RewardObject;
 class ALLL_MonsterSpawner;
 
+/**
+ * 
+ */
 UCLASS()
 class PROJECT_LLL_API ULLL_MapDataAsset : public UDataAsset
 {

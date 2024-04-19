@@ -7,6 +7,7 @@
 #include "LLL_RangedMonsterDataAsset.generated.h"
 
 class ALLL_ThrownObject;
+
 /**
  * 
  */

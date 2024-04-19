@@ -18,10 +18,8 @@
 #include "LevelSequencePlayer.h"
 #include "System/MapGimmick/LLL_ShoppingMapComponent.h"
 
-// Sets default values
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
-
 	RootBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	RootBox->SetBoxExtent(FVector(5000.0f, 5000.0f, 500.0f));
 	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
@@ -32,7 +30,6 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 
 	CurrentState = EStageState::READY;
 
-	//Sequence Section
 	FadeInSequence = MapDataAsset->FadeIn;
 	FadeOutSequence = MapDataAsset->FadeOut;
 	LevelSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
@@ -155,7 +152,7 @@ void ALLL_MapGimmick::OnInteractionGate()
 
 void ALLL_MapGimmick::EnableAllGates()
 {
-	for (auto Gate:Gates)
+	for (const auto Gate:Gates)
 	{
 		Gate->GateEnable();
 		Gate->StageDestroyDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
@@ -221,7 +218,7 @@ void ALLL_MapGimmick::RewardSpawn()
 	}
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActor<ALLL_RewardObject>(RewardObjectClass, Player->GetActorLocation(), Player->GetActorRotation());
-	if (RewardObject)
+	if (IsValid(RewardObject))
 	{
 		RewardObject->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::RewardDestroyed);
 	}

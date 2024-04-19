@@ -56,10 +56,9 @@ void ULLL_AT_Trace::SpawnAndInitializeTargetActor()
 	}
 }
 
-void ULLL_AT_Trace::FinalizeTargetActor()
+void ULLL_AT_Trace::FinalizeTargetActor() const
 {
-	UAbilitySystemComponent* ASC = AbilitySystemComponent.Get();
-	if (ASC)
+	if (UAbilitySystemComponent* ASC = AbilitySystemComponent.Get(); IsValid(ASC))
 	{
 		const FTransform SpawnTransform = ASC->GetAvatarActor()->GetTransform();
 		SpawnedTargetActor->FinishSpawning(SpawnTransform);

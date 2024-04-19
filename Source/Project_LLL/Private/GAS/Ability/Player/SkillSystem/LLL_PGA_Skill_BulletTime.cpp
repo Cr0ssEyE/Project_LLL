@@ -13,7 +13,9 @@
 
 ULLL_PGA_Skill_BulletTime::ULLL_PGA_Skill_BulletTime()
 {
-	
+	SkillDuration = 0.f;
+	WorldDecelerationRate = 0.f;
+	PlayerAccelerationRate = 0.f;
 }
 
 void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -67,7 +69,7 @@ void ULLL_PGA_Skill_BulletTime::EndAbility(const FGameplayAbilitySpecHandle Hand
 	GetWorld()->RemoveOnActorSpawnedHandler(ActorSpawnedDelegateHandle);
 	ActorSpawnedDelegateHandle.Reset();
 	
-	SkillDuration = WorldDecelerationRate = PlayerAccelerationRate = 0.f;
+	SkillDuration = WorldDecelerationRate = PlayerAccelerationRate;
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 

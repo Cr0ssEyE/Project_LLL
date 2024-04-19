@@ -17,7 +17,7 @@ void ULLL_CharacterAttributeSetBase::PostAttributeChange(const FGameplayAttribut
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
 	if(Attribute == GetMoveSpeedAttribute())
 	{
-		ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwningActor());
+		const ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwningActor());
 		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GetMoveSpeed();
 	}
 	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());

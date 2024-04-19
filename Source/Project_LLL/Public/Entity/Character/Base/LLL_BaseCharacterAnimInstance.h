@@ -31,7 +31,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void AnimNotify_RightStep();
 
-	void ExecuteStepCue();
+	void ExecuteStepCue() const;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	uint8 bIsIdle : 1;

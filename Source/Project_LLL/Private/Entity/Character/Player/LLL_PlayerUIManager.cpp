@@ -24,7 +24,7 @@ void ULLL_PlayerUIManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetOwner());
+	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetOwner());
 	const ULLL_BaseCharacterDataAsset* CharacterDataAsset = PlayerCharacter->GetCharacterDataAsset();
 	const ULLL_PlayerBaseDataAsset* PlayerBaseDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
 	
@@ -131,13 +131,13 @@ void ULLL_PlayerUIManager::DisableInteractionWidget() const
 	InteractionWidget->SetIsEnabled(false);
 }
 
-void ULLL_PlayerUIManager::UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject, int Num) const
+void ULLL_PlayerUIManager::UpdateInteractionWidget(const ALLL_InteractiveObject* CurrentObject, int Num) const
 {
 	InteractionWidget->RenderNextInteractionPanel(static_cast<bool>(Num));
 	InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
 }
 
-void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible)
+void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
 {
 	if(Visible)
 	{

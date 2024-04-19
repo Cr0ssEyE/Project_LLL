@@ -3,48 +3,84 @@
 
 #include "GAS/Ability/Monster/MeleeMonster/SwordDash/LLL_MGA_Dash.h"
 
+#include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDash.h"
 #include "GameFramework/PawnMovementComponent.h"
-#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
-#include "Interface/LLL_DashMonsterInterface.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "GAS/Attribute/Character/Monster/MeleeMonster/SwordDash/LLL_SwordDashAttributeSet.h"
 
 void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
-	if (ILLL_DashMonsterInterface* DashMonster = Cast<ILLL_DashMonsterInterface>(Monster))
+	ALLL_SwordDash* SwordDash = CastChecked<ALLL_SwordDash>(GetAvatarActorFromActorInfo());
+	SwordDash->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
+	SwordDash->GetMovementComponent()->Velocity = FVector::Zero();
+	
+	const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(SwordDash->GetAbilitySystemComponent()->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
+
+	FHitResult StaticResult;
+	FHitResult PlayerResult;
+	const FVector SweepStartLocation = SwordDash->GetActorLocation();
+	FVector SweepEndLocation = SweepStartLocation + SwordDash->GetActorForwardVector() * SwordDashAttributeSet->GetDashDistance();
+	FQuat SweepQuat = SwordDash->GetActorQuat();
+	ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
+	ECollisionChannel PlayerTraceChannel = ECC_PLAYER;
+
+	UCapsuleComponent* Capsule = SwordDash->GetCapsuleComponent();
+	FCollisionShape TraceShape = FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius(), Capsule->GetScaledCapsuleHalfHeight() / 2.0f);
+		
+	GetWorld()->SweepSingleByChannel(
+		StaticResult,
+		SweepStartLocation,
+		SweepEndLocation,
+		SweepQuat,
+		StaticTraceChannel,
+		TraceShape);
+	
+	GetWorld()->SweepSingleByChannel(
+		PlayerResult,
+		SweepStartLocation,
+		SweepEndLocation,
+		SweepQuat,
+		PlayerTraceChannel,
+		TraceShape);
+
+	FVector DashLocation = SweepEndLocation;
+	if (StaticResult.GetActor())
 	{
-		const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-		Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
-		Monster->GetMovementComponent()->Velocity = FVector::Zero();
-		Monster->LaunchCharacter(Monster->GetActorForwardVector() * MonsterAttributeSet->GetAttackDistance() * 10.0f, true, true);
-		DashMonster->SetDash(true);
+		if (PlayerResult.GetActor())
+		{
+			float StaticDistance = SwordDash->GetDistanceTo(StaticResult.GetActor());
+			float PlayerDistance = SwordDash->GetDistanceTo(PlayerResult.GetActor());
+
+			DashLocation = (StaticDistance <= PlayerDistance) ? StaticResult.Location : PlayerResult.Location;
+		}
+		else
+		{
+			DashLocation = StaticResult.Location;
+		}
 	}
-	else
+	else if (PlayerResult.GetActor())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("대시할 수 있는 몬스터가 아닙니다"))
+		DashLocation = PlayerResult.Location;
 	}
 	
-	FTimerHandle HideTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(HideTimerHandle, this, &ULLL_MGA_Dash::EndDash, 0.2f, false);
+	SwordDash->SetDash(true);
+
+	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, 0.1f, nullptr, nullptr);
+	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &ULLL_MGA_Dash::OnCompleteCallBack);
+
+	MoveToLocationTask->ReadyForActivation();
 }
 
 void ULLL_MGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
-	if (ILLL_DashMonsterInterface* DashMonster = Cast<ILLL_DashMonsterInterface>(Monster))
-	{
-		Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_DASH);
-		DashMonster->SetDash(false);
-	}
+	ALLL_SwordDash* SwordDash = CastChecked<ALLL_SwordDash>(GetAvatarActorFromActorInfo());
+	SwordDash->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
+	SwordDash->SetDash(false);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-}
-
-void ULLL_MGA_Dash::EndDash()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

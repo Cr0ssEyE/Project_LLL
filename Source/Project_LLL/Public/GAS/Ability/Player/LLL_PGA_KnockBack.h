@@ -7,6 +7,7 @@
 #include "LLL_PGA_KnockBack.generated.h"
 
 class ALLL_TA_TraceBase;
+
 /**
  * 
  */
