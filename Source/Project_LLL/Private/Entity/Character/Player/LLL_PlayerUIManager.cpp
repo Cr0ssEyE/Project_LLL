@@ -13,6 +13,7 @@
 #include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
 #include "UI/Entity/Character/Player/LLL_SkillWidget.h"
 #include "UI/System/LLL_GamePauseWidget.h"
+#include "UI/System/LLL_SelectRewardWidget.h"
 
 ULLL_PlayerUIManager::ULLL_PlayerUIManager()
 {
@@ -32,6 +33,7 @@ void ULLL_PlayerUIManager::BeginPlay()
 	InventoryWidgetClass = PlayerBaseDataAsset->InventoryWidgetClass;
 	InteractionWidgetClass = PlayerBaseDataAsset->InteractionWidgetClass;
 	SkillGaugeWidgetClass = PlayerBaseDataAsset->SkillGaugeWidgetClass;
+	SelectRewardWidgetClass = PlayerBaseDataAsset->SelectRewardWidgetClass;
 	
 	if(IsValid(CharacterStatusWidgetClass))
 	{
@@ -65,6 +67,14 @@ void ULLL_PlayerUIManager::BeginPlay()
 	{
 		SkillGaugeWidget = CastChecked<ULLL_SkillWidget>(CreateWidget(GetWorld(), SkillGaugeWidgetClass));
 		SkillGaugeWidget->AddToViewport();
+	}
+
+	if(IsValid(SelectRewardWidgetClass))
+	{
+		SelectRewardWidget = CastChecked<ULLL_SelectRewardWidget>(CreateWidget(GetWorld(), SelectRewardWidgetClass));
+		SelectRewardWidget->AddToViewport();
+		SelectRewardWidget->SetVisibility(ESlateVisibility::Hidden);
+		SelectRewardWidget->SetIsEnabled(false);
 	}
 }
 
