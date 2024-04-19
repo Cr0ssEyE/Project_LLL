@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GAS/Ability/Player/LLL_PlayerGameplayAbilityBase.h"
-#include "LLL_PGA_WireHandGrab.generated.h"
+#include "LLL_PGA_ChaseHandLockTarget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PGA_WireHandGrab : public ULLL_PlayerGameplayAbilityBase
+class PROJECT_LLL_API ULLL_PGA_ChaseHandLockTarget : public ULLL_PlayerGameplayAbilityBase
 {
 	GENERATED_BODY()
 
 public:
-	ULLL_PGA_WireHandGrab();
+	ULLL_PGA_ChaseHandLockTarget();
 	
 protected:
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
@@ -29,9 +29,6 @@ protected:
 
 	virtual void CheckGrabbedTime();
 
-	UFUNCTION(BlueprintCallable)
-	virtual void OnReleasedCallBack();
-	
 protected:
 	UPROPERTY(EditDefaultsOnly, DisplayName = "와이어의 그랩 애니메이션")
 	TObjectPtr<UAnimSequence> GrabAnim;

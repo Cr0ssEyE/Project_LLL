@@ -5,29 +5,29 @@
 #include "CoreMinimal.h"
 #include "Entity/Object/Thrown/LLL_ThrownObject.h"
 #include "Interface/LLL_PlayerDependencyInterface.h"
-#include "LLL_PlayerWireHand.generated.h"
+#include "LLL_PlayerChaseHand.generated.h"
 
 class USphereComponent;
-class ULLL_PlayerWireHandAttributeSet;
-class ULLL_PlayerWireObjectDataAsset;
+class ULLL_PlayerChaseHandAttributeSet;
+class ULLL_PlayerChaseHandDataAsset;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWireMovementCompleteDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHandMovementCompleteDelegate);
 
 UCLASS()
-class PROJECT_LLL_API ALLL_PlayerWireHand : public ALLL_ThrownObject, public ILLL_PlayerDependencyActorInterface
+class PROJECT_LLL_API ALLL_PlayerChaseHand : public ALLL_ThrownObject, public ILLL_PlayerDependencyActorInterface
 {
 	GENERATED_BODY()
 
 public:
-	ALLL_PlayerWireHand();
+	ALLL_PlayerChaseHand();
 
 public:
-	FWireMovementCompleteDelegate ThrowCompleteDelegate;
-	FWireMovementCompleteDelegate OnGrabbedDelegate;
-	FWireMovementCompleteDelegate ReleaseCompleteDelegate;
+	FHandMovementCompleteDelegate ThrowCompleteDelegate;
+	FHandMovementCompleteDelegate OnGrabbedDelegate;
+	FHandMovementCompleteDelegate ReleaseCompleteDelegate;
 
 public:
-	FORCEINLINE ULLL_PlayerWireHandAttributeSet* GetWireHandAttributeSet() const { return WireHandAttributeSet; }
+	FORCEINLINE ULLL_PlayerChaseHandAttributeSet* GetChaseHandAttributeSet() const { return ChaseHandAttributeSet; }
 	FORCEINLINE USphereComponent* GetCollisionComponent() const { return HandCollision; }
 	FORCEINLINE USkeletalMeshComponent* GetHandMesh() const { return HandMesh; }
 	FORCEINLINE AActor* GetGrabbedActor() const { return GrabbedActor; }
@@ -50,7 +50,7 @@ protected:
 	TObjectPtr<USphereComponent> HandCollision;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_PlayerWireHandAttributeSet> WireHandAttributeSet;
+	TObjectPtr<ULLL_PlayerChaseHandAttributeSet> ChaseHandAttributeSet;
 
 protected:
 	UPROPERTY(VisibleAnywhere)

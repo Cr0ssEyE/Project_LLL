@@ -4,32 +4,33 @@
 
 #include "CoreMinimal.h"
 #include "GAS/Ability/Player/LLL_PlayerGameplayAbilityBase.h"
-#include "LLL_PGA_WireHandThrow.generated.h"
+#include "LLL_PGA_ChaseHandRelease.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PGA_WireHandThrow : public ULLL_PlayerGameplayAbilityBase
+class PROJECT_LLL_API ULLL_PGA_ChaseHandRelease : public ULLL_PlayerGameplayAbilityBase
 {
 	GENERATED_BODY()
-
+	
 public:
-	ULLL_PGA_WireHandThrow();
-
+	ULLL_PGA_ChaseHandRelease();
+	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
+	
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	
+protected:
+	virtual bool CheckOwnerAlreadyOverlapped();
+	
+	virtual void ReleaseToOwnerLocation();
+
+	virtual void RetargetReleaseVelocity();
 
 protected:
-	virtual void ThrowToCursorLocation();
-
-	virtual void CheckReached();
-
-protected:
-	UPROPERTY(EditDefaultsOnly, DisplayName = "와이어의 투척 애니메이션")
-	TObjectPtr<UAnimSequence> ThrowAnim;
-
-	FVector TargetLocation;
+	UPROPERTY(EditDefaultsOnly, DisplayName = "와이어의 회수 애니메이션")
+	TObjectPtr<UAnimSequence> ReleaseAnim;
+	
 };

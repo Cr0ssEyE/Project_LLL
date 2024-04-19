@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "LLL_ThrownObjectDataAsset.h"
-#include "LLL_PlayerWireObjectDataAsset.generated.h"
+#include "LLL_PlayerChaseHandDataAsset.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PlayerWireObjectDataAsset : public ULLL_ThrownObjectDataAsset
+class PROJECT_LLL_API ULLL_PlayerChaseHandDataAsset : public ULLL_ThrownObjectDataAsset
 {
 	GENERATED_BODY()
 
 public:
-	ULLL_PlayerWireObjectDataAsset();
+	ULLL_PlayerChaseHandDataAsset();
 };

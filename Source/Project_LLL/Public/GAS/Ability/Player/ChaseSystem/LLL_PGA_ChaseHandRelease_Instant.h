@@ -3,19 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LLL_PGA_WireHandRelease.h"
-#include "LLL_PGA_WireHandRelease_Instant.generated.h"
+#include "LLL_PGA_ChaseHandRelease.h"
+#include "LLL_PGA_ChaseHandRelease_Instant.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PGA_WireHandRelease_Instant : public ULLL_PGA_WireHandRelease
+class PROJECT_LLL_API ULLL_PGA_ChaseHandRelease_Instant : public ULLL_PGA_ChaseHandRelease
 {
 	GENERATED_BODY()
 
 public:
-	ULLL_PGA_WireHandRelease_Instant();
+	ULLL_PGA_ChaseHandRelease_Instant();
 
 protected:
 	virtual void RetargetReleaseVelocity() override;

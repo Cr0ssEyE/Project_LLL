@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Ability/Player/WireSystem/LLL_PGA_RushToWireHand.h"
+#include "GAS/Ability/Player/ChaseSystem/LLL_PGA_ChaseToTarget.h"
 
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
@@ -10,13 +10,12 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
+#include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GAS/Ability/Player/WireSystem/LLL_PGA_ControlWireHand.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 
-ULLL_PGA_RushToWireHand::ULLL_PGA_RushToWireHand()
+ULLL_PGA_ChaseToTarget::ULLL_PGA_ChaseToTarget()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	TargetLocation = Direction = FVector::Zero();
@@ -24,30 +23,30 @@ ULLL_PGA_RushToWireHand::ULLL_PGA_RushToWireHand()
 	RushSpeed = 0.f;
 }
 
-void ULLL_PGA_RushToWireHand::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void ULLL_PGA_ChaseToTarget::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
-	const ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
+	const ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 	PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
-	PlayerCharacter->SetActorRotation((PlayerWireHand->GetActorLocation() - PlayerCharacter->GetActorLocation()).GetSafeNormal().Rotation());
+	PlayerCharacter->SetActorRotation((PlayerChaseHand->GetActorLocation() - PlayerCharacter->GetActorLocation()).GetSafeNormal().Rotation());
 	PlayerCharacter->GetCharacterMovement()->Velocity = FVector::Zero();
 
-	PlayerWireHand->GetCollisionComponent()->SetCollisionObjectType(ECC_PLAYER_CHECK);
-	PlayerWireHand->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	PlayerChaseHand->GetCollisionComponent()->SetCollisionObjectType(ECC_PLAYER_CHECK);
+	PlayerChaseHand->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
-	TargetLocation = PlayerWireHand->GetActorLocation();
+	TargetLocation = PlayerChaseHand->GetActorLocation();
 	Direction = (TargetLocation - PlayerCharacter->GetActorLocation()).GetSafeNormal();
 	RushSpeed = PlayerAttributeSet->GetRushSpeed();
 
 	UAbilityTask_WaitGameplayTagAdded* WaitTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, TAG_GAS_COLLIDE_WALL);
-	WaitTask->Added.AddDynamic(this, &ULLL_PGA_RushToWireHand::OnCollidedCallBack);
+	WaitTask->Added.AddDynamic(this, &ULLL_PGA_ChaseToTarget::OnCompleteCallBack);
 	WaitTask->ReadyForActivation();
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_RushToWireHand::OwnerLaunchToWireHand);
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseToTarget::OwnerLaunchToChaseHand);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -60,16 +59,18 @@ void ULLL_PGA_RushToWireHand::ActivateAbility(const FGameplayAbilitySpecHandle H
 #endif
 }
 
-void ULLL_PGA_RushToWireHand::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+void ULLL_PGA_ChaseToTarget::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	RushSpeed = 0.f;
+	
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
-	const ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
+	const ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
 	
 	PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 	PlayerCharacter->GetCharacterMovement()->Velocity = PlayerCharacter->GetCharacterMovement()->Velocity.GetSafeNormal() * PlayerCharacter->GetCharacterMovement()->GetMaxSpeed();
 	
-	PlayerWireHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_RELEASE));
+	PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_RELEASE));
 	
 	PlayerCharacter->GetAbilitySystemComponent()->CancelAbilities( new FGameplayTagContainer(TAG_GAS_PLAYER_WIRE_THROW));
 
@@ -93,15 +94,15 @@ void ULLL_PGA_RushToWireHand::EndAbility(const FGameplayAbilitySpecHandle Handle
 #endif
 }
 
-void ULLL_PGA_RushToWireHand::OwnerLaunchToWireHand()
+void ULLL_PGA_ChaseToTarget::OwnerLaunchToChaseHand()
 {
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
-	const ALLL_PlayerWireHand* PlayerWireHand = PlayerCharacter->GetWireHand();
+	const ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
 	const float Distance2D = FVector::DistXY(TargetLocation, PlayerCharacter->GetActorLocation());
 	
 	if(RushSpeed <= 0.f || Distance2D < AbilityEndDistance)
 	{
-		PlayerWireHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_RELEASE));
+		PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_RELEASE));
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}
@@ -109,11 +110,6 @@ void ULLL_PGA_RushToWireHand::OwnerLaunchToWireHand()
 	Direction = (TargetLocation - PlayerCharacter->GetActorLocation()).GetSafeNormal();
 	PlayerCharacter->GetCharacterMovement()->Velocity += Direction * RushSpeed;
 	
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_RushToWireHand::OwnerLaunchToWireHand);
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseToTarget::OwnerLaunchToChaseHand);
 }
 
-void ULLL_PGA_RushToWireHand::OnCollidedCallBack()
-{
-	RushSpeed = 0.f;
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-}

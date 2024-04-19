@@ -6,28 +6,28 @@
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
 #include "GAS/Attribute/Object/ThrownObject/LLL_ThrownObjectAttributeSet.h"
-#include "LLL_PlayerWireHandAttributeSet.generated.h"
+#include "LLL_PlayerChaseHandAttributeSet.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PlayerWireHandAttributeSet : public ULLL_ThrownObjectAttributeSet
+class PROJECT_LLL_API ULLL_PlayerChaseHandAttributeSet : public ULLL_ThrownObjectAttributeSet
 {
 	GENERATED_BODY()
 
 public:
-	ULLL_PlayerWireHandAttributeSet();
+	ULLL_PlayerChaseHandAttributeSet();
 
 	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, MinimumThrowDistance);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, MaximumThrowDistance);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, CorrectionReachStateDistance);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, ReleaseSpeed);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, CollisionRadius);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerWireHandAttributeSet, GrabDuration);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, MinimumThrowDistance);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, MaximumThrowDistance);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, CorrectionReachStateDistance);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, ReleaseSpeed);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, CollisionRadius);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, GrabDuration);
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")

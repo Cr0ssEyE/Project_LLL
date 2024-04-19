@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
+#include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
 
 #include "GameplayTagContainer.h"
 #include "Components/SphereComponent.h"
@@ -9,23 +9,22 @@
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "DataAsset/LLL_PlayerWireObjectDataAsset.h"
+#include "DataAsset/LLL_PlayerChaseHandDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Game/LLL_GameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Object/ThrownObject/PlayerWireHand/LLL_PlayerWireHandAttributeSet.h"
+#include "GAS/Attribute/Object/ThrownObject/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
 #include "Util/LLLConstructorHelper.h"
 
-ALLL_PlayerWireHand::ALLL_PlayerWireHand()
+ALLL_PlayerChaseHand::ALLL_PlayerChaseHand()
 {
-	ULLL_PlayerWireObjectDataAsset* WireObjectDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerWireObjectDataAsset>(PATH_PLAYER_WIRE_DATA, EAssertionLevel::Check);
-	BaseObjectDataAsset = Cast<ULLL_BaseObjectDataAsset>(WireObjectDataAsset);
+	ULLL_PlayerChaseHandDataAsset* ChaseHandDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerChaseHandDataAsset>(PATH_PLAYER_WIRE_DATA, EAssertionLevel::Check);
+	BaseObjectDataAsset = Cast<ULLL_BaseObjectDataAsset>(ChaseHandDataAsset);
 	HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh"));
 	HandCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-	ThrownObjectAttributeSet = CreateDefaultSubobject<ULLL_PlayerWireHandAttributeSet>(TEXT("WireHandAttributeSet"));
+	ThrownObjectAttributeSet = CreateDefaultSubobject<ULLL_PlayerChaseHandAttributeSet>(TEXT("ChaseHandAttributeSet"));
 
-	HandMesh->SetSkeletalMesh(WireObjectDataAsset->SkeletalMesh);
-	HandMesh->SetRelativeScale3D(WireObjectDataAsset->MeshScale);
+	HandMesh->SetSkeletalMesh(ChaseHandDataAsset->SkeletalMesh);
+	HandMesh->SetRelativeScale3D(ChaseHandDataAsset->MeshScale);
 	HandMesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
 	
 	// 이후 BeginPlay에서 InitEffect를 통해 실제 사용하는 값으로 초기화 해준다. 해당 매직넘버는 비정상적인 동작 방지용
@@ -40,7 +39,7 @@ ALLL_PlayerWireHand::ALLL_PlayerWireHand()
 	bIsGrabbed = false;
 }
 
-void ALLL_PlayerWireHand::SetHiddenState()
+void ALLL_PlayerChaseHand::SetHiddenState()
 {
 	bIsGrabbed = false;
 	HandMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -53,12 +52,12 @@ void ALLL_PlayerWireHand::SetHiddenState()
 	SetActorLocation(GetOwner()->GetActorLocation());
 }
 
-void ALLL_PlayerWireHand::BeginPlay()
+void ALLL_PlayerChaseHand::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void ALLL_PlayerWireHand::NotifyActorBeginOverlap(AActor* OtherActor)
+void ALLL_PlayerChaseHand::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 

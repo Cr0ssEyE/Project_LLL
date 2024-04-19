@@ -4,36 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "GAS/Ability/Player/LLL_PlayerGameplayAbilityBase.h"
-#include "LLL_PGA_RushToWireHand.generated.h"
+#include "LLL_PGA_ControlChaseHand.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PGA_RushToWireHand : public ULLL_PlayerGameplayAbilityBase
+class PROJECT_LLL_API ULLL_PGA_ControlChaseHand : public ULLL_PlayerGameplayAbilityBase
 {
 	GENERATED_BODY()
 
 public:
-	ULLL_PGA_RushToWireHand();
-	
+	ULLL_PGA_ControlChaseHand();
+
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-	
-protected:
-	virtual void OwnerLaunchToWireHand();
 
-	UFUNCTION(BlueprintCallable)
-	virtual void OnCollidedCallBack();
-	
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "와이어 돌진 정지 거리")
-	float AbilityEndDistance;
-	
-	FVector TargetLocation;
-	
-	FVector Direction;
+	virtual void ThrowHand(const FGameplayAbilityActorInfo* ActorInfo);
 
-	float RushSpeed;
+protected:
+	uint8 bIsAlreadyThrown : 1;
 };

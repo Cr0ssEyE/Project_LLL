@@ -8,7 +8,7 @@
 
 enum class EPlayerFootstepsSurface : uint8;
 class ULLL_SkillWidget;
-class ULLL_PlayerWireObjectDataAsset;
+class ULLL_PlayerChaseHandDataAsset;
 enum class EAbilityInputName;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
@@ -73,8 +73,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "기본 공격 입력 키")
 	TObjectPtr<UInputAction> AttackInputAction;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "와이어 액션 입력 키")
-	TObjectPtr<UInputAction> ControlWireInputAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "추격 액션 입력 키")
+	TObjectPtr<UInputAction> ControlChaseInputAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "스킬 입력 키")
 	TObjectPtr<UInputAction> SkillInputAction;
