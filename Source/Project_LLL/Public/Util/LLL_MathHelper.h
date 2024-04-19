@@ -48,6 +48,50 @@ public:
 
 		return true;
 	}
+
+	static FVector CalcualteLaunchablePosition(const UWorld& World, const AActor* Owner, const float LaunchDistance, const FVector& LaunchDirection, const float ArrivalDistance, const FName CollisionProfile)
+	{
+		FHitResult HitResult;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(Owner);
+
+		FVector LaunchablePosition = Owner->GetActorLocation() + LaunchDirection.GetSafeNormal() * LaunchDistance;
+		World.LineTraceSingleByProfile(
+			HitResult,
+			Owner->GetActorLocation(),
+			LaunchablePosition,
+			CollisionProfile,
+			Params
+			);
+
+		if (!HitResult.GetActor())
+		{
+			return LaunchablePosition;
+		}
+
+		// 충돌한 대상이 있는 경우 = 해당 충돌 위치에서 도달 인식이 되는 위치를 목표 위치로 설정
+		FVector MovablePosition = HitResult.ImpactPoint - LaunchDirection * ArrivalDistance;
+		return MovablePosition;
+	}
+
+	static bool CheckLaunchablePosition(const UWorld* World, const AActor* Owner, const float LaunchDistance, const FVector& LaunchDirection, const FName CollisionProfile)
+	{
+		FHitResult HitResult;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(Owner);
+
+		FVector LaunchablePosition = Owner->GetActorLocation() + LaunchDirection.GetSafeNormal() * LaunchDistance;
+		World->LineTraceSingleByProfile(
+			HitResult,
+			Owner->GetActorLocation(),
+			LaunchablePosition,
+			CollisionProfile,
+			Params
+			);
+		
+		return !HitResult.GetActor();
+	}
+	
 	// 플레이어
 public:
 	static float CalculateSkillGaugeIncrement(const float BaseValue, const float ComboAmplify, const float ItemAmplify)

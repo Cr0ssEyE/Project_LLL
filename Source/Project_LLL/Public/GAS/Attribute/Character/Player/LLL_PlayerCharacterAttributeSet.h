@@ -21,9 +21,10 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, AttackActionIntervalTime);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, AttackActionInputDelayTime);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxDashCount);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashInvincibleTime);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, RushSpeed);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackPower);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ImpulseStrength);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CurrentComboCount);
@@ -63,13 +64,16 @@ protected:
 	FGameplayAttributeData MaxDashCount;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData DashDistance;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DashSpeed;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DashInvincibleTime;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData RushSpeed;
+	FGameplayAttributeData ChaseSpeed;
 
 	// 넉백 관련
 protected:

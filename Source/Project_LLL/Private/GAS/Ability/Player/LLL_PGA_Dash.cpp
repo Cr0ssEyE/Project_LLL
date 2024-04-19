@@ -11,6 +11,7 @@
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "Util/LLL_MathHelper.h"
 
 ULLL_PGA_Dash::ULLL_PGA_Dash()
 {
@@ -108,12 +109,12 @@ void ULLL_PGA_Dash::DashActionEvent()
 	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
 	
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+	
 	if (IsValid(PlayerCharacter) && bIsInputPressed && CurrentDashCount < MaxDashCount)
 	{
 		CurrentDashCount++;
-		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
-		PlayerCharacter->GetMovementComponent()->Velocity = FVector::Zero();
-		
+		float LaunchDistance = PlayerCharacterAttributeSet->GetDashDistance();
 		FVector LaunchDirection;
 		if (PlayerCharacter->GetMoveInputPressed())
 		{
@@ -123,6 +124,17 @@ void ULLL_PGA_Dash::DashActionEvent()
 		{
 			LaunchDirection = PlayerCharacter->GetActorForwardVector().GetSafeNormal2D();
 		}
+
+		if(FLLL_MathHelper::CheckLaunchablePosition(GetWorld(), PlayerCharacter, LaunchDistance, LaunchDirection,  CP_NON_PASS_EVADE))
+		{
+			PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PASS_EVADE);
+		}
+		else
+		{
+			PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_NON_PASS_EVADE);
+		}
+		
+		PlayerCharacter->GetMovementComponent()->Velocity = FVector::Zero();
 		
 		PlayerCharacter->LaunchCharacter(LaunchDirection * (DashSpeed * 1000.f), true, true);
 		// 애님 몽타주 처음부터 다시 실행하거나 특정 시간부터 실행 시키도록 하는게 상당히 귀찮아서 땜빵 처리

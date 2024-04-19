@@ -34,7 +34,7 @@ void ULLL_PGA_ChaseToTarget::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 	PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
-	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
+	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PASS_EVADE);
 	PlayerCharacter->SetActorRotation((PlayerChaseHand->GetActorLocation() - PlayerCharacter->GetActorLocation()).GetSafeNormal().Rotation());
 	PlayerCharacter->GetCharacterMovement()->Velocity = FVector::Zero();
 
@@ -43,7 +43,7 @@ void ULLL_PGA_ChaseToTarget::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 
 	TargetLocation = PlayerChaseHand->GetActorLocation();
 	Direction = (TargetLocation - PlayerCharacter->GetActorLocation()).GetSafeNormal();
-	RushSpeed = PlayerAttributeSet->GetRushSpeed();
+	RushSpeed = PlayerAttributeSet->GetChaseSpeed();
 
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("SkillMontage"), AbilityActionMontage, 1.0f, SECTION_FLY);
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_ChaseToTarget::OnCompleteCallBack);
