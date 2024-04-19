@@ -48,5 +48,5 @@ protected:
 	UPROPERTY(EditAnywhere, DisplayName = "공격 이벤트 태그", meta=(Categories = "GameplayCue"))
 	FGameplayTag AttackCueTag;
 
-	FName PlayerWalkMaterialParameterName;
+	FName PlayerAttackCountParameterName;
 };

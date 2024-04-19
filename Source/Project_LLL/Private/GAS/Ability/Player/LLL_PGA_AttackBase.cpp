@@ -34,7 +34,7 @@ void ULLL_PGA_AttackBase::PreActivate(const FGameplayAbilitySpecHandle Handle, c
 	{
 		if (FModParameterData.Parameter == EFModParameter::PlayerAttackCountParameter)
 		{
-			PlayerWalkMaterialParameterName = FModParameterData.Name;
+			PlayerAttackCountParameterName = FModParameterData.Name;
 		}
 	}
 }
@@ -81,7 +81,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	StartAttackInputWait();
 
 	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
-	PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerWalkMaterialParameterName, CurrentComboAction - 1);
+	PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerAttackCountParameterName, CurrentComboAction - 1);
 }
 
 void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -159,7 +159,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 		bIsInputPressed = false;
 
 		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
-		PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerWalkMaterialParameterName, CurrentComboAction - 1);
+		PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerAttackCountParameterName, CurrentComboAction - 1);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
