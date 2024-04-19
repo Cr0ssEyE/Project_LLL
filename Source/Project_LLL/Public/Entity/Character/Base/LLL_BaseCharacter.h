@@ -7,7 +7,6 @@
 #include "DataAsset/LLL_BaseCharacterDataAsset.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
-#include "DataTable/LLL_FModParameterDataTable.h"
 #include "Interface/LLL_EntityInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
@@ -40,7 +39,6 @@ public:
 	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
-	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterDataArray; }
 
 	// 플레이어
 protected:
@@ -106,12 +104,6 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "FMOD")
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const UDataTable> FModParameterDataTable;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FFModParameterDataTable> FModParameterDataArray;
 
 protected:
 	virtual void DestroyHandle();

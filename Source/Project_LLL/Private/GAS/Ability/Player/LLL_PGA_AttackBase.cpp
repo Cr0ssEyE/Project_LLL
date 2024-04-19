@@ -29,8 +29,8 @@ void ULLL_PGA_AttackBase::PreActivate(const FGameplayAbilitySpecHandle Handle, c
 {
 	Super::PreActivate(Handle, ActorInfo, ActivationInfo, OnGameplayAbilityEndedDelegate, TriggerEventData);
 
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	for (const auto FModParameterData : Player->GetFModParameterDataArray())
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
 	{
 		if (FModParameterData.Parameter == EFModParameter::PlayerAttackCountParameter)
 		{

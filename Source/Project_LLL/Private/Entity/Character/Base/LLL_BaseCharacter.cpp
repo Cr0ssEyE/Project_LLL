@@ -22,8 +22,6 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	bIsDead = false;
 
-	FModParameterDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_FMOD_PARAMETER_NAME_DATA, EAssertionLevel::Check);
-
 	ASC = CreateDefaultSubobject<ULLL_BaseASC>(TEXT("AbilitySystem"));
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	
@@ -91,17 +89,6 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		bIsSpawned = true;
 #endif
-	}
-
-	TArray<FFModParameterDataTable*> LoadDataArray;
-	FModParameterDataTable->GetAllRows<FFModParameterDataTable>(TEXT("Failed To Load FMod Parameter Name Data Tables"), LoadDataArray);
-
-	for (const FFModParameterDataTable* LoadData : LoadDataArray)
-	{
-		FFModParameterDataTable TempData;
-		TempData.Parameter = LoadData->Parameter;
-		TempData.Name = LoadData->Name;
-		FModParameterDataArray.Emplace(TempData);
 	}
 }
 
