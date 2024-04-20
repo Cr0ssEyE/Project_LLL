@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTable/LLL_MonsterSpawnDataTable.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_MonsterSpawner.generated.h"
 
 class ALLL_MonsterBase;
 class UBoxComponent;
-struct FMonsterSpawnDataTable;
 class ULLL_MonsterSpawnDataTable;
 class ULLL_MonsterSpawnPointComponent;
 
@@ -43,7 +43,7 @@ private:
 	TObjectPtr<const UDataTable> MonsterSpawnDataTable;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FMonsterSpawnDataTable> DataTables;
+	TArray<FMonsterSpawnDataTable> MonsterSpawnDataArray;
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	TArray<ULLL_MonsterSpawnPointComponent*> SpawnPoints;

@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "LLL_DashMonsterInterface.generated.h"
+#include "LLL_ChargeMonsterInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class ULLL_DashMonsterInterface : public UInterface
+class ULLL_ChargeMonsterInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,16 +16,16 @@ class ULLL_DashMonsterInterface : public UInterface
 /**
  * 
  */
-class PROJECT_LLL_API ILLL_DashMonsterInterface
+class PROJECT_LLL_API ILLL_ChargeMonsterInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	FORCEINLINE virtual void SetDash(bool IsDashing) { bIsDashing = IsDashing; }
-	FORCEINLINE virtual bool IsDashing() const { return bIsDashing; }
+	FORCEINLINE virtual void SetCharge(bool IsCharging) { bIsCharging = IsCharging; }
+	FORCEINLINE virtual bool IsCharging() const { return bIsCharging; }
 	
-	virtual void Dash() const = 0;
+	virtual void Charge() const = 0;
 
-	uint8 bIsDashing : 1;
+	uint8 bIsCharging : 1;
 };

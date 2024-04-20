@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "BrainComponent.h"
+#include "FMODAudioComponent.h"
 #include "GameplayAbilitySpec.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -92,6 +93,12 @@ void ALLL_MonsterBase::Dead()
 	Super::Dead();
 	
 	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
+
+	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+	if (IsValid(MonsterBaseAnimInstance))
+	{
+		MonsterBaseAnimInstance->StopAllMontages(1.0f);
+	}
 	
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
 	if (IsValid(MonsterBaseAIController))
@@ -143,6 +150,8 @@ void ALLL_MonsterBase::Damaged()
 	{
 		MonsterBaseAnimInstance->StopAllMontages(1.0f);
 		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+
+		FModAudioComponent->Stop();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
