@@ -6,6 +6,7 @@
 #include "LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_Dash.generated.h"
 
+class UAbilityTask_MoveToLocation;
 /**
  * 
  */
@@ -28,6 +29,10 @@ protected:
 	void DashActionEvent();
 	void StartDashInputWait();
 	void EndDashInputWait();
+
+protected:
+	UPROPERTY()
+	TObjectPtr<UAbilityTask_MoveToLocation> DashTask;
 	
 protected:
 	UPROPERTY(EditAnywhere, DisplayName = "대쉬 애님 몽타주")
@@ -38,14 +43,19 @@ protected:
 
 	UPROPERTY(EditAnywhere, DisplayName = "대쉬 연속 사용 딜레이")
 	float DashReActionTime = 0.f;
-	
+
+protected:
 	FTimerHandle WaitInputTimerHandle;
 	
 	uint32 CurrentDashCount;
 
 	uint32 MaxDashCount;
 
-	uint32 DashSpeed;
+	float DashSpeed;
 
+	float DashDistance;
+
+	float DashCorrectionDistance;
+	
 	uint32 bIsInputPressed : 1;
 };

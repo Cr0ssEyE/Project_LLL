@@ -34,7 +34,7 @@ void ULLL_PGA_ChaseToTarget::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 	PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
-	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PASS_EVADE);
+	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER_EVADE);
 	PlayerCharacter->SetActorRotation((PlayerChaseHand->GetActorLocation() - PlayerCharacter->GetActorLocation()).GetSafeNormal().Rotation());
 	PlayerCharacter->GetCharacterMovement()->Velocity = FVector::Zero();
 
@@ -74,7 +74,6 @@ void ULLL_PGA_ChaseToTarget::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	const ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
 	
-	PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 	PlayerCharacter->GetCharacterMovement()->Velocity = PlayerCharacter->GetCharacterMovement()->Velocity.GetSafeNormal() * PlayerCharacter->GetCharacterMovement()->GetMaxSpeed();
 	
@@ -111,6 +110,7 @@ void ULLL_PGA_ChaseToTarget::OwnerLaunchToChaseHand()
 	if(RushSpeed <= 0.f || Distance2D < AbilityEndDistance)
 	{
 		PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_RELEASE));
+		PlayerCharacter->GetCharacterAnimInstance()->Montage_JumpToSectionsEnd(SECTION_FLY, AbilityActionMontage);
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}

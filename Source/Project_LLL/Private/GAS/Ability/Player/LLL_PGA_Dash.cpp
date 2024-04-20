@@ -3,6 +3,7 @@
 
 #include "GAS/Ability/Player/LLL_PGA_Dash.h"
 #include "AbilitySystemComponent.h"
+#include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -39,6 +40,7 @@ void ULLL_PGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	if(IsValid(PlayerCharacter) && IsValid(PlayerAttributeSet))
 	{
 		DashSpeed = PlayerAttributeSet->GetDashSpeed();
+		DashCorrectionDistance = PlayerAttributeSet->GetDashCorrectionDistance();
 		MaxDashCount = PlayerAttributeSet->GetMaxDashCount();
 	}
 	bIsInputPressed = true;
@@ -74,6 +76,11 @@ void ULLL_PGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
 	WaitInputTimerHandle.Invalidate();
 
+	if (IsValid(DashTask) && DashTask->IsActive())
+	{
+		DashTask->EndTask();
+	}
+	
 	ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
 	PlayerAnimInstance->SetDash(false);
 	
@@ -114,29 +121,28 @@ void ULLL_PGA_Dash::DashActionEvent()
 	if (IsValid(PlayerCharacter) && bIsInputPressed && CurrentDashCount < MaxDashCount)
 	{
 		CurrentDashCount++;
-		float LaunchDistance = PlayerCharacterAttributeSet->GetDashDistance();
-		FVector LaunchDirection;
+		DashDistance = PlayerCharacterAttributeSet->GetDashDistance();
+		
+		FVector DashDirection;
 		if (PlayerCharacter->GetMoveInputPressed())
 		{
-			LaunchDirection = PlayerCharacter->GetMoveInputDirection().GetSafeNormal2D();
+			DashDirection = PlayerCharacter->GetMoveInputDirection().GetSafeNormal2D();
 		}
 		else
 		{
-			LaunchDirection = PlayerCharacter->GetActorForwardVector().GetSafeNormal2D();
+			DashDirection = PlayerCharacter->GetActorForwardVector().GetSafeNormal2D();
 		}
 
-		if(FLLL_MathHelper::CheckLaunchablePosition(GetWorld(), PlayerCharacter, LaunchDistance, LaunchDirection,  CP_NON_PASS_EVADE))
-		{
-			PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PASS_EVADE);
-		}
-		else
-		{
-			PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_NON_PASS_EVADE);
-		}
-		
+		FVector DashLocation = FLLL_MathHelper::CalculatePlayerLaunchableLocation(GetWorld(), PlayerCharacter, DashDistance, DashCorrectionDistance, DashDirection);
 		PlayerCharacter->GetMovementComponent()->Velocity = FVector::Zero();
+		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER_EVADE);
+		if (IsValid(DashTask) && DashTask->IsActive())
+		{
+			DashTask->EndTask();
+		}
+		DashTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, DashDistance / DashSpeed, nullptr, nullptr);
+		DashTask->ReadyForActivation();
 		
-		PlayerCharacter->LaunchCharacter(LaunchDirection * (DashSpeed * 1000.f), true, true);
 		// 애님 몽타주 처음부터 다시 실행하거나 특정 시간부터 실행 시키도록 하는게 상당히 귀찮아서 땜빵 처리
 		PlayerCharacter->StopAnimMontage(DashAnimMontage);
 		PlayerCharacter->PlayAnimMontage(DashAnimMontage);

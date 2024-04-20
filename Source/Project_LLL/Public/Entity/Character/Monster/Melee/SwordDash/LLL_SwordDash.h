@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_SwordDashDataAsset.h"
 #include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
+#include "Interface/LLL_KnockBackInterface.h"
 #include "LLL_SwordDash.generated.h"
 
 class UBoxComponent;
@@ -12,7 +13,7 @@ class UBoxComponent;
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster
+class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster, public ILLL_KnockBackInterface
 {
 	GENERATED_BODY()
 

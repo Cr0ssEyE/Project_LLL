@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/CapsuleComponent.h"
+#include "Constant/LLL_CollisionChannel.h"
 
 class PROJECT_LLL_API FLLL_MathHelper
 {
@@ -48,33 +50,8 @@ public:
 
 		return true;
 	}
-
-	static FVector CalcualteLaunchablePosition(const UWorld& World, const AActor* Owner, const float LaunchDistance, const FVector& LaunchDirection, const float ArrivalDistance, const FName CollisionProfile)
-	{
-		FHitResult HitResult;
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(Owner);
-
-		FVector LaunchablePosition = Owner->GetActorLocation() + LaunchDirection.GetSafeNormal() * LaunchDistance;
-		World.LineTraceSingleByProfile(
-			HitResult,
-			Owner->GetActorLocation(),
-			LaunchablePosition,
-			CollisionProfile,
-			Params
-			);
-
-		if (!HitResult.GetActor())
-		{
-			return LaunchablePosition;
-		}
-
-		// 충돌한 대상이 있는 경우 = 해당 충돌 위치에서 도달 인식이 되는 위치를 목표 위치로 설정
-		FVector MovablePosition = HitResult.ImpactPoint - LaunchDirection * ArrivalDistance;
-		return MovablePosition;
-	}
-
-	static bool CheckLaunchablePosition(const UWorld* World, const AActor* Owner, const float LaunchDistance, const FVector& LaunchDirection, const FName CollisionProfile)
+	
+	static bool CheckLaunchablePosition(const UWorld* World, const ACharacter* Owner, const float LaunchDistance, const FVector& LaunchDirection, const FName CollisionProfile)
 	{
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
@@ -94,11 +71,136 @@ public:
 	
 	// 플레이어
 public:
-	static float CalculateSkillGaugeIncrement(const float BaseValue, const float ComboAmplify, const float ItemAmplify)
+	static float CalculatePlayerSkillGaugeIncrement(const float BaseValue, const float ComboAmplify, const float ItemAmplify)
 	{
 		const float CalculateResult = BaseValue * ComboAmplify * ItemAmplify;
 		return CalculateResult;
 	}
+
+	static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)
+	{
+		FHitResult CapsuleHitResult;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(Owner);
+		FVector LaunchLocation = Owner->GetActorLocation() + LaunchDirection.GetSafeNormal2D() * LaunchDistance;
+		FVector2d CapsuleExtent = FVector2d(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.2f, Owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f);
+		// 끼임 방지용 캐릭터 충돌 캡슐보다 1.2배 큰 반지름 체크
+		World->SweepSingleByChannel(
+			CapsuleHitResult,
+			LaunchLocation,
+			LaunchLocation,
+			FQuat::Identity,
+			ECC_WALL_ONLY,
+			FCollisionShape::MakeCapsule(CapsuleExtent.X, CapsuleExtent.Y),
+			Params
+			);
+		
+		// 해당 범위에 아무런 액터도 충돌하지 않음 = 이동 거리만큼 이동해도 문제 없음
+		if (!CapsuleHitResult.GetActor())
+		{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+			{
+				if(ProtoGameInstance->CheckPlayerDashDebug())
+				{
+					DrawDebugCapsule(World, LaunchLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Yellow, false, 2.f);
+				}
+			}
+#endif
+			return LaunchLocation;
+		}
+
+		FVector CorrectionLaunchLocation = LaunchLocation + LaunchDirection.GetSafeNormal2D() * CorrectionDistance;
+		FHitResult CorrectionLocationHitResult;
+		World->SweepSingleByChannel(
+			CorrectionLocationHitResult,
+			CorrectionLaunchLocation,
+			CorrectionLaunchLocation,
+			FQuat::Identity,
+			ECC_WALL_ONLY,
+			FCollisionShape::MakeCapsule(CapsuleExtent.X, CapsuleExtent.Y),
+			Params
+			);
+		
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerDashDebug())
+			{
+				DrawDebugCapsule(World, LaunchLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Red, false, 2.f);
+				DrawDebugCapsule(World, CorrectionLaunchLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Cyan, false, 2.f);
+			}
+		}
+#endif
+		
+		if (!CorrectionLocationHitResult.GetActor())
+		{
+			FHitResult CorrectionLineTraceHitResult;
+			World->LineTraceSingleByChannel(
+				CorrectionLineTraceHitResult,
+				CorrectionLaunchLocation,
+				Owner->GetActorLocation(),
+				ECC_WALL_ONLY,
+				Params
+				);
+
+			if (CorrectionLineTraceHitResult.GetActor())
+			{
+				CorrectionLaunchLocation = CorrectionLineTraceHitResult.ImpactPoint + LaunchDirection.GetSafeNormal2D() * CapsuleExtent.X;
+				CorrectionLaunchLocation.Z = Owner->GetActorLocation().Z;
+					
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+				if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+				{
+					if(ProtoGameInstance->CheckPlayerDashDebug())
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("대쉬 거리 보정 동작")));
+						DrawDebugLine(World, Owner->GetActorLocation(), CorrectionLaunchLocation, FColor::Cyan, false, 2.f);
+					}
+				}
+#endif
+				return CorrectionLaunchLocation;
+			}
+		}
+
+		TArray<FHitResult> LineTraceHitResults;
+		World->LineTraceMultiByChannel(
+			LineTraceHitResults,
+			Owner->GetActorLocation(),
+			LaunchLocation + LaunchDirection.GetSafeNormal2D() * CapsuleExtent.X * 2,
+			ECC_WALL_ONLY,
+			Params
+			);
+		
+		// 앞서 캡슐로 긁어봐서 반드시 대상 검출 됨
+		for (auto HitResult : LineTraceHitResults)
+		{
+			if (HitResult.GetActor() == CapsuleHitResult.GetActor())
+			{
+				// 대상과 충돌하는 위치 - 충돌체 반지름 만큼 위치 보정
+				LaunchLocation = HitResult.ImpactPoint - LaunchDirection.GetSafeNormal2D() * CapsuleExtent.X;
+				LaunchLocation.Z = Owner->GetActorLocation().Z;
+				
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+				if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+				{
+					if(ProtoGameInstance->CheckPlayerDashDebug())
+					{
+						DrawDebugLine(World, Owner->GetActorLocation(), LaunchLocation, FColor::Red, false, 2.f);
+					}
+				}
+#endif
+				return LaunchLocation;
+			}
+		}
+
+		// 여긴 사실상 들어오면 안됨
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("대쉬 거리 계산 오류 발생")));
+		DrawDebugLine(World, Owner->GetActorLocation(), LaunchLocation, FColor::Magenta, false, 2.f);
+		DrawDebugCapsule(World, LaunchLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Magenta, false, 2.f);
+		return LaunchLocation;
+	}
+	
 private:
 	
 };

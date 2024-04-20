@@ -69,7 +69,7 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 
 	if (Data.EvaluatedData.Attribute == GetAddCurrentSkillGaugeAttribute())
 	{
-		const float Result = FLLL_MathHelper::CalculateSkillGaugeIncrement(Data.EvaluatedData.Magnitude, GetSkillGaugeAmplifyByCombo(), GetSkillGaugeAmplifyByItem());
+		const float Result = FLLL_MathHelper::CalculatePlayerSkillGaugeIncrement(Data.EvaluatedData.Magnitude, GetSkillGaugeAmplifyByCombo(), GetSkillGaugeAmplifyByItem());
 		const float NewCurrentSkillGauge = FMath::Clamp(GetCurrentSkillGauge() + Result, 0.f, GetMaxSkillGauge());
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
