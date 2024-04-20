@@ -8,6 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerMoneyChangedDelegate, float);
 
+class ULLL_PlayerGoldWidget;
 class ULLL_GoldComponentDataAsset;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECT_LLL_API ULLL_PlayerGoldComponent : public UActorComponent
@@ -19,9 +20,9 @@ public:
 	ULLL_PlayerGoldComponent();
 
 	FOnPlayerMoneyChangedDelegate FOnMoneyChanged;
-	FORCEINLINE void IncreaseMoney(const float InMoney) { Money += InMoney; FOnMoneyChanged.Broadcast(GetMoney()); ShowWidget(); }
-	FORCEINLINE void DecreaseMoney(const float OutMoney) { Money = Money - OutMoney >= 0 ? Money - OutMoney : 0; FOnMoneyChanged.Broadcast(GetMoney()); ShowWidget();}
-	FORCEINLINE float GetMoney() const { return Money; }
+	void IncreaseMoney(const float InMoney);
+	void DecreaseMoney(const float OutMoney);
+	FORCEINLINE const float GetMoney() { return Money; }
 
 protected:
 	// Called when the game starts
@@ -32,27 +33,36 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	float Money;
 
-	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<class ULLL_PlayerGoldWidget> GoldWidgetClass;
+	UPROPERTY(EditDefaultsOnly)
+	float BeforeMoneyData;
+
+	UPROPERTY(EditDefaultsOnly)
+	float InitMoney;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<class ULLL_PlayerGoldWidget> GoldWidget;
+	TSubclassOf<ULLL_PlayerGoldWidget> GoldWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_PlayerGoldWidget> GoldWidget;
 
 	FTimerHandle WidgetWaitHideTimerHandle;
 
+	FTimerHandle MoneyTextChangeHandle;
+
 	UPROPERTY(VisibleAnywhere)
-	uint8 WidgetHideWaitTime;
+	float WidgetHideWaitTime;
 
 	UPROPERTY(EditDefaultsOnly)
-	bool IsShowWidget;
+	uint8 bIsShowWidget : 1;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_GoldComponentDataAsset> GoldComponentDataAsset;
 
-	void EnableInteractionWidget();
-	void DisableInteractionWidget();
+	void PlayShowInitGoldWidgetAnim();
+	void PlayHideInitGoldWidgetAnim();
+	void SetMoneyData();
 	void ShowWidget(); 
 };
