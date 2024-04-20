@@ -15,6 +15,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Ability/Monster/LLL_MGA_Attack.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
@@ -143,7 +144,7 @@ void ALLL_MonsterBase::Damaged()
 	{
 		MonsterBaseAnimInstance->StopAllMontages(1.0f);
 		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
-
+		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
@@ -153,6 +154,19 @@ void ALLL_MonsterBase::Damaged()
 			}
 		}
 #endif
+	}
+}
+
+void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity)
+{
+	if (CustomTimeDilation == 1.f)
+	{
+		GetCharacterMovement()->Velocity = FVector::Zero();
+		LaunchCharacter(KnockBackVelocity, true, true);
+	}
+	else
+	{
+		
 	}
 }
 

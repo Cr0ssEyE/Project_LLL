@@ -85,7 +85,10 @@ protected:
 	FGameplayAttributeData KnockBackPower;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData ImpulseStrength;
+	FGameplayAttributeData KnockBackDamage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData KnockBackInfluence;
 	
 	// 콤보 관련
 protected:
@@ -128,6 +131,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData BulletTimeWorldDecelerationRate;
+
+	// 기타 효과 관련
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ImpulseStrength;
 	
 	// 메타 어트리뷰트
 protected:

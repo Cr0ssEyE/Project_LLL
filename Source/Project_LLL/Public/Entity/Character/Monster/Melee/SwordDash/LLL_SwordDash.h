@@ -13,7 +13,7 @@ class UBoxComponent;
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster, public ILLL_KnockBackInterface
+class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster
 {
 	GENERATED_BODY()
 

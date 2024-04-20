@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Game/ProtoGameInstance.h"
 
 class PROJECT_LLL_API FLLL_MathHelper
 {

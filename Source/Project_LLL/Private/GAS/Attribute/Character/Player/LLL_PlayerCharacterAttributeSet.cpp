@@ -24,7 +24,7 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 	{
 		return;
 	}
-
+	
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
 		const uint32 DeclinedComboCount = FMath::FloorToInt(GetCurrentComboCount() * GetMultiplyComboCountWhenHit());

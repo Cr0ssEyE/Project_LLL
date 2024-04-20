@@ -18,6 +18,7 @@ class UAttributeSet;
 class UAbilitySystemComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*, Character);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOtherActorCollidedDelegate, AActor*, SelfActor, AActor*, OtherActor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTakeDamageDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
 
@@ -68,6 +69,8 @@ public:
 	FCharacterDeadDelegate CharacterDeadDelegate;
 
 	FTakeDamageDelegate TakeDamageDelegate;
+
+	FOtherActorCollidedDelegate OtherActorCollidedDelegate;
 	
 	// 위젯 업데이트를 위한 델리게이트
 public:

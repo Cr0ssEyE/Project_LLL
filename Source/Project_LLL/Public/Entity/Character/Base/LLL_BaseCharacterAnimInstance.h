@@ -10,6 +10,8 @@
 class ALLL_BaseCharacter;
 class UCharacterMovementComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FMontageEndedEnhancedDelegate, ALLL_BaseCharacter*, Character, UAnimMontage*, Montage, bool, bIsInterrupt); 
+
 /**
  * 
  */
@@ -21,10 +23,16 @@ class PROJECT_LLL_API ULLL_BaseCharacterAnimInstance : public UAnimInstance
 public:
 	ULLL_BaseCharacterAnimInstance();
 
+	FMontageEndedEnhancedDelegate MontageEndedEnhancedDelegate;
+	
 protected:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-
+	UFUNCTION(BlueprintCallable)
+	virtual void MontageEndedEvent(UAnimMontage* Montage, const bool bIsInterrupt);
+	
+	// 사운드 관련
+protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void AnimNotify_LeftStep();
 
@@ -32,7 +40,8 @@ protected:
 	virtual void AnimNotify_RightStep();
 
 	void ExecuteStepCue() const;
-	
+
+protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	uint8 bIsIdle : 1;
 
@@ -54,6 +63,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	float JumpingThreshold;
 
+protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	TObjectPtr<ALLL_BaseCharacter> Character;
 

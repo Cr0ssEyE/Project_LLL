@@ -8,8 +8,6 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/PawnMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Task/LLL_AT_Trace.h"
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
@@ -47,16 +45,16 @@ void ULLL_PGA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataH
 	for (auto Actor : TargetDataHandle.Data[0]->GetActors())
 	{
 		// 초기 구현은 MovementComponent의 LaunchCharacter 기반 물리 넉백으로 구현. 추후 방향성에 따른 수정 예정
-		ACharacter* MovableActor = Cast<ACharacter>(Actor);
-		if (MovableActor && Cast<ILLL_KnockBackInterface>(MovableActor))
+		ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor);
+		if (KnockBackActor)
 		{
-			const FVector LaunchDirection = (MovableActor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
-			MovableActor->GetMovementComponent()->Velocity = FVector::Zero();
-			MovableActor->LaunchCharacter(FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, PlayerCharacterAttributeSet->GetKnockBackPower() * KnockBackMultiplier), true, true);
+			const FVector LaunchDirection = (Actor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
+			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, PlayerCharacterAttributeSet->GetKnockBackPower() * KnockBackMultiplier);
+			KnockBackActor->AddKnockBackVelocity(LaunchVelocity);
 		}
 
 		// 만약 넉백 당하지는 않지만 넉백 관련 이벤트가 있는 대상일 경우를 위해 위와 별도 처리
-		if (Cast<IAbilitySystemInterface>(MovableActor))
+		if (Cast<IAbilitySystemInterface>(Actor))
 		{
 			BP_ApplyGameplayEffectToTarget(TargetDataHandle, KnockBackEffect);
 		}
