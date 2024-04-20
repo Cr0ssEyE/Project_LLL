@@ -40,6 +40,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
 
 	GetCharacterMovement()->MaxFlySpeed = 10000.f;
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);

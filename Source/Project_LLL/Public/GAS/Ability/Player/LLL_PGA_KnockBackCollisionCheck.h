@@ -32,14 +32,10 @@ protected:
 protected:
 	UFUNCTION()
 	void OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
-
-	UFUNCTION()
-	void OnDamagedMontageEndedCallBack(ALLL_BaseCharacter* Character, UAnimMontage* Montage, bool bInterrupted);
 	
 	UFUNCTION()
 	void OnOtherActorCollidedCallBack(AActor* HitActor, AActor* OtherActor);
 
 	UPROPERTY()
-	TArray<TWeakObjectPtr<ALLL_BaseCharacter>> KnockBackedCharacters;
-	
+	TArray<TObjectPtr<ALLL_BaseCharacter>> KnockBackedCharacters;
 };

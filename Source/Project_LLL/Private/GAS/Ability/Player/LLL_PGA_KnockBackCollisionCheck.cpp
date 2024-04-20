@@ -6,12 +6,12 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
-#include "Constant/LLL_AnimMontageSlotName.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
-#include "Interface/LLL_EntityInterface.h"
+#include "Util/LLL_MathHelper.h"
 
 ULLL_PGA_KnockBackCollisionCheck::ULLL_PGA_KnockBackCollisionCheck()
 {
@@ -29,8 +29,17 @@ void ULLL_PGA_KnockBackCollisionCheck::ActivateAbility(const FGameplayAbilitySpe
 
 void ULLL_PGA_KnockBackCollisionCheck::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	
 	if (!KnockBackedCharacters.IsEmpty())
 	{
+		for (auto Character : KnockBackedCharacters)
+		{
+			if (IsValid(Character))
+			{
+				Character->OtherActorCollidedDelegate.RemoveDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack);
+			}
+		}
+		
 		KnockBackedCharacters.Empty();
 	}
 	
@@ -44,6 +53,8 @@ void ULLL_PGA_KnockBackCollisionCheck::OnTraceResultCallBack(const FGameplayAbil
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);;
 	}
 
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+	const float CollideCheckTime = FLLL_MathHelper::CalculatePlayerKnockBackCollisionCheckEndApproximation(PlayerAttributeSet->GetKnockBackPower());
 	for (auto Actor : TargetDataHandle.Data[0]->GetActors())
 	{
 		const ILLL_KnockBackInterface* ActorCanKnockBacked = Cast<ILLL_KnockBackInterface>(Actor);
@@ -52,30 +63,28 @@ void ULLL_PGA_KnockBackCollisionCheck::OnTraceResultCallBack(const FGameplayAbil
 			continue;
 		}
 
-		if (ALLL_BaseCharacter* Character = Cast<ALLL_BaseCharacter>(Actor))
+		ALLL_BaseCharacter* Character = Cast<ALLL_BaseCharacter>(Actor);
+		if (Character && !KnockBackedCharacters.Contains(Character))
 		{
 			Character->OtherActorCollidedDelegate.AddDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack);
-			Character->GetCharacterAnimInstance()->MontageEndedEnhancedDelegate.AddDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnDamagedMontageEndedCallBack);
 			KnockBackedCharacters.Emplace(Character);
 		}
 	}
-}
 
-void ULLL_PGA_KnockBackCollisionCheck::OnDamagedMontageEndedCallBack(ALLL_BaseCharacter* Character, UAnimMontage* Montage, bool bInterrupted)
-{
-	if (Montage->GetGroupName() == ANIM_SLOT_DAMAGED && KnockBackedCharacters.Contains(Character))
+	FTimerHandle CollideCheckTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(CollideCheckTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]()
 	{
-		KnockBackedCharacters.Remove(Character);
-
-		if (KnockBackedCharacters.IsEmpty())
-		{
-			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-		}
-	}
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	}), CollideCheckTime, false);
 }
 
 void ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack(AActor* HitActor, AActor* OtherActor)
 {
+	if (OtherActor == GetAvatarActorFromActorInfo())
+	{
+		return;
+	}
+	
 	// 넉백당한 대상에 대한 처리
 	ALLL_BaseCharacter* HitCharacter = Cast<ALLL_BaseCharacter>(HitActor);
 	if (IsValid(HitCharacter))
@@ -85,7 +94,7 @@ void ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack(AActor* HitA
 		const FGameplayAbilityTargetDataHandle HitActorHandle = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(HitCharacter);
 		BP_ApplyGameplayEffectToTarget(HitActorHandle, CollideCauserApplyEffect);
 	}
-
+	
 	// 넉백당한 대상에 충돌한 대상에 대한 처리
 	const IAbilitySystemInterface* OtherActorHasGAS = Cast<IAbilitySystemInterface>(OtherActor);
 	if (OtherActorHasGAS)

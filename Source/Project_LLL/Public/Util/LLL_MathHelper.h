@@ -201,7 +201,35 @@ public:
 		DrawDebugCapsule(World, LaunchLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Magenta, false, 2.f);
 		return LaunchLocation;
 	}
-	
+
+	static float CalculatePlayerKnockBackCollisionCheckEndApproximation(const float KnockBackPower)
+	{
+		// 1000.f 기준 약 0.1초 뒤에 속도가 0에 근접함.
+		// 5000.f 기준 약 0.2초 뒤에 속도가 0에 근접함.
+		// 40000.f 기준 약 0.3초 뒤에 속도가 0에 근접함. 이 이상 플레이어의 공격으로 넉백 당하지 않을거라 생각해 0.3초를 최대 값으로 지정
+		// 40000.f로 얼마나 멀리 날아가는지 궁금하시다면 BP_VelocityTestActor에서 Velocity 벡터 값중 아무 한군데 40000.f를 넣어보세요.
+		// 위 CalculateLaunchVelocity 함수를 보면 아시겠지만 입력값에 *10 처리 하고 있어서 받는 값은 실제 속도의 1/10.
+		
+		const float Result = 0.2f;
+		const float MinTime = 0.1f;
+		const float MaxTime = 0.3f;
+
+		if (KnockBackPower - 500.f <= 0)
+		{
+			const float Alpha = KnockBackPower / 500.f;
+			const float TimeSubtractValue = FMath::Lerp(0.1f, 0.f, Alpha);
+			return FMath::Clamp(Result - TimeSubtractValue, MinTime, Result);
+		}
+
+		if (KnockBackPower - 500.f > 0)
+		{
+			const float Alpha = 500.f / KnockBackPower;
+			const float TimeAdditiveValue = FMath::Lerp(0.1f, 0.f, Alpha);
+			return FMath::Clamp(Result + TimeAdditiveValue, Result, MaxTime);
+		}
+		
+		return Result;
+	}
 private:
 	
 };

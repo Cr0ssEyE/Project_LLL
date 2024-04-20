@@ -2,4 +2,4 @@
 
 #include "CoreMinimal.h"
 
-#define ANIM_SLOT_DAMAGED TEXT("Test")
+#define ANIM_SLOT_DAMAGED TEXT("DamagedSlot")
