@@ -11,6 +11,7 @@
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 ULLL_PGA_Dash::ULLL_PGA_Dash()
 {
@@ -111,6 +112,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 	if (IsValid(PlayerCharacter) && bIsInputPressed && CurrentDashCount < MaxDashCount)
 	{
 		CurrentDashCount++;
+		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
 		PlayerCharacter->GetMovementComponent()->Velocity = FVector::Zero();
 		
 		FVector LaunchDirection;
@@ -124,7 +126,6 @@ void ULLL_PGA_Dash::DashActionEvent()
 		}
 		
 		PlayerCharacter->LaunchCharacter(LaunchDirection * (DashSpeed * 1000.f), true, true);
-		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
 		// 애님 몽타주 처음부터 다시 실행하거나 특정 시간부터 실행 시키도록 하는게 상당히 귀찮아서 땜빵 처리
 		PlayerCharacter->StopAnimMontage(DashAnimMontage);
 		PlayerCharacter->PlayAnimMontage(DashAnimMontage);
@@ -135,6 +136,8 @@ void ULLL_PGA_Dash::DashActionEvent()
 
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
 		PlayerAnimInstance->SetDash(true);
+
+		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, DashCueTag);
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Object/Thrown/LLL_ThrownObject.h"
+#include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerWireHand.generated.h"
 
@@ -19,7 +19,6 @@ class PROJECT_LLL_API ALLL_PlayerWireHand : public ALLL_ThrownObject, public ILL
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ALLL_PlayerWireHand();
 
 public:
@@ -29,12 +28,13 @@ public:
 
 public:
 	FORCEINLINE ULLL_PlayerWireHandAttributeSet* GetWireHandAttributeSet() const { return WireHandAttributeSet; }
-	FORCEINLINE USphereComponent* GetCollisionComponent() { return HandCollision; }
-	FORCEINLINE USkeletalMeshComponent* GetHandMesh() { return HandMesh; }
+	FORCEINLINE USphereComponent* GetCollisionComponent() const { return HandCollision; }
+	FORCEINLINE USkeletalMeshComponent* GetHandMesh() const { return HandMesh; }
 	FORCEINLINE AActor* GetGrabbedActor() const { return GrabbedActor; }
 	
 public:
 	FORCEINLINE void SetGrabbedActor(AActor* Actor) { GrabbedActor = Actor; }
+	
 	void SetHiddenState();
 	
 protected:

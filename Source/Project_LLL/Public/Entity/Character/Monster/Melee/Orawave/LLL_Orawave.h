@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_OrawaveDataAsset.h"
-#include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
+#include "Entity/Character/Monster/Melee/Base/LLL_MeleeMonster.h"
 #include "Interface/LLL_KnockBackInterface.h"
 #include "LLL_Orawave.generated.h"
 

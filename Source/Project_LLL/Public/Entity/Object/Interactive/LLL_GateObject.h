@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Object/Interactive/LLL_InteractiveObject.h"
-#include "GameFramework/RotatingMovementComponent.h"
+#include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "LLL_GateObject.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnStageDestroyDelegate);
@@ -19,15 +18,8 @@ public:
 
 	FORCEINLINE void GateEnable() { IsGateEnabled = true; }
 	
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	
 	FOnStageDestroyDelegate StageDestroyDelegate;
+	
 protected:
 	virtual void InteractiveEvent() override;
 

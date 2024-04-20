@@ -4,23 +4,13 @@
 #include "Entity/Object/Interactive/LLL_GateObject.h"
 
 #include "Constant/LLL_FilePath.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 ALLL_GateObject::ALLL_GateObject()
 {
-	GateMesh = FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_GATE_OBJECT_TEST_MESH, EAssertionLevel::Check);
+	GateMesh = FLLL_ConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_GATE_OBJECT_TEST_MESH, EAssertionLevel::Check);
 	BaseMesh->SetStaticMesh(GateMesh);
 	IsGateEnabled = false;
-}
-
-void ALLL_GateObject::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void ALLL_GateObject::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void ALLL_GateObject::InteractiveEvent()
@@ -29,6 +19,7 @@ void ALLL_GateObject::InteractiveEvent()
 	{
 		return;
 	}
+	
 	Super::InteractiveEvent();
 	
 	OpenGate();
@@ -38,6 +29,6 @@ void ALLL_GateObject::InteractiveEvent()
 
 void ALLL_GateObject::OpenGate()
 {
-	//¹® ¿ÀÇÂ ¾Ö´Ï ¹× ÀÌÆåÆ®
+	//ë¬¸ ì˜¤í”ˆ ì• ë‹ˆ ë° ì´í™íŠ¸
 	AddActorLocalRotation(FRotator(0.0f, -90.0f, 0.0f));
 }

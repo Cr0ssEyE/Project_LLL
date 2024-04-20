@@ -18,6 +18,7 @@ public:
 	ULLL_PGA_AttackBase();
 	
 protected:
+	virtual void PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData) override;
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
@@ -42,4 +43,10 @@ protected:
 	uint32 MaxAttackAction;
 	
 	uint8 bIsInputPressed : 1;
+
+protected:
+	UPROPERTY(EditAnywhere, DisplayName = "공격 이벤트 태그", meta=(Categories = "GameplayCue"))
+	FGameplayTag AttackCueTag;
+
+	FName PlayerAttackCountParameterName;
 };

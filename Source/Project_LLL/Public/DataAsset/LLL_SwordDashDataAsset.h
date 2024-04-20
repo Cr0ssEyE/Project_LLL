@@ -14,4 +14,7 @@ class PROJECT_LLL_API ULLL_SwordDashDataAsset : public ULLL_MeleeMonsterDataAsse
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "대시 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> DashDamageEffect;
 };

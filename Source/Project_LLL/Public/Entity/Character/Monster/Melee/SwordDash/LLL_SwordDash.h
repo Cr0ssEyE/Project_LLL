@@ -4,33 +4,38 @@
 
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_SwordDashDataAsset.h"
-#include "Entity/Character/Monster/Melee/LLL_MeleeMonster.h"
+#include "Interface/LLL_ChargeMonsterInterface.h"
 #include "Interface/LLL_DashMonsterInterface.h"
+#include "Entity/Character/Monster/Melee/Base/LLL_MeleeMonster.h"
 #include "LLL_SwordDash.generated.h"
 
+class UBoxComponent;
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster, public ILLL_DashMonsterInterface
+class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster, public ILLL_DashMonsterInterface, public ILLL_ChargeMonsterInterface
 {
 	GENERATED_BODY()
 
 public:
 	ALLL_SwordDash();
-
+	
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+	void DashDamageRangeBoxInit() const;
 
 public:
-	virtual void Dash() override;
-
-	FORCEINLINE virtual void SetDash(bool IsDashing) override { bIsDashing = IsDashing; }
-	FORCEINLINE virtual bool IsDashing() override { return bIsDashing; }
+	virtual void Dash() const override;
+	virtual void Charge() const override;
 
 protected:
-	uint8 bIsDashing : 1;
-	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_SwordDashDataAsset> SwordDashDataAsset;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UBoxComponent> DashDamageRangeBox;
 };

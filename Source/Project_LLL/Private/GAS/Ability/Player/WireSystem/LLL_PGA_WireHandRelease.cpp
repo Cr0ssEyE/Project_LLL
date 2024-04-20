@@ -97,7 +97,7 @@ void ULLL_PGA_WireHandRelease::ReleaseToOwnerLocation()
 	WireHandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	HandMesh->SetHiddenInGame(false);
 	
-	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileComponent();
+	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileMovementComponent();
 	WireHandProjectile->Activate();
 
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_WireHandRelease::RetargetReleaseVelocity);
@@ -117,7 +117,7 @@ void ULLL_PGA_WireHandRelease::RetargetReleaseVelocity()
 	const FVector ToOwnerDirection = (PlayerCharacter->GetActorLocation() - PlayerWireHand->GetActorLocation()).GetSafeNormal();
 	PlayerWireHand->SetActorRotation(ToOwnerDirection.Rotation());
 
-	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileComponent();
+	UProjectileMovementComponent* WireHandProjectile = PlayerWireHand->GetProjectileMovementComponent();
 	const ULLL_PlayerWireHandAttributeSet* WireHandAttributeSet = CastChecked<ULLL_PlayerWireHandAttributeSet>(PlayerWireHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerWireHandAttributeSet::StaticClass()));
 	
 	WireHandProjectile->Velocity = ToOwnerDirection * WireHandAttributeSet->GetReleaseSpeed();

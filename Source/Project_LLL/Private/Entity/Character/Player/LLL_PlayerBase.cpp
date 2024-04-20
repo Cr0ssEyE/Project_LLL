@@ -12,11 +12,10 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
-#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
-#include "Entity/Object/Interactive/LLL_InteractiveObject.h"
+#include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
 #include "Game/ProtoGameInstance.h"
@@ -24,9 +23,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
 #include "GAS/LLL_ExtendedGameplayEffect.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
@@ -35,13 +35,9 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
-	
-	Continuous = 0.0f;
-	Discrete = 0;
-	Labeled = ELabeled::A;
 
-	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
-	CameraDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_CameraDataAsset>(PATH_CAMERA_DATA, EAssertionLevel::Check);
+	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
+	CameraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_CameraDataAsset>(PATH_CAMERA_DATA, EAssertionLevel::Check);
 
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
 
@@ -106,6 +102,9 @@ void ALLL_PlayerBase::BeginPlay()
 		Delegate.AddDynamic(this, &ALLL_PlayerBase::DelegateReceiveTest);
 		AbilityManageSubSystem->ASyncLoadEffectsByTag(Delegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), true);
 	}
+
+	FModAudioComponent->SetEvent(PlayerDataAsset->Stage1AMB);
+	FModAudioComponent->Play();
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -157,7 +156,7 @@ void ALLL_PlayerBase::PossessedBy(AController* NewController)
 	APlayerController* PlayerController = Cast<APlayerController>(NewController);
 	if (IsValid(PlayerController))
 	{
-		PlayerController->SetAudioListenerOverride(GetRootComponent(), FVector::ZeroVector, FRotator::ZeroRotator);
+		PlayerController->SetAudioListenerOverride(SpringArm, FVector::ZeroVector, FRotator::ZeroRotator);
 	}
 }
 
@@ -176,7 +175,7 @@ void ALLL_PlayerBase::DelegateReceiveTest(TArray<TSoftClassPtr<ULLL_ExtendedGame
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Silver, FString::Printf(TEXT("비동기 로딩 확인")));
 }
 
-void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
+void ALLL_PlayerBase::AddInteractiveObject(ALLL_InteractiveObject* Object)
 {
 	InteractiveObjects.Emplace(Object);
 	PlayerUIManager->EnableInteractionWidget();
@@ -187,7 +186,7 @@ void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
 	PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
 }
 
-void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject)
+void ALLL_PlayerBase::RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject)
 {
 	if (!InteractiveObjects.IsEmpty())
 	{
@@ -211,6 +210,7 @@ void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObj
 				break;
 			}
 		}
+		
 		if(!InteractiveObjects.IsEmpty())
 		{
 			PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
@@ -409,22 +409,11 @@ void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::PlayerRotateToMouseCursor()
 {
-	FVector MouseWorldLocation = GetMouseLocation();
+	const FVector MouseWorldLocation = GetMouseLocation();
 	FVector ViewDirection = (MouseWorldLocation - GetActorLocation()).GetSafeNormal();
 	ViewDirection.Z = 0.f;
 	SetActorRotation(ViewDirection.Rotation());
 	
-}
-
-void ALLL_PlayerBase::ParameterTest()
-{
-	Continuous = 1.0f;
-	Discrete = 3;
-	Labeled = ELabeled::C;
-	
-	FModAudioComponent->SetParameter(FName("Continuous"), Continuous);
-	FModAudioComponent->SetParameter(FName("Discrete"), Discrete);
-	FModAudioComponent->SetParameter(FName("Labeled"), static_cast<float>(Labeled));
 }
 
 void ALLL_PlayerBase::Dead()

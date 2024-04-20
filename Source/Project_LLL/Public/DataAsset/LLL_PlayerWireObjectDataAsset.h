@@ -16,5 +16,4 @@ class PROJECT_LLL_API ULLL_PlayerWireObjectDataAsset : public ULLL_ThrownObjectD
 
 public:
 	ULLL_PlayerWireObjectDataAsset();
-	
 };

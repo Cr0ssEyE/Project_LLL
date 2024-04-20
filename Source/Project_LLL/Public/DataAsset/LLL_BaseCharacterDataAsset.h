@@ -7,11 +7,10 @@
 #include "Engine/DataAsset.h"
 #include "LLL_BaseCharacterDataAsset.generated.h"
 
-class UGameplayCueNotify_Burst;
 class ULLL_CharacterStatusWidget;
-class ULLL_PlayerStatusWidget;
 class UGameplayEffect;
 class UGameplayAbility;
+
 /**
  * 
  */
@@ -49,6 +48,9 @@ public:
 	TArray<TSubclassOf<UGameplayAbility>> PassiveGameplayAbility;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "발걸음 이벤트 태그")
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "발걸음 이벤트 태그", meta=(Categories = "GameplayCue"))
 	FGameplayTag StepCueTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "피격 이벤트 태그", meta=(Categories = "GameplayCue"))
+	FGameplayTag DamagedCueTag;
 };

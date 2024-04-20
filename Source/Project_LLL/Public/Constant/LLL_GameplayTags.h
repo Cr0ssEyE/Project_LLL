@@ -41,6 +41,7 @@
 
 // 소드 대시 게임플레이 태그
 #define TAG_GAS_SWORD_DASH_DASH FGameplayTag::RequestGameplayTag(FName("Character.Monster.Melee.SwordDash.Action.Dash"))
+#define TAG_GAS_SWORD_DASH_CHARGE FGameplayTag::RequestGameplayTag(FName("Character.Monster.Melee.SwordDash.Action.Charge"))
 
 // 시스템 게임플레이 태그
 #define TAG_GAS_SYSTEM_DROP_GOLD FGameplayTag::RequestGameplayTag(FName("System.Drop.Gold"))

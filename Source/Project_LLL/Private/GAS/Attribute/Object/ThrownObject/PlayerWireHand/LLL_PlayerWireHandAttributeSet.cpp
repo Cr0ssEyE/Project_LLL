@@ -27,7 +27,7 @@ void ULLL_PlayerWireHandAttributeSet::PostGameplayEffectExecute(const FGameplayE
 
 	if(Data.EvaluatedData.Attribute == GetCollisionRadiusAttribute())
 	{
-		ALLL_PlayerWireHand* WireHand = CastChecked<ALLL_PlayerWireHand>(GetOwningAbilitySystemComponentChecked()->GetAvatarActor());
+		const ALLL_PlayerWireHand* WireHand = CastChecked<ALLL_PlayerWireHand>(GetOwningAbilitySystemComponentChecked()->GetAvatarActor());
 		SetCollisionRadius(Data.EvaluatedData.Magnitude);
 		WireHand->GetCollisionComponent()->SetSphereRadius(GetCollisionRadius());
 	}

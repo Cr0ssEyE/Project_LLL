@@ -34,7 +34,7 @@ public:
 
 protected:
 	void SpawnAndInitializeTargetActor();
-	void FinalizeTargetActor();
+	void FinalizeTargetActor() const;
 
 protected:
 	void OnTraceCompletedCallBack(const FGameplayAbilityTargetDataHandle& DataHandle);

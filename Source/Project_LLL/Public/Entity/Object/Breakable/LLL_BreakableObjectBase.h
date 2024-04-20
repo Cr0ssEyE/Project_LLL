@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
-#include "Entity/Object/LLL_BaseObject.h"
+#include "Entity/Object/Base/LLL_BaseObject.h"
 #include "Interface/LLL_DropGoldInterface.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "GameFramework/Actor.h"
@@ -17,19 +17,15 @@ class PROJECT_LLL_API ALLL_BreakableObjectBase : public ALLL_BaseObject, public 
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
+public:
 	ALLL_BreakableObjectBase();
 
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
+	
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	
+public:
 	virtual void DropGold(const FGameplayTag tag, int32 data) override;
 	FOnDropGoldDelegate GoldDelegate;
 
