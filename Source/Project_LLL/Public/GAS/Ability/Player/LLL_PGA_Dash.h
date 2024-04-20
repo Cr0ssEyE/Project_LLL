@@ -48,4 +48,8 @@ protected:
 	uint32 DashSpeed;
 
 	uint32 bIsInputPressed : 1;
+
+protected:
+	UPROPERTY(EditAnywhere, DisplayName = "대시 이벤트 태그", meta=(Categories = "GameplayCue"))
+	FGameplayTag DashCueTag;
 };

@@ -4,15 +4,19 @@
 #include "Entity/Object/LLL_BaseObject.h"
 
 #include "AbilitySystemComponent.h"
+#include "FMODAudioComponent.h"
 
 ALLL_BaseObject::ALLL_BaseObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-
+	
 	SetRootComponent(BaseMesh);
+	
+	FModAudioComponent->SetupAttachment(RootComponent);
 }
 
 void ALLL_BaseObject::PostLoad()

@@ -3,7 +3,7 @@
 
 #include "Entity/Object/Interactive/LLL_RewardObject.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_FilePath.h"
@@ -13,9 +13,9 @@
 
 ALLL_RewardObject::ALLL_RewardObject()
 {
-	RewardObjectDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_RewardObjectDataAsset>(PATH_REWARD_OBJECT_TEST_DATA, EAssertionLevel::Check);
+	RewardObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_RewardObjectDataAsset>(PATH_REWARD_OBJECT_TEST_DATA, EAssertionLevel::Check);
 
-	RewardMesh = FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_REWARD_OBJECT_TEST_MESH, EAssertionLevel::Check);
+	RewardMesh = FLLL_ConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_REWARD_OBJECT_TEST_MESH, EAssertionLevel::Check);
 	BaseMesh->SetStaticMesh(RewardMesh);
 
 	PriceWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("PriceWidgetComponent");
