@@ -115,6 +115,7 @@ protected:
 	virtual void DestroyHandle() override;
 
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
+	
 	// 상태 관련 변수
 protected:
 	uint8 bIsMoveInputPressed : 1;

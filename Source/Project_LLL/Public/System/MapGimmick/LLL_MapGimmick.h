@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "System/Base/LLL_SystemBase.h"
 #include "LLL_MapGimmick.generated.h"
 
 class UBoxComponent;
@@ -38,7 +39,7 @@ enum class EStageState : uint8
 };
 
 UCLASS()
-class PROJECT_LLL_API ALLL_MapGimmick : public AActor
+class PROJECT_LLL_API ALLL_MapGimmick : public ALLL_SystemBase
 {
 	GENERATED_BODY()
 	

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Object/Thrown/LLL_ThrownObject.h"
+#include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerChaseHand.generated.h"
 
@@ -27,7 +27,6 @@ public:
 	FHandMovementCompleteDelegate ReleaseCompleteDelegate;
 
 public:
-	FORCEINLINE ULLL_PlayerChaseHandAttributeSet* GetChaseHandAttributeSet() const { return ChaseHandAttributeSet; }
 	FORCEINLINE USphereComponent* GetCollisionComponent() const { return HandCollision; }
 	FORCEINLINE USkeletalMeshComponent* GetHandMesh() const { return HandMesh; }
 	FORCEINLINE AActor* GetGrabbedActor() const { return GrabbedActor; }
@@ -48,9 +47,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> HandCollision;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_PlayerChaseHandAttributeSet> ChaseHandAttributeSet;
 
 protected:
 	UPROPERTY(VisibleAnywhere)

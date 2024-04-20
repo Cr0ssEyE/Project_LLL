@@ -6,6 +6,8 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+class UFMODEvent;
+enum class EPlayerWalkMaterialParameter : uint8;
 enum class EPlayerFootstepsSurface : uint8;
 class ULLL_SkillWidget;
 class ULLL_PlayerChaseHandDataAsset;
@@ -92,9 +94,9 @@ public:
 	TObjectPtr<UInputAction> PauseInputAction;
 	
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 이름")
-	FName StepEventParameterName;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
-	TMap<TEnumAsByte<EPhysicalSurface>, EPlayerFootstepsSurface> StepEventParameterProperties;
+	TMap<TEnumAsByte<EPhysicalSurface>, EPlayerWalkMaterialParameter> StepEventParameterProperties;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "스테이지 1 배경음")
+	TObjectPtr<UFMODEvent> Stage1AMB;
 };

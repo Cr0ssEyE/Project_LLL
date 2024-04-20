@@ -20,6 +20,7 @@
 #define PATH_SWORD_DASH_DATA TEXT("/Script/Project_LLL.LLL_SwordDashDataAsset'/Game/DataAsset/DA_SwordDash.DA_SwordDash'")
 
 #define PATH_MONSTER_SPAWN_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/MonsterSpawnData.MonsterSpawnData'")
+#define PATH_FMOD_PARAMETER_NAME_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/FModParameterNameData.FModParameterNameData'")
 
 #define PATH_INTERACTIVE_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_InteractiveObjectData'/Game/DataAsset/DA_InteractiveObject.DA_InteractiveObject'")
 
@@ -37,3 +38,5 @@
 #define PATH_PLAYER_GOLD_COMPONENT_DATA TEXT("/Script/Project_LLL.LLL_GoldComponentDataAsset'/Game/DataAsset/DA_PlayerGoldComponent.DA_PlayerGoldComponent'")
 
 #define PATH_MAP_DATA TEXT("/Script/Project_LLL.LLL_MapDataAsset'/Game/DataAsset/DA_Map.DA_Map'")
+
+#define PATH_UI_PROGRESSBAR_INST TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Materials/Instances/M_UI_CircleProgressBer_Inst.M_UI_CircleProgressBer_Inst'")

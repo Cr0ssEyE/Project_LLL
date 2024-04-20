@@ -2,7 +2,7 @@
 
 
 #include "System/Reward/LLL_RewardGimmick.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick()
 {

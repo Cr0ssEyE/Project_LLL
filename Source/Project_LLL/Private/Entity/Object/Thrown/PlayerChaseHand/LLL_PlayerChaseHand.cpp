@@ -13,18 +13,18 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/ThrownObject/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 ALLL_PlayerChaseHand::ALLL_PlayerChaseHand()
 {
-	ULLL_PlayerChaseHandDataAsset* ChaseHandDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerChaseHandDataAsset>(PATH_PLAYER_WIRE_DATA, EAssertionLevel::Check);
-	BaseObjectDataAsset = Cast<ULLL_BaseObjectDataAsset>(ChaseHandDataAsset);
+	ThrownObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerChaseHandDataAsset>(PATH_PLAYER_WIRE_DATA, EAssertionLevel::Check);
+	BaseObjectDataAsset = Cast<ULLL_BaseObjectDataAsset>(ThrownObjectDataAsset);
 	HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh"));
 	HandCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
 	ThrownObjectAttributeSet = CreateDefaultSubobject<ULLL_PlayerChaseHandAttributeSet>(TEXT("ChaseHandAttributeSet"));
 
-	HandMesh->SetSkeletalMesh(ChaseHandDataAsset->SkeletalMesh);
-	HandMesh->SetRelativeScale3D(ChaseHandDataAsset->MeshScale);
+	HandMesh->SetSkeletalMesh(ThrownObjectDataAsset->SkeletalMesh);
+	HandMesh->SetRelativeScale3D(ThrownObjectDataAsset->MeshScale);
 	HandMesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
 	
 	// 이후 BeginPlay에서 InitEffect를 통해 실제 사용하는 값으로 초기화 해준다. 해당 매직넘버는 비정상적인 동작 방지용

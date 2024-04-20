@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
-#include "GAS/Attribute/Object/ThrownObject/LLL_ThrownObjectAttributeSet.h"
+#include "GAS/Attribute/Object/ThrownObject/Base/LLL_ThrownObjectAttributeSet.h"
 #include "LLL_PlayerChaseHandAttributeSet.generated.h"
 
 /**

@@ -12,6 +12,7 @@
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/ThrownObject/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 ULLL_PGA_ChaseHandThrow::ULLL_PGA_ChaseHandThrow()
 {
@@ -104,6 +105,8 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandThrow::CheckReached);
 
+	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, WireHandThrowCueTag);
+	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{

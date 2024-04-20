@@ -13,6 +13,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Util/LLL_MathHelper.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 ULLL_PGA_Dash::ULLL_PGA_Dash()
 {
@@ -153,6 +154,8 @@ void ULLL_PGA_Dash::DashActionEvent()
 
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
 		PlayerAnimInstance->SetDash(true);
+
+		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, DashCueTag);
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

@@ -24,5 +24,8 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	TObjectPtr<UAnimMontage> AbilityActionMontage;
-	
+
+protected:
+	UPROPERTY(EditAnywhere, DisplayName = "와이어 공격 이벤트 태그", meta=(Categories = "GameplayCue"))
+	FGameplayTag WireAttackCueTag;
 };

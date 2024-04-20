@@ -8,6 +8,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 ULLL_PGA_GroundStrike::ULLL_PGA_GroundStrike()
 {
@@ -46,6 +47,8 @@ void ULLL_PGA_GroundStrike::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_GroundStrike::OnInterruptedCallBack);
 
 	PlayMontageTask->ReadyForActivation();
+	
+	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, WireAttackCueTag);
 }
 
 void ULLL_PGA_GroundStrike::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Object/Interactive/LLL_InteractiveObject.h"
+#include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "DataAsset/LLL_RewardObjectDataAsset.h"
 #include "Interface/LLL_ProductObjectInterface.h"
 #include "LLL_RewardObject.generated.h"

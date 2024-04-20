@@ -32,4 +32,8 @@ protected:
 	TObjectPtr<UAnimSequence> ThrowAnim;
 
 	FVector TargetLocation;
+
+protected:
+	UPROPERTY(EditAnywhere, DisplayName = "와이어 투척 이벤트 태그", meta=(Categories = "GameplayCue"))
+	FGameplayTag WireHandThrowCueTag;
 };

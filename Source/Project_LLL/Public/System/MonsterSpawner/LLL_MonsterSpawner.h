@@ -3,12 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTable/LLL_MonsterSpawnDataTable.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "System/Base/LLL_SystemBase.h"
 #include "LLL_MonsterSpawner.generated.h"
 
 class ALLL_MonsterBase;
 class UBoxComponent;
-struct FMonsterSpawnDataTable;
 class ULLL_MonsterSpawnDataTable;
 class ULLL_MonsterSpawnPointComponent;
 
@@ -17,7 +18,7 @@ DECLARE_MULTICAST_DELEGATE(FMonsterSpawnerDestroyDelegate)
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_MonsterSpawner : public AActor
+class PROJECT_LLL_API ALLL_MonsterSpawner : public ALLL_SystemBase
 {
 	GENERATED_BODY()
 
@@ -42,7 +43,7 @@ private:
 	TObjectPtr<const UDataTable> MonsterSpawnDataTable;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FMonsterSpawnDataTable> DataTables;
+	TArray<FMonsterSpawnDataTable> MonsterSpawnDataArray;
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	TArray<ULLL_MonsterSpawnPointComponent*> SpawnPoints;
