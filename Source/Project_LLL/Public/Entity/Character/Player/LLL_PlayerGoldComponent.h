@@ -50,13 +50,13 @@ protected:
 
 	FTimerHandle WidgetWaitHideTimerHandle;
 
-	FTimerHandle MoneyTextChangHandle;
+	FTimerHandle MoneyTextChangeHandle;
 
 	UPROPERTY(VisibleAnywhere)
 	float WidgetHideWaitTime;
 
 	UPROPERTY(EditDefaultsOnly)
-	uint8 bIsShowWidget;
+	uint8 bIsShowWidget : 1;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_GoldComponentDataAsset> GoldComponentDataAsset;

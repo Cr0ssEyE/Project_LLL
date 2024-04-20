@@ -21,7 +21,7 @@ ULLL_PlayerGoldComponent::ULLL_PlayerGoldComponent()
 	InitMoney = 0;
 	GoldComponentDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_GoldComponentDataAsset>(PATH_PLAYER_GOLD_COMPONENT_DATA, EAssertionLevel::Check);
 	WidgetHideWaitTime = GoldComponentDataAsset->WidgetHideWaitTime;
-	bIsShowWidget = 0;
+	
 	GoldWidget = CreateDefaultSubobject<ULLL_PlayerGoldWidget>(TEXT("GoldWidget"));
 	GoldWidgetClass = FLLLConstructorHelper::FindAndGetClass<ULLL_PlayerGoldWidget>(PATH_PLAYER_GOLD_UI_WIDGET, EAssertionLevel::Check);
 
@@ -29,12 +29,12 @@ ULLL_PlayerGoldComponent::ULLL_PlayerGoldComponent()
 
 void ULLL_PlayerGoldComponent::IncreaseMoney(const float InMoney)
 {
-	if (bIsShowWidget == 1)
+	if (bIsShowWidget)
 	{
 		InitMoney += InMoney;
 	}
 	
-	if (bIsShowWidget == 0)
+	if (!bIsShowWidget)
 	{
 		InitMoney = InMoney;
 	}
@@ -46,12 +46,12 @@ void ULLL_PlayerGoldComponent::IncreaseMoney(const float InMoney)
 
 void ULLL_PlayerGoldComponent::DecreaseMoney(const float OutMoney)
 {
-	if (bIsShowWidget == 1)
+	if (bIsShowWidget)
 	{
 		InitMoney -= OutMoney;
 	}
 
-	if (bIsShowWidget == 0)
+	if (!bIsShowWidget)
 	{
 		InitMoney = -OutMoney;
 	}
@@ -87,7 +87,7 @@ void ULLL_PlayerGoldComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void ULLL_PlayerGoldComponent::PlayShowInitGoldWidgetAnim()
 {
-	if (bIsShowWidget == 1)
+	if (bIsShowWidget)
 	{
 		return;
 	}
@@ -101,7 +101,7 @@ void ULLL_PlayerGoldComponent::PlayHideInitGoldWidgetAnim()
 	GoldWidget->PlayHideInitGoldAnimation();
 	
 	// 30프레임 기준 1프레임마다 호출
-	GetWorld()->GetTimerManager().SetTimer(MoneyTextChangHandle, this, &ULLL_PlayerGoldComponent::SetMoneyData, 0.03f, true);
+	GetWorld()->GetTimerManager().SetTimer(MoneyTextChangeHandle, this, &ULLL_PlayerGoldComponent::SetMoneyData, 0.03f, true);
 }
 
 void ULLL_PlayerGoldComponent::SetMoneyData()
@@ -113,7 +113,7 @@ void ULLL_PlayerGoldComponent::SetMoneyData()
 		
 		if (BeforeMoneyData >= Money)
 		{
-			GetWorld()->GetTimerManager().ClearTimer(MoneyTextChangHandle);
+			GetWorld()->GetTimerManager().ClearTimer(MoneyTextChangeHandle);
 			GoldWidget->UpdateGoldWidget(Money);
 		}
 	}
@@ -124,7 +124,7 @@ void ULLL_PlayerGoldComponent::SetMoneyData()
 
 		if (BeforeMoneyData <= Money)
 		{
-			GetWorld()->GetTimerManager().ClearTimer(MoneyTextChangHandle);
+			GetWorld()->GetTimerManager().ClearTimer(MoneyTextChangeHandle);
 			GoldWidget->UpdateGoldWidget(Money);
 		}
 	}
