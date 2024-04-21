@@ -357,9 +357,8 @@ void ALLL_PlayerBase::ChaseAction(const FInputActionValue& Value, EAbilityInputN
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	if(SkillSpec)
+	const int32 InputID = static_cast<int32>(InputName);
+	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
 		SkillSpec->InputPressed = true;
 		if (SkillSpec->IsActive())
