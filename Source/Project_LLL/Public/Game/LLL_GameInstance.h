@@ -29,5 +29,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> InterfaceMPC;
-	
 };

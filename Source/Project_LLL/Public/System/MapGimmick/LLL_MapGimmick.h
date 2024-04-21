@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTable/LLL_RewardDataTable.h"
 #include "GameFramework/Actor.h"
 #include "LLL_MapGimmick.generated.h"
 
@@ -15,6 +16,8 @@ class ULevelSequencePlayer;
 class ULevelSequence;
 class ALevelSequenceActor;
 class ULLL_ShoppingMapComponent;
+class ULLL_RewardDataTable;
+class ALLL_RewardGimmick;
 
 DECLARE_DELEGATE(FOnStageChangedDelegate);
 
@@ -104,9 +107,8 @@ protected:
 	
 	UFUNCTION()
 	void AllGatesDestroy();
-
-	UFUNCTION()
-	void OnInteractionGate();
+	
+	void OnInteractionGate(FTestRewardDataTable* Data);
 	
 	void EnableAllGates();
 
@@ -145,6 +147,11 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<ALLL_RewardObject> RewardObjectClass;
+
+	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ALLL_RewardGimmick> RewardGimmick;
+	
+	FTestRewardDataTable* RewardData;
 
 	UFUNCTION()
 	void RewardDestroyed(AActor* DestroyedActor);

@@ -10,13 +10,14 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Util/LLLConstructorHelper.h"
 #include "Entity/Object/Interactive/LLL_GateObject.h"
-#include "Entity/Object/Breakable/LLL_BreakableObjectBase.h"
+#include "DataTable/LLL_RewardDataTable.h"
 #include "Entity/Object/Interactive/LLL_RewardObject.h"
 #include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawner.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "System/MapGimmick/LLL_ShoppingMapComponent.h"
+#include "System/Reward/LLL_RewardGimmick.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
@@ -27,7 +28,7 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 	SetRootComponent(RootBox);
 
 	MapDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MapDataAsset>(PATH_MAP_DATA, EAssertionLevel::Check);
-
+	RewardGimmick = CreateDefaultSubobject<ALLL_RewardGimmick>(TEXT("RewardGimmick"));
 	CurrentState = EStageState::READY;
 
 	FadeInSequence = MapDataAsset->FadeIn;
@@ -144,8 +145,9 @@ void ALLL_MapGimmick::AllGatesDestroy()
 	Gates.Empty();
 }
 
-void ALLL_MapGimmick::OnInteractionGate()
+void ALLL_MapGimmick::OnInteractionGate(FTestRewardDataTable* Data)
 {
+	RewardData = Data;
 	StageChildActors.Empty();
 	StageActor->Destroy();
 }
@@ -155,7 +157,7 @@ void ALLL_MapGimmick::EnableAllGates()
 	for (const auto Gate:Gates)
 	{
 		Gate->GateEnable();
-		Gate->StageDestroyDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
+		Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
 	}
 }
 
@@ -216,12 +218,12 @@ void ALLL_MapGimmick::RewardSpawn()
 	{
 		return;
 	}
+	RewardGimmick->SetRewardButtons();
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActor<ALLL_RewardObject>(RewardObjectClass, Player->GetActorLocation(), Player->GetActorRotation());
 	if (IsValid(RewardObject))
 	{
+		RewardObject->SetInformation(RewardData);
 		RewardObject->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::RewardDestroyed);
 	}
 }
-
-

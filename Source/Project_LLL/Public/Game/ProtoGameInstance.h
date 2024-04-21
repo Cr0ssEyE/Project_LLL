@@ -17,6 +17,9 @@ UCLASS(Blueprintable)
 class PROJECT_LLL_API UProtoGameInstance : public ULLL_GameInstance
 {
 	GENERATED_BODY()
+
+public:
+	UProtoGameInstance();
 	
 	// 디버그용 델리게이트
 public:
@@ -113,6 +116,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckObjectCollisionDebug() const { return bObjectCollisionDebug; }
 
+public:
+	// 데이터 테이블 Getter
+	FORCEINLINE TObjectPtr<const UDataTable> GetAbilityDataTable() const { return AbilityDataTable; }
+	FORCEINLINE TObjectPtr<const UDataTable> GetRewardDataTable() const { return RewardDataTable; }
 
 	// 플레이어 디버그 변수
 protected:
@@ -155,4 +162,13 @@ protected:
 	uint8 bObjectHitCheckDebug : 1;
 
 	uint8 bObjectCollisionDebug : 1;
+	
+	// 데이터 테이블 변수
+protected:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<const UDataTable> AbilityDataTable;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<const UDataTable> RewardDataTable;
+	
 };
