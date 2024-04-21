@@ -119,7 +119,7 @@ void ULLL_PGA_ChaseHandLockTarget::GrabTargetEntity()
 	HandProjectile->Deactivate();
 
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(PlayerChaseHand->GetOwner());
-	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_PLAYER_WIRE_RUSH));
+	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_PLAYER_CHASE_RUSH));
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandLockTarget::CheckGrabbedTime);
 }
