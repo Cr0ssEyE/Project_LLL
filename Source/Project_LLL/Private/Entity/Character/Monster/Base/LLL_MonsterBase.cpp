@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "BrainComponent.h"
+#include "FMODAudioComponent.h"
 #include "GameplayAbilitySpec.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -15,11 +16,12 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Ability/Monster/LLL_MGA_Attack.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/Ability/Monster/Base/LLL_MGA_Attack.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
-#include "UI/LLL_CharacterStatusWidget.h"
-#include "Util/LLLConstructorHelper.h"
+#include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
@@ -34,7 +36,7 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
-	DropGoldEffect = FLLLConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'"), EAssertionLevel::Check);
+	DropGoldEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'"), EAssertionLevel::Check);
 	
 }
 
@@ -92,12 +94,12 @@ void ALLL_MonsterBase::Dead()
 	Super::Dead();
 	
 	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
+
+	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = CastChecked<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+	MonsterBaseAnimInstance->StopAllMontages(1.0f);
 	
-	const ALLL_MonsterBaseAIController* MonsterBaseAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
-	if (IsValid(MonsterBaseAIController))
-	{
-		MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
-	}
+	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
+	MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
 
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
@@ -144,6 +146,8 @@ void ALLL_MonsterBase::Damaged()
 		MonsterBaseAnimInstance->StopAllMontages(1.0f);
 		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
 
+		FModAudioComponent->Stop();
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
@@ -153,6 +157,19 @@ void ALLL_MonsterBase::Damaged()
 			}
 		}
 #endif
+	}
+}
+
+void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity)
+{
+	if (CustomTimeDilation == 1.f)
+	{
+		GetCharacterMovement()->Velocity = FVector::Zero();
+		LaunchCharacter(KnockBackVelocity, true, true);
+	}
+	else
+	{
+		
 	}
 }
 

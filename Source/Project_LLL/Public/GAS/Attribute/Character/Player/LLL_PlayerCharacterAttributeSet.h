@@ -20,12 +20,19 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxAttackAction);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, AttackActionIntervalTime);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, AttackActionInputDelayTime);
+	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxDashCount);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashDistance);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashCorrectionDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashInvincibleTime);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, RushSpeed);
+	
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseSpeed);
+	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackPower);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ImpulseStrength);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackDamage);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackInfluence);
+	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CurrentComboCount);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxComboCount);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MultiplyComboCountWhenHit);
@@ -37,8 +44,10 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, SkillGaugeAmplifyByItem);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, bIsComboTimerElapsed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, AddCurrentSkillGauge);
+	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, BulletTimeDuration);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, BulletTimeWorldDecelerationRate);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ImpulseStrength);
 	
 protected:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
@@ -63,13 +72,19 @@ protected:
 	FGameplayAttributeData MaxDashCount;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData DashDistance;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData DashCorrectionDistance;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DashSpeed;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DashInvincibleTime;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData RushSpeed;
+	FGameplayAttributeData ChaseSpeed;
 
 	// 넉백 관련
 protected:
@@ -77,7 +92,10 @@ protected:
 	FGameplayAttributeData KnockBackPower;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData ImpulseStrength;
+	FGameplayAttributeData KnockBackDamage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData KnockBackInfluence;
 	
 	// 콤보 관련
 protected:
@@ -120,6 +138,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData BulletTimeWorldDecelerationRate;
+
+	// 기타 효과 관련
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ImpulseStrength;
 	
 	// 메타 어트리뷰트
 protected:

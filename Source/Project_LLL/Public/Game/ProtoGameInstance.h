@@ -31,7 +31,7 @@ public:
 	FORCEINLINE void SetPlayerMovementDebug(bool value) { bPlayerMovementDebug = value; }
 	FORCEINLINE void SetPlayerDashDebug(bool value) { bPlayerDashDebug = value; }
 	FORCEINLINE void SetPlayerSkillDebug(bool value) { bPlayerSkillDebug = value; }
-	FORCEINLINE void SetPlayerWireActionDebug(bool value) { bPlayerWireActionDebug = value; }
+	FORCEINLINE void SetPlayerChaseActionDebug(bool value) { bPlayerChaseActionDebug = value; }
 	FORCEINLINE void SetPlayerHitCheckDebug(bool value) { bPlayerHitCheckDebug = value; }
 	FORCEINLINE void SetPlayerAttackDebug(bool value) { bPlayerAttackDebug = value; }
 	FORCEINLINE void SetPlayerCollisionDebug(bool value) { bPlayerCollisionDebug = value; }
@@ -47,7 +47,7 @@ public:
 	FORCEINLINE bool CheckPlayerSkillDebug() const { return bPlayerSkillDebug; }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE bool CheckPlayerWireActionDebug() const { return bPlayerWireActionDebug; }
+	FORCEINLINE bool CheckPlayerChaseActionDebug() const { return bPlayerChaseActionDebug; }
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerHitDebug() const { return bPlayerHitCheckDebug; }
@@ -120,7 +120,7 @@ protected:
 
 	uint8 bPlayerDashDebug : 1;
 
-	uint8 bPlayerWireActionDebug : 1;
+	uint8 bPlayerChaseActionDebug : 1;
 	
 	uint8 bPlayerSkillDebug : 1;
 

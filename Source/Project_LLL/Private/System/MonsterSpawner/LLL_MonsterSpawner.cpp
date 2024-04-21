@@ -11,11 +11,11 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawnPointComponent.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 ALLL_MonsterSpawner::ALLL_MonsterSpawner()
 {
-	MonsterSpawnDataTable = FLLLConstructorHelper::FindAndGetObject<UDataTable>(PATH_MONSTER_SPAWN_DATA, EAssertionLevel::Check);
+	MonsterSpawnDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_MONSTER_SPAWN_DATA, EAssertionLevel::Check);
 	
 	DetectBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	DetectBox->SetCollisionProfileName(CP_INTERACTION);
@@ -27,22 +27,22 @@ void ALLL_MonsterSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TArray<FMonsterSpawnDataTable*> LoadDataTables;
-	MonsterSpawnDataTable->GetAllRows<FMonsterSpawnDataTable>(TEXT("Failed To Load Monster Spawn Data Tables"), LoadDataTables);
+	TArray<FMonsterSpawnDataTable*> LoadDataArray;
+	MonsterSpawnDataTable->GetAllRows<FMonsterSpawnDataTable>(TEXT("Failed To Load Monster Spawn Data Tables"), LoadDataArray);
 
 	int rowNum = 0;
-	for (const FMonsterSpawnDataTable* LoadDataTable : LoadDataTables)
+	for (const FMonsterSpawnDataTable* LoadData : LoadDataArray)
 	{
-		FMonsterSpawnDataTable TempDataTable;
-		TempDataTable.Group = LoadDataTable->Group;
-		TempDataTable.SpawnPoint = LoadDataTable->SpawnPoint;
-		TempDataTable.MonsterClass = LoadDataTable->MonsterClass;
-		DataTables.Emplace(TempDataTable);
+		FMonsterSpawnDataTable TempData;
+		TempData.Group = LoadData->Group;
+		TempData.SpawnPoint = LoadData->SpawnPoint;
+		TempData.MonsterClass = LoadData->MonsterClass;
+		MonsterSpawnDataArray.Emplace(TempData);
 
 		rowNum++;
-		if (rowNum == LoadDataTables.Num())
+		if (rowNum == LoadDataArray.Num())
 		{
-			LastGroup = LoadDataTable->Group;
+			LastGroup = LoadData->Group;
 		}
 	}
 
@@ -101,11 +101,11 @@ void ALLL_MonsterSpawner::SpawnMonster()
 		{
 			SpawnPointNum++;
 
-			for (FMonsterSpawnDataTable DataTable : DataTables)
+			for (FMonsterSpawnDataTable MonsterSpawnData : MonsterSpawnDataArray)
 			{
-				if (DataTable.Group == CurrentGroup && DataTable.SpawnPoint == SpawnPointNum)
+				if (MonsterSpawnData.Group == CurrentGroup && MonsterSpawnData.SpawnPoint == SpawnPointNum)
 				{
-					ALLL_MonsterBase* MonsterBase = GetWorld()->SpawnActor<ALLL_MonsterBase>(DataTable.MonsterClass, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+					ALLL_MonsterBase* MonsterBase = GetWorld()->SpawnActor<ALLL_MonsterBase>(MonsterSpawnData.MonsterClass, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 					if (IsValid(MonsterBase))
 					{
 						MonsterBase->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::MonsterDeadHandle);

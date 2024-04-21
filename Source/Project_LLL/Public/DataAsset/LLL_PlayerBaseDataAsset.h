@@ -6,9 +6,11 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+class UFMODEvent;
+enum class EPlayerWalkMaterialParameter : uint8;
 enum class EPlayerFootstepsSurface : uint8;
 class ULLL_SkillWidget;
-class ULLL_PlayerWireObjectDataAsset;
+class ULLL_PlayerChaseHandDataAsset;
 enum class EAbilityInputName;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
@@ -73,8 +75,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "기본 공격 입력 키")
 	TObjectPtr<UInputAction> AttackInputAction;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "와이어 액션 입력 키")
-	TObjectPtr<UInputAction> ControlWireInputAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "추격 액션 입력 키")
+	TObjectPtr<UInputAction> ControlChaseInputAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "스킬 입력 키")
 	TObjectPtr<UInputAction> SkillInputAction;
@@ -92,9 +94,9 @@ public:
 	TObjectPtr<UInputAction> PauseInputAction;
 	
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 이름")
-	FName StepEventParameterName;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
-	TMap<TEnumAsByte<EPhysicalSurface>, EPlayerFootstepsSurface> StepEventParameterProperties;
+	TMap<TEnumAsByte<EPhysicalSurface>, EPlayerWalkMaterialParameter> StepEventParameterProperties;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "스테이지 1 배경음")
+	TObjectPtr<UFMODEvent> Stage1AMB;
 };

@@ -20,9 +20,9 @@
 // Collision Profile
 #define CP_STATIC_ONLY TEXT("IgnoreOnlyPawn")
 #define CP_PLAYER TEXT("Player")
+#define CP_PLAYER_EVADE TEXT("Player_Evade")
 #define CP_MONSTER TEXT("Monster")
 #define CP_INTERACTION TEXT("Interaction")
-#define CP_EVADE TEXT("Evade")
 #define CP_MONSTER_ATTACK TEXT("MonsterAttack")
 #define CP_NO_COLLISION TEXT("NoCollision")
 #define CP_OVERLAP_ALL TEXT("OverlapAll")
