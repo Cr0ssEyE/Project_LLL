@@ -116,11 +116,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckObjectCollisionDebug() const { return bObjectCollisionDebug; }
 
-public:
-	// 데이터 테이블 Getter
-	FORCEINLINE TObjectPtr<const UDataTable> GetAbilityDataTable() const { return AbilityDataTable; }
-	FORCEINLINE TObjectPtr<const UDataTable> GetRewardDataTable() const { return RewardDataTable; }
-
 	// 플레이어 디버그 변수
 protected:
 	uint8 bPlayerMovementDebug : 1;
@@ -162,13 +157,4 @@ protected:
 	uint8 bObjectHitCheckDebug : 1;
 
 	uint8 bObjectCollisionDebug : 1;
-	
-	// 데이터 테이블 변수
-protected:
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<const UDataTable> AbilityDataTable;
-
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<const UDataTable> RewardDataTable;
-	
 };

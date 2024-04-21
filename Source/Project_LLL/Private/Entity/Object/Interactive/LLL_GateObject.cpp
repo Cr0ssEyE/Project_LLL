@@ -58,7 +58,7 @@ void ALLL_GateObject::OpenGate()
 
 	FTimerHandle StageDestroyTimerHandle;
 	
-	GetWorld()->GetTimerManager().SetTimer(StageDestroyTimerHandle, this, &ALLL_GateObject::StartDestroy, 0, false, 0.5f);
+	GetWorld()->GetTimerManager().SetTimer(StageDestroyTimerHandle, this, &ALLL_GateObject::StartDestroy, 0.1f, false, 0.5f);
 }
 
 void ALLL_GateObject::StartDestroy()

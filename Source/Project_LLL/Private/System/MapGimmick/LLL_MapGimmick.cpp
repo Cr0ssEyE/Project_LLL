@@ -62,6 +62,10 @@ void ALLL_MapGimmick::BeginPlay()
 	StateChangeActions.Add(EStageState::FIGHT, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetFight)));
 	StateChangeActions.Add(EStageState::REWARD, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetChooseReward)));
 	StateChangeActions.Add(EStageState::NEXT, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetChooseNext)));
+
+	RewardGimmick->SetDataTable();
+	
+	RewardData = RewardGimmick->GetRewardData(0);
 	
 	RandomMap();
 	CreateMap();
@@ -97,6 +101,7 @@ void ALLL_MapGimmick::CreateMap()
 		if (IsValid(SpawnPoint))
 		{
 			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
 			Gates.Add(Gate);
 		}
 	}
@@ -157,7 +162,6 @@ void ALLL_MapGimmick::EnableAllGates()
 	for (const auto Gate:Gates)
 	{
 		Gate->GateEnable();
-		Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
 	}
 }
 

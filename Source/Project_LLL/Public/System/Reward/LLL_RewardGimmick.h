@@ -21,11 +21,11 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_RewardGimmick();
 
+	FORCEINLINE FTestRewardDataTable* GetRewardData(uint8 index) { return &RewardData[index]; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	virtual void PostInitializeComponents() override;
 
 public:
 	// Called every frame
@@ -36,6 +36,8 @@ public:
 	
 	UFUNCTION()
 	void SetRewardButtons();
+
+	void SetDataTable();
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)

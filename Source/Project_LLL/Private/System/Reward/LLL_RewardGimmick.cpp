@@ -24,43 +24,6 @@ void ALLL_RewardGimmick::BeginPlay()
 	
 }
 
-void ALLL_RewardGimmick::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	const UProtoGameInstance* GameInstance = CastChecked<UProtoGameInstance>(GetGameInstance());
-
-	TArray<FTestRewardDataTable*> LoadDataTables;
-	GameInstance->GetRewardDataTable()->GetAllRows<FTestRewardDataTable>(TEXT("Failed To Load Reward Data Tables"), LoadDataTables);
-
-	for (const FTestRewardDataTable* LoadDataTable : LoadDataTables)
-	{
-		FTestRewardDataTable TempDataTable;
-		TempDataTable.RewardType = LoadDataTable->RewardType;
-		TempDataTable.RewardValue = LoadDataTable->RewardValue;
-		TempDataTable.bIsHardReward = LoadDataTable->bIsHardReward;
-		RewardData.Emplace(TempDataTable);
-	}
-
-	TArray<FTestAbilityDataTable*> LoadAbilityDataTables;
-
-	GameInstance->GetRewardDataTable()->GetAllRows<FTestAbilityDataTable>(TEXT("Failed To Ability Data Tables"), LoadAbilityDataTables);
-
-	for (const FTestAbilityDataTable* LoadDataTable : LoadAbilityDataTables)
-	{
-		FTestAbilityDataTable TempDataTable;
-		TempDataTable.AbilityCategory = LoadDataTable->AbilityCategory;
-		TempDataTable.AbilityParts = LoadDataTable->AbilityParts;
-		TempDataTable.AbilityRank = LoadDataTable->AbilityRank;
-		TempDataTable.AbilityType = LoadDataTable->AbilityType;
-		TempDataTable.AbilityValue = LoadDataTable->AbilityValue;
-		TempDataTable.ChangeValue = LoadDataTable->ChangeValue;
-		TempDataTable.RequireCategory = LoadDataTable->RequireCategory;
-		
-		AbilityData.Emplace(TempDataTable);
-	}
-}
-
 // Called every frame
 void ALLL_RewardGimmick::Tick(float DeltaTime)
 {
@@ -94,6 +57,15 @@ void ALLL_RewardGimmick::SetRewardButtons()
 
 	Index = FMath::RandRange(0, AbilityData.Num() - 1);
 	ButtonAbilityData3 = &AbilityData[Index];
+}
+
+void ALLL_RewardGimmick::SetDataTable()
+{
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	
+	RewardData = GameInstance->GetRewardDataTable();
+
+	AbilityData = GameInstance->GetAbilityDataTable();
 }
 
 void ALLL_RewardGimmick::ClickFirstButton()

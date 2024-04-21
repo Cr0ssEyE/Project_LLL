@@ -115,6 +115,5 @@ void ALLL_RewardObject::InteractiveEvent()
 		break;
 	}
 	
-	
 	Destroy();
 }
