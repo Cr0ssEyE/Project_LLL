@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Ability/Player/LLL_PGA_GroundStrike.h"
+#include "GAS/Ability/Player/ChaseSystem/LLL_PGA_Chase.h"
 
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Constant/LLL_MonatgeSectionName.h"
@@ -10,12 +10,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Util/LLL_ExecuteCueHelper.h"
 
-ULLL_PGA_GroundStrike::ULLL_PGA_GroundStrike()
+ULLL_PGA_Chase::ULLL_PGA_Chase()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
-void ULLL_PGA_GroundStrike::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void ULLL_PGA_Chase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
@@ -43,15 +43,15 @@ void ULLL_PGA_GroundStrike::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("SkillMontage"), AbilityActionMontage, 1.0f, SECTION_ATTACK);
-	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_GroundStrike::OnCompleteCallBack);
-	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_GroundStrike::OnInterruptedCallBack);
+	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_Chase::OnCompleteCallBack);
+	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_Chase::OnInterruptedCallBack);
 
 	PlayMontageTask->ReadyForActivation();
 	
-	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, WireAttackCueTag);
+	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, ChaseAttackCueTag);
 }
 
-void ULLL_PGA_GroundStrike::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+void ULLL_PGA_Chase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

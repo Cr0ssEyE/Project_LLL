@@ -5,7 +5,6 @@
 
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "GAS/Ability/Player/LLL_PGA_GroundStrike.h"
 
 void ULLL_MGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
