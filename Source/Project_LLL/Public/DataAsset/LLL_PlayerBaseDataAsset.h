@@ -98,5 +98,8 @@ public:
 	TMap<TEnumAsByte<EPhysicalSurface>, EPlayerWalkMaterialParameter> StepEventParameterProperties;
 
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "스테이지 1 배경음")
+	TObjectPtr<UFMODEvent> Stage1BGM;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "스테이지 1 환경음")
 	TObjectPtr<UFMODEvent> Stage1AMB;
 };
