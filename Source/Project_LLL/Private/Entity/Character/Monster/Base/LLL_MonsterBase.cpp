@@ -94,17 +94,11 @@ void ALLL_MonsterBase::Dead()
 	
 	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
 
-	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(MonsterBaseAnimInstance))
-	{
-		MonsterBaseAnimInstance->StopAllMontages(1.0f);
-	}
+	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = CastChecked<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+	MonsterBaseAnimInstance->StopAllMontages(1.0f);
 	
-	const ALLL_MonsterBaseAIController* MonsterBaseAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
-	if (IsValid(MonsterBaseAIController))
-	{
-		MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
-	}
+	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
+	MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
 
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
