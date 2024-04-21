@@ -104,8 +104,6 @@ void ALLL_PlayerBase::BeginPlay()
 		AbilityManageSubSystem->ASyncLoadEffectsByTag(Delegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), true);
 	}
 
-	FModAudioComponent->Stop();
-	
 	FModAudioComponent->Release();
 	FModAudioComponent->SetEvent(PlayerDataAsset->Stage1BGM);
 	FModAudioComponent->Play();
