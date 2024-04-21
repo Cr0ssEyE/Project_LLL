@@ -9,7 +9,7 @@
 #include "DataTable/LLL_RewardDataTable.h"
 #include "DataTable/LLL_TestAbilityDataTable.h"
 #include "Game/ProtoGameInstance.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick()
 {

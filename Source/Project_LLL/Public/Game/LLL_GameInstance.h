@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTable/LLL_FModParameterDataTable.h"
 #include "LLL_GameInstance.generated.h"
 
 /**
@@ -17,6 +18,10 @@ class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
 public:
 	ULLL_GameInstance();
 
+	virtual void Init() override;
+
+	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterDataArray; }
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> PlayerMPC;
@@ -29,4 +34,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> InterfaceMPC;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<const UDataTable> FModParameterDataTable;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TArray<FFModParameterDataTable> FModParameterDataArray;
 };

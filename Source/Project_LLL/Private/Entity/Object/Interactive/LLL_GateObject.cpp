@@ -5,11 +5,11 @@
 
 #include "Constant/LLL_FilePath.h"
 #include "System/Reward/LLL_RewardGimmick.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 ALLL_GateObject::ALLL_GateObject()
 {
-	GateMesh = FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_GATE_OBJECT_TEST_MESH, EAssertionLevel::Check);
+	GateMesh = FLLL_ConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_GATE_OBJECT_TEST_MESH, EAssertionLevel::Check);
 	BaseMesh->SetStaticMesh(GateMesh);
 	bIsGateEnabled = false;
 	bIsGateInteracted = false;

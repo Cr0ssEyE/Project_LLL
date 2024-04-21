@@ -12,7 +12,7 @@
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
-class ALLL_PlayerWireHand;
+class ALLL_PlayerChaseHand;
 class ULLL_PlayerCharacterAttributeSet;
 class ULLL_PlayerWeaponComponent;
 class ULLL_PlayerAnimInstance;
@@ -53,7 +53,7 @@ public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
 	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
-	FORCEINLINE ALLL_PlayerWireHand* GetWireHand() const { return WireHandActor; }
+	FORCEINLINE ALLL_PlayerChaseHand* GetChaseHand() const { return ChaseHandActor; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	
 	FVector GetMouseLocation() const;
@@ -76,14 +76,14 @@ protected:
 	TObjectPtr<ULLL_PlayerAnimInstance> PlayerAnimInstance;
 	
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ALLL_PlayerWireHand> WireHandActor;
+	TObjectPtr<ALLL_PlayerChaseHand> ChaseHandActor;
 	
 	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);
 	void DashAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void AttackAction(const FInputActionValue& Value, EAbilityInputName InputName);
-	void WireAction(const FInputActionValue& Value, EAbilityInputName InputName);
+	void ChaseAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void SkillAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void InteractAction(const FInputActionValue& Value);
 	void InteractiveTargetChangeAction(const FInputActionValue& Value);
@@ -115,6 +115,7 @@ protected:
 	virtual void DestroyHandle() override;
 
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
+	
 	// 상태 관련 변수
 protected:
 	uint8 bIsMoveInputPressed : 1;

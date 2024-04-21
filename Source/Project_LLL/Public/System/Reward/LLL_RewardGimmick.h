@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "System/Base/LLL_SystemBase.h"
 #include "LLL_RewardGimmick.generated.h"
 
 struct FTestRewardDataTable;
@@ -12,7 +13,7 @@ class ULLL_RewardDataTable;
 class ULLL_TestAbilityDataTable;
 
 UCLASS()
-class PROJECT_LLL_API ALLL_RewardGimmick : public AActor
+class PROJECT_LLL_API ALLL_RewardGimmick : public ALLL_SystemBase
 {
 	GENERATED_BODY()
 

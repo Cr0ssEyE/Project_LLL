@@ -15,7 +15,7 @@ void UPlayerDebugWidget::NativeConstruct()
 	
 	PlayerMovementCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerMovementCheckBoxEvent);
 	PlayerDashCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerDashCheckBoxEvent);
-	PlayerWireActionCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerWireActionCheckBoxEvent);
+	PlayerWireActionCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent);
 	PlayerSkillCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerSkillCheckBoxEvent);
 
 	PlayerFillHealthButton->OnClicked.AddDynamic(this, &UPlayerDebugWidget::PlayerFillHealthButtonEvent);
@@ -32,9 +32,9 @@ void UPlayerDebugWidget::PlayerDashCheckBoxEvent(bool value)
 	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerDashDebug(PlayerDashCheckBox->IsChecked());
 }
 
-void UPlayerDebugWidget::PlayerWireActionCheckBoxEvent(bool value)
+void UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerWireActionDebug(PlayerWireActionCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerChaseActionDebug(PlayerWireActionCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerSkillCheckBoxEvent(bool value)

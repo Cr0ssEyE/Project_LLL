@@ -8,7 +8,7 @@ enum class EAbilityInputName
 {
 	Attack UMETA(Displayname="공격"),
 	Skill UMETA(Displayname="스킬"),
-	Wire UMETA(Displayname="와이어"),
+	Chase UMETA(Displayname="추격"),
 	Dash UMETA(Displayname="회피")
 };
 

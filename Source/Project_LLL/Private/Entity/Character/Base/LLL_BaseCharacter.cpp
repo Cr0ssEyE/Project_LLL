@@ -6,10 +6,14 @@
 #include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "DataTable/LLL_FModParameterDataTable.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
+#include "Util/LLL_ConstructorHelper.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 // Sets default values
 ALLL_BaseCharacter::ALLL_BaseCharacter()
@@ -152,6 +156,12 @@ void ALLL_BaseCharacter::Tick(float DeltaTime)
 void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+	if (HitLocation.Z >= GetActorLocation().Z)
+	{
+		OtherActorCollidedDelegate.Broadcast(this, Other);
+	}
+
 	const ECollisionResponse Response = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
 	// Static Actor 중에서 벽과 바닥을 구분하는 좋은 방법이 뭐가 있을지 고민. 지금은 머릿속에서 생각나는게 이게 최선
 	if (Response == ECR_Block && FMath::Abs(HitNormal.Z) < 0.2f)
@@ -172,7 +182,7 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 
 void ALLL_BaseCharacter::Damaged()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s 피격"), *GetName())
+	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DamagedCueTag);
 }
 
 void ALLL_BaseCharacter::Dead()
@@ -190,6 +200,8 @@ void ALLL_BaseCharacter::Dead()
 	bIsDead = true;
 
 	CharacterDeadDelegate.Broadcast(this);
+
+	FModAudioComponent->Stop();
 }
 
 void ALLL_BaseCharacter::DestroyHandle()

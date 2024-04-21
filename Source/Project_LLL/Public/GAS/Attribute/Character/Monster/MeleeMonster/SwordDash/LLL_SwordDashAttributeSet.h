@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Attribute/Character/Monster/MeleeMonster/LLL_MeleeMonsterAttributeSet.h"
+#include "GAS/Attribute/Character/Monster/MeleeMonster/Base/LLL_MeleeMonsterAttributeSet.h"
 #include "LLL_SwordDashAttributeSet.generated.h"
 
 /**
@@ -18,6 +18,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_SwordDashAttributeSet, DashDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_SwordDashAttributeSet, DashDamage);
 	ATTRIBUTE_ACCESSORS(ULLL_SwordDashAttributeSet, DashDamageRange);
+	ATTRIBUTE_ACCESSORS(ULLL_SwordDashAttributeSet, ChargeTimer);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
@@ -28,4 +29,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DashDamageRange;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ChargeTimer;
 };

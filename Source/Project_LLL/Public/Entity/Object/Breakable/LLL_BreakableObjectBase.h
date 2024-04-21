@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
-#include "Entity/Object/LLL_BaseObject.h"
+#include "Entity/Object/Base/LLL_BaseObject.h"
 #include "Interface/LLL_DropGoldInterface.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "GameFramework/Actor.h"

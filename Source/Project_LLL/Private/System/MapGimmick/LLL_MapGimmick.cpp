@@ -8,7 +8,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_MapDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 #include "Entity/Object/Interactive/LLL_GateObject.h"
 #include "DataTable/LLL_RewardDataTable.h"
 #include "Entity/Object/Interactive/LLL_RewardObject.h"
@@ -27,7 +27,7 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 	RootBox->OnComponentBeginOverlap.AddDynamic(this, &ALLL_MapGimmick::OnStageTriggerBeginOverlap);
 	SetRootComponent(RootBox);
 
-	MapDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_MapDataAsset>(PATH_MAP_DATA, EAssertionLevel::Check);
+	MapDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_MapDataAsset>(PATH_MAP_DATA, EAssertionLevel::Check);
 	RewardGimmick = CreateDefaultSubobject<ALLL_RewardGimmick>(TEXT("RewardGimmick"));
 	CurrentState = EStageState::READY;
 

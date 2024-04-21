@@ -3,13 +3,13 @@
 
 #include "GAS/Ability/Monster/RangedMonster/LLL_MGA_SpawnThrownObject.h"
 
-#include "Entity/Character/Monster/Ranged/LLL_RangedMonster.h"
+#include "Entity/Character/Monster/Ranged/Base/LLL_RangedMonster.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/LLL_ThrownObject.h"
+#include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Character/Monster/RangedMonster/LLL_RangedMonsterAttributeSet.h"
+#include "GAS/Attribute/Character/Monster/RangedMonster/Base/LLL_RangedMonsterAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
-#include "GAS/Attribute/Object/ThrownObject/LLL_ThrownObjectAttributeSet.h"
+#include "GAS/Attribute/Object/ThrownObject/Base/LLL_ThrownObjectAttributeSet.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 #include "Util/LLL_MathHelper.h"
 

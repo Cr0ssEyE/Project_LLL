@@ -1,0 +1,26 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameplayModMagnitudeCalculation.h"
+#include "LLL_CC_KnockBackDamageCalculate.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class PROJECT_LLL_API ULLL_CC_KnockBackDamageCalculate : public UGameplayModMagnitudeCalculation
+{
+	GENERATED_BODY()
+
+public:
+	ULLL_CC_KnockBackDamageCalculate();
+
+protected:
+	virtual float CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const override;
+
+protected:
+	UPROPERTY(EditAnywhere)
+	uint8 bUseKnockBackInfluence : 1;
+};

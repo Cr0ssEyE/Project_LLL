@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_AttackBase.generated.h"
+
+class UAbilityTask_WaitGameplayTagAdded;
 
 /**
  * 
@@ -18,14 +21,20 @@ public:
 	ULLL_PGA_AttackBase();
 	
 protected:
+	virtual void PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData) override;
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
 protected:
+	UFUNCTION()
+	void WaitInputForNextAction();
 	void SetNextAttackAction();
-	void StartAttackInputWait();
 	void EndAttackInputWait();
+
+protected:
+	UPROPERTY()
+	TObjectPtr<UAbilityTask_WaitGameplayTagAdded> WaitTagTask;
 	
 protected:
 	UPROPERTY(EditAnywhere, DisplayName = "공격 애님 몽타주")
@@ -41,5 +50,13 @@ protected:
 
 	uint32 MaxAttackAction;
 	
+	uint8 bIsCanPlayNextAction : 1;
+	
 	uint8 bIsInputPressed : 1;
+
+protected:
+	UPROPERTY(EditAnywhere, DisplayName = "공격 이벤트 태그", meta=(Categories = "GameplayCue"))
+	FGameplayTag AttackCueTag;
+
+	FName PlayerAttackCountParameterName;
 };

@@ -4,7 +4,7 @@
 #include "Entity/Object/Breakable/LLL_BreakableObjectBase.h"
 
 #include "AbilitySystemComponent.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 #include "Entity/Character/Player/LLL_PlayerGoldComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -15,7 +15,7 @@
 
 ALLL_BreakableObjectBase::ALLL_BreakableObjectBase()
 {
-	BaseMesh->SetStaticMesh(FLLLConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_BREAKABLE_OBJECT_TEST_MESH, EAssertionLevel::Check));
+	BaseMesh->SetStaticMesh(FLLL_ConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_BREAKABLE_OBJECT_TEST_MESH, EAssertionLevel::Check));
 	SetRootComponent(BaseMesh);
 	
 	HitCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HitCollisionComponent"));
@@ -24,7 +24,7 @@ ALLL_BreakableObjectBase::ALLL_BreakableObjectBase()
 	HitCollision->SetupAttachment(RootComponent);
 	
 	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
-	InitEffect = FLLLConstructorHelper::FindAndGetClass<UGameplayEffect>(PATH_BREAKABLE_OBJECT_TEST_EFFECT, EAssertionLevel::Check);
+	InitEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(PATH_BREAKABLE_OBJECT_TEST_EFFECT, EAssertionLevel::Check);
 	ASC->RegisterGameplayTagEvent(TAG_GAS_SYSTEM_DROP_GOLD).AddUObject(this, &ALLL_BreakableObjectBase::DropGold);
 }
 

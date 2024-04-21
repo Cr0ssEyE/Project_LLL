@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Attribute/Character/Monster/RangedMonster/LLL_RangedMonsterAttributeSet.h"
+#include "GAS/Attribute/Character/Monster/RangedMonster/Base/LLL_RangedMonsterAttributeSet.h"
 #include "LLL_EnergyBlasterAttributeSet.generated.h"
 
 /**
