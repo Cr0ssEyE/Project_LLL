@@ -17,7 +17,7 @@
 
 ALLL_PlayerChaseHand::ALLL_PlayerChaseHand()
 {
-	ThrownObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerChaseHandDataAsset>(PATH_PLAYER_WIRE_DATA, EAssertionLevel::Check);
+	ThrownObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerChaseHandDataAsset>(PATH_PLAYER_CHASE_HAND_DATA, EAssertionLevel::Check);
 	BaseObjectDataAsset = Cast<ULLL_BaseObjectDataAsset>(ThrownObjectDataAsset);
 	HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh"));
 	HandCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));

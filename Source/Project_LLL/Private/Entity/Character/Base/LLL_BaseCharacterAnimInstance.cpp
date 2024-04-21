@@ -29,8 +29,6 @@ void ULLL_BaseCharacterAnimInstance::NativeInitializeAnimation()
 		Movement = Character->GetCharacterMovement();
 		CharacterDataAsset = Character->GetCharacterDataAsset();
 	}
-	
-	OnMontageEnded.AddDynamic(this, &ULLL_BaseCharacterAnimInstance::MontageEndedEvent);
 }
 
 void ULLL_BaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -47,11 +45,6 @@ void ULLL_BaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsIdle = GroundSpeed < MovingThreshold;
 	bIsFalling = Movement->IsFalling();
 	bIsJumping = bIsFalling && (Velocity.Z > JumpingThreshold);
-}
-
-void ULLL_BaseCharacterAnimInstance::MontageEndedEvent(UAnimMontage* Montage, const bool bIsInterrupt)
-{
-	MontageEndedEnhancedDelegate.Broadcast(Character, Montage, bIsInterrupt);
 }
 
 void ULLL_BaseCharacterAnimInstance::AnimNotify_LeftStep()
