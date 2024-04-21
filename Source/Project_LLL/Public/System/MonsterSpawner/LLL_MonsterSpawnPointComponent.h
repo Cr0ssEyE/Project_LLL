@@ -4,25 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
+#include "DataAsset/LLL_MonsterSpawnerDataAsset.h"
 #include "LLL_MonsterSpawnPointComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECT_LLL_API ULLL_MonsterSpawnPointComponent : public USceneComponent
+class PROJECT_LLL_API ULLL_MonsterSpawnPointComponent : public UStaticMeshComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
+public:
 	ULLL_MonsterSpawnPointComponent();
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<const ULLL_MonsterSpawnerDataAsset> MonsterSpawnerDataAsset;
 };

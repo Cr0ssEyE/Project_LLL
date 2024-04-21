@@ -3,32 +3,25 @@
 
 #include "System/MonsterSpawner/LLL_MonsterSpawnPointComponent.h"
 
-// Sets default values for this component's properties
+#include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_FilePath.h"
+#include "DataAsset/LLL_MonsterSpawnerDataAsset.h"
+#include "Util/LLL_ConstructorHelper.h"
+
 ULLL_MonsterSpawnPointComponent::ULLL_MonsterSpawnPointComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	
+	MonsterSpawnerDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_MonsterSpawnerDataAsset>(PATH_MONSTER_SPAWNER_DATA, EAssertionLevel::Check);
 
-	// ...
+	ULLL_MonsterSpawnPointComponent::SetStaticMesh(MonsterSpawnerDataAsset->SpawnPointMesh);
+	ULLL_MonsterSpawnPointComponent::SetCollisionProfileName(CP_NO_COLLISION);
 }
 
-
-// Called when the game starts
 void ULLL_MonsterSpawnPointComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
-}
-
-
-// Called every frame
-void ULLL_MonsterSpawnPointComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	SetHiddenInGame(true);
 }
 

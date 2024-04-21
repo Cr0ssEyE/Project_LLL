@@ -14,6 +14,8 @@ class PROJECT_LLL_API ALLL_SystemBase : public AActor
 	GENERATED_BODY()
 
 public:
+	ALLL_SystemBase();
+	
 	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
 
 protected:

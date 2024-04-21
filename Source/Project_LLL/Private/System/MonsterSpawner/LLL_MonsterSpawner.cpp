@@ -3,6 +3,7 @@
 
 #include "System/MonsterSpawner/LLL_MonsterSpawner.h"
 
+#include "FMODAudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
@@ -15,6 +16,7 @@
 
 ALLL_MonsterSpawner::ALLL_MonsterSpawner()
 {
+	MonsterSpawnerDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_MonsterSpawnerDataAsset>(PATH_MONSTER_SPAWNER_DATA, EAssertionLevel::Check);
 	MonsterSpawnDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_MONSTER_SPAWN_DATA, EAssertionLevel::Check);
 	
 	DetectBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
@@ -84,6 +86,15 @@ void ALLL_MonsterSpawner::BeginDestroy()
 }
 
 void ALLL_MonsterSpawner::SpawnMonster()
+{
+	FModAudioComponent->Release();
+	FModAudioComponent->SetEvent(MonsterSpawnerDataAsset->SpawnSoundEvent);
+	FModAudioComponent->Play();
+	FTimerHandle MonsterSpawnTimerHandle;
+	GetWorldTimerManager().SetTimer(MonsterSpawnTimerHandle, this, &ALLL_MonsterSpawner::SpawnMonsterTimerHandle, MonsterSpawnerDataAsset->SpawnTimer, false);
+}
+
+void ALLL_MonsterSpawner::SpawnMonsterTimerHandle()
 {
 	CurrentWave++;
 	
