@@ -156,6 +156,12 @@ void ALLL_BaseCharacter::Tick(float DeltaTime)
 void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+	if (HitLocation.Z >= GetActorLocation().Z)
+	{
+		OtherActorCollidedDelegate.Broadcast(this, Other);
+	}
+
 	const ECollisionResponse Response = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
 	// Static Actor 중에서 벽과 바닥을 구분하는 좋은 방법이 뭐가 있을지 고민. 지금은 머릿속에서 생각나는게 이게 최선
 	if (Response == ECR_Block && FMath::Abs(HitNormal.Z) < 0.2f)

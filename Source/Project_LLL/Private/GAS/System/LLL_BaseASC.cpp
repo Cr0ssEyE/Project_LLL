@@ -16,6 +16,7 @@ ULLL_BaseASC::ULLL_BaseASC()
 void ULLL_BaseASC::ReceiveTargetData(const UGameplayAbility* OwnerAbility, const FGameplayAbilityTargetDataHandle& TargetDataHandle) const
 {
 	FGameplayAbilitySpec* Spec = FindAbilitySpecFromClass(OwnerAbility->GetClass());
+	
 	if(Spec)
 	{
 		TargetDataDelegate.Broadcast(TargetDataHandle);

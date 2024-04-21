@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_AttackBase.generated.h"
+
+class UAbilityTask_WaitGameplayTagAdded;
 
 /**
  * 
@@ -24,9 +27,14 @@ protected:
 	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
 protected:
+	UFUNCTION()
+	void WaitInputForNextAction();
 	void SetNextAttackAction();
-	void StartAttackInputWait();
 	void EndAttackInputWait();
+
+protected:
+	UPROPERTY()
+	TObjectPtr<UAbilityTask_WaitGameplayTagAdded> WaitTagTask;
 	
 protected:
 	UPROPERTY(EditAnywhere, DisplayName = "공격 애님 몽타주")
@@ -41,6 +49,8 @@ protected:
 	uint32 CurrentComboAction;
 
 	uint32 MaxAttackAction;
+	
+	uint8 bIsCanPlayNextAction : 1;
 	
 	uint8 bIsInputPressed : 1;
 

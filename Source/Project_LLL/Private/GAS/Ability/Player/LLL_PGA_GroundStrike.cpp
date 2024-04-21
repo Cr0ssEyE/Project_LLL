@@ -4,6 +4,7 @@
 #include "GAS/Ability/Player/LLL_PGA_GroundStrike.h"
 
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Constant/LLL_MonatgeSectionName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -28,8 +29,8 @@ void ULLL_PGA_GroundStrike::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	}
 #endif
 
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	if(!IsValid(Player))
+	const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	if(!IsValid(PlayerCharacter))
 	{
 		return;
 	}
@@ -39,18 +40,15 @@ void ULLL_PGA_GroundStrike::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		return;
 	}
 
-	if(Player->GetCharacterMovement()->IsWalking())
-	{
-		Player->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-	}
+	PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	
-	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("SkillMontage"), AbilityActionMontage, 1.0f);
+	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("SkillMontage"), AbilityActionMontage, 1.0f, SECTION_ATTACK);
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_GroundStrike::OnCompleteCallBack);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_GroundStrike::OnInterruptedCallBack);
 
 	PlayMontageTask->ReadyForActivation();
 	
-	FLLL_ExecuteCueHelper::ExecuteCue(Player, WireAttackCueTag);
+	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, WireAttackCueTag);
 }
 
 void ULLL_PGA_GroundStrike::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_EnergyBlaster : public ALLL_RangedMonster, public ILLL_KnockBackInterface
+class PROJECT_LLL_API ALLL_EnergyBlaster : public ALLL_RangedMonster
 {
 	GENERATED_BODY()
 

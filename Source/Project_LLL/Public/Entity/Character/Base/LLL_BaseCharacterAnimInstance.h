@@ -25,12 +25,15 @@ protected:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	// 사운드 관련
+protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void AnimNotify_LeftStep();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void AnimNotify_RightStep();
-	
+
+protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	uint8 bIsIdle : 1;
 
@@ -52,6 +55,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	float JumpingThreshold;
 
+protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	TObjectPtr<ALLL_BaseCharacter> Character;
 

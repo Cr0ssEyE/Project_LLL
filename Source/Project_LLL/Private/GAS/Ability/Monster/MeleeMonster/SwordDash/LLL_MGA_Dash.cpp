@@ -17,9 +17,9 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
-	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_EVADE);
+	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_DASH);
 	Monster->GetMovementComponent()->Velocity = FVector::Zero();
-
+	
 	const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
 
 	FHitResult StaticResult;
