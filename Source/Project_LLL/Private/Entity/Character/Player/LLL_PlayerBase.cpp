@@ -309,7 +309,7 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 		AddMovementInput(MoveDirection, 1.f);
 	}
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckPlayerMovementDebug())
 		{
