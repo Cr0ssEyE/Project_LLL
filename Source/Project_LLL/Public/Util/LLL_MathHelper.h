@@ -84,7 +84,7 @@ public:
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(Owner);
 		FVector LaunchLocation = Owner->GetActorLocation() + LaunchDirection.GetSafeNormal2D() * LaunchDistance;
-		FVector2d CapsuleExtent = FVector2d(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.2f, Owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f);
+		FVector2d CapsuleExtent = FVector2d(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.f, Owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f);
 		// 끼임 방지용 캐릭터 충돌 캡슐보다 1.2배 큰 반지름 체크
 		World->SweepSingleByChannel(
 			CapsuleHitResult,
@@ -112,6 +112,7 @@ public:
 		}
 
 		FVector CorrectionLaunchLocation = LaunchLocation + LaunchDirection.GetSafeNormal2D() * CorrectionDistance;
+		
 		FHitResult CorrectionLocationHitResult;
 		World->SweepSingleByChannel(
 			CorrectionLocationHitResult,
@@ -164,9 +165,56 @@ public:
 			}
 		}
 
-		TArray<FHitResult> LineTraceHitResults;
-		World->LineTraceMultiByChannel(
-			LineTraceHitResults,
+		Params.AddIgnoredActor(CapsuleHitResult.GetActor());
+		FHitResult LineTraceHitResultFromLaunchLocation;
+		World->LineTraceSingleByChannel(
+			LineTraceHitResultFromLaunchLocation,
+			LaunchLocation,
+			Owner->GetActorLocation(),
+			ECC_WALL_ONLY,
+			Params
+			);
+		
+		if (LineTraceHitResultFromLaunchLocation.GetActor())
+		{
+			float Distance = FVector::DistXY(LineTraceHitResultFromLaunchLocation.ImpactPoint, LaunchLocation);
+			if (Distance >= CapsuleExtent.X)
+			{
+				Params.ClearIgnoredActors();
+				Params.AddIgnoredActor(Owner);
+				FVector SweepLocation = LineTraceHitResultFromLaunchLocation.ImpactPoint + LaunchDirection.GetSafeNormal2D() * CapsuleExtent.X;
+				FHitResult ChinkCheckHitResult;
+				
+				World->SweepSingleByChannel(
+				ChinkCheckHitResult,
+			SweepLocation,
+			SweepLocation,
+			FQuat::Identity,
+				ECC_WALL_ONLY,
+				FCollisionShape::MakeCapsule(CapsuleExtent.X, CapsuleExtent.Y),
+				Params
+				);
+				
+				#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+                			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+                			{
+                				if(ProtoGameInstance->CheckPlayerDashDebug())
+                				{
+                					DrawDebugCapsule(World, SweepLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Orange, false, 2.f);
+                				}
+                			}
+                #endif
+
+				if (!ChinkCheckHitResult.GetActor())
+				{
+					return SweepLocation;
+				}
+			} 
+		}
+		
+		FHitResult LineTraceHitResultFromOwner;
+		World->LineTraceSingleByChannel(
+			LineTraceHitResultFromOwner,
 			Owner->GetActorLocation(),
 			LaunchLocation + LaunchDirection.GetSafeNormal2D() * CapsuleExtent.X * 2,
 			ECC_WALL_ONLY,
@@ -174,25 +222,22 @@ public:
 			);
 		
 		// 앞서 캡슐로 긁어봐서 반드시 대상 검출 됨
-		for (auto HitResult : LineTraceHitResults)
+		if (LineTraceHitResultFromOwner.GetActor())
 		{
-			if (HitResult.GetActor() == CapsuleHitResult.GetActor())
-			{
-				// 대상과 충돌하는 위치 - 충돌체 반지름 만큼 위치 보정
-				LaunchLocation = HitResult.ImpactPoint - LaunchDirection.GetSafeNormal2D() * CapsuleExtent.X;
-				LaunchLocation.Z = Owner->GetActorLocation().Z;
+			// 대상과 충돌하는 위치 - 충돌체 반지름 만큼 위치 보정
+			LaunchLocation = LineTraceHitResultFromOwner.ImpactPoint - LaunchDirection.GetSafeNormal2D() * CapsuleExtent.X;
+			LaunchLocation.Z = Owner->GetActorLocation().Z;
 				
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-				if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+			{
+				if(ProtoGameInstance->CheckPlayerDashDebug())
 				{
-					if(ProtoGameInstance->CheckPlayerDashDebug())
-					{
-						DrawDebugLine(World, Owner->GetActorLocation(), LaunchLocation, FColor::Red, false, 2.f);
-					}
+					DrawDebugLine(World, Owner->GetActorLocation(), LaunchLocation, FColor::Red, false, 2.f);
 				}
-#endif
-				return LaunchLocation;
 			}
+#endif
+			return LaunchLocation;
 		}
 
 		// 여긴 사실상 들어오면 안됨
