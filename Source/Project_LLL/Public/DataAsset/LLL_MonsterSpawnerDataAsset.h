@@ -16,9 +16,6 @@ class PROJECT_LLL_API ULLL_MonsterSpawnerDataAsset : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Mesh", DisplayName = "스폰 포인트 메시")
-	TObjectPtr<UStaticMesh> SpawnPointMesh;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "스폰 사운드 이벤트")
 	TObjectPtr<UFMODEvent> SpawnSoundEvent;
 

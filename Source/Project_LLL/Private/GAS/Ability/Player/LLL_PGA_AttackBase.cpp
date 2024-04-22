@@ -204,6 +204,9 @@ void ULLL_PGA_AttackBase::ExecuteAttackCueWithDelay()
 
 		if (AttackEventDelayArray[AttackEventDelayIndex] > 0)
 		{
+			const UAnimInstance* PlayerAnimInstance = PlayerCharacter->GetCharacterAnimInstance();
+			const float MontagePlayRate = PlayerAnimInstance->Montage_GetPlayRate(AttackAnimMontage);
+			
 			int32 CapturedCurrentComboAction = CurrentComboAction;
 			FTimerHandle AttackEventDelayTimerHandle;
 
@@ -211,7 +214,7 @@ void ULLL_PGA_AttackBase::ExecuteAttackCueWithDelay()
 				const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 				FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
 				PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerAttackCountParameterName, CapturedCurrentComboAction - 1);
-			}), AttackEventDelayArray[AttackEventDelayIndex], false);
+			}), AttackEventDelayArray[AttackEventDelayIndex] * MontagePlayRate, false);
 		}
 		else
 		{

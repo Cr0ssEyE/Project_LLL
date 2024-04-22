@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SceneComponent.h"
+#include "Components/BillboardComponent.h"
 #include "DataAsset/LLL_MonsterSpawnerDataAsset.h"
 #include "LLL_MonsterSpawnPointComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECT_LLL_API ULLL_MonsterSpawnPointComponent : public UStaticMeshComponent
+class PROJECT_LLL_API ULLL_MonsterSpawnPointComponent : public UBillboardComponent
 {
 	GENERATED_BODY()
 
