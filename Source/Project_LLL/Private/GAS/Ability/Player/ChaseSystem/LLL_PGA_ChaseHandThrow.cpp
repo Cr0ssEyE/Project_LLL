@@ -53,9 +53,9 @@ void ULLL_PGA_ChaseHandThrow::EndAbility(const FGameplayAbilitySpecHandle Handle
 			}
 		}
 #endif
-		if (!GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_GRAB)))
+		if (!GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_GRAB)))
 		{
-			GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_RELEASE));
+			GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_RELEASE));
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 			if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 			{
@@ -120,7 +120,7 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 
 void ULLL_PGA_ChaseHandThrow::CheckReached()
 {
-	if (GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_GRAB)))
+	if (GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_GRAB)))
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		return;
@@ -140,7 +140,7 @@ void ULLL_PGA_ChaseHandThrow::CheckReached()
 	}
 	else if (OwnerDistance >= ChaseHandAttributeSet->GetMaximumThrowDistance())
 	{
-		GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_WIRE_RELEASE));
+		GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_RELEASE));
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	}
 	else

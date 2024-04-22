@@ -6,6 +6,7 @@
 #include "Components/SceneComponent.h"
 #include "LLL_GateSpawnPointComponent.generated.h"
 
+class USphereComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECT_LLL_API ULLL_GateSpawnPointComponent : public USceneComponent
@@ -24,5 +25,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USphereComponent> CollisionSphere;
 };

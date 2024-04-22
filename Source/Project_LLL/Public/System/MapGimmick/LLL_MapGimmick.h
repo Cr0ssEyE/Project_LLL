@@ -3,12 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTable/LLL_RewardDataTable.h"
+#include "DataAsset/LLL_MapDataAsset.h"
 #include "GameFramework/Actor.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_MapGimmick.generated.h"
 
 class UBoxComponent;
-class ULLL_MapDataAsset;
 class ALLL_GateObject;
 class ALLL_RewardObject;
 class ALLL_MonsterSpawner;
@@ -16,6 +17,9 @@ class ULevelSequencePlayer;
 class ULevelSequence;
 class ALevelSequenceActor;
 class ULLL_ShoppingMapComponent;
+class ULLL_RewardDataTable;
+class ALLL_RewardGimmick;
+class ULLL_PlayerSpawnPointComponent;
 
 DECLARE_DELEGATE(FOnStageChangedDelegate);
 
@@ -60,7 +64,7 @@ protected:
 	// Stage Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage")
-	TObjectPtr<ULLL_MapDataAsset> MapDataAsset;
+	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
 	
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> Stage;
@@ -76,6 +80,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_ShoppingMapComponent> ShoppingMapComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ULLL_PlayerSpawnPointComponent> PlayerSpawnPointComponent;
 
 	uint32 Seed;
 
@@ -105,9 +112,8 @@ protected:
 	
 	UFUNCTION()
 	void AllGatesDestroy();
-
-	UFUNCTION()
-	void OnInteractionGate();
+	
+	void OnInteractionGate(FTestRewardDataTable* Data);
 	
 	void EnableAllGates();
 
@@ -146,6 +152,11 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<ALLL_RewardObject> RewardObjectClass;
+
+	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ALLL_RewardGimmick> RewardGimmick;
+	
+	FTestRewardDataTable* RewardData;
 
 	UFUNCTION()
 	void RewardDestroyed(AActor* DestroyedActor);

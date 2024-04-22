@@ -19,8 +19,9 @@ public:
 	virtual void NativeConstruct() override;
 
 public:
-	UFUNCTION(BlueprintCallable)
-	void SetRewardButton();
+	FORCEINLINE UButton* GetFirstButton() const { return RewardButton1; }
+	FORCEINLINE UButton* GetSecondButton() const { return RewardButton2; }
+	FORCEINLINE UButton* GetThirdButton() const { return RewardButton3; }
 
 	UFUNCTION(BlueprintCallable)
 	void CheckButton();

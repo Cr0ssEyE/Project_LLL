@@ -28,12 +28,12 @@ protected:
 	virtual void CheckReached();
 
 protected:
-	UPROPERTY(EditDefaultsOnly, DisplayName = "와이어의 투척 애니메이션")
+	UPROPERTY(EditDefaultsOnly, DisplayName = "체이서의 투척 애니메이션")
 	TObjectPtr<UAnimSequence> ThrowAnim;
 
 	FVector TargetLocation;
 
 protected:
-	UPROPERTY(EditAnywhere, DisplayName = "와이어 투척 이벤트 태그", meta=(Categories = "GameplayCue"))
+	UPROPERTY(EditAnywhere, DisplayName = "체이서 투척 이벤트 태그", meta=(Categories = "GameplayCue"))
 	FGameplayTag WireHandThrowCueTag;
 };

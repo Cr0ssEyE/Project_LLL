@@ -103,9 +103,6 @@ void ALLL_PlayerBase::BeginPlay()
 		Delegate.AddDynamic(this, &ALLL_PlayerBase::DelegateReceiveTest);
 		AbilityManageSubSystem->ASyncLoadEffectsByTag(Delegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), true);
 	}
-
-	FModAudioComponent->SetEvent(PlayerDataAsset->Stage1AMB);
-	FModAudioComponent->Play();
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -302,7 +299,7 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 		AddMovementInput(MoveDirection, 1.f);
 	}
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckPlayerMovementDebug())
 		{
@@ -357,9 +354,8 @@ void ALLL_PlayerBase::ChaseAction(const FInputActionValue& Value, EAbilityInputN
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	if(SkillSpec)
+	const int32 InputID = static_cast<int32>(InputName);
+	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
 		SkillSpec->InputPressed = true;
 		if (SkillSpec->IsActive())

@@ -17,6 +17,9 @@ UCLASS(Blueprintable)
 class PROJECT_LLL_API UProtoGameInstance : public ULLL_GameInstance
 {
 	GENERATED_BODY()
+
+public:
+	UProtoGameInstance();
 	
 	// 디버그용 델리게이트
 public:
@@ -112,7 +115,6 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckObjectCollisionDebug() const { return bObjectCollisionDebug; }
-
 
 	// 플레이어 디버그 변수
 protected:

@@ -3,11 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataAsset/LLL_MonsterSpawnerDataAsset.h"
 #include "DataTable/LLL_MonsterSpawnDataTable.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_MonsterSpawner.generated.h"
 
+class UFMODEvent;
 class ALLL_MonsterBase;
 class UBoxComponent;
 class ULLL_MonsterSpawnDataTable;
@@ -38,6 +40,9 @@ public:
 private:
 	UFUNCTION()
 	void MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter);
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<const ULLL_MonsterSpawnerDataAsset> MonsterSpawnerDataAsset;
 	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<const UDataTable> MonsterSpawnDataTable;
