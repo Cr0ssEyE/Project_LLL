@@ -32,7 +32,7 @@ void ULLL_GameInstance::Init()
 	}
 
 	TArray<FTestAbilityDataTable*> LoadAbilityDataArray;
-	AbilityDataTable->GetAllRows<FTestAbilityDataTable>(TEXT("Failed To Load FMod Parameter Name Data Tables"), LoadAbilityDataArray);
+	AbilityDataTable->GetAllRows<FTestAbilityDataTable>(TEXT("Failed To Load Ability Data Tables"), LoadAbilityDataArray);
 
 	for (const FTestAbilityDataTable* LoadDataTable : LoadAbilityDataArray)
 	{

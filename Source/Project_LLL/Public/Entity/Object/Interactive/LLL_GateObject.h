@@ -21,7 +21,6 @@ public:
 
 	FORCEINLINE void GateEnable() { bIsGateEnabled = true; }
 	FORCEINLINE FTestRewardDataTable* GetRewardData() const { return RewardData; }
-	FORCEINLINE uint8 IsGateInteracted() const { return bIsGateInteracted; }
 	
 	FOnGateInteractionDelegate GateInteractionDelegate;
 
@@ -37,9 +36,6 @@ protected:
 	uint8 bIsGateEnabled : 1;
 	
 	FTestRewardDataTable* RewardData;
-	
-	UPROPERTY(EditDefaultsOnly)
-	uint8 bIsGateInteracted : 1;
 	
 	void OpenGate();
 

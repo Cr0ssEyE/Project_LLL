@@ -15,9 +15,9 @@ class PROJECT_LLL_API ULLL_PlayerRewardInfoWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	FORCEINLINE UImage* GetFirstImage() { return RewardImage1; }
-	FORCEINLINE UImage* GetSecondImage() { return RewardImage2; }
-	FORCEINLINE UImage* GetThirdImage() { return RewardImage3; }
+	FORCEINLINE UImage* GetFirstImage() const { return RewardImage1; }
+	FORCEINLINE UImage* GetSecondImage() const { return RewardImage2; }
+	FORCEINLINE UImage* GetThirdImage() const { return RewardImage3; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
