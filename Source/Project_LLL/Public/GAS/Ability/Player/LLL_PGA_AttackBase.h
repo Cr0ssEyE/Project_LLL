@@ -29,8 +29,10 @@ protected:
 protected:
 	UFUNCTION()
 	void WaitInputForNextAction();
+	
 	void SetNextAttackAction();
 	void EndAttackInputWait();
+	void ExecuteAttackCueWithDelay();
 
 protected:
 	UPROPERTY()
@@ -57,6 +59,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, DisplayName = "공격 이벤트 태그", meta=(Categories = "GameplayCue"))
 	FGameplayTag AttackCueTag;
+
+	UPROPERTY(EditAnywhere, DisplayName = "콤보 공격 이벤트 딜레이")
+	TArray<float> AttackEventDelayArray;
 
 	FName PlayerAttackCountParameterName;
 };

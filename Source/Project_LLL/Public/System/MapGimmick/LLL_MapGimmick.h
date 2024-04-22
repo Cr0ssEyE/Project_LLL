@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "DataTable/LLL_RewardDataTable.h"
+#include "DataAsset/LLL_MapDataAsset.h"
 #include "GameFramework/Actor.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_MapGimmick.generated.h"
 
 class UBoxComponent;
-class ULLL_MapDataAsset;
 class ALLL_GateObject;
 class ALLL_RewardObject;
 class ALLL_MonsterSpawner;
@@ -64,7 +64,7 @@ protected:
 	// Stage Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage")
-	TObjectPtr<ULLL_MapDataAsset> MapDataAsset;
+	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
 	
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> Stage;

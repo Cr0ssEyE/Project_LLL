@@ -70,7 +70,7 @@ void ALLL_PlayerChaseHand::NotifyActorBeginOverlap(AActor* OtherActor)
 		}
 		
 		// PGA_WireHandGrab
-		const FGameplayTagContainer GrabTag(TAG_GAS_WIRE_GRAB);
+		const FGameplayTagContainer GrabTag(TAG_GAS_CHASE_GRAB);
 		if(ASC->TryActivateAbilitiesByTag(GrabTag))
 		{
 			GrabbedActor = OtherActor;

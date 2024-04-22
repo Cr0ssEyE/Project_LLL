@@ -2,6 +2,7 @@
 
 
 #include "System/MapGimmick/LLL_MapGimmick.h"
+
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -82,8 +83,7 @@ void ALLL_MapGimmick::BeginPlay()
 	LevelSequencePlayer->Play();
 }
 
-void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	SetState(EStageState::FIGHT);
 }
@@ -150,7 +150,7 @@ void ALLL_MapGimmick::AllGatesDestroy()
 	{
 		return;
 	}
-	for	(auto Gate : Gates)
+	for	(const auto Gate : Gates)
 	{
 		Gate->Destroy();
 	}

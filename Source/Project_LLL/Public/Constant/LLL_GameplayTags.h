@@ -18,10 +18,10 @@
 
 // 플레이어 행동, 상태 관련 게임플레이 태그
 #define TAG_GAS_PLAYER_DASH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash"))
-#define TAG_GAS_PLAYER_WIRE_THROW FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Wire.Throw"))
-#define TAG_GAS_PLAYER_WIRE_RUSH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Wire.Rush"))
-#define TAG_GAS_PLAYER_WIRE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Wire.Attack"))
-#define TAG_GAS_PLAYER_WIRE_RETURN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.WireReturned"))
+#define TAG_GAS_PLAYER_CHASE_THROW FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Throw"))
+#define TAG_GAS_PLAYER_CHASE_RUSH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Rush"))
+#define TAG_GAS_PLAYER_CHASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Attack"))
+#define TAG_GAS_PLAYER_CHASE_RETURN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaseReturned"))
 #define TAG_GAS_PLAYER_WAIT_ATTACK_INPUT FGameplayTag::RequestGameplayTag(FName("Character.Player.State.WaitAttackInput"))
 
 // 플레이어 부가 효과 구분용 게임플레이 태그
@@ -29,13 +29,13 @@
 #define TAG_GAS_PERKS_DASH FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Dash")
 #define TAG_GAS_PERKS_SKILL FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Skill")
 #define TAG_GAS_PERKS_STAT FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Stat")
-#define TAG_GAS_PERKS_WIRE FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Wire")
+#define TAG_GAS_PERKS_CHASE FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Chase")
 
 // 와이어 게임플레이 태그
-#define TAG_GAS_WIRE_THROW FGameplayTag::RequestGameplayTag(FName("Object.Wire.Action.Throw"))
-#define TAG_GAS_WIRE_RELEASE FGameplayTag::RequestGameplayTag(FName("Object.Wire.Action.Release"))
-#define TAG_GAS_WIRE_GRAB FGameplayTag::RequestGameplayTag(FName("Object.Wire.Action.Grab"))
-#define TAG_GAS_WIRE_STATE_GRABBED FGameplayTag::RequestGameplayTag(FName("Object.Wire.State.Grabbed"))
+#define TAG_GAS_CHASE_THROW FGameplayTag::RequestGameplayTag(FName("Object.Chase.Action.Throw"))
+#define TAG_GAS_CHASE_RELEASE FGameplayTag::RequestGameplayTag(FName("Object.Chase.Action.Release"))
+#define TAG_GAS_CHASE_GRAB FGameplayTag::RequestGameplayTag(FName("Object.Chase.Action.Grab"))
+#define TAG_GAS_CHASE_STATE_GRABBED FGameplayTag::RequestGameplayTag(FName("Object.Chase.State.Grabbed"))
 
 // 몬스터 게임플레이 태그
 #define TAG_GAS_MONSTER_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Attack"))

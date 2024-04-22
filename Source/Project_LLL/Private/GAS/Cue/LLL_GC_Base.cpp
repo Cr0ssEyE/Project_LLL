@@ -28,7 +28,7 @@ bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCue
 		if (IsValid(FModAudioComponent))
 		{
 			FModAudioComponent->Release();
-			FModAudioComponent->Event = FModEvent;
+			FModAudioComponent->SetEvent(FModEvent);
 			FModAudioComponent->Play();
 		}
 		else
