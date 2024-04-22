@@ -2,6 +2,7 @@
 
 
 #include "System/MapGimmick/LLL_MapGimmick.h"
+
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -10,7 +11,6 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Entity/Object/Interactive/LLL_GateObject.h"
-#include "Entity/Object/Breakable/LLL_BreakableObjectBase.h"
 #include "Entity/Object/Interactive/LLL_RewardObject.h"
 #include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawner.h"
@@ -76,8 +76,7 @@ void ALLL_MapGimmick::BeginPlay()
 	LevelSequencePlayer->Play();
 }
 
-void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	SetState(EStageState::FIGHT);
 }
@@ -92,7 +91,8 @@ void ALLL_MapGimmick::CreateMap()
 		{
 			ShoppingMapComponent = Cast<ULLL_ShoppingMapComponent>(ChildComponent);
 		}
-		ULLL_GateSpawnPointComponent* SpawnPoint = Cast<ULLL_GateSpawnPointComponent>(ChildComponent);
+		
+		const ULLL_GateSpawnPointComponent* SpawnPoint = Cast<ULLL_GateSpawnPointComponent>(ChildComponent);
 		if (IsValid(SpawnPoint))
 		{
 			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
@@ -137,7 +137,7 @@ void ALLL_MapGimmick::AllGatesDestroy()
 	{
 		return;
 	}
-	for	(auto Gate : Gates)
+	for	(const auto Gate : Gates)
 	{
 		Gate->Destroy();
 	}

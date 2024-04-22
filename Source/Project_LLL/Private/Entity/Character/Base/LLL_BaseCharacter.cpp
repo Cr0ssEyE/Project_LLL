@@ -26,7 +26,6 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	
 	FModAudioComponent->SetupAttachment(RootComponent);
-	FModAudioComponent->bStopWhenOwnerDestroyed; // 이거 왜 안되지
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	bIsSpawned = false;

@@ -103,14 +103,6 @@ void ALLL_PlayerBase::BeginPlay()
 		Delegate.AddDynamic(this, &ALLL_PlayerBase::DelegateReceiveTest);
 		AbilityManageSubSystem->ASyncLoadEffectsByTag(Delegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), true);
 	}
-
-	FModAudioComponent->Release();
-	FModAudioComponent->SetEvent(PlayerDataAsset->Stage1BGM);
-	FModAudioComponent->Play();
-
-	FModAudioComponent->Release();
-	FModAudioComponent->SetEvent(PlayerDataAsset->Stage1AMB);
-	FModAudioComponent->Play();
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
