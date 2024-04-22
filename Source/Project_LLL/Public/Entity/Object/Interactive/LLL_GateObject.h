@@ -3,11 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTable/LLL_RewardDataTable.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "LLL_GateObject.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnStageDestroyDelegate);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateInteractionDelegate, FTestRewardDataTable*);
 
+struct FTestRewardDataTable;
+class ULLL_RewardDataTable;
 UCLASS()
 class PROJECT_LLL_API ALLL_GateObject : public ALLL_InteractiveObject
 {
@@ -16,9 +19,12 @@ class PROJECT_LLL_API ALLL_GateObject : public ALLL_InteractiveObject
 public:
 	ALLL_GateObject();
 
-	FORCEINLINE void GateEnable() { IsGateEnabled = true; }
+	FORCEINLINE void GateEnable() { bIsGateEnabled = true; }
+	FORCEINLINE FTestRewardDataTable* GetRewardData() const { return RewardData; }
 	
-	FOnStageDestroyDelegate StageDestroyDelegate;
+	FOnGateInteractionDelegate GateInteractionDelegate;
+
+	void SetGateInformation(FTestRewardDataTable* Data);
 	
 protected:
 	virtual void InteractiveEvent() override;
@@ -27,7 +33,11 @@ protected:
 	TObjectPtr<UStaticMesh> GateMesh;
 
 	UPROPERTY(EditDefaultsOnly)
-	bool IsGateEnabled;
-
+	uint8 bIsGateEnabled : 1;
+	
+	FTestRewardDataTable* RewardData;
+	
 	void OpenGate();
+
+	void StartDestroy();
 };

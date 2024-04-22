@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
-#include "LLL_GateSpawnPointComponent.generated.h"
+#include "LLL_PlayerSpawnPointComponent.generated.h"
 
 class USphereComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECT_LLL_API ULLL_GateSpawnPointComponent : public USceneComponent
+class PROJECT_LLL_API ULLL_PlayerSpawnPointComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	ULLL_GateSpawnPointComponent();
+	ULLL_PlayerSpawnPointComponent();
 
 protected:
 	// Called when the game starts
@@ -28,4 +28,5 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<USphereComponent> CollisionSphere;
+		
 };

@@ -3,3 +3,10 @@
 
 #include "Game/ProtoGameInstance.h"
 
+#include "Constant/LLL_FilePath.h"
+#include "Util/LLL_ConstructorHelper.h"
+
+UProtoGameInstance::UProtoGameInstance()
+{
+
+}
