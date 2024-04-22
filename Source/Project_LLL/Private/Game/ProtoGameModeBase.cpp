@@ -2,10 +2,10 @@
 
 
 #include "Game/ProtoGameModeBase.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 ALLL_ProtoGameModeBase::ALLL_ProtoGameModeBase()
 {
-	DefaultPawnClass = FLLLConstructorHelper::FindAndGetClass<APawn>(TEXT("/Script/CoreUObject.Class'/Script/Project_LLL.LLL_PlayerBase'"));
-	PlayerControllerClass = FLLLConstructorHelper::FindAndGetClass<APlayerController>(TEXT("/Script/CoreUObject.Class'/Script/Project_LLL.LLL_PlayerController'"));
+	DefaultPawnClass = FLLL_ConstructorHelper::FindAndGetClass<APawn>(TEXT("/Script/CoreUObject.Class'/Script/Project_LLL.LLL_PlayerBase'"));
+	PlayerControllerClass = FLLL_ConstructorHelper::FindAndGetClass<APlayerController>(TEXT("/Script/CoreUObject.Class'/Script/Project_LLL.LLL_PlayerController'"));
 }

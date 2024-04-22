@@ -7,17 +7,16 @@
 #include "GameplayEffectTypes.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 ULLL_BaseCharacterAnimInstance::ULLL_BaseCharacterAnimInstance()
 {
+	bIsIdle = true;
+	bIsFalling = false;
+	bIsJumping = false;
+	GroundSpeed = 0.0f;
 	MovingThreshold = 3.0f;
 	JumpingThreshold = 100.0f;
-}
-
-void ULLL_BaseCharacterAnimInstance::PlayDeadAnimation()
-{
-	StopAllMontages(0.0f);
-	Montage_Play(CharacterDataAsset->DeadAnimMontage);
 }
 
 void ULLL_BaseCharacterAnimInstance::NativeInitializeAnimation()
@@ -50,21 +49,10 @@ void ULLL_BaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void ULLL_BaseCharacterAnimInstance::AnimNotify_LeftStep()
 {
-	ExecuteStepCue();
+	FLLL_ExecuteCueHelper::ExecuteCue(Character, CharacterDataAsset->StepCueTag);
 }
 
 void ULLL_BaseCharacterAnimInstance::AnimNotify_RightStep()
 {
-	ExecuteStepCue();
-}
-
-void ULLL_BaseCharacterAnimInstance::ExecuteStepCue()
-{
-	UAbilitySystemComponent* ASC = Character->GetAbilitySystemComponent();
-	FGameplayEffectContextHandle CueContextHandle = ASC->MakeEffectContext();
-	CueContextHandle.AddSourceObject(this);
-	FGameplayCueParameters CueParam;
-	CueParam.EffectContext = CueContextHandle;
-	
-	ASC->ExecuteGameplayCue(CharacterDataAsset->StepCueTag, CueParam);
+	FLLL_ExecuteCueHelper::ExecuteCue(Character, CharacterDataAsset->StepCueTag);
 }

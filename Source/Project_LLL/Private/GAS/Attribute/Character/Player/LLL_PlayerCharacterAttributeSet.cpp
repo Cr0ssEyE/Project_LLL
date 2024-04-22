@@ -19,12 +19,12 @@ ULLL_PlayerCharacterAttributeSet::ULLL_PlayerCharacterAttributeSet() :
 
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
 	if (!IsValid(Player))
 	{
 		return;
 	}
-
+	
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
 		const uint32 DeclinedComboCount = FMath::FloorToInt(GetCurrentComboCount() * GetMultiplyComboCountWhenHit());
@@ -69,7 +69,7 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 
 	if (Data.EvaluatedData.Attribute == GetAddCurrentSkillGaugeAttribute())
 	{
-		const float Result = FLLL_MathHelper::CalculateSkillGaugeIncrement(Data.EvaluatedData.Magnitude, GetSkillGaugeAmplifyByCombo(), GetSkillGaugeAmplifyByItem());
+		const float Result = FLLL_MathHelper::CalculatePlayerSkillGaugeIncrement(Data.EvaluatedData.Magnitude, GetSkillGaugeAmplifyByCombo(), GetSkillGaugeAmplifyByItem());
 		const float NewCurrentSkillGauge = FMath::Clamp(GetCurrentSkillGauge() + Result, 0.f, GetMaxSkillGauge());
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -104,7 +104,7 @@ void ULLL_PlayerCharacterAttributeSet::TryStartComboManagement(const FGameplayEf
 	SetCurrentComboCount(FMath::Clamp(GetCurrentComboCount(), 0.f, GetMaxComboCount()));
 	
 	UAbilitySystemComponent* OwnerASC = GetOwningAbilitySystemComponentChecked();
-	FGameplayTagContainer ComboManagementTag(TAG_GAS_COMBO_MANAGEMENT);
+	const FGameplayTagContainer ComboManagementTag(TAG_GAS_COMBO_MANAGEMENT);
 	OwnerASC->TryActivateAbilitiesByTag(ComboManagementTag);
 }
 	

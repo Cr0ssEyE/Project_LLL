@@ -5,14 +5,15 @@
 
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Interactive/LLL_InteractiveObject.h"
+#include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/Player/LLL_InteractionWidget.h"
-#include "UI/Player/LLL_InventoryWidget.h"
-#include "UI/Player/LLL_PlayerStatusWidget.h"
-#include "UI/Player/LLL_SkillWidget.h"
+#include "UI/Entity/Character/Player/LLL_InteractionWidget.h"
+#include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
+#include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
+#include "UI/Entity/Character/Player/LLL_SkillWidget.h"
 #include "UI/System/LLL_GamePauseWidget.h"
+#include "UI/System/LLL_SelectRewardWidget.h"
 
 ULLL_PlayerUIManager::ULLL_PlayerUIManager()
 {
@@ -23,7 +24,7 @@ void ULLL_PlayerUIManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetOwner());
+	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetOwner());
 	const ULLL_BaseCharacterDataAsset* CharacterDataAsset = PlayerCharacter->GetCharacterDataAsset();
 	const ULLL_PlayerBaseDataAsset* PlayerBaseDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
 	
@@ -32,6 +33,7 @@ void ULLL_PlayerUIManager::BeginPlay()
 	InventoryWidgetClass = PlayerBaseDataAsset->InventoryWidgetClass;
 	InteractionWidgetClass = PlayerBaseDataAsset->InteractionWidgetClass;
 	SkillGaugeWidgetClass = PlayerBaseDataAsset->SkillGaugeWidgetClass;
+	SelectRewardWidgetClass = PlayerBaseDataAsset->SelectRewardWidgetClass;
 	
 	if(IsValid(CharacterStatusWidgetClass))
 	{
@@ -65,6 +67,14 @@ void ULLL_PlayerUIManager::BeginPlay()
 	{
 		SkillGaugeWidget = CastChecked<ULLL_SkillWidget>(CreateWidget(GetWorld(), SkillGaugeWidgetClass));
 		SkillGaugeWidget->AddToViewport();
+	}
+
+	if(IsValid(SelectRewardWidgetClass))
+	{
+		SelectRewardWidget = CastChecked<ULLL_SelectRewardWidget>(CreateWidget(GetWorld(), SelectRewardWidgetClass));
+		SelectRewardWidget->AddToViewport();
+		SelectRewardWidget->SetVisibility(ESlateVisibility::Hidden);
+		SelectRewardWidget->SetIsEnabled(false);
 	}
 }
 
@@ -121,13 +131,13 @@ void ULLL_PlayerUIManager::DisableInteractionWidget() const
 	InteractionWidget->SetIsEnabled(false);
 }
 
-void ULLL_PlayerUIManager::UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject, int Num) const
+void ULLL_PlayerUIManager::UpdateInteractionWidget(const ALLL_InteractiveObject* CurrentObject, int Num) const
 {
 	InteractionWidget->RenderNextInteractionPanel(static_cast<bool>(Num));
 	InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
 }
 
-void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible)
+void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
 {
 	if(Visible)
 	{

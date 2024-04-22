@@ -6,6 +6,10 @@
 #include "Engine/DataAsset.h"
 #include "LLL_MapDataAsset.generated.h"
 
+class ULevelSequence;
+class ALLL_RewardObject;
+class ALLL_MonsterSpawner;
+
 /**
  * 
  */
@@ -25,8 +29,14 @@ public:
 	uint8 StoreRoom;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Monster", DisplayName = "몬스터 스포너")
-	TSubclassOf<class ALLL_MonsterSpawner> MonsterSpawnerClass;
+	TSubclassOf<ALLL_MonsterSpawner> MonsterSpawnerClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Reward", DisplayName = "보상 오브젝트")
-	TSubclassOf<class ALLL_RewardObject> RewardObjectClass;
+	TSubclassOf<ALLL_RewardObject> RewardObjectClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Fade", DisplayName = "페이드 인 시퀀스")
+	TObjectPtr<ULevelSequence> FadeIn;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Fade", DisplayName = "페이드 아웃 시퀀스")
+	TObjectPtr<ULevelSequence> FadeOut;
 };

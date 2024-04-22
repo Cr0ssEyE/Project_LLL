@@ -27,7 +27,7 @@ void ULLL_SelectRewardWidget::SetRewardButton()
 void ULLL_SelectRewardWidget::CheckButton()
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckObjectActivateDebug())
 		{

@@ -8,6 +8,7 @@
 
 class UBehaviorTree;
 class UBlackboardData;
+
 /**
  * 
  */
@@ -25,12 +26,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "행동트리")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
-
-	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "감지 거리")
-	float DetectDistance;
-
-	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "시야각")
-	float FieldOfView;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스테이터스 게이지 위치")
 	FVector StatusGaugeLocation;

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Character/Monster/Ranged/LLL_RangedMonsterAnimInstance.h"
+#include "Entity/Character/Monster/Ranged/Base/LLL_RangedMonsterAnimInstance.h"
 #include "LLL_EnergyBlasterAnimInstance.generated.h"
 
 /**

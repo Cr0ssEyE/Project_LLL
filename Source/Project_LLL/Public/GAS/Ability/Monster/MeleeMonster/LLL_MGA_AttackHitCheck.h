@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Ability/Monster/LLL_MonsterGameplayAbilityBase.h"
+#include "GAS/Ability/Monster/Base/LLL_MonsterGameplayAbilityBase.h"
 #include "LLL_MGA_AttackHitCheck.generated.h"
 
 class ALLL_TA_TraceBase;
+
 /**
  * 
  */

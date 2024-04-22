@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Object/Thrown/LLL_ThrownObject.h"
+#include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "LLL_EnergyBlasterEnergy.generated.h"
 
 /**

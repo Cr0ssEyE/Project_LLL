@@ -47,19 +47,8 @@ void ULLL_PGA_ComboManagement::EndAbility(const FGameplayAbilitySpecHandle Handl
 		}
 	}
 #endif
-	
-	if(!OnEndedEffects.IsEmpty())
-	{
-		for (auto EndedEffect : OnEndedEffects)
-		{
-			if(IsValid(EndedEffect.Key) && EndedEffect.Value == EEffectApplyTarget::Self)
-			{
-				BP_ApplyGameplayEffectToOwner(EndedEffect.Key);
-			}
-		}
-	}
 
-	FGameplayTagContainer SkillGaugeAmplifyByComboTag(TAG_GAS_COMBO_CHECK_AMPLIFY);
+	const FGameplayTagContainer SkillGaugeAmplifyByComboTag(TAG_GAS_COMBO_CHECK_AMPLIFY);
 	GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(SkillGaugeAmplifyByComboTag);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
@@ -74,7 +63,7 @@ void ULLL_PGA_ComboManagement::ComboTimerTick()
 		{
 			CurrentComboStackDuration = MaxComboStackDuration;
 		}
-		FGameplayTagContainer SkillGaugeAmplifyByComboTag(TAG_GAS_COMBO_CHECK_AMPLIFY);
+		const FGameplayTagContainer SkillGaugeAmplifyByComboTag(TAG_GAS_COMBO_CHECK_AMPLIFY);
 		GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(SkillGaugeAmplifyByComboTag);
 	}
 	else
@@ -91,6 +80,7 @@ void ULLL_PGA_ComboManagement::ComboTimerTick()
 			BP_ApplyGameplayEffectToOwner(ComboDivideEffect);
 		}
 	}
+	
 	CurrentComboCount = PlayerAttributes->GetCurrentComboCount();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ComboManagement::ComboTimerTick);
 	// TODO: UI 연결

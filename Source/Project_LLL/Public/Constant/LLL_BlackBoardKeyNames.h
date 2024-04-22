@@ -6,5 +6,6 @@
 
 #define BBKEY_PATROL_POS TEXT("PatrolPos")
 #define BBKEY_PLAYER TEXT("PlayerBase")
-#define BBKEY_IS_IN_RANGE TEXT("IsInRange")
+#define BBKEY_IS_IN_RANGE TEXT("IsInAttackRange")
 #define BBKEY_IS_IN_FIELD_OF_VIEW TEXT("IsInFieldOfView")
+#define BBKEY_DAMAGED TEXT("Damaged")

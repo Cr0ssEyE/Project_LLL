@@ -3,6 +3,8 @@
 
 #include "GAS/Ability/Base/LLL_CharacterGameplayAbilityBase.h"
 
+#include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+
 ULLL_CharacterGameplayAbilityBase::ULLL_CharacterGameplayAbilityBase()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
@@ -11,10 +13,22 @@ ULLL_CharacterGameplayAbilityBase::ULLL_CharacterGameplayAbilityBase()
 void ULLL_CharacterGameplayAbilityBase::PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
 {
 	Super::PreActivate(Handle, ActorInfo, ActivationInfo, OnGameplayAbilityEndedDelegate, TriggerEventData);
+	
 	// UE 5.3 이후로 버그인지 의도된 사항인지 코스트 항목에 GE를 넣어놔도 자동으로 작동하지 않음. 수동으로 호출해야 함.
 	if(CurrentActorInfo)
 	{
 		K2_CommitAbilityCost();
+	}
+
+	if(!OnActivateEffects.IsEmpty())
+	{
+		for (auto OnActivateEffect : OnActivateEffects)
+		{
+			if(IsValid(OnActivateEffect.Key) && OnActivateEffect.Value == EEffectApplyTarget::Self)
+			{
+				BP_ApplyGameplayEffectToOwner(OnActivateEffect.Key);
+			}
+		}
 	}
 }
 
@@ -24,6 +38,17 @@ void ULLL_CharacterGameplayAbilityBase::EndAbility(const FGameplayAbilitySpecHan
 	if(CurrentActorInfo)
 	{
 		K2_CommitAbilityCooldown();
+	}
+
+	if(!OnEndedEffects.IsEmpty())
+	{
+		for (auto EndedEffect : OnEndedEffects)
+		{
+			if(IsValid(EndedEffect.Key) && EndedEffect.Value == EEffectApplyTarget::Self)
+			{
+				BP_ApplyGameplayEffectToOwner(EndedEffect.Key);
+			}
+		}
 	}
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);

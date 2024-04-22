@@ -18,6 +18,7 @@ class UAttributeSet;
 class UAbilitySystemComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*, Character);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOtherActorCollidedDelegate, AActor*, SelfActor, AActor*, OtherActor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTakeDamageDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
 
@@ -36,9 +37,8 @@ public:
 	// 외부 접근용 함수
 public:
 	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
+	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
-	FORCEINLINE float GetTurnSpeed() const { return TurnSpeed; }
-	FORCEINLINE float GetAttackDistance() const { return AttackDistance; }
 	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
 
 	// 플레이어
@@ -48,6 +48,8 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
+
+	void MovementInit();
 	
 protected:
 	virtual void Tick(float DeltaTime) override;
@@ -55,7 +57,7 @@ protected:
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Damaged() {}
+	virtual void Damaged();
 	virtual void Dead();
 
 	// 상태 체크용 변수
@@ -67,6 +69,8 @@ public:
 	FCharacterDeadDelegate CharacterDeadDelegate;
 
 	FTakeDamageDelegate TakeDamageDelegate;
+
+	FOtherActorCollidedDelegate OtherActorCollidedDelegate;
 	
 	// 위젯 업데이트를 위한 델리게이트
 public:
@@ -83,22 +87,10 @@ protected:
 	// 캐릭터 공용 변수
 protected:
 	UPROPERTY(VisibleAnywhere)
-	float AttackDistance;
-
-	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
 
 	// 이동 관련 변수
 protected:
-	UPROPERTY(VisibleAnywhere)
-	float AccelerateSpeed;
-
-	UPROPERTY(VisibleAnywhere)
-	float GroundFriction;
-
-	UPROPERTY(VisibleAnywhere)
-	float TurnSpeed;
-
 	UPROPERTY(VisibleAnywhere)
 	FVector MoveDirection;
 
@@ -117,7 +109,7 @@ protected:
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 
 protected:
-	virtual void DeadMontageEndEvent();
+	virtual void DestroyHandle();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수
