@@ -68,14 +68,17 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		{
 			if (!OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER))
 			{
-				const ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(MonsterAIController->GetPawn());
-				const FVector Center = MonsterBase->GetActorLocation();
-				const FVector Direction = MonsterBase->GetActorForwardVector();
+				const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(MonsterAIController->GetPawn());
+				const FVector Center = Monster->GetActorLocation();
+				const FVector Direction = Monster->GetActorForwardVector();
 
-				const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(MonsterBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+				const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 				const float DetectDistance = MonsterAttributeSet->GetDetectDistance();
 				const float HalfFieldOfViewRadian = FMath::DegreesToRadians(MonsterAttributeSet->GetFieldOfView() / 2.0f);
 				DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Red, false, 0.1f);
+
+				ULLL_MonsterBaseDataAsset* MonsterDataAsset = CastChecked<ULLL_MonsterBaseDataAsset>(Monster->GetCharacterDataAsset());
+				DrawDebugSphere(GetWorld(), Center, MonsterDataAsset->CollisionSize.Y, 16, FColor::Red, false, 0.1f);
 			}
 		}
 	}
