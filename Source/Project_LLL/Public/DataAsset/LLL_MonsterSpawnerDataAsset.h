@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "LLL_MonsterSpawnerDataAsset.generated.h"
 
+class UNiagaraSystem;
 class UFMODEvent;
 /**
  * 
@@ -21,4 +22,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Timer", DisplayName = "스폰 타이머")
 	float SpawnTimer;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "스폰 파티클")
+	TObjectPtr<UNiagaraSystem> SpawnParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "스폰 파티클 타이머")
+	float SpawnParticleTimer;
 };

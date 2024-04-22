@@ -11,6 +11,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "NiagaraFunctionLibrary.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawnPointComponent.h"
 #include "Util/LLL_ConstructorHelper.h"
 
@@ -87,15 +88,6 @@ void ALLL_MonsterSpawner::BeginDestroy()
 
 void ALLL_MonsterSpawner::SpawnMonster()
 {
-	FModAudioComponent->Release();
-	FModAudioComponent->SetEvent(MonsterSpawnerDataAsset->SpawnSoundEvent);
-	FModAudioComponent->Play();
-	FTimerHandle MonsterSpawnTimerHandle;
-	GetWorldTimerManager().SetTimer(MonsterSpawnTimerHandle, this, &ALLL_MonsterSpawner::SpawnMonsterTimerHandle, MonsterSpawnerDataAsset->SpawnTimer, false);
-}
-
-void ALLL_MonsterSpawner::SpawnMonsterTimerHandle()
-{
 	CurrentWave++;
 	
 	CurrentGroup++;
@@ -112,30 +104,42 @@ void ALLL_MonsterSpawner::SpawnMonsterTimerHandle()
 		{
 			SpawnPointNum++;
 
-			for (FMonsterSpawnDataTable MonsterSpawnData : MonsterSpawnDataArray)
+			for (const FMonsterSpawnDataTable MonsterSpawnData : MonsterSpawnDataArray)
 			{
-				if (MonsterSpawnData.Group == CurrentGroup && MonsterSpawnData.SpawnPoint == SpawnPointNum)
+				if (MonsterSpawnData.Group == CurrentGroup && MonsterSpawnData.SpawnPoint == SpawnPointNum && IsValid(MonsterSpawnData.MonsterClass))
 				{
-					ALLL_MonsterBase* MonsterBase = GetWorld()->SpawnActor<ALLL_MonsterBase>(MonsterSpawnData.MonsterClass, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
-					if (IsValid(MonsterBase))
-					{
-						MonsterBase->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::MonsterDeadHandle);
-						Monsters.Emplace(MonsterBase);
+					FTimerHandle MonsterSpawnTimerHandle;
+					GetWorldTimerManager().SetTimer(MonsterSpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [this, MonsterSpawnData, SpawnPoint, SpawnPointNum]{
+						ALLL_MonsterBase* MonsterBase = GetWorld()->SpawnActor<ALLL_MonsterBase>(MonsterSpawnData.MonsterClass, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+						if (IsValid(MonsterBase))
+						{
+							MonsterBase->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::MonsterDeadHandle);
+							Monsters.Emplace(MonsterBase);
 						
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-						if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-						{
-							if (ProtoGameInstance->CheckMonsterSpawnDataDebug())
+							if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 							{
-								GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 스폰 (웨이브 : %d, 그룹 : %d, 스폰 포인트 : %d)"), *GetName(), CurrentWave, CurrentGroup, SpawnPointNum));
+								if (ProtoGameInstance->CheckMonsterSpawnDataDebug())
+								{
+									GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 스폰 (웨이브 : %d, 그룹 : %d, 스폰 포인트 : %d)"), *GetName(), CurrentWave, CurrentGroup, SpawnPointNum));
+								}
 							}
 						}
 #endif
-					}
+					}), MonsterSpawnerDataAsset->SpawnTimer, false);
+
+					FTimerHandle SpawnParticleTimerHandle;
+					GetWorldTimerManager().SetTimer(SpawnParticleTimerHandle, FTimerDelegate::CreateWeakLambda(this, [this, SpawnPoint]{
+						UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MonsterSpawnerDataAsset->SpawnParticle, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+					}), MonsterSpawnerDataAsset->SpawnParticleTimer, false);
 				}
 			}
 		}
 	}
+
+	FModAudioComponent->Release();
+	FModAudioComponent->SetEvent(MonsterSpawnerDataAsset->SpawnSoundEvent);
+	FModAudioComponent->Play();
 }
 
 void ALLL_MonsterSpawner::MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter)
