@@ -6,13 +6,12 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Character/Monster/Base/LLL_MonsterAttributeSet.h"
-#include "Perception/AIPerceptionComponent.h"
-#include "Perception/AISense_Sight.h"
+#include "Util/LLL_MathHelper.h"
 
 ULLL_DetectPlayer_BTService::ULLL_DetectPlayer_BTService()
 {
@@ -25,40 +24,37 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	ALLL_MonsterBaseAIController* MonsterAIController = CastChecked<ALLL_MonsterBaseAIController>(OwnerComp.GetAIOwner());
-	const ALLL_PlayerBase* BlackboardPlayer = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
-	bool IsHavePlayer = false;
-	if (IsValid(BlackboardPlayer))
+	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	if (!IsValid(Player) || Player->CheckCharacterIsDead())
 	{
-		if (BlackboardPlayer->CheckCharacterIsDead())
-		{
-			OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, nullptr);
-			OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, false);
-			return;
-		}
-
-		IsHavePlayer = true;
+		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, nullptr);
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, false);
+		return;
 	}
-	
-	TArray<AActor*> OutActors;
-	MonsterAIController->GetAIPerceptionComponent()->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), OutActors);
 
+	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetCharacter());
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+	const float DetectDistance = MonsterAttributeSet->GetDetectDistance();
+	
 	bool IsInFieldOfView = false;
-	for (const auto OutActor : OutActors)
+	if (FLLL_MathHelper::IsInFieldOfView(Monster, Player, DetectDistance, MonsterAttributeSet->GetFieldOfView()))
 	{
-		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OutActor);
-		if (IsValid(Player))
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(Monster);
+		CollisionParams.AddIgnoredActor(Player);
+	
+		FHitResult HitResult;
+		if (!GetWorld()->LineTraceSingleByProfile(HitResult, Monster->GetActorLocation(), Player->GetActorLocation(), CP_MONSTER_ATTACK, CollisionParams))
 		{
-			if (!IsHavePlayer)
+			if (!Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER)))
 			{
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, Player);
 			}
-			
+
 			IsInFieldOfView = true;
-			break;
 		}
 	}
-	
+
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, IsInFieldOfView);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -68,17 +64,9 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		{
 			if (!OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER))
 			{
-				const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(MonsterAIController->GetPawn());
-				const FVector Center = Monster->GetActorLocation();
 				const FVector Direction = Monster->GetActorForwardVector();
-
-				const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-				const float DetectDistance = MonsterAttributeSet->GetDetectDistance();
 				const float HalfFieldOfViewRadian = FMath::DegreesToRadians(MonsterAttributeSet->GetFieldOfView() / 2.0f);
-				DrawDebugCone(GetWorld(), Center, Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Red, false, 0.1f);
-
-				ULLL_MonsterBaseDataAsset* MonsterDataAsset = CastChecked<ULLL_MonsterBaseDataAsset>(Monster->GetCharacterDataAsset());
-				DrawDebugSphere(GetWorld(), Center, MonsterDataAsset->CollisionSize.Y, 16, FColor::Red, false, 0.1f);
+				DrawDebugCone(GetWorld(), Monster->GetActorLocation(), Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Red, false, 0.1f);
 			}
 		}
 	}
