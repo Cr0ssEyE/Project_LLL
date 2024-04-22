@@ -7,13 +7,13 @@
 #include "DataAsset/LLL_OrawaveDataAsset.h"
 #include "Entity/Character/Monster/Melee/Orawave/LLL_OrawaveAIController.h"
 #include "GAS/Attribute/Character/Monster/MeleeMonster/Orawave/LLL_OrawaveAttributeSet.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 ALLL_Orawave::ALLL_Orawave()
 {
-	CharacterAttributeSet = CreateDefaultSubobject<ULLL_OrawaveAttributeSet>(TEXT("OrawaveAttributes"));
+	CharacterAttributeSet = CreateDefaultSubobject<ULLL_OrawaveAttributeSet>(TEXT("OrawaveAttributeSet"));
 	
-	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_OrawaveDataAsset>(PATH_ORAWAVE_DATA, EAssertionLevel::Check);
+	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_OrawaveDataAsset>(PATH_ORAWAVE_DATA, EAssertionLevel::Check);
 	AIControllerClass = ALLL_OrawaveAIController::StaticClass();
 }
 
@@ -21,5 +21,5 @@ void ALLL_Orawave::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OrawaveMeleeDataAsset = Cast<ULLL_OrawaveDataAsset>(MeleeMonsterDataAsset);
+	OrawaveDataAsset = Cast<ULLL_OrawaveDataAsset>(MeleeMonsterDataAsset);
 }

@@ -28,7 +28,7 @@ protected:
 	void PlayerDashCheckBoxEvent(bool value);
 
 	UFUNCTION(BlueprintCallable)
-	void PlayerWireActionCheckBoxEvent(bool value);
+	void PlayerChaseActionCheckBoxEvent(bool value);
 	
 	UFUNCTION(BlueprintCallable)
 	void PlayerSkillCheckBoxEvent(bool value);

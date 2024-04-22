@@ -6,9 +6,14 @@
 #include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "DataTable/LLL_FModParameterDataTable.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
+#include "Util/LLL_ConstructorHelper.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 // Sets default values
 ALLL_BaseCharacter::ALLL_BaseCharacter()
@@ -17,7 +22,7 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	bIsDead = false;
 
-	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+	ASC = CreateDefaultSubobject<ULLL_BaseASC>(TEXT("AbilitySystem"));
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	
 	FModAudioComponent->SetupAttachment(RootComponent);
@@ -74,17 +79,12 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 			CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 		}
 
-		GetCharacterMovement()->MaxAcceleration = AccelerateSpeed = CharacterDataAsset->AccelerateSpeed;
-		GetCharacterMovement()->GroundFriction = GroundFriction = CharacterDataAsset->GroundFriction;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->RotationRate = FRotator(0.f, CharacterDataAsset->TurnSpeed * 360.f, 0.f);
 		GetCharacterMovement()->FallingLateralFriction = 3.0f;
 
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationRoll = false;
-
-		AttackDistance = CharacterDataAsset->AttackDistance;
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		bIsSpawned = true;
@@ -98,10 +98,6 @@ void ALLL_BaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	CharacterAnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(CharacterAnimInstance))
-	{
-		CharacterAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_BaseCharacter::DeadMontageEndEvent);
-	}
 
 	if(IsValid(ASC))
 	{
@@ -137,6 +133,17 @@ void ALLL_BaseCharacter::BeginPlay()
 
 		UpdateWidgetDelegate.Broadcast();
 	}
+
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_BaseCharacter::MovementInit);
+}
+
+void ALLL_BaseCharacter::MovementInit()
+{
+	const ULLL_CharacterAttributeSetBase* CharacterAttributeSetBase = CastChecked<ULLL_CharacterAttributeSetBase>(ASC->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
+	
+	GetCharacterMovement()->MaxAcceleration = CharacterAttributeSetBase->GetAccelerateSpeed();
+	GetCharacterMovement()->GroundFriction = CharacterAttributeSetBase->GetGroundFriction();
+	GetCharacterMovement()->RotationRate = FRotator(0.f, CharacterAttributeSetBase->GetTurnSpeed() * 360.f, 0.f);
 }
 
 // Called every frame
@@ -149,6 +156,12 @@ void ALLL_BaseCharacter::Tick(float DeltaTime)
 void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+	if (HitLocation.Z >= GetActorLocation().Z)
+	{
+		OtherActorCollidedDelegate.Broadcast(this, Other);
+	}
+
 	const ECollisionResponse Response = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
 	// Static Actor 중에서 벽과 바닥을 구분하는 좋은 방법이 뭐가 있을지 고민. 지금은 머릿속에서 생각나는게 이게 최선
 	if (Response == ECR_Block && FMath::Abs(HitNormal.Z) < 0.2f)
@@ -167,6 +180,11 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	}
 }
 
+void ALLL_BaseCharacter::Damaged()
+{
+	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DamagedCueTag);
+}
+
 void ALLL_BaseCharacter::Dead()
 {
 	if (bIsDead)
@@ -174,16 +192,17 @@ void ALLL_BaseCharacter::Dead()
 		return;
 	}
 
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CharacterAnimInstance->PlayDeadAnimation();
+	CharacterAnimInstance->StopAllMontages(1.0f);
+
+	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
+	GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
 	
 	bIsDead = true;
 
 	CharacterDeadDelegate.Broadcast(this);
 }
 
-void ALLL_BaseCharacter::DeadMontageEndEvent()
+void ALLL_BaseCharacter::DestroyHandle()
 {
 	// TODO: 화면 페이드, 결과창 출력 등등. 임시로 Destroy 처리
 	Destroy();

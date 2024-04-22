@@ -7,6 +7,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "Interface/LLL_DropGoldInterface.h"
+#include "Interface/LLL_KnockBackInterface.h"
 #include "LLL_MonsterBase.generated.h"
 
 class ULLL_MonsterAttributeSet;
@@ -14,15 +15,12 @@ class ULLL_MonsterAttributeSet;
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_MonsterBase : public ALLL_BaseCharacter, public ILLL_DropGoldInterface
+class PROJECT_LLL_API ALLL_MonsterBase : public ALLL_BaseCharacter, public ILLL_DropGoldInterface, public ILLL_KnockBackInterface
 {
 	GENERATED_BODY()
 
 public:
 	ALLL_MonsterBase();
-	
-	FORCEINLINE float GetDetectDistance() const { return DetectDistance; }
-	FORCEINLINE float GetFieldOfView() const { return FieldOfView; }
 	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -31,10 +29,10 @@ protected:
 	virtual void Dead() override;
 	
 public:
-	void Attack();
+	void Attack() const;
 	virtual void Damaged() override;
-	
-	bool CanPlayAttackAnimation();
+	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity) override;
+	bool CanPlayAttackAnimation() const;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -42,12 +40,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> MonsterStatusWidgetComponent;
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	float DetectDistance;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	float FieldOfView;
 
 public:
 	UFUNCTION()

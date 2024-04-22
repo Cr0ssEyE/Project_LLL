@@ -6,18 +6,19 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+enum class EPlayerWalkMaterialParameter : uint8;
 enum class EPlayerFootstepsSurface : uint8;
 class ULLL_SkillWidget;
-class ULLL_PlayerWireObjectDataAsset;
+class ULLL_PlayerChaseHandDataAsset;
 enum class EAbilityInputName;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;
 class ULLL_GamePauseWidget;
 class ULLL_PlayerAnimInstance;
+class ULLL_SelectRewardWidget;
 class UInputAction;
 class UInputMappingContext;
-class UGameplayAbility;
 
 /**
  * 
@@ -26,7 +27,7 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PlayerBaseDataAsset : public ULLL_BaseCharacterDataAsset
 {
 	GENERATED_BODY()
-
+	
 	// UI 관련 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "일시정지 UI")
@@ -41,22 +42,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스킬 게이지 UI")
 	TSubclassOf<ULLL_SkillWidget> SkillGaugeWidgetClass;
 
-	// 카메라 관련
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV")
-	float CameraFOV;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리")
-	float SpringArmLength;
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "보상 선택 UI")
+	TSubclassOf<ULLL_SelectRewardWidget> SelectRewardWidgetClass;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 회전값")
-	FRotator SpringArmAngle;
-
-	// 상호작용 관련(현재 처리하지 않고 있음)
+	// 애니메이션 관련
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "상호작용 거리")
-	float InteractionRange;
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
+	TObjectPtr<UAnimMontage> DeadAnimMontage;
 
+	// 상호작용 관련
+public:
 	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "마우스 입력시 위치 보정 처리 영역 반지름")
 	float MouseCursorCorrectRadius;
 	
@@ -79,8 +74,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "기본 공격 입력 키")
 	TObjectPtr<UInputAction> AttackInputAction;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "와이어 액션 입력 키")
-	TObjectPtr<UInputAction> ControlWireInputAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "추격 액션 입력 키")
+	TObjectPtr<UInputAction> ControlChaseInputAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "스킬 입력 키")
 	TObjectPtr<UInputAction> SkillInputAction;
@@ -98,9 +93,6 @@ public:
 	TObjectPtr<UInputAction> PauseInputAction;
 	
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 이름")
-	FName StepEventParameterName;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
-	TMap<TEnumAsByte<EPhysicalSurface>, EPlayerFootstepsSurface> StepEventParameterProperties;
+	TMap<TEnumAsByte<EPhysicalSurface>, EPlayerWalkMaterialParameter> StepEventParameterProperties;
 };

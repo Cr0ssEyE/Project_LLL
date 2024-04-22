@@ -8,7 +8,8 @@ enum class ESelectShapeTypes : uint8
 {
 	Box,
 	Capsule,
-	Sphere
+	Sphere,
+	Cone
 };
 
 UENUM(BlueprintType)

@@ -13,58 +13,70 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
-#include "Entity/Object/Interactive/LLL_InteractiveObject.h"
-#include "Entity/Object/Thrown/PlayerWireHand/LLL_PlayerWireHand.h"
-#include "Enumeration/LLL_AbilityKeyHelper.h"
+#include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
+#include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
+#include "Game/LLL_AbilityManageSubSystem.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
-#include "Util/LLLConstructorHelper.h"
+#include "Util/LLL_ConstructorHelper.h"
+#include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "GAS/LLL_ExtendedGameplayEffect.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	GoldComponet = CreateDefaultSubobject<ULLL_PlayerGoldComponet>(TEXT("PlayerGoldComponent"));
+	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
-	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributes"));
-	
-	Continuous = 0.0f;
-	Discrete = 0;
-	Labeled = ELabeled::A;
+	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
 
-	CharacterDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
+	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
+	CameraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_CameraDataAsset>(PATH_CAMERA_DATA, EAssertionLevel::Check);
+
 	PlayerDataAsset = Cast<ULLL_PlayerBaseDataAsset>(CharacterDataAsset);
-	if (IsValid(CharacterDataAsset))
-	{
-		GetCharacterMovement()->MaxFlySpeed = 10000.f;
-		GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
-		
-		Camera->SetFieldOfView(PlayerDataAsset->CameraFOV);
-		Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-		Camera->bUsePawnControlRotation = false;
-		
-		SpringArm->TargetArmLength = PlayerDataAsset->SpringArmLength;
-		SpringArm->SetRelativeRotation(PlayerDataAsset->SpringArmAngle);
-		SpringArm->bDoCollisionTest = false;
-		SpringArm->bUsePawnControlRotation = false;
-		SpringArm->bInheritPitch = false;
-		SpringArm->bInheritYaw = false;
-		SpringArm->bInheritRoll = false;
-		SpringArm->SetUsingAbsoluteRotation(true);
-		SpringArm->SetupAttachment(RootComponent);
-	}
+
+	GetCharacterMovement()->MaxFlySpeed = 10000.f;
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
+
+	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+	Camera->bUsePawnControlRotation = false;
+	
+	SpringArm->bDoCollisionTest = false;
+	SpringArm->bUsePawnControlRotation = false;
+	SpringArm->bInheritPitch = false;
+	SpringArm->bInheritYaw = false;
+	SpringArm->bInheritRoll = false;
+	SpringArm->SetUsingAbsoluteRotation(true);
+	SpringArm->SetupAttachment(RootComponent);
 }
 
 void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	WireHandActor = Cast<ALLL_PlayerWireHand>(GetWorld()->SpawnActor(ALLL_PlayerWireHand::StaticClass()));
-	WireHandActor->SetOwner(this);
+	if (IsValid(CharacterAnimInstance))
+	{
+		PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
+		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DestroyHandle);
+	}
+
+	if (IsValid(CameraDataAsset))
+	{
+		Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
+		
+		SpringArm->TargetArmLength = CameraDataAsset->SpringArmLength;
+		SpringArm->SetRelativeRotation(CameraDataAsset->SpringArmAngle);
+	}
+
+	ChaseHandActor = Cast<ALLL_PlayerChaseHand>(GetWorld()->SpawnActor(ALLL_PlayerChaseHand::StaticClass()));
+	ChaseHandActor->SetOwner(this);
 
 	PlayerUIManager = CastChecked<ULLL_PlayerUIManager>(CharacterUIManager);
 	
@@ -79,6 +91,17 @@ void ALLL_PlayerBase::BeginPlay()
 				ASC->GiveAbility(SkillSpec);
 			}
 		}
+	}
+	
+	// 서브시스템 접근 테스트용
+	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
+	if (IsValid(AbilityManageSubSystem))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Silver, FString::Printf(TEXT("서브 시스템 생성 확인")));
+		// AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_PlayerBase::DelegateReceiveTest);
+		FAsyncLoadEffectDelegate Delegate;
+		Delegate.AddDynamic(this, &ALLL_PlayerBase::DelegateReceiveTest);
+		AbilityManageSubSystem->ASyncLoadEffectsByTag(Delegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), true);
 	}
 }
 
@@ -110,11 +133,13 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	SubSystem->ClearAllMappings();
 	SubSystem->AddMappingContext(PlayerDataAsset->PlayerInputMappingContext, 0);
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
-	
+
+	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SetMoveInputPressed, true);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::SetMoveInputPressed, false);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction, EAbilityInputName::Skill);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->ControlWireInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::WireAction, EAbilityInputName::Wire);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->ControlChaseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::ChaseAction, EAbilityInputName::Chase);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractiveTargetChangeInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractiveTargetChangeAction);
@@ -129,11 +154,26 @@ void ALLL_PlayerBase::PossessedBy(AController* NewController)
 	APlayerController* PlayerController = Cast<APlayerController>(NewController);
 	if (IsValid(PlayerController))
 	{
-		PlayerController->SetAudioListenerOverride(GetRootComponent(), FVector::ZeroVector, FRotator::ZeroRotator);
+		PlayerController->SetAudioListenerOverride(SpringArm, FVector::ZeroVector, FRotator::ZeroRotator);
 	}
 }
 
-void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
+void ALLL_PlayerBase::DelegateReceiveTest(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& Effects)
+{
+	for (auto Effect : Effects)
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(Effect.Get(), 1.0, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Silver, FString::Printf(TEXT("비동기 로딩 확인")));
+}
+
+void ALLL_PlayerBase::AddInteractiveObject(ALLL_InteractiveObject* Object)
 {
 	InteractiveObjects.Emplace(Object);
 	PlayerUIManager->EnableInteractionWidget();
@@ -144,7 +184,7 @@ void ALLL_PlayerBase::AddInteractableObject(ALLL_InteractiveObject* Object)
 	PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
 }
 
-void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObject)
+void ALLL_PlayerBase::RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject)
 {
 	if (!InteractiveObjects.IsEmpty())
 	{
@@ -168,6 +208,7 @@ void ALLL_PlayerBase::RemoveInteractableObject(ALLL_InteractiveObject* RemoveObj
 				break;
 			}
 		}
+		
 		if(!InteractiveObjects.IsEmpty())
 		{
 			PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
@@ -214,7 +255,7 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug() || ProtoGameInstance->CheckPlayerWireActionDebug())
+		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug() || ProtoGameInstance->CheckPlayerChaseActionDebug())
 		{
 			DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
 			DrawDebugPoint(GetWorld(), TrueMouseWorldLocation, 10.f, FColor::Red, false, 3.f);
@@ -248,20 +289,30 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	{
 		MoveInputValue.Normalize();
 	}
-	
-	MoveDirection = Camera->GetComponentRotation().RotateVector(FVector(MoveInputValue.X, MoveInputValue.Y, 0.f));
+
+	FRotator CameraRotation = Camera->GetComponentRotation();
+	CameraRotation.Pitch = CameraRotation.Roll = 0.f;
+	MoveDirection = CameraRotation.RotateVector(FVector(MoveInputValue.X, MoveInputValue.Y, 0.f));
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
-	if(GetCharacterMovement()->IsWalking())
+	if (GetCharacterMovement()->IsWalking())
 	{
 		AddMovementInput(MoveDirection, 1.f);
 	}
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if(ProtoGameInstance->CheckPlayerMovementDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("이동 입력 방향: %f, %f"), MoveDirection.X, MoveDirection.Y));
+		}
+	}
+#endif
 }
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	if(DashSpec)
+	const int32 InputID = static_cast<int32>(InputName);
+	if(FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
 		DashSpec->InputPressed = true;
 		if (DashSpec->IsActive())
@@ -277,9 +328,8 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputNa
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	if(AttackSpec)
+	const int32 InputID = static_cast<int32>(InputName);
+	if(FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
 		AttackSpec->InputPressed = true;
 		if (AttackSpec->IsActive())
@@ -293,32 +343,30 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 	}
 }
 
-void ALLL_PlayerBase::WireAction(const FInputActionValue& Value, EAbilityInputName InputName)
+void ALLL_PlayerBase::ChaseAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	int32 InputID = static_cast<int32>(InputName);
-	FGameplayAbilitySpec* WireSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	if(WireSpec)
+	const int32 InputID = static_cast<int32>(InputName);
+	if(const FGameplayAbilitySpec* ChaseSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
-		ASC->TryActivateAbility(WireSpec->Handle);
+		ASC->TryActivateAbility(ChaseSpec->Handle);
 	}
 }
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	// int32 InputID = static_cast<int32>(InputName);
-	// FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID);
-	// if(SkillSpec)
-	// {
-	// 	SkillSpec->InputPressed = true;
-	// 	if (SkillSpec->IsActive())
-	// 	{
-	// 		ASC->AbilitySpecInputPressed(*SkillSpec);
-	// 	}
-	// 	else
-	// 	{
-	// 		ASC->TryActivateAbility(SkillSpec->Handle);
-	// 	}
-	// }
+	const int32 InputID = static_cast<int32>(InputName);
+	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
+	{
+		SkillSpec->InputPressed = true;
+		if (SkillSpec->IsActive())
+		{
+			ASC->AbilitySpecInputPressed(*SkillSpec);
+		}
+		else
+		{
+			ASC->TryActivateAbility(SkillSpec->Handle);
+		}
+	}
 }
 
 void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
@@ -358,21 +406,11 @@ void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::PlayerRotateToMouseCursor()
 {
-	FVector MouseWorldLocation = GetMouseLocation();
+	const FVector MouseWorldLocation = GetMouseLocation();
 	FVector ViewDirection = (MouseWorldLocation - GetActorLocation()).GetSafeNormal();
 	ViewDirection.Z = 0.f;
 	SetActorRotation(ViewDirection.Rotation());
-}
-
-void ALLL_PlayerBase::ParameterTest()
-{
-	Continuous = 1.0f;
-	Discrete = 3;
-	Labeled = ELabeled::C;
 	
-	FModAudioComponent->SetParameter(FName("Continuous"), Continuous);
-	FModAudioComponent->SetParameter(FName("Discrete"), Discrete);
-	FModAudioComponent->SetParameter(FName("Labeled"), static_cast<float>(Labeled));
 }
 
 void ALLL_PlayerBase::Dead()
@@ -382,10 +420,13 @@ void ALLL_PlayerBase::Dead()
 	// TODO: 목숨 같은거 생기면 사이에 추가하기
 	
 	DisableInput(Cast<APlayerController>(GetController()));
+
+	PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
+	PlayerAnimInstance->PlayDeadAnimation();
 }
 
-void ALLL_PlayerBase::DeadMontageEndEvent()
+void ALLL_PlayerBase::DestroyHandle()
 {
-	// Super::DeadMontageEndEvent();
+	// Super::DestroyHandle();
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }

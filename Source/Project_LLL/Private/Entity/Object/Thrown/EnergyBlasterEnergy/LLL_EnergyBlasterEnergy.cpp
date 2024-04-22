@@ -5,12 +5,12 @@
 
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_EnergyBlasterEnergyDataAsset.h"
-#include "GAS/Attribute/Object/ThrownObject/EnergyBlasterEnergy/LLL_EnergyAttributeSet.h"
-#include "Util/LLLConstructorHelper.h"
+#include "GAS/Attribute/Object/ThrownObject/EnergyBlasterEnergy/LLL_EnergyBlasterEnergyAttributeSet.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 ALLL_EnergyBlasterEnergy::ALLL_EnergyBlasterEnergy()
 {
-	BaseObjectDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_EnergyBlasterEnergyDataAsset>(PATH_ENERGYBLASTER_ENERGY_DATA, EAssertionLevel::Check);
+	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_EnergyBlasterEnergyDataAsset>(PATH_ENERGY_BLASTER_ENERGY_DATA, EAssertionLevel::Check);
 
-	ThrownObjectAttributeSet = CreateDefaultSubobject<ULLL_EnergyAttributeSet>(TEXT("EnergyBlasterEnergyAttributeSet"));
+	ThrownObjectAttributeSet = CreateDefaultSubobject<ULLL_EnergyBlasterEnergyAttributeSet>(TEXT("EnergyBlasterEnergyAttributeSet"));
 }

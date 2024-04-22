@@ -3,14 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataAsset/LLL_MapDataAsset.h"
 #include "GameFramework/Actor.h"
+#include "System/Base/LLL_SystemBase.h"
 #include "LLL_MapGimmick.generated.h"
 
 class UBoxComponent;
-class ULLL_MapDataAsset;
 class ALLL_GateObject;
 class ALLL_RewardObject;
 class ALLL_MonsterSpawner;
+class ULevelSequencePlayer;
+class ULevelSequence;
+class ALevelSequenceActor;
+class ULLL_ShoppingMapComponent;
 
 DECLARE_DELEGATE(FOnStageChangedDelegate);
 
@@ -34,7 +39,7 @@ enum class EStageState : uint8
 };
 
 UCLASS()
-class PROJECT_LLL_API ALLL_MapGimmick : public AActor
+class PROJECT_LLL_API ALLL_MapGimmick : public ALLL_SystemBase
 {
 	GENERATED_BODY()
 	
@@ -54,14 +59,25 @@ protected:
 	
 	// Stage Section
 protected:
-	UPROPERTY(VisibleAnywhere, Category = stage)
-	TObjectPtr<ULLL_MapDataAsset> MapDataAsset;
+	UPROPERTY(VisibleAnywhere, Category = "stage")
+	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
 	
-	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> Stage;
 
-	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent> StageTrigger;
+
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<AActor> StageActor;
+
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
+	TArray<AActor*> StageChildActors;
+
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ULLL_ShoppingMapComponent> ShoppingMapComponent;
+
+	uint32 Seed;
 
 	UFUNCTION()
 	void OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -71,6 +87,9 @@ protected:
 
 	UFUNCTION()
 	void RandomMap();
+
+	UFUNCTION()
+	void ChangeMap(AActor* DestroyedActor);
 
 private:
 	UPROPERTY()
@@ -83,9 +102,13 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
 	TArray<TWeakObjectPtr<ALLL_GateObject>> Gates;
+	
+	UFUNCTION()
+	void AllGatesDestroy();
 
-	TMap<FName, FVector> GateLocations;
-
+	UFUNCTION()
+	void OnInteractionGate();
+	
 	void EnableAllGates();
 
 // State Section
@@ -128,4 +151,18 @@ protected:
 	void RewardDestroyed(AActor* DestroyedActor);
 
 	void RewardSpawn();
+
+//Sequence Section
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	TObjectPtr<ULevelSequencePlayer> LevelSequencePlayer;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	TObjectPtr<ULevelSequence> FadeInSequence;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	TObjectPtr<ULevelSequence> FadeOutSequence;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	TObjectPtr<ALevelSequenceActor> LevelSequenceActor;
 };

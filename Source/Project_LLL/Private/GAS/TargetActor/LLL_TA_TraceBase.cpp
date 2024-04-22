@@ -6,11 +6,8 @@
 #include "Abilities/GameplayAbility.h"
 #include "Constant/LLL_CollisionChannel.h"
 
-
-// Sets default values
 ALLL_TA_TraceBase::ALLL_TA_TraceBase()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -44,6 +41,22 @@ void ALLL_TA_TraceBase::SetTraceInfo(const ESelectTraceTarget NewTraceTarget, co
 	}
 }
 
+void ALLL_TA_TraceBase::SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes, float Distance, float FieldOfView)
+{
+	TraceTarget = NewTraceTarget;
+	BaseShape = NewShapeTypes;
+	if (Distance > 0 && FieldOfView > 0)
+	{
+		ConeDistance = Distance;
+		ConeFieldOfView = FieldOfView;
+	}
+}
+
+void ALLL_TA_TraceBase::SetIgnoreInfo(TSet<AActor*> Actors)
+{
+	IgnoreActors.Append(Actors);
+}
+
 void ALLL_TA_TraceBase::StartTargeting(UGameplayAbility* Ability)
 {
 	Super::StartTargeting(Ability);
@@ -55,7 +68,7 @@ void ALLL_TA_TraceBase::ConfirmTargetingAndContinue()
 {
 	if (SourceActor)
 	{
-		FGameplayAbilityTargetDataHandle DataHandle = MakeTargetData();
+		const FGameplayAbilityTargetDataHandle DataHandle = MakeTargetData();
 		TargetDataReadyDelegate.Broadcast(DataHandle);
 	}
 }
@@ -72,6 +85,9 @@ FGameplayAbilityTargetDataHandle ALLL_TA_TraceBase::MakeTargetData() const
 		break;
 	case ESelectShapeTypes::Sphere:
 		TraceShape = FCollisionShape::MakeSphere(SphereRadius);
+		break;
+	case ESelectShapeTypes::Cone:
+		TraceShape = FCollisionShape::MakeSphere(ConeDistance);
 		break;
 	default:
 		checkNoEntry();

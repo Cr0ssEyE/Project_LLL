@@ -14,7 +14,7 @@ void ULLL_GamePauseWidget::NativeConstruct()
 	ExitButton->OnClicked.AddDynamic(this, &ULLL_GamePauseWidget::ExitButtonEvent);
 }
 
-void ULLL_GamePauseWidget::SetupDeadStateLayout()
+void ULLL_GamePauseWidget::SetupDeadStateLayout() const
 {
 	ResumeButton->SetIsEnabled(false);
 	SettingButton->SetIsEnabled(false);

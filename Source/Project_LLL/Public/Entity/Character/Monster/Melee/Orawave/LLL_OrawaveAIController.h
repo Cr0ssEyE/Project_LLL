@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Character/Monster/Melee/LLL_MeleeMonsterAIController.h"
+#include "Entity/Character/Monster/Melee/Base/LLL_MeleeMonsterAIController.h"
 #include "LLL_OrawaveAIController.generated.h"
 
 /**
