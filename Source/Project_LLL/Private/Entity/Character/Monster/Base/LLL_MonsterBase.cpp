@@ -147,6 +147,8 @@ void ALLL_MonsterBase::Damaged()
 		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
 
 		FModAudioComponent->Stop();
+		// 경직 사운드 이벤트 할당
+		// 경직 사운드 플레이
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

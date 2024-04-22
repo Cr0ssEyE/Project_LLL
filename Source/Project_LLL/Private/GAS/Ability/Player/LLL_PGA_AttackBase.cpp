@@ -25,6 +25,7 @@ ULLL_PGA_AttackBase::ULLL_PGA_AttackBase()
 	AttackActionInputDelayTime = 0.f;
 	MaxAttackAction = 0;
 	bIsCanPlayNextAction = false;
+	bIsInputPressed = false;
 }
 
 void ULLL_PGA_AttackBase::PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
@@ -80,9 +81,8 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	WaitTagTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, TAG_GAS_PLAYER_WAIT_ATTACK_INPUT);
 	WaitTagTask->Added.AddDynamic(this, &ULLL_PGA_AttackBase::WaitInputForNextAction);
 	WaitTagTask->ReadyForActivation();
-	
-	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
-	PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerAttackCountParameterName, CurrentComboAction - 1);
+
+	ExecuteAttackCueWithDelay();
 }
 
 void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -149,8 +149,9 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 {
 	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
 	WaitInputTimerHandle.Invalidate();
-	ALLL_PlayerBase * PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	if(IsValid(PlayerCharacter) && bIsCanPlayNextAction)
+	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	const UAnimInstance* PlayerAnimInstance = PlayerCharacter->GetCharacterAnimInstance();
+	if(IsValid(PlayerCharacter) && bIsCanPlayNextAction && PlayerAnimInstance->Montage_IsPlaying(AttackAnimMontage))
 	{
 		if(CurrentComboAction == MaxAttackAction)
 		{
@@ -171,9 +172,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 			}
 		}));
 		
-		
-		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
-		PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerAttackCountParameterName, CurrentComboAction - 1);
+		ExecuteAttackCueWithDelay();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -190,4 +189,42 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 void ULLL_PGA_AttackBase::EndAttackInputWait()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+void ULLL_PGA_AttackBase::ExecuteAttackCueWithDelay()
+{
+	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	if (AttackEventDelayArray.Num() >= 1)
+	{
+		int32 AttackEventDelayIndex = CurrentComboAction - 1;
+		if (AttackEventDelayArray.Num() <= AttackEventDelayIndex)
+		{
+			AttackEventDelayIndex = AttackEventDelayArray.Num() - 1;
+		}
+
+		if (AttackEventDelayArray[AttackEventDelayIndex] > 0)
+		{
+			const UAnimInstance* PlayerAnimInstance = PlayerCharacter->GetCharacterAnimInstance();
+			const float MontagePlayRate = PlayerAnimInstance->Montage_GetPlayRate(AttackAnimMontage);
+			
+			int32 CapturedCurrentComboAction = CurrentComboAction;
+			FTimerHandle AttackEventDelayTimerHandle;
+
+			GetWorld()->GetTimerManager().SetTimer(AttackEventDelayTimerHandle, FTimerDelegate::CreateLambda([this, CapturedCurrentComboAction]{
+				const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+				FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
+				PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerAttackCountParameterName, CapturedCurrentComboAction - 1);
+			}), AttackEventDelayArray[AttackEventDelayIndex] * MontagePlayRate, false);
+		}
+		else
+		{
+			FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
+			PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerAttackCountParameterName, CurrentComboAction - 1);
+		}
+	}
+	else
+	{
+		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
+		PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerAttackCountParameterName, CurrentComboAction - 1);
+	}
 }

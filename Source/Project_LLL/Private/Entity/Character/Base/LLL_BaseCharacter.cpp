@@ -200,8 +200,6 @@ void ALLL_BaseCharacter::Dead()
 	bIsDead = true;
 
 	CharacterDeadDelegate.Broadcast(this);
-
-	FModAudioComponent->Stop();
 }
 
 void ALLL_BaseCharacter::DestroyHandle()

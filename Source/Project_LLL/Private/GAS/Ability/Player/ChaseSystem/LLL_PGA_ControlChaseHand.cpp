@@ -71,7 +71,7 @@ void ULLL_PGA_ControlChaseHand::ThrowHand(const FGameplayAbilityActorInfo* Actor
 	UAbilitySystemComponent* HandASC = PlayerChaseHand->GetAbilitySystemComponent();
 	if(IsValid(HandASC))
 	{
-		const FGameplayTagContainer ThrowHandTags(TAG_GAS_WIRE_THROW);
+		const FGameplayTagContainer ThrowHandTags(TAG_GAS_CHASE_THROW);
 		HandASC->TryActivateAbilitiesByTag(ThrowHandTags);
 	}
 	bIsAlreadyThrown = true;

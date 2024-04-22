@@ -28,7 +28,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	TObjectPtr<UAnimMontage> AbilityActionMontage;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "와이어 돌진 정지 거리")
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "체이서 돌진 정지 거리")
 	float AbilityEndDistance;
 	
 	FVector TargetLocation;
