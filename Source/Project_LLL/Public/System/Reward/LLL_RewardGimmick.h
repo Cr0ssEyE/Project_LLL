@@ -32,7 +32,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void SetRewardToDoor(ALLL_GateObject* Gate);
+	void SetRewardToGate(ALLL_GateObject* Gate);
 	
 	UFUNCTION()
 	void SetRewardButtons();
@@ -49,6 +49,9 @@ protected:
 	FTestAbilityDataTable* ButtonAbilityData1;
 	FTestAbilityDataTable* ButtonAbilityData2;
 	FTestAbilityDataTable* ButtonAbilityData3;
+
+	UPROPERTY(EditDefaultsOnly)
+	uint8 bIsButtonEventSetup : 1;
 
 	UFUNCTION()
 	void ClickFirstButton();

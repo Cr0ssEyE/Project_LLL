@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
+#include "System/MapGimmick/LLL_PlayerSpawnPointComponent.h"
 #include "Components/SphereComponent.h"
 
 // Sets default values for this component's properties
-ULLL_GateSpawnPointComponent::ULLL_GateSpawnPointComponent()
+ULLL_PlayerSpawnPointComponent::ULLL_PlayerSpawnPointComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -17,7 +17,7 @@ ULLL_GateSpawnPointComponent::ULLL_GateSpawnPointComponent()
 
 
 // Called when the game starts
-void ULLL_GateSpawnPointComponent::BeginPlay()
+void ULLL_PlayerSpawnPointComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -27,7 +27,7 @@ void ULLL_GateSpawnPointComponent::BeginPlay()
 
 
 // Called every frame
-void ULLL_GateSpawnPointComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void ULLL_PlayerSpawnPointComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 

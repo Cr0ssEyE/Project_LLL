@@ -10,11 +10,14 @@
 #include "DataTable/LLL_TestAbilityDataTable.h"
 #include "Game/ProtoGameInstance.h"
 #include "Util/LLL_ConstructorHelper.h"
+#include <Entity/Character/Player/LLL_PlayerBase.h>
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
+	bIsButtonEventSetup = false;
 }
 
 // Called when the game starts or when spawned
@@ -31,7 +34,7 @@ void ALLL_RewardGimmick::Tick(float DeltaTime)
 
 }
 
-void ALLL_RewardGimmick::SetRewardToDoor(ALLL_GateObject* Gate)
+void ALLL_RewardGimmick::SetRewardToGate(ALLL_GateObject* Gate)
 {
 	uint8 Index = FMath::RandRange(0, RewardData.Num() - 1);
 	
@@ -40,14 +43,17 @@ void ALLL_RewardGimmick::SetRewardToDoor(ALLL_GateObject* Gate)
 
 void ALLL_RewardGimmick::SetRewardButtons()
 {
-	if (AbilityData.Num() == 0)
+	if (!bIsButtonEventSetup)
 	{
-		const ULLL_PlayerUIManager* PlayerUIManager = CastChecked<ULLL_PlayerUIManager>(GetWorld()->GetFirstPlayerController()->GetPawn());
-		ULLL_SelectRewardWidget* RewardWidget =  PlayerUIManager->GetSelectRewardWidget();
+		const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
+		ULLL_SelectRewardWidget* RewardWidget = PlayerUIManager->GetSelectRewardWidget();
 		RewardWidget->GetFirstButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickFirstButton);
 		RewardWidget->GetSecondButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickSecondButton);
 		RewardWidget->GetThirdButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickThirdButton);
+		bIsButtonEventSetup = true;
 	}
+
 	//보상쪽 상세 시스템 기획이 나오면 바뀔 부분
 	uint8 Index = FMath::RandRange(0, AbilityData.Num() - 1);
 	ButtonAbilityData1 = &AbilityData[Index];
@@ -76,7 +82,7 @@ void ALLL_RewardGimmick::ClickFirstButton()
 	{
 		if(ProtoGameInstance->CheckObjectActivateDebug())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString(TEXT("버튼1 : ")).Append(AbilityData[0].AbilityCategory).Append(TEXT(" / ")).Append(AbilityData[0].AbilityParts).Append(AbilityData[0].AbilityRank).Append(TEXT(" / ")).Append(AbilityData[0].AbilityType));
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString(TEXT("버튼1 : ")).Append(ButtonAbilityData1->AbilityCategory).Append(TEXT(" / ")).Append(ButtonAbilityData1->AbilityParts).Append(ButtonAbilityData1->AbilityRank).Append(TEXT(" / ")).Append(ButtonAbilityData1->AbilityType));
 		}
 	}
 #endif
@@ -91,7 +97,7 @@ void ALLL_RewardGimmick::ClickSecondButton()
 	{
 		if(ProtoGameInstance->CheckObjectActivateDebug())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString(TEXT("버튼2 : ")).Append(AbilityData[1].AbilityCategory).Append(TEXT(" / ")).Append(AbilityData[1].AbilityParts).Append(AbilityData[1].AbilityRank).Append(TEXT(" / ")).Append(AbilityData[1].AbilityType));
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString(TEXT("버튼2 : ")).Append(ButtonAbilityData2->AbilityCategory).Append(TEXT(" / ")).Append(ButtonAbilityData2->AbilityParts).Append(ButtonAbilityData2->AbilityRank).Append(TEXT(" / ")).Append(ButtonAbilityData2->AbilityType));
 		}
 	}
 #endif
@@ -106,7 +112,7 @@ void ALLL_RewardGimmick::ClickThirdButton()
 	{
 		if(ProtoGameInstance->CheckObjectActivateDebug())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString(TEXT("버튼3 : ")).Append(AbilityData[2].AbilityCategory).Append(TEXT(" / ")).Append(AbilityData[2].AbilityParts).Append(AbilityData[2].AbilityRank).Append(TEXT(" / ")).Append(AbilityData[2].AbilityType));
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString(TEXT("버튼3 : ")).Append(ButtonAbilityData3->AbilityCategory).Append(TEXT(" / ")).Append(ButtonAbilityData3->AbilityParts).Append(ButtonAbilityData3->AbilityRank).Append(TEXT(" / ")).Append(ButtonAbilityData3->AbilityType));
 		}
 	}
 #endif

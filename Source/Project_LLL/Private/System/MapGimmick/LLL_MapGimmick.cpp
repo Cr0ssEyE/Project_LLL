@@ -7,17 +7,18 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_MapDataAsset.h"
-#include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Util/LLL_ConstructorHelper.h"
-#include "Entity/Object/Interactive/LLL_GateObject.h"
 #include "DataTable/LLL_RewardDataTable.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Interactive/LLL_GateObject.h"
 #include "Entity/Object/Interactive/LLL_RewardObject.h"
 #include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
+#include "System/MapGimmick/LLL_ShoppingMapComponent.h"
+#include "System/MapGimmick/LLL_PlayerSpawnPointComponent.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawner.h"
+#include "System/Reward/LLL_RewardGimmick.h"
+#include "Util/LLL_ConstructorHelper.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
-#include "System/MapGimmick/LLL_ShoppingMapComponent.h"
-#include "System/Reward/LLL_RewardGimmick.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
@@ -69,7 +70,7 @@ void ALLL_MapGimmick::BeginPlay()
 	
 	RandomMap();
 	CreateMap();
-
+	
 	//Sequence Section
 	FMovieSceneSequencePlaybackSettings Settings;
 	Settings.bAutoPlay = false;
@@ -97,11 +98,13 @@ void ALLL_MapGimmick::CreateMap()
 		{
 			ShoppingMapComponent = Cast<ULLL_ShoppingMapComponent>(ChildComponent);
 		}
+		PlayerSpawnPointComponent = Cast<ULLL_PlayerSpawnPointComponent>(ChildComponent);
 		ULLL_GateSpawnPointComponent* SpawnPoint = Cast<ULLL_GateSpawnPointComponent>(ChildComponent);
 		if (IsValid(SpawnPoint))
 		{
 			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
+			RewardGimmick->SetRewardToGate(Gate);
 			Gates.Add(Gate);
 		}
 	}
@@ -121,6 +124,10 @@ void ALLL_MapGimmick::CreateMap()
 		MonsterSpawner = CastChecked<ALLL_MonsterSpawner>(ChildActor);
 	}
 	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
+
+	// TODO: Player loaction change 
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 	SetState(EStageState::READY);
 }
 

@@ -19,6 +19,7 @@ class ALevelSequenceActor;
 class ULLL_ShoppingMapComponent;
 class ULLL_RewardDataTable;
 class ALLL_RewardGimmick;
+class ULLL_PlayerSpawnPointComponent;
 
 DECLARE_DELEGATE(FOnStageChangedDelegate);
 
@@ -79,6 +80,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_ShoppingMapComponent> ShoppingMapComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ULLL_PlayerSpawnPointComponent> PlayerSpawnPointComponent;
 
 	uint32 Seed;
 
