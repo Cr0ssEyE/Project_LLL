@@ -108,9 +108,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "FMOD")
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 
-protected:
-	virtual void DestroyHandle();
-
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	// 디버그용 함수
 public:

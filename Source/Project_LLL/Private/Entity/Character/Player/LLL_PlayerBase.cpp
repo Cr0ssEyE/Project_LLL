@@ -64,7 +64,7 @@ void ALLL_PlayerBase::BeginPlay()
 	if (IsValid(CharacterAnimInstance))
 	{
 		PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
-		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DestroyHandle);
+		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DeadMotionEndedHandle);
 	}
 
 	if (IsValid(CameraDataAsset))
@@ -425,8 +425,7 @@ void ALLL_PlayerBase::Dead()
 	PlayerAnimInstance->PlayDeadAnimation();
 }
 
-void ALLL_PlayerBase::DestroyHandle()
+void ALLL_PlayerBase::DeadMotionEndedHandle()
 {
-	// Super::DestroyHandle();
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }
