@@ -30,6 +30,7 @@ ALLL_RewardObject::ALLL_RewardObject()
 void ALLL_RewardObject::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	PriceWidgetClass = RewardObjectDataAsset->PriceWidgetClass;
 	PriceWidget = CastChecked<ULLL_ProductObjectPriceWidget>(CreateWidget(GetWorld(), PriceWidgetClass));
 	
@@ -74,6 +75,7 @@ void ALLL_RewardObject::SetInformation(FTestRewardDataTable* Data)
 void ALLL_RewardObject::InteractiveEvent()
 {
 	Super::InteractiveEvent();
+	
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	ULLL_PlayerGoldComponent* PlayerGoldComponent = Player->GetGoldComponent();
 	if (bIsProduct && PlayerGoldComponent->GetMoney() < Price)
@@ -91,10 +93,10 @@ void ALLL_RewardObject::InteractiveEvent()
 	switch (RewardData->RewardType)
 	{
 	case ERewardType::Ability :
-		
 		SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 		SelectRewardWidget->SetIsEnabled(true);
 		break;
+		
 	case ERewardType::MaxHealth :
 		//player 최대 hp 증가 attributeset 활용?
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -107,9 +109,11 @@ void ALLL_RewardObject::InteractiveEvent()
 		}
 #endif
 		break;
+		
 	case ERewardType::Gold :
 		PlayerGoldComponent->IncreaseMoney(RewardData->RewardValue);
 		break;
+		
 	default:
 		break;
 	}
