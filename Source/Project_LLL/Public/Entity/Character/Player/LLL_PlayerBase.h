@@ -112,7 +112,9 @@ private:
 	// 상태 관련 함수
 protected:
 	virtual void Dead() override;
-	virtual void DestroyHandle() override;
+
+	UFUNCTION()
+	void DeadMotionEndedHandle();
 
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
 	
