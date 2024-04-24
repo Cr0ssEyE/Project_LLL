@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Entity/Object/Interactive/LLL_RewardObject.h"
+#include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 
-#include "AbilitySystemComponent.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Components/WidgetComponent.h"

@@ -12,7 +12,7 @@
 #include "DataAsset/LLL_PlayerChaseHandDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Object/ThrownObject/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_PlayerChaseHand::ALLL_PlayerChaseHand()

@@ -1,10 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Entity/Object/Interactive/LLL_GateObject.h"
+#include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 
 #include "Constant/LLL_FilePath.h"
-#include "System/Reward/LLL_RewardGimmick.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_GateObject::ALLL_GateObject()

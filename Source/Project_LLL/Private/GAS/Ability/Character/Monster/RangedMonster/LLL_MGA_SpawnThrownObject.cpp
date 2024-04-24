@@ -9,7 +9,7 @@
 #include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Character/Monster/RangedMonster/Base/LLL_RangedMonsterAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
-#include "GAS/Attribute/Object/ThrownObject/Base/LLL_ThrownObjectAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 #include "Util/LLL_MathHelper.h"
 

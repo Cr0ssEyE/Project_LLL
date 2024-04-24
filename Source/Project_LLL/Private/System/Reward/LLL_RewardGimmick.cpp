@@ -4,13 +4,12 @@
 #include "System/Reward/LLL_RewardGimmick.h"
 
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
-#include "Entity/Object/Interactive/LLL_GateObject.h"
+#include "Entity/Object/Interactive/Gate//LLL_GateObject.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
-#include "DataTable/LLL_RewardDataTable.h"
 #include "DataTable/LLL_TestAbilityDataTable.h"
 #include "Game/ProtoGameInstance.h"
-#include "Util/LLL_ConstructorHelper.h"
 #include <Entity/Character/Player/LLL_PlayerBase.h>
+
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick()
 {
@@ -36,7 +35,7 @@ void ALLL_RewardGimmick::Tick(float DeltaTime)
 
 void ALLL_RewardGimmick::SetRewardToGate(ALLL_GateObject* Gate)
 {
-	uint8 Index = FMath::RandRange(0, RewardData.Num() - 1);
+	const uint8 Index = FMath::RandRange(0, RewardData.Num() - 1);
 	
 	Gate->SetGateInformation(&RewardData[Index]);
 }
@@ -46,8 +45,8 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	if (!bIsButtonEventSetup)
 	{
 		const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
-		ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
-		ULLL_SelectRewardWidget* RewardWidget = PlayerUIManager->GetSelectRewardWidget();
+		const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
+		const ULLL_SelectRewardWidget* RewardWidget = PlayerUIManager->GetSelectRewardWidget();
 		RewardWidget->GetFirstButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickFirstButton);
 		RewardWidget->GetSecondButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickSecondButton);
 		RewardWidget->GetThirdButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickThirdButton);

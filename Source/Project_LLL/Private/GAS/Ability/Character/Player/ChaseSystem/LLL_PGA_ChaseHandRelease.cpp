@@ -9,7 +9,7 @@
 #include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Object/ThrownObject/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
 
 ULLL_PGA_ChaseHandRelease::ULLL_PGA_ChaseHandRelease()
 {

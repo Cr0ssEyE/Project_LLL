@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Attribute/Object/ThrownObject/Base/LLL_ThrownObjectAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
 #include "LLL_EnergyBlasterEnergyAttributeSet.generated.h"
 
 /**
