@@ -25,8 +25,8 @@ void ULLL_AnimNotify_GameplayTag::Notify(USkeletalMeshComponent* MeshComp, UAnim
 			PayloadData.EventMagnitude = NotifyLevel;
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, TriggerGameplayTag, PayloadData);
 		}
-		
-		IAbilitySystemInterface* ASCOwner = Cast<IAbilitySystemInterface>(OwnerActor);
+
+		const IAbilitySystemInterface* ASCOwner = Cast<IAbilitySystemInterface>(OwnerActor);
 		if (ASCOwner && OwnerGiveTag.IsValid())
 		{
 			ASCOwner->GetAbilitySystemComponent()->AddLooseGameplayTag(OwnerGiveTag);
