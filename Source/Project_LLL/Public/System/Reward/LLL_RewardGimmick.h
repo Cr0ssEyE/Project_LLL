@@ -8,7 +8,7 @@
 #include "LLL_RewardGimmick.generated.h"
 
 struct FTestRewardDataTable;
-struct FTestAbilityDataTable;
+struct FAbilityDataTable;
 class ULLL_RewardDataTable;
 class ULLL_TestAbilityDataTable;
 
@@ -44,11 +44,11 @@ protected:
 	TArray<FTestRewardDataTable> RewardData;
 	
 	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FTestAbilityDataTable> AbilityData;
+	TArray<FAbilityDataTable> AbilityData;
 
-	FTestAbilityDataTable* ButtonAbilityData1;
-	FTestAbilityDataTable* ButtonAbilityData2;
-	FTestAbilityDataTable* ButtonAbilityData3;
+	FAbilityDataTable* ButtonAbilityData1;
+	FAbilityDataTable* ButtonAbilityData2;
+	FAbilityDataTable* ButtonAbilityData3;
 
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsButtonEventSetup : 1;

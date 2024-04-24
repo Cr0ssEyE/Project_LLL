@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "DataTable/LLL_FModParameterDataTable.h"
 #include "DataTable/LLL_RewardDataTable.h"
-#include "DataTable/LLL_TestAbilityDataTable.h"
+#include "DataTable/LLL_AbilityDataTable.h"
 #include "LLL_GameInstance.generated.h"
 
 /**
@@ -26,7 +26,7 @@ public:
 
 public:
 	// 데이터 테이블 Getter
-	FORCEINLINE TArray<FTestAbilityDataTable> GetAbilityDataTable() const { return AbilityData; }
+	FORCEINLINE TArray<FAbilityDataTable> GetAbilityDataTable() const { return AbilityData; }
 	FORCEINLINE TArray<FTestRewardDataTable> GetRewardDataTable() const { return RewardData; }
 
 protected:
@@ -54,7 +54,7 @@ protected:
 	TObjectPtr<const UDataTable> AbilityDataTable;
 	
 	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FTestAbilityDataTable> AbilityData;
+	TArray<FAbilityDataTable> AbilityData;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<const UDataTable> RewardDataTable;

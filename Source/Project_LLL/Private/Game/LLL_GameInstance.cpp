@@ -31,33 +31,35 @@ void ULLL_GameInstance::Init()
 		FModParameterDataArray.Emplace(TempData);
 	}
 
-	TArray<FTestAbilityDataTable*> LoadAbilityDataArray;
-	AbilityDataTable->GetAllRows<FTestAbilityDataTable>(TEXT("Failed To Load Ability Data Tables"), LoadAbilityDataArray);
+	TArray<FAbilityDataTable*> LoadAbilityDataArray;
+	AbilityDataTable->GetAllRows<FAbilityDataTable>(TEXT("Failed To Load Ability Data Tables"), LoadAbilityDataArray);
 
-	for (const FTestAbilityDataTable* LoadDataTable : LoadAbilityDataArray)
+	for (const FAbilityDataTable* LoadAbilityData : LoadAbilityDataArray)
 	{
-		FTestAbilityDataTable TempDataTable;
-		TempDataTable.AbilityCategory = LoadDataTable->AbilityCategory;
-		TempDataTable.AbilityParts = LoadDataTable->AbilityParts;
-		TempDataTable.AbilityRank = LoadDataTable->AbilityRank;
-		TempDataTable.AbilityType = LoadDataTable->AbilityType;
-		TempDataTable.AbilityValue = LoadDataTable->AbilityValue;
-		TempDataTable.ChangeValue = LoadDataTable->ChangeValue;
-		TempDataTable.RequireCategory = LoadDataTable->RequireCategory;
+		FAbilityDataTable TempAbilityData;
+		TempAbilityData.ID = LoadAbilityData->ID;
+		TempAbilityData.AbilityType = LoadAbilityData->AbilityType;
+		TempAbilityData.AbilityPart = LoadAbilityData->AbilityPart;
+		TempAbilityData.AbilityRank = LoadAbilityData->AbilityRank;
+		TempAbilityData.AbilityCategory = LoadAbilityData->AbilityCategory;
+		TempAbilityData.AbilityName = LoadAbilityData->AbilityName;
+		TempAbilityData.AbilityValue = LoadAbilityData->AbilityValue;
+		TempAbilityData.ChangeValue = LoadAbilityData->ChangeValue;
+		TempAbilityData.RequireCategory = LoadAbilityData->RequireCategory;
 		
-		AbilityData.Emplace(TempDataTable);
+		AbilityData.Emplace(TempAbilityData);
 	}
 
-	TArray<FTestRewardDataTable*> LoadRewardDataTables;
-	RewardDataTable->GetAllRows<FTestRewardDataTable>(TEXT("Failed To Load Reward Data Tables"), LoadRewardDataTables);
+	TArray<FTestRewardDataTable*> LoadRewardDataArray;
+	RewardDataTable->GetAllRows<FTestRewardDataTable>(TEXT("Failed To Load Reward Data Tables"), LoadRewardDataArray);
 
-	for (const FTestRewardDataTable* LoadDataTable : LoadRewardDataTables)
+	for (const FTestRewardDataTable* LoadRewardData : LoadRewardDataArray)
 	{
-		FTestRewardDataTable TempDataTable;
-		TempDataTable.RewardType = LoadDataTable->RewardType;
-		TempDataTable.RewardValue = LoadDataTable->RewardValue;
-		TempDataTable.bIsHardReward = LoadDataTable->bIsHardReward;
-		RewardData.Emplace(TempDataTable);
+		FTestRewardDataTable TempRewardData;
+		TempRewardData.RewardType = LoadRewardData->RewardType;
+		TempRewardData.RewardValue = LoadRewardData->RewardValue;
+		TempRewardData.bIsHardReward = LoadRewardData->bIsHardReward;
+		RewardData.Emplace(TempRewardData);
 	}
 }
 

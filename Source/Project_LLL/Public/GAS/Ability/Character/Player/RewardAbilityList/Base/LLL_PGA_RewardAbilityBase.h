@@ -10,42 +10,10 @@
  * 
  */
 
-UENUM(BlueprintType)
-enum class EAbilityType : uint8
-{
-	Crow,
-	Deer,
-	Wolf
-};
-
-UENUM(BlueprintType)
-enum class EAbilityPart : uint8
-{
-	Common,
-	Attack,
-	Chase,
-	Dash,
-	ComboSkill
-};
-
-UENUM(BlueprintType)
-enum class EAbilityRank : uint8
-{
-	Normal,
-	Rare,
-	Epic,
-	Legend
-};
-
-UENUM(BlueprintType)
-enum class EAbilityCategory : uint8
-{
-	Null,
-	Feather,
-	Critical,
-	Marking,
-	Bleeding
-};
+enum class EAbilityCategory : uint8;
+enum class EAbilityRank : uint8;
+enum class EAbilityPart : uint8;
+enum class EAbilityType : uint8;
 
 UCLASS()
 class PROJECT_LLL_API ULLL_PGA_RewardAbilityBase : public ULLL_PlayerGameplayAbilityBase
@@ -73,6 +41,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, DisplayName = "능력 설명")
 	FText AbilityInformation;
+
+	UPROPERTY(EditAnywhere, DisplayName = "능력 수치")
+	float AbilityValue;
+
+	UPROPERTY(EditAnywhere, DisplayName = "수치 변화량")
+	float ChangeValue;
 
 	UPROPERTY(EditAnywhere, DisplayName = "획득 조건")
 	EAbilityCategory RequireCategory;

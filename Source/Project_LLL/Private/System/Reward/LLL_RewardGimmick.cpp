@@ -6,7 +6,7 @@
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Gate//LLL_GateObject.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
-#include "DataTable/LLL_TestAbilityDataTable.h"
+#include "DataTable/LLL_AbilityDataTable.h"
 #include "Game/ProtoGameInstance.h"
 #include <Entity/Character/Player/LLL_PlayerBase.h>
 
@@ -81,7 +81,14 @@ void ALLL_RewardGimmick::ClickFirstButton()
 	{
 		if(ProtoGameInstance->CheckObjectActivateDebug())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString(TEXT("버튼1 : ")).Append(ButtonAbilityData1->AbilityCategory).Append(TEXT(" / ")).Append(ButtonAbilityData1->AbilityParts).Append(ButtonAbilityData1->AbilityRank).Append(TEXT(" / ")).Append(ButtonAbilityData1->AbilityType));
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange,
+				FString(TEXT("버튼1 : ")).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityType))).
+				Append(TEXT(" / ")).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityPart))).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityRank))).
+				Append(TEXT(" / ")).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityCategory))));
 		}
 	}
 #endif
@@ -96,7 +103,14 @@ void ALLL_RewardGimmick::ClickSecondButton()
 	{
 		if(ProtoGameInstance->CheckObjectActivateDebug())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString(TEXT("버튼2 : ")).Append(ButtonAbilityData2->AbilityCategory).Append(TEXT(" / ")).Append(ButtonAbilityData2->AbilityParts).Append(ButtonAbilityData2->AbilityRank).Append(TEXT(" / ")).Append(ButtonAbilityData2->AbilityType));
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange,
+				FString(TEXT("버튼2 : ")).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityType))).
+				Append(TEXT(" / ")).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityPart))).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityRank))).
+				Append(TEXT(" / ")).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityCategory))));
 		}
 	}
 #endif
@@ -111,7 +125,14 @@ void ALLL_RewardGimmick::ClickThirdButton()
 	{
 		if(ProtoGameInstance->CheckObjectActivateDebug())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString(TEXT("버튼3 : ")).Append(ButtonAbilityData3->AbilityCategory).Append(TEXT(" / ")).Append(ButtonAbilityData3->AbilityParts).Append(ButtonAbilityData3->AbilityRank).Append(TEXT(" / ")).Append(ButtonAbilityData3->AbilityType));
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange,
+				FString(TEXT("버튼3 : ")).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityType))).
+				Append(TEXT(" / ")).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityPart))).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityRank))).
+				Append(TEXT(" / ")).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityCategory))));
 		}
 	}
 #endif
