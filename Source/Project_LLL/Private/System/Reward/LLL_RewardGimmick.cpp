@@ -76,6 +76,7 @@ void ALLL_RewardGimmick::SetDataTable()
 void ALLL_RewardGimmick::ClickFirstButton()
 {
 	//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
+	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -85,10 +86,11 @@ void ALLL_RewardGimmick::ClickFirstButton()
 				FString(TEXT("버튼1 : ")).
 				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityType))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityPart))).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityRank))).
+				Append(StaticEnum<EAbilityPart>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityPart))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityCategory))));
+				Append(StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityRank))).
+				Append(TEXT(" / ")).
+				Append(StaticEnum<EAbilityCategory>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityCategory))));
 		}
 	}
 #endif
@@ -107,10 +109,11 @@ void ALLL_RewardGimmick::ClickSecondButton()
 				FString(TEXT("버튼2 : ")).
 				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityType))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityPart))).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityRank))).
+				Append(StaticEnum<EAbilityPart>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityPart))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityCategory))));
+				Append(StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityRank))).
+				Append(TEXT(" / ")).
+				Append(StaticEnum<EAbilityCategory>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityCategory))));
 		}
 	}
 #endif
@@ -129,10 +132,11 @@ void ALLL_RewardGimmick::ClickThirdButton()
 				FString(TEXT("버튼3 : ")).
 				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityType))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityPart))).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityRank))).
+				Append(StaticEnum<EAbilityPart>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityPart))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityCategory))));
+				Append(StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityRank))).
+				Append(TEXT(" / ")).
+				Append(StaticEnum<EAbilityCategory>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityCategory))));
 		}
 	}
 #endif

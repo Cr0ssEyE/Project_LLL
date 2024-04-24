@@ -39,8 +39,8 @@ protected:
 	UPROPERTY(EditAnywhere, DisplayName = "능력 이름")
 	FName AbilityName;
 
-	UPROPERTY(EditAnywhere, DisplayName = "능력 설명")
-	FText AbilityInformation;
+	UPROPERTY(EditAnywhere, DisplayName = "능력 정보")
+	FString AbilityInformation;
 
 	UPROPERTY(EditAnywhere, DisplayName = "능력 수치")
 	float AbilityValue;

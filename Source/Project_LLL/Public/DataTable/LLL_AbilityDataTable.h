@@ -71,6 +71,9 @@ struct FAbilityDataTable : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 이름")
 	FName AbilityName = FName("");
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 정보")
+	FString AbilityInformation = TEXT("");
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 수치")
 	float AbilityValue = 0;
 
