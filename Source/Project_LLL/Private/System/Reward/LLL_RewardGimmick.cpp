@@ -167,7 +167,7 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData) 
 		//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
 		FAsyncLoadEffectDelegate AsyncLoadEffectDelegate;
 		AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_RewardGimmick::ReceivePlayerEffectsHandle);
-		AbilityManageSubSystem->ASyncLoadEffectsByTag(AsyncLoadEffectDelegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), true);
+		AbilityManageSubSystem->ASyncLoadEffectsByTag(AsyncLoadEffectDelegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("AbilityEffects.Test"))), true);
 	}
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)

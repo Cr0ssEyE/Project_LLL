@@ -12,6 +12,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -313,6 +314,16 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 		else
 		{
 			ASC->TryActivateAbility(AttackSpec->Handle);
+		}
+	}
+
+	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
+	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_PLAYER_ATTACK));
+	for (const auto AbilitySpecHandle : AbilitySpecHandles)
+	{
+		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
+		{
+			ASC->TryActivateAbility(AbilitySpec->Handle);
 		}
 	}
 }
