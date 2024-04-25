@@ -10,6 +10,9 @@
 #include "Game/ProtoGameInstance.h"
 #include <Entity/Character/Player/LLL_PlayerBase.h>
 
+#include "AbilitySystemComponent.h"
+#include "GAS/LLL_ExtendedGameplayEffect.h"
+
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick()
 {
@@ -85,13 +88,87 @@ void ALLL_RewardGimmick::SetDataTable()
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
 	
 	RewardData = GameInstance->GetRewardDataTable();
-
 	AbilityData = GameInstance->GetAbilityDataTable();
 }
 
 void ALLL_RewardGimmick::ClickFirstButton()
 {
-	//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
+	ClickButtonEvent(ButtonAbilityData1);
+}
+
+void ALLL_RewardGimmick::ClickSecondButton()
+{
+	ClickButtonEvent(ButtonAbilityData2);
+}
+
+void ALLL_RewardGimmick::ClickThirdButton()
+{
+	ClickButtonEvent(ButtonAbilityData3);
+}
+
+void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData) const
+{
+	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetWorld()->GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
+	if (IsValid(AbilityManageSubSystem))
+	{
+		int32 LoadedEffectCount = 0;
+		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> PlayerGameplayEffects = AbilityManageSubSystem->GetPlayerGameplayEffects();
+		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> MonsterGameplayEffects = AbilityManageSubSystem->GetMonsterGameplayEffects();
+		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> ObjectGameplayEffects = AbilityManageSubSystem->GetObjectGameplayEffects();
+		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> ShareableGameplayEffects = AbilityManageSubSystem->GetShareableGameplayEffects();
+
+		LoadedEffectCount += PlayerGameplayEffects.Num();
+		LoadedEffectCount += MonsterGameplayEffects.Num();
+		LoadedEffectCount += ObjectGameplayEffects.Num();
+		LoadedEffectCount += ShareableGameplayEffects.Num();
+		
+		UE_LOG(LogTemp, Log, TEXT("[ 로드된 이펙트 수 : %d ]"), LoadedEffectCount);
+		bool Flag = false;
+		for (auto PlayerGameplayEffect : PlayerGameplayEffects)
+		{
+			if (!Flag)
+			{
+				UE_LOG(LogTemp, Log, TEXT("부여 가능 플레이어 이펙트"));
+				Flag = true;
+			}
+			UE_LOG(LogTemp, Log, TEXT("- %s"), *PlayerGameplayEffect.Get()->GetName());
+		}
+		Flag = false;
+		for (auto MonsterGameplayEffect : MonsterGameplayEffects)
+		{
+			if (!Flag)
+			{
+				UE_LOG(LogTemp, Log, TEXT("부여 가능 몬스터 이펙트"));
+				Flag = true;
+			}
+			UE_LOG(LogTemp, Log, TEXT("- %s"), *MonsterGameplayEffect.Get()->GetName());
+		}
+		Flag = false;
+		for (auto ObjectGameplayEffect : ObjectGameplayEffects)
+		{
+			if (!Flag)
+			{
+				UE_LOG(LogTemp, Log, TEXT("부여 가능 오브젝트 이펙트"));
+				Flag = true;
+			}
+			UE_LOG(LogTemp, Log, TEXT("- %s"), *ObjectGameplayEffect.Get()->GetName());
+		}
+		Flag = false;
+		for (auto ShareableGameplayEffect : ShareableGameplayEffects)
+		{
+			if (!Flag)
+			{
+				UE_LOG(LogTemp, Log, TEXT("부여 가능 범용 이펙트"));
+				Flag = true;
+			}
+			UE_LOG(LogTemp, Log, TEXT("- %s"), *ShareableGameplayEffect.Get()->GetName());
+		}
+
+		//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
+		FAsyncLoadEffectDelegate AsyncLoadEffectDelegate;
+		AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_RewardGimmick::ReceivePlayerEffectsHandle);
+		AbilityManageSubSystem->ASyncLoadEffectsByTag(AsyncLoadEffectDelegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), true);
+	}
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -100,61 +177,39 @@ void ALLL_RewardGimmick::ClickFirstButton()
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange,
 				FString(TEXT("버튼1 : ")).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityType))).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData->AbilityType))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityPart>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityPart))).
+				Append(StaticEnum<EAbilityPart>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData->AbilityPart))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityRank))).
+				Append(StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData->AbilityRank))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityCategory>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData1->AbilityCategory))));
+				Append(StaticEnum<EAbilityCategory>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData->AbilityCategory))));
 		}
 	}
 #endif
 }
 
-void ALLL_RewardGimmick::ClickSecondButton()
+void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects)
 {
-	//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
 
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-	{
-		if(ProtoGameInstance->CheckObjectActivateDebug())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange,
-				FString(TEXT("버튼2 : ")).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityType))).
-				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityPart>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityPart))).
-				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityRank))).
-				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityCategory>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData2->AbilityCategory))));
-		}
-	}
-#endif
+	UE_LOG(LogTemp, Log, TEXT("부여 된 플레이어 이펙트"));
+	ReceiveEffects(LoadedEffects, ASC);
 }
 
-void ALLL_RewardGimmick::ClickThirdButton()
+void ALLL_RewardGimmick::ReceiveEffects(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, UAbilitySystemComponent* ASC) const
 {
-	//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	for (auto LoadedEffect : LoadedEffects)
 	{
-		if(ProtoGameInstance->CheckObjectActivateDebug())
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(LoadedEffect.Get(), 1.0, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange,
-				FString(TEXT("버튼3 : ")).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityType))).
-				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityPart>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityPart))).
-				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityRank))).
-				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityCategory>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData3->AbilityCategory))));
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, ASC);
+			UE_LOG(LogTemp, Log, TEXT("- %s"), *LoadedEffect.Get()->GetName());
 		}
 	}
-#endif
 }
 

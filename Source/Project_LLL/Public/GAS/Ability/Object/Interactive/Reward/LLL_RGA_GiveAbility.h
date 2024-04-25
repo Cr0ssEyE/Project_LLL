@@ -16,7 +16,4 @@ class PROJECT_LLL_API ULLL_RGA_GiveAbility : public ULLL_InteractiveObjectGamepl
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
-	UPROPERTY(EditAnywhere, DisplayName = "보상 능력")
-	TSubclassOf<UGameplayEffect> RewardAbilityEffect;
 };

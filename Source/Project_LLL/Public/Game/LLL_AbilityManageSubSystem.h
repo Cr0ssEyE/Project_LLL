@@ -35,6 +35,11 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
+	FORCEINLINE TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> GetPlayerGameplayEffects() { return PlayerGameplayEffects; }
+	FORCEINLINE TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> GetMonsterGameplayEffects() { return MonsterGameplayEffects; }
+	FORCEINLINE TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> GetObjectGameplayEffects() { return ObjectGameplayEffects; }
+	FORCEINLINE TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> GetShareableGameplayEffects() { return ShareableGameplayEffects; }
+
 	// 어빌리티 OR 스탯 부여 이펙트 비동기 로딩
 public:
 	void ASyncLoadEffectsByTag(FAsyncLoadEffectDelegate Delegate, EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching = false);

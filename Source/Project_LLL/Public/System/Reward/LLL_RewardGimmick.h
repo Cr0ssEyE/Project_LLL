@@ -7,6 +7,8 @@
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_RewardGimmick.generated.h"
 
+class UAbilitySystemComponent;
+class ULLL_ExtendedGameplayEffect;
 class ALLL_GateObject;
 struct FRewardDataTable;
 struct FAbilityDataTable;
@@ -66,4 +68,11 @@ protected:
 
 	UFUNCTION()
 	void ClickThirdButton();
+	
+	void ClickButtonEvent(FAbilityDataTable* ButtonAbilityData) const;
+
+	UFUNCTION()
+	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects);
+
+	void ReceiveEffects(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, UAbilitySystemComponent* ASC) const;
 };
