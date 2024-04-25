@@ -53,7 +53,7 @@ void ALLL_RewardObject::ApplyProductEvent()
 	PriceWidget->SetPrice(Price);
 }
 
-void ALLL_RewardObject::SetInformation(FTestRewardDataTable* Data)
+void ALLL_RewardObject::SetInformation(FRewardDataTable* Data)
 {
 	RewardData = Data;
 
@@ -90,6 +90,15 @@ void ALLL_RewardObject::InteractiveEvent()
 	
 	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
 	// 해당 부분은 추후 보상 관련 오브젝트를 분리하게 될 시 MapGimmick에 옮겨질 수 있음
+	
+	if (!RewardData)
+	{
+		const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+		TArray<FRewardDataTable> RewardDataArray = GameInstance->GetRewardDataTable();
+		const uint8 Index = FMath::RandRange(0, RewardDataArray.Num() - 1);
+		RewardData = &RewardDataArray[Index];
+	}
+	
 	switch (RewardData->RewardType)
 	{
 	case ERewardType::Ability :

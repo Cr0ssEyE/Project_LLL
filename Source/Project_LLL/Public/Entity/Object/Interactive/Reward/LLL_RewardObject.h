@@ -11,7 +11,7 @@
 class ULLL_SelectRewardWidget;
 class ULLL_ProductObjectPriceWidget;
 class UWidgetComponent;
-struct FTestRewardDataTable;
+struct FRewardDataTable;
 
 UCLASS()
 class PROJECT_LLL_API ALLL_RewardObject : public ALLL_InteractiveObject, public ILLL_ProductObjectInterface
@@ -27,7 +27,7 @@ public:
 
 	virtual void ApplyProductEvent() override;
 
-	void SetInformation(FTestRewardDataTable* Data);
+	void SetInformation(FRewardDataTable* Data);
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -52,5 +52,5 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_ProductObjectPriceWidget> PriceWidget;
 	
-	FTestRewardDataTable* RewardData;
+	FRewardDataTable* RewardData;
 };

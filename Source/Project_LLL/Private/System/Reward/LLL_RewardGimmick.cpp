@@ -16,14 +16,25 @@ ALLL_RewardGimmick::ALLL_RewardGimmick()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	ButtonAbilityData1 = nullptr;
+	ButtonAbilityData2 = nullptr;
+	ButtonAbilityData3 = nullptr;
+	
 	bIsButtonEventSetup = false;
+	bMapGimmickIsExist = false;
 }
 
 // Called when the game starts or when spawned
 void ALLL_RewardGimmick::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
+		if (!bMapGimmickIsExist)
+		{
+			SetRewardButtons();
+		}
+	}));
 }
 
 // Called every frame
@@ -42,6 +53,11 @@ void ALLL_RewardGimmick::SetRewardToGate(ALLL_GateObject* Gate)
 
 void ALLL_RewardGimmick::SetRewardButtons()
 {
+	if (RewardData.Num() == 0 || AbilityData.Num() == 0)
+	{
+		SetDataTable();
+	}
+	
 	if (!bIsButtonEventSetup)
 	{
 		const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());

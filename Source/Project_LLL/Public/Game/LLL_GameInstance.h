@@ -27,7 +27,7 @@ public:
 public:
 	// 데이터 테이블 Getter
 	FORCEINLINE TArray<FAbilityDataTable> GetAbilityDataTable() const { return AbilityData; }
-	FORCEINLINE TArray<FTestRewardDataTable> GetRewardDataTable() const { return RewardData; }
+	FORCEINLINE TArray<FRewardDataTable> GetRewardDataTable() const { return RewardData; }
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -60,6 +60,6 @@ protected:
 	TObjectPtr<const UDataTable> RewardDataTable;
 	
 	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FTestRewardDataTable> RewardData;
+	TArray<FRewardDataTable> RewardData;
 	
 };

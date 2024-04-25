@@ -13,39 +13,39 @@
 UENUM(BlueprintType)
 enum class EAbilityType : uint8
 {
-	None UMETA(Hidden, DisplayName = "None"),
-	Crow UMETA(DisplayName = "Crow"),
-	Deer UMETA(DisplayName = "Deer"),
-	Wolf UMETA(DisplayName = "Wolf")
+	None UMETA(Hidden),
+	Crow,
+	Deer,
+	Wolf
 };
 
 UENUM(BlueprintType)
 enum class EAbilityPart : uint8
 {
-	Common UMETA(DisplayName = "Common"),
-	Attack UMETA(DisplayName = "Attack"),
-	Chase UMETA(DisplayName = "Chase"),
-	Dash UMETA(DisplayName = "Dash"),
-	ComboSkill UMETA(DisplayName = "ComboSkill")
+	Common,
+	Attack,
+	Chase,
+	Dash,
+	ComboSkill
 };
 
 UENUM(BlueprintType)
 enum class EAbilityRank : uint8
 {
-	Normal UMETA(DisplayName = "Normal"),
-	Rare UMETA(DisplayName = "Rare"),
-	Epic UMETA(DisplayName = "Epic"),
-	Legend UMETA(DisplayName = "Legend")
+	Normal,
+	Rare,
+	Epic,
+	Legend
 };
 
 UENUM(BlueprintType)
 enum class EAbilityCategory : uint8
 {
-	Null UMETA(DisplayName = "Null"),
-	Feather UMETA(DisplayName = "Feather"),
-	Critical UMETA(DisplayName = "Critical"),
-	Marking UMETA(DisplayName = "Marking"),
-	Bleeding UMETA(DisplayName = "Bleeding")
+	Null,
+	Feather,
+	Critical,
+	Marking,
+	Bleeding
 };
 
 USTRUCT(BlueprintType)

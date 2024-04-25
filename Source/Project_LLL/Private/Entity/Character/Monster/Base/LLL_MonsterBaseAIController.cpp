@@ -25,13 +25,10 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 		BlackboardComponent = NewBlackboardComponent;
 	}
 
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBaseAIController::MontageDelegateInit);
-}
-
-void ALLL_MonsterBaseAIController::MontageDelegateInit()
-{
-	Monster->GetCharacterAnimInstance()->OnMontageStarted.AddDynamic(this, &ALLL_MonsterBaseAIController::StartDamagedHandle);
-	Monster->GetCharacterAnimInstance()->OnMontageEnded.AddDynamic(this, &ALLL_MonsterBaseAIController::EndDamagedHandle);
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
+		Monster->GetCharacterAnimInstance()->OnMontageStarted.AddDynamic(this, &ALLL_MonsterBaseAIController::StartDamagedHandle);
+		Monster->GetCharacterAnimInstance()->OnMontageEnded.AddDynamic(this, &ALLL_MonsterBaseAIController::EndDamagedHandle);
+	}));
 }
 
 void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)

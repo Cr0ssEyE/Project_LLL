@@ -113,7 +113,7 @@ protected:
 	UFUNCTION()
 	void AllGatesDestroy();
 	
-	void OnInteractionGate(FTestRewardDataTable* Data);
+	void OnInteractionGate(FRewardDataTable* Data);
 	
 	void EnableAllGates();
 
@@ -156,7 +156,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ALLL_RewardGimmick> RewardGimmick;
 	
-	FTestRewardDataTable* RewardData;
+	FRewardDataTable* RewardData;
 
 	UFUNCTION()
 	void RewardDestroyed(AActor* DestroyedActor);

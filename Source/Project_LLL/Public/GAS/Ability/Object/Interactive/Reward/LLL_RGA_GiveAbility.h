@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Ability/Character/Player/RewardAbilityList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "GAS/Ability/Object/Interactive/Base/LLL_InteractiveObjectGameplayAbilityBase.h"
 #include "LLL_RGA_GiveAbility.generated.h"
 
@@ -19,5 +18,5 @@ protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 	UPROPERTY(EditAnywhere, DisplayName = "보상 능력")
-	TSubclassOf<ULLL_PGA_RewardAbilityBase> RewardAbility;
+	TSubclassOf<UGameplayEffect> RewardAbilityEffect;
 };

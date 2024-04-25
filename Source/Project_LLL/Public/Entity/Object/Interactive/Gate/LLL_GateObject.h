@@ -7,9 +7,9 @@
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "LLL_GateObject.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateInteractionDelegate, FTestRewardDataTable*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateInteractionDelegate, FRewardDataTable*);
 
-struct FTestRewardDataTable;
+struct FRewardDataTable;
 class ULLL_RewardDataTable;
 UCLASS()
 class PROJECT_LLL_API ALLL_GateObject : public ALLL_InteractiveObject
@@ -20,11 +20,11 @@ public:
 	ALLL_GateObject();
 
 	FORCEINLINE void GateEnable() { bIsGateEnabled = true; }
-	FORCEINLINE FTestRewardDataTable* GetRewardData() const { return RewardData; }
+	FORCEINLINE FRewardDataTable* GetRewardData() const { return RewardData; }
 	
 	FOnGateInteractionDelegate GateInteractionDelegate;
 
-	void SetGateInformation(FTestRewardDataTable* Data);
+	void SetGateInformation(FRewardDataTable* Data);
 	
 protected:
 	virtual void InteractiveEvent() override;
@@ -35,7 +35,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsGateEnabled : 1;
 	
-	FTestRewardDataTable* RewardData;
+	FRewardDataTable* RewardData;
 	
 	void OpenGate();
 
