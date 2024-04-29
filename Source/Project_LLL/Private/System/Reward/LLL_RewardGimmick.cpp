@@ -204,7 +204,6 @@ void ALLL_RewardGimmick::ReceiveEffects(TArray<TSoftClassPtr<ULLL_ExtendedGamepl
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(ASC->GetOwnerActor());
-		UE_LOG(LogTemp, Log, TEXT("%s"), *ASC->GetOwnerActor()->GetName())
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(LoadedEffect.Get(), 1.0, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{
