@@ -46,7 +46,7 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByTag(FAsyncLoadEffectDelegate
 		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FilteredDataSet;
 		for (auto Data : DataSet)
 		{
-			ULLL_ExtendedGameplayEffect* EffectObject = Cast<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
+			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
 			if(EffectObject->GetAssetTags().IsEmpty())
 			{
 				continue;
@@ -84,7 +84,7 @@ void ULLL_AbilityManageSubSystem::ASyncLoadAttributeEffectsByTag(FAsyncLoadEffec
 		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FilteredDataSet;
 		for (auto Data : DataSet)
 		{
-			ULLL_ExtendedGameplayEffect* EffectObject = Cast<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
+			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
 			if(EffectObject->GetAssetTags().IsEmpty() || EffectObject->GetAccessRange() == EEffectAccessRange::Ability)
 			{
 				continue;
@@ -122,7 +122,7 @@ void ULLL_AbilityManageSubSystem::ASyncLoadGrantAbilityEffectsByTag(FAsyncLoadEf
 		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FilteredDataSet;
 		for (auto Data : DataSet)
 		{
-			ULLL_ExtendedGameplayEffect* EffectObject = Cast<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
+			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
 			if(EffectObject->GetAssetTags().IsEmpty() || EffectObject->GetAccessRange() == EEffectAccessRange::Attribute)
 			{
 				continue;
@@ -138,6 +138,30 @@ void ULLL_AbilityManageSubSystem::ASyncLoadGrantAbilityEffectsByTag(FAsyncLoadEf
 			}
 		
 			if (EffectObject->GetAssetTags().HasAny(EffectTag))
+			{
+				FilteredDataSet.Emplace(Data);
+			}
+		}
+		Delegate.Broadcast(FilteredDataSet);
+	}));
+}
+
+void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate Delegate, EEffectOwnerType Owner, int32 ID, bool TagHasMatching)
+{
+	FStreamableManager& StreamableManager = UAssetManager::GetStreamableManager();
+	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> DataSet = GetDataSetByOwner(Owner);
+	TArray<FSoftObjectPath> Paths;
+	for (auto& Effect : DataSet)
+	{
+		Paths.Emplace(Effect.ToSoftObjectPath());
+	}
+	StreamableManager.RequestAsyncLoad(Paths, FStreamableDelegate::CreateWeakLambda(this, [=]()
+	{
+		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FilteredDataSet;
+		for (auto Data : DataSet)
+		{
+			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
+			if (EffectObject->GetID() == ID)
 			{
 				FilteredDataSet.Emplace(Data);
 			}

@@ -112,10 +112,10 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData) 
 	if (IsValid(AbilityManageSubSystem))
 	{
 		int32 LoadedEffectCount = 0;
-		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> PlayerGameplayEffects = AbilityManageSubSystem->GetPlayerGameplayEffects();
-		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> MonsterGameplayEffects = AbilityManageSubSystem->GetMonsterGameplayEffects();
-		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> ObjectGameplayEffects = AbilityManageSubSystem->GetObjectGameplayEffects();
-		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> ShareableGameplayEffects = AbilityManageSubSystem->GetShareableGameplayEffects();
+		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> PlayerGameplayEffects = AbilityManageSubSystem->GetDataSetByOwner(EEffectOwnerType::Player);
+		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> MonsterGameplayEffects = AbilityManageSubSystem->GetDataSetByOwner(EEffectOwnerType::Monster);
+		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> ObjectGameplayEffects = AbilityManageSubSystem->GetDataSetByOwner(EEffectOwnerType::Object);
+		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> ShareableGameplayEffects = AbilityManageSubSystem->GetDataSetByOwner(EEffectOwnerType::Share);
 
 		LoadedEffectCount += PlayerGameplayEffects.Num();
 		LoadedEffectCount += MonsterGameplayEffects.Num();
@@ -167,7 +167,7 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData) 
 		//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
 		FAsyncLoadEffectDelegate AsyncLoadEffectDelegate;
 		AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_RewardGimmick::ReceivePlayerEffectsHandle);
-		AbilityManageSubSystem->ASyncLoadEffectsByTag(AsyncLoadEffectDelegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("AbilityEffects.Test"))), true);
+		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, ButtonAbilityData->ID, true);
 	}
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)

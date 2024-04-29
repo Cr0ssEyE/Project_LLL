@@ -7,7 +7,7 @@ void ULLL_PGA_Test::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	UE_LOG(LogTemp, Log, TEXT("보상으로 얻은 어빌리티 발동"));
+	UE_LOG(LogTemp, Log, TEXT("%s"), *GetName());
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

@@ -6,7 +6,6 @@
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "FMODAudioComponent.h"
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -18,7 +17,6 @@
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
-#include "Game/LLL_AbilityManageSubSystem.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -26,8 +24,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
-#include "GAS/LLL_ExtendedGameplayEffect.h"
-#include "Util/LLL_ExecuteCueHelper.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
@@ -314,16 +310,6 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 		else
 		{
 			ASC->TryActivateAbility(AttackSpec->Handle);
-		}
-	}
-
-	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
-	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_PLAYER_ATTACK));
-	for (const auto AbilitySpecHandle : AbilitySpecHandles)
-	{
-		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
-		{
-			ASC->TryActivateAbility(AbilitySpec->Handle);
 		}
 	}
 }

@@ -17,7 +17,6 @@
 #define TAG_GAS_ATTACK_HIT_CHECK_COMPLETE FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.CheckComplete"))
 
 // 플레이어 행동, 상태 관련 게임플레이 태그
-#define TAG_GAS_PLAYER_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Attack.MeleeAttack"))
 #define TAG_GAS_PLAYER_DASH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash"))
 #define TAG_GAS_PLAYER_CHASE_THROW FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Throw"))
 #define TAG_GAS_PLAYER_CHASE_RUSH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Rush"))
