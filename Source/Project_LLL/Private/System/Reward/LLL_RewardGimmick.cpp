@@ -113,16 +113,10 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData) 
 	{
 		int32 LoadedEffectCount = 0;
 		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> PlayerGameplayEffects = AbilityManageSubSystem->GetDataSetByOwner(EEffectOwnerType::Player);
-		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> MonsterGameplayEffects = AbilityManageSubSystem->GetDataSetByOwner(EEffectOwnerType::Monster);
-		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> ObjectGameplayEffects = AbilityManageSubSystem->GetDataSetByOwner(EEffectOwnerType::Object);
-		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> ShareableGameplayEffects = AbilityManageSubSystem->GetDataSetByOwner(EEffectOwnerType::Share);
 
 		LoadedEffectCount += PlayerGameplayEffects.Num();
-		LoadedEffectCount += MonsterGameplayEffects.Num();
-		LoadedEffectCount += ObjectGameplayEffects.Num();
-		LoadedEffectCount += ShareableGameplayEffects.Num();
 		
-		UE_LOG(LogTemp, Log, TEXT("[ 로드된 이펙트 수 : %d ]"), LoadedEffectCount);
+		UE_LOG(LogTemp, Log, TEXT("[ 로드된 플레이어 이펙트 수 : %d ]"), PlayerGameplayEffects.Num());
 		bool Flag = false;
 		for (auto PlayerGameplayEffect : PlayerGameplayEffects)
 		{
@@ -133,37 +127,7 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData) 
 			}
 			UE_LOG(LogTemp, Log, TEXT("- %s"), *PlayerGameplayEffect.Get()->GetName());
 		}
-		Flag = false;
-		for (auto MonsterGameplayEffect : MonsterGameplayEffects)
-		{
-			if (!Flag)
-			{
-				UE_LOG(LogTemp, Log, TEXT("부여 가능 몬스터 이펙트"));
-				Flag = true;
-			}
-			UE_LOG(LogTemp, Log, TEXT("- %s"), *MonsterGameplayEffect.Get()->GetName());
-		}
-		Flag = false;
-		for (auto ObjectGameplayEffect : ObjectGameplayEffects)
-		{
-			if (!Flag)
-			{
-				UE_LOG(LogTemp, Log, TEXT("부여 가능 오브젝트 이펙트"));
-				Flag = true;
-			}
-			UE_LOG(LogTemp, Log, TEXT("- %s"), *ObjectGameplayEffect.Get()->GetName());
-		}
-		Flag = false;
-		for (auto ShareableGameplayEffect : ShareableGameplayEffects)
-		{
-			if (!Flag)
-			{
-				UE_LOG(LogTemp, Log, TEXT("부여 가능 범용 이펙트"));
-				Flag = true;
-			}
-			UE_LOG(LogTemp, Log, TEXT("- %s"), *ShareableGameplayEffect.Get()->GetName());
-		}
-
+		
 		//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
 		FAsyncLoadEffectDelegate AsyncLoadEffectDelegate;
 		AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_RewardGimmick::ReceivePlayerEffectsHandle);
@@ -195,15 +159,10 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
 
 	UE_LOG(LogTemp, Log, TEXT("부여 된 플레이어 이펙트"));
-	ReceiveEffects(LoadedEffects, ASC);
-}
-
-void ALLL_RewardGimmick::ReceiveEffects(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, UAbilitySystemComponent* ASC) const
-{
 	for (auto LoadedEffect : LoadedEffects)
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(ASC->GetOwnerActor());
+		EffectContextHandle.AddSourceObject(Player);
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(LoadedEffect.Get(), 1.0, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{
@@ -212,4 +171,3 @@ void ALLL_RewardGimmick::ReceiveEffects(TArray<TSoftClassPtr<ULLL_ExtendedGamepl
 		}
 	}
 }
-
