@@ -9,7 +9,7 @@
 #include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
-#include "GAS/LLL_ExtendedGameplayEffect.h"
+#include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 
 ULLL_AbilityManageSubSystem::ULLL_AbilityManageSubSystem()
 {
@@ -32,7 +32,7 @@ void ULLL_AbilityManageSubSystem::Deinitialize()
 	
 }
 
-void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByTag(FAsyncLoadEffectDelegate Delegate, EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching)
+void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByTag(FAsyncLoadEffectDelegate Delegate, EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, const EEffectAccessRange AccessRange, bool TagHasMatching)
 {
 	FStreamableManager& StreamableManager = UAssetManager::GetStreamableManager();
 	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> DataSet = GetDataSetByOwner(Owner);
@@ -47,9 +47,19 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByTag(FAsyncLoadEffectDelegate
 		for (auto Data : DataSet)
 		{
 			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
-			if(EffectObject->GetAssetTags().IsEmpty())
+			if (AccessRange == EEffectAccessRange::None)
 			{
-				continue;
+				if(EffectObject->GetAssetTags().IsEmpty())
+				{
+					continue;
+				}
+			}
+			else
+			{
+				if(EffectObject->GetAssetTags().IsEmpty() || EffectObject->GetAccessRange() == AccessRange)
+				{
+					continue;
+				}
 			}
 		
 			if (TagHasMatching)
@@ -70,7 +80,7 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByTag(FAsyncLoadEffectDelegate
 	}));
 }
 
-void ULLL_AbilityManageSubSystem::ASyncLoadAttributeEffectsByTag(FAsyncLoadEffectDelegate Delegate, EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching)
+void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate Delegate, EEffectOwnerType Owner, int32 ID, const EEffectAccessRange AccessRange)
 {
 	FStreamableManager& StreamableManager = UAssetManager::GetStreamableManager();
 	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> DataSet = GetDataSetByOwner(Owner);
@@ -85,82 +95,14 @@ void ULLL_AbilityManageSubSystem::ASyncLoadAttributeEffectsByTag(FAsyncLoadEffec
 		for (auto Data : DataSet)
 		{
 			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
-			if(EffectObject->GetAssetTags().IsEmpty() || EffectObject->GetAccessRange() == EEffectAccessRange::Ability)
+			if (AccessRange != EEffectAccessRange::None)
 			{
-				continue;
-			}
-		
-			if (TagHasMatching)
-			{
-				if (EffectObject->GetAssetTags().HasAllExact(EffectTag))
+				if(EffectObject->GetAccessRange() == AccessRange)
 				{
-					FilteredDataSet.Emplace(Data);
+					continue;
 				}
-				continue;
 			}
-		
-			if (EffectObject->GetAssetTags().HasAny(EffectTag))
-			{
-				FilteredDataSet.Emplace(Data);
-			}
-		}
-		Delegate.Broadcast(FilteredDataSet);
-	}));
-}
-
-void ULLL_AbilityManageSubSystem::ASyncLoadGrantAbilityEffectsByTag(FAsyncLoadEffectDelegate Delegate, EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, bool TagHasMatching)
-{
-	FStreamableManager& StreamableManager = UAssetManager::GetStreamableManager();
-	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> DataSet = GetDataSetByOwner(Owner);
-	TArray<FSoftObjectPath> Paths;
-	for (auto& Effect : DataSet)
-	{
-		Paths.Emplace(Effect.ToSoftObjectPath());
-	}
-	StreamableManager.RequestAsyncLoad(Paths, FStreamableDelegate::CreateWeakLambda(this, [=]()
-	{
-		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FilteredDataSet;
-		for (auto Data : DataSet)
-		{
-			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
-			if(EffectObject->GetAssetTags().IsEmpty() || EffectObject->GetAccessRange() == EEffectAccessRange::Attribute)
-			{
-				continue;
-			}
-		
-			if (TagHasMatching)
-			{
-				if (EffectObject->GetAssetTags().HasAllExact(EffectTag))
-				{
-					FilteredDataSet.Emplace(Data);
-				}
-				continue;
-			}
-		
-			if (EffectObject->GetAssetTags().HasAny(EffectTag))
-			{
-				FilteredDataSet.Emplace(Data);
-			}
-		}
-		Delegate.Broadcast(FilteredDataSet);
-	}));
-}
-
-void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate Delegate, EEffectOwnerType Owner, int32 ID, bool TagHasMatching)
-{
-	FStreamableManager& StreamableManager = UAssetManager::GetStreamableManager();
-	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> DataSet = GetDataSetByOwner(Owner);
-	TArray<FSoftObjectPath> Paths;
-	for (auto& Effect : DataSet)
-	{
-		Paths.Emplace(Effect.ToSoftObjectPath());
-	}
-	StreamableManager.RequestAsyncLoad(Paths, FStreamableDelegate::CreateWeakLambda(this, [=]()
-	{
-		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FilteredDataSet;
-		for (auto Data : DataSet)
-		{
-			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
+			
 			if (EffectObject->GetID() == ID)
 			{
 				FilteredDataSet.Emplace(Data);
@@ -172,7 +114,7 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 
 void ULLL_AbilityManageSubSystem::LoadEffectsFromPath(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& Container, const FName PrimaryTypes)
 {
-	UAssetManager& Manager = UAssetManager::Get();
+	const UAssetManager& Manager = UAssetManager::Get();
 	TArray<FPrimaryAssetId> Assets;
 	Manager.GetPrimaryAssetIdList(PrimaryTypes, Assets);
 

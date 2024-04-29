@@ -11,7 +11,7 @@
 #include <Entity/Character/Player/LLL_PlayerBase.h>
 
 #include "AbilitySystemComponent.h"
-#include "GAS/LLL_ExtendedGameplayEffect.h"
+#include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick()
@@ -167,7 +167,7 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData) 
 		//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
 		FAsyncLoadEffectDelegate AsyncLoadEffectDelegate;
 		AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_RewardGimmick::ReceivePlayerEffectsHandle);
-		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, ButtonAbilityData->ID, true);
+		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, ButtonAbilityData->ID, EEffectAccessRange::None);
 	}
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -203,11 +203,12 @@ void ALLL_RewardGimmick::ReceiveEffects(TArray<TSoftClassPtr<ULLL_ExtendedGamepl
 	for (auto LoadedEffect : LoadedEffects)
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
+		EffectContextHandle.AddSourceObject(ASC->GetOwnerActor());
+		UE_LOG(LogTemp, Log, TEXT("%s"), *ASC->GetOwnerActor()->GetName())
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(LoadedEffect.Get(), 1.0, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{
-			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, ASC);
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 			UE_LOG(LogTemp, Log, TEXT("- %s"), *LoadedEffect.Get()->GetName());
 		}
 	}

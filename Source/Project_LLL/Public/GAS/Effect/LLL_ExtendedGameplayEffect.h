@@ -9,7 +9,6 @@
 class UAssetTagsGameplayEffectComponent;
 enum class EEffectAccessRange : uint8;
 enum class EEffectOwnerType : uint8;
-
 enum class EAbilityCategory : uint8;
 enum class EAbilityRank : uint8;
 enum class EAbilityPart : uint8;
