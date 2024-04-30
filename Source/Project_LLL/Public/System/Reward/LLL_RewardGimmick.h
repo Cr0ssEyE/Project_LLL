@@ -73,6 +73,4 @@ protected:
 
 	UFUNCTION()
 	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects);
-
-	FString TempTagName;
 };

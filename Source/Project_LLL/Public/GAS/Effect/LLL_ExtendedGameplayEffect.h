@@ -28,6 +28,9 @@ public:
 	FORCEINLINE EEffectOwnerType GetOwnership() const { return EffectOwnership; }
 	FORCEINLINE EEffectAccessRange GetAccessRange() const { return EffectAccessRange; }
 	FORCEINLINE int32 GetID() const { return Id; }
+	FORCEINLINE void SetAbilityRank(EAbilityRank InAbilityRank) { AbilityRank = InAbilityRank; }
+
+	void SendRankToAbility();
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS", DisplayName = "이펙트 소유자 종류", meta=(DisplayPriority = 1))

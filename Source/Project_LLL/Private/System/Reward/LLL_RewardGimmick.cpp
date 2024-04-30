@@ -150,7 +150,11 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(LoadedEffect.Get(), 1.0, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{
-			const FGameplayTagContainer TagContainer = CastChecked<UGameplayEffect>(LoadedEffect->GetDefaultObject())->GetAssetTags();
+			ULLL_ExtendedGameplayEffect* Effect = CastChecked<ULLL_ExtendedGameplayEffect>(LoadedEffect->GetDefaultObject());
+			Effect->SetAbilityRank(EAbilityRank::Legend);
+			Effect->SendRankToAbility();
+			
+			const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
 			TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
 			for (auto EffectHandle : EffectHandles)
 			{
