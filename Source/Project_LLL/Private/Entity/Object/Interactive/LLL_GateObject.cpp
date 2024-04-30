@@ -19,13 +19,13 @@ void ALLL_GateObject::SetGateInformation(FTestRewardDataTable* Data)
 	RewardData = Data;
 	
 	//TODO: gate의 보상 표시 변경
-	switch (RewardData->RewardType)
+	switch (RewardData->ID)
 	{
-	case ERewardType::Ability :
+	case 1:
 		break;
-	case ERewardType::MaxHealth :
+	case 2:
 		break;
-	case ERewardType::Gold :
+	case 3:
 		break;
 	default:
 		break;

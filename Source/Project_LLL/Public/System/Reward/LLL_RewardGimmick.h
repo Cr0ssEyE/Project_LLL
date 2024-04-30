@@ -11,6 +11,7 @@ struct FTestRewardDataTable;
 struct FTestAbilityDataTable;
 class ULLL_RewardDataTable;
 class ULLL_TestAbilityDataTable;
+class ALLL_AbilityRewardObject;
 
 UCLASS()
 class PROJECT_LLL_API ALLL_RewardGimmick : public ALLL_SystemBase
@@ -33,6 +34,8 @@ public:
 
 	UFUNCTION()
 	void SetRewardToGate(ALLL_GateObject* Gate);
+
+	void SetAbilityToReward(ALLL_AbilityRewardObject* RewardObject);
 	
 	UFUNCTION()
 	void SetRewardButtons();

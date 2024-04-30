@@ -43,4 +43,5 @@
 #define PATH_MAP_DATA TEXT("/Script/Project_LLL.LLL_MapDataAsset'/Game/DataAsset/DA_Map.DA_Map'")
 #define PATH_ABILITY_DATA_TABLE TEXT("/Script/Engine.DataTable'/Game/DataTable/AbilityTestDataTable.AbilityTestDataTable'")
 #define PATH_REWARD_DATA_TABLE TEXT("/Script/Engine.DataTable'/Game/DataTable/TestRewardDataTable.TestRewardDataTable'")
+#define PATH_SHOP_DATA_TABLE TEXT("/Script/CoreUObject.Class'/Script/Project_LLL.LLL_TestShopDataTable'")
 #define PATH_UI_PROGRESSBAR_INST TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Materials/Instances/M_UI_CircleProgressBer_Inst.M_UI_CircleProgressBer_Inst'")

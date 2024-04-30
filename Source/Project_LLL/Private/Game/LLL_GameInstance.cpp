@@ -13,7 +13,8 @@ ULLL_GameInstance::ULLL_GameInstance()
 	AbilityDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_ABILITY_DATA_TABLE, EAssertionLevel::Check);
 
 	RewardDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_REWARD_DATA_TABLE, EAssertionLevel::Check);
-	
+
+	ShopDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_SHOP_DATA_TABLE, EAssertionLevel::Check);
 }
 
 void ULLL_GameInstance::Init()
@@ -54,10 +55,29 @@ void ULLL_GameInstance::Init()
 	for (const FTestRewardDataTable* LoadDataTable : LoadRewardDataTables)
 	{
 		FTestRewardDataTable TempDataTable;
-		TempDataTable.RewardType = LoadDataTable->RewardType;
-		TempDataTable.RewardValue = LoadDataTable->RewardValue;
+		TempDataTable.DropType = LoadDataTable->DropType;
+		TempDataTable.GetType = LoadDataTable->GetType;
+		TempDataTable.ID = LoadDataTable->ID;
+		TempDataTable.UseType = LoadDataTable->UseType;
+		TempDataTable.GroupID = LoadDataTable->GroupID;
+		TempDataTable.Value = LoadDataTable->Value;
 		TempDataTable.bIsHardReward = LoadDataTable->bIsHardReward;
 		RewardData.Emplace(TempDataTable);
+	}
+
+	TArray<FTestShopDataTable*> LoadShopDataTables;
+	ShopDataTable->GetAllRows<FTestShopDataTable>(TEXT("Failed To Load Shop Data Tables"), LoadShopDataTables);
+
+	for (const FTestShopDataTable* LoadDataTable : LoadShopDataTables)
+	{
+		FTestShopDataTable TempDataTable;
+		TempDataTable.AppearRate = LoadDataTable->AppearRate;
+		TempDataTable.AppearStage = LoadDataTable->AppearStage;
+		TempDataTable.ProductCount = LoadDataTable->ProductCount;
+		TempDataTable.ProductPrice = LoadDataTable->ProductPrice;
+		TempDataTable.RewardID = LoadDataTable->RewardID;
+		TempDataTable.RewardGroupID = LoadDataTable->RewardGroupID;
+		ShopData.Emplace(TempDataTable);
 	}
 }
 

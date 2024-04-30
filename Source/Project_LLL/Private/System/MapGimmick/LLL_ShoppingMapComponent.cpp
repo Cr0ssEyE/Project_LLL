@@ -3,7 +3,11 @@
 
 #include "System/MapGimmick/LLL_ShoppingMapComponent.h"
 
+#include "Entity/Object/Interactive/LLL_AbilityRewardObject.h"
+#include "Entity/Object/Interactive/LLL_GoldRewardObject.h"
+#include "Entity/Object/Interactive/LLL_MaxHPRewardObject.h"
 #include "Entity/Object/Interactive/LLL_RewardObject.h"
+#include "Game/LLL_GameInstance.h"
 #include "System/MapGimmick/LLL_ProductSpawnPointComponent.h"
 
 // Sets default values for this component's properties
@@ -22,7 +26,8 @@ void ULLL_ShoppingMapComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	ShopData = GameInstance->GetShopDataTable();
 }
 
 void ULLL_ShoppingMapComponent::DeleteProducts()
@@ -53,7 +58,21 @@ void ULLL_ShoppingMapComponent::SetProducts()
 		ULLL_ProductSpawnPointComponent* SpawnPoint = Cast<ULLL_ProductSpawnPointComponent>(ChildComponent);
 		if (IsValid(SpawnPoint))
 		{
-			ALLL_RewardObject* Product = GetWorld()->SpawnActor<ALLL_RewardObject>(ALLL_RewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+			ALLL_RewardObject* Product;
+			uint8 Index = FMath::RandRange(0, ShopData.Num() - 1);
+			switch (ShopData[Index].RewardID)
+			{
+			case static_cast<int>(EProductType::Gold):
+				Product = GetWorld()->SpawnActor<ALLL_GoldRewardObject>(ALLL_GoldRewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+				break;
+			case static_cast<int>(EProductType::MaxHP):
+				Product = GetWorld()->SpawnActor<ALLL_MaxHPRewardObject>(ALLL_MaxHPRewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+				break;
+			case static_cast<int>(EProductType::Ability):
+				Product = GetWorld()->SpawnActor<ALLL_AbilityRewardObject>(ALLL_AbilityRewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+				break;
+			default: ;
+			}
 			Product->ApplyProductEvent();
 			ProductList.Add(Product);
 		}

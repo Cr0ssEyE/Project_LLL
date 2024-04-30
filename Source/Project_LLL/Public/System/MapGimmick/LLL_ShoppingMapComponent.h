@@ -5,7 +5,18 @@
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
 #include "LLL_ShoppingMapComponent.generated.h"
+
 class ALLL_RewardObject;
+struct FTestShopDataTable;
+class ULLL_ShopDataTable;
+
+UENUM()
+enum class EProductType
+{
+	Gold = 1,
+	MaxHP,
+	Ability
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECT_LLL_API ULLL_ShoppingMapComponent : public USceneComponent
@@ -32,4 +43,7 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, Category = Product, Meta = (AllowPrivateAccess = "true"))
 	TArray<TObjectPtr<ALLL_RewardObject>> ProductList;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TArray<FTestShopDataTable> ShopData;
 };

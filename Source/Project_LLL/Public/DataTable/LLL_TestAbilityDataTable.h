@@ -6,6 +6,13 @@
 #include "Engine/DataTable.h"
 #include "LLL_TestAbilityDataTable.generated.h"
 
+UENUM()
+enum class EAbilityType
+{
+	Crow,
+	Deer,
+	Wolf
+};
 /**
  * 
  */
@@ -17,7 +24,7 @@ struct FTestAbilityDataTable : public FTableRowBase
 	
 	// 해당 FName과 일치하는 열의 값 읽어옴
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	FString AbilityType = TEXT("");
+	EAbilityType AbilityType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	FString AbilityParts = TEXT("");

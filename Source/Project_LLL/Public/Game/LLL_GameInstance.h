@@ -6,6 +6,7 @@
 #include "DataTable/LLL_FModParameterDataTable.h"
 #include "DataTable/LLL_RewardDataTable.h"
 #include "DataTable/LLL_TestAbilityDataTable.h"
+#include "DataTable/LLL_TestShopDataTable.h"
 #include "LLL_GameInstance.generated.h"
 
 /**
@@ -28,6 +29,7 @@ public:
 	// 데이터 테이블 Getter
 	FORCEINLINE TArray<FTestAbilityDataTable> GetAbilityDataTable() const { return AbilityData; }
 	FORCEINLINE TArray<FTestRewardDataTable> GetRewardDataTable() const { return RewardData; }
+	FORCEINLINE TArray<FTestShopDataTable> GetShopDataTable() const { return ShopData; }
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -61,5 +63,11 @@ protected:
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	TArray<FTestRewardDataTable> RewardData;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<const UDataTable> ShopDataTable;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+	TArray<FTestShopDataTable> ShopData;
 	
 };
