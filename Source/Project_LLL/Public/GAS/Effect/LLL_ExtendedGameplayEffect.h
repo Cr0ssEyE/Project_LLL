@@ -39,30 +39,27 @@ protected:
 	UPROPERTY(EditAnywhere)
 	int32 Id;
 	
-	UPROPERTY(EditAnywhere, DisplayName = "능력 유형")
+	UPROPERTY()
 	EAbilityType AbilityType;
 	
-	UPROPERTY(EditAnywhere, DisplayName = "능력 부위")
-	EAbilityPart AbilityPart;
-	
-	UPROPERTY(EditAnywhere, DisplayName = "능력 등급")
+	UPROPERTY()
 	EAbilityRank AbilityRank;
 	
-	UPROPERTY(EditAnywhere, DisplayName = "능력 분류")
+	UPROPERTY()
 	EAbilityCategory AbilityCategory;
 	
-	UPROPERTY(EditAnywhere, DisplayName = "능력 이름")
+	UPROPERTY()
 	FName AbilityName;
 
-	UPROPERTY(EditAnywhere, DisplayName = "능력 정보")
+	UPROPERTY()
 	FString AbilityInformation;
 
-	UPROPERTY(EditAnywhere, DisplayName = "능력 수치")
+	UPROPERTY()
 	float AbilityValue;
 
-	UPROPERTY(EditAnywhere, DisplayName = "수치 변화량")
+	UPROPERTY()
 	float ChangeValue;
 
-	UPROPERTY(EditAnywhere, DisplayName = "획득 조건")
+	UPROPERTY()
 	EAbilityCategory RequireCategory;
 };

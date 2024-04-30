@@ -10,7 +10,7 @@ enum class EPlayerWalkMaterialParameter : uint8;
 enum class EPlayerFootstepsSurface : uint8;
 class ULLL_SkillWidget;
 class ULLL_PlayerChaseHandDataAsset;
-enum class EAbilityInputName;
+enum class EAbilityInputName : uint8;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;

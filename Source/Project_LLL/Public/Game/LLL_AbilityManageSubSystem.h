@@ -68,7 +68,5 @@ private:
 	// 내부적으로 작동하는 기능 모음?
 private:
 	static void LoadEffectsFromPath(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& Container, FName PrimaryTypes);
-
-public:
 	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& GetDataSetByOwner(EEffectOwnerType Owner);
 };

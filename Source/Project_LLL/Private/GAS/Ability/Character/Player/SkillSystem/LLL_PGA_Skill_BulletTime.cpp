@@ -35,7 +35,6 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 			FMovieSceneSequencePlaybackSettings Settings;
 			Settings.bAutoPlay = false;
 			Settings.bHideHud = false;
-			Settings.bRestoreState = false;
 			BulletTimeActivateSequenceActor->PlaybackSettings = Settings;
 			BulletTimeActivateSequenceActor->SetSequence(BulletTimeActivateSequence);
 			BulletTimeActivateSequenceActor->FinishSpawning(FTransform::Identity);
@@ -127,7 +126,6 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 			FMovieSceneSequencePlaybackSettings Settings;
 			Settings.bAutoPlay = false;
 			Settings.bHideHud = false;
-			Settings.bRestoreState = false;
 
 			if (IsValid(BulletTimeDeActivateSequenceActor))
 			{

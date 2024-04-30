@@ -13,6 +13,7 @@
 #include "Editor/UnrealEdEngine.h"
 #include "ISectionLayoutBuilder.h"
 #include "CommonMovieSceneTools.h"
+#include "TimeToPixel.h"
 #include "Channels/MovieSceneChannelProxy.h"
 #include "Channels/MovieSceneChannelEditorData.h"
 

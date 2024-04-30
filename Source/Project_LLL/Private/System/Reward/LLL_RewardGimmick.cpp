@@ -8,10 +8,11 @@
 #include "UI/System/LLL_SelectRewardWidget.h"
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Game/ProtoGameInstance.h"
-#include <Entity/Character/Player/LLL_PlayerBase.h>
-
 #include "AbilitySystemComponent.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/LLL_AbilityManageSubSystem.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
+#include "UObject/AssetRegistryTagsContext.h"
 
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick()
@@ -56,7 +57,7 @@ void ALLL_RewardGimmick::SetRewardToGate(ALLL_GateObject* Gate)
 
 void ALLL_RewardGimmick::SetRewardButtons()
 {
-	if (RewardData.Num() == 0 || AbilityData.Num() == 0)
+	if (RewardData.IsEmpty() || AbilityData.IsEmpty())
 	{
 		SetDataTable();
 	}
@@ -111,23 +112,6 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData) 
 	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetWorld()->GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
 	if (IsValid(AbilityManageSubSystem))
 	{
-		int32 LoadedEffectCount = 0;
-		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> PlayerGameplayEffects = AbilityManageSubSystem->GetDataSetByOwner(EEffectOwnerType::Player);
-
-		LoadedEffectCount += PlayerGameplayEffects.Num();
-		
-		UE_LOG(LogTemp, Log, TEXT("[ 로드된 플레이어 이펙트 수 : %d ]"), PlayerGameplayEffects.Num());
-		bool Flag = false;
-		for (auto PlayerGameplayEffect : PlayerGameplayEffects)
-		{
-			if (!Flag)
-			{
-				UE_LOG(LogTemp, Log, TEXT("부여 가능 플레이어 이펙트"));
-				Flag = true;
-			}
-			UE_LOG(LogTemp, Log, TEXT("- %s"), *PlayerGameplayEffect.Get()->GetName());
-		}
-		
 		//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
 		FAsyncLoadEffectDelegate AsyncLoadEffectDelegate;
 		AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_RewardGimmick::ReceivePlayerEffectsHandle);
@@ -163,11 +147,23 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(Player);
+
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(LoadedEffect.Get(), 1.0, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{
+			const FGameplayTagContainer TagContainer = CastChecked<UGameplayEffect>(LoadedEffect->GetDefaultObject())->GetAssetTags();
+			TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
+			for (auto EffectHandle : EffectHandles)
+			{
+				if (EffectHandle.IsValid())
+				{
+					ASC->RemoveActiveGameplayEffect(EffectHandle);
+					UE_LOG(LogTemp, Log, TEXT("- %s 삭제"), *EffectHandle.ToString());
+				}
+			}
+		
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-			UE_LOG(LogTemp, Log, TEXT("- %s"), *LoadedEffect.Get()->GetName());
+			UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
 		}
 	}
 }
