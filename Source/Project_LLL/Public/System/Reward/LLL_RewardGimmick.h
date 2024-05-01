@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTable/LLL_AbilityDataTable.h"
 #include "GameFramework/Actor.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_RewardGimmick.generated.h"
@@ -54,6 +55,8 @@ protected:
 	FAbilityDataTable* ButtonAbilityData2;
 	FAbilityDataTable* ButtonAbilityData3;
 
+	FAbilityDataTable* CurrentAbilityData;
+	
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsButtonEventSetup : 1;
 
@@ -69,7 +72,7 @@ protected:
 	UFUNCTION()
 	void ClickThirdButton();
 	
-	void ClickButtonEvent(FAbilityDataTable* ButtonAbilityData) const;
+	void ClickButtonEvent(FAbilityDataTable* ButtonAbilityData);
 
 	UFUNCTION()
 	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects);

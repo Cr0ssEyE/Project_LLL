@@ -35,6 +35,6 @@ UENUM(BlueprintType)
 enum class EEffectAccessRange : uint8
 {
 	None UMETA(Displayname="미지정(필터링 되지 않음)"),
-	Attribute UMETA(Displayname="스테이터스 변화"),
-	Ability UMETA(Displayname="어빌리티 추가")
+	AttributeOnly UMETA(Displayname="스테이터스 변화"),
+	AbilityOnly UMETA(Displayname="어빌리티 추가")
 };

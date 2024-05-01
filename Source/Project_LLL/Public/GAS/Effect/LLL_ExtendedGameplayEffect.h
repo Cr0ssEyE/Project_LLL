@@ -6,7 +6,8 @@
 #include "GameplayEffect.h"
 #include "LLL_ExtendedGameplayEffect.generated.h"
 
-class UAssetTagsGameplayEffectComponent;
+struct FAbilityDataTable;
+class ULLL_PGA_RewardAbilityBase;
 enum class EEffectAccessRange : uint8;
 enum class EEffectOwnerType : uint8;
 enum class EAbilityCategory : uint8;
@@ -21,16 +22,14 @@ UCLASS()
 class PROJECT_LLL_API ULLL_ExtendedGameplayEffect : public UGameplayEffect
 {
 	GENERATED_BODY()
-
+	
 public:
-	ULLL_ExtendedGameplayEffect();
-
 	FORCEINLINE EEffectOwnerType GetOwnership() const { return EffectOwnership; }
 	FORCEINLINE EEffectAccessRange GetAccessRange() const { return EffectAccessRange; }
 	FORCEINLINE int32 GetID() const { return Id; }
-	FORCEINLINE void SetAbilityRank(EAbilityRank InAbilityRank) { AbilityRank = InAbilityRank; }
+	FORCEINLINE void SetAbilityInfo(FAbilityDataTable* InAbilityData);
 
-	void SendRankToAbility();
+	void SendInfoToAbility();
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS", DisplayName = "이펙트 소유자 종류", meta=(DisplayPriority = 1))
@@ -38,10 +37,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS", DisplayName = "이펙트 접근 범위", meta=(DisplayPriority = 1))
 	EEffectAccessRange EffectAccessRange;
-
+	
 	UPROPERTY(EditAnywhere)
 	int32 Id;
 	
+	FAbilityDataTable* AbilityData;
+	
+	/*
 	UPROPERTY()
 	EAbilityType AbilityType;
 	
@@ -65,4 +67,5 @@ protected:
 
 	UPROPERTY()
 	EAbilityCategory RequireCategory;
+	*/
 };

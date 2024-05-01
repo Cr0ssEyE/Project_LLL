@@ -11,7 +11,9 @@
 #include "AbilitySystemComponent.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
+#include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
+#include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick()
@@ -74,7 +76,7 @@ void ALLL_RewardGimmick::SetRewardButtons()
 
 	//보상쪽 상세 시스템 기획이 나오면 바뀔 부분
 	uint8 Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	ButtonAbilityData1 = &AbilityData[Index];
+	ButtonAbilityData1 = &AbilityData[0];
 	
 	Index = FMath::RandRange(0, AbilityData.Num() - 1);
 	ButtonAbilityData2 = &AbilityData[Index];
@@ -106,15 +108,17 @@ void ALLL_RewardGimmick::ClickThirdButton()
 	ClickButtonEvent(ButtonAbilityData3);
 }
 
-void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData) const
+void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData)
 {
+	CurrentAbilityData = ButtonAbilityData;
+	
 	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetWorld()->GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
 	if (IsValid(AbilityManageSubSystem))
 	{
 		//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
 		FAsyncLoadEffectDelegate AsyncLoadEffectDelegate;
 		AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_RewardGimmick::ReceivePlayerEffectsHandle);
-		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, ButtonAbilityData->ID, EEffectAccessRange::None);
+		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, CurrentAbilityData->ID, EEffectAccessRange::None);
 	}
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -124,13 +128,13 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData) 
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange,
 				FString(TEXT("버튼1 : ")).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData->AbilityType))).
+				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityType))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityPart>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData->AbilityPart))).
+				Append(StaticEnum<EAbilityPart>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityPart))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData->AbilityRank))).
+				Append(StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityRank))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityCategory>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData->AbilityCategory))));
+				Append(StaticEnum<EAbilityCategory>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityCategory))));
 		}
 	}
 #endif
@@ -142,31 +146,50 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
 
 	UE_LOG(LogTemp, Log, TEXT("부여 된 플레이어 이펙트"));
-	for (auto LoadedEffect : LoadedEffects)
+	for (auto& LoadedEffect : LoadedEffects)
 	{
+		ULLL_ExtendedGameplayEffect*   = CastChecked<ULLL_ExtendedGameplayEffect>(LoadedEffect.Get()->GetDefaultObject());
+		// Effect->SetAbilityInfo(CurrentAbilityData);
+		// 	
+		// if (Effect->GetAccessRange() != EEffectAccessRange::AttributeOnly)
+		// {
+		// 	Effect->SendInfoToAbility();
+		// }
+			
+		const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
+		TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
+		for (auto EffectHandle : EffectHandles)
+		{
+			if (EffectHandle.IsValid())
+			{
+				ASC->RemoveActiveGameplayEffect(EffectHandle);
+				UE_LOG(LogTemp, Log, TEXT("- %s 삭제"), *EffectHandle.ToString());
+			}
+		}
+
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(Player);
-
-		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(LoadedEffect.Get(), 1.0, EffectContextHandle);
-		if(EffectSpecHandle.IsValid())
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(Effect->GetClass(), 1.0, EffectContextHandle);
+		if(!EffectSpecHandle.IsValid())
 		{
-			ULLL_ExtendedGameplayEffect* Effect = CastChecked<ULLL_ExtendedGameplayEffect>(LoadedEffect->GetDefaultObject());
-			Effect->SetAbilityRank(EAbilityRank::Legend);
-			Effect->SendRankToAbility();
-			
-			const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
-			TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
-			for (auto EffectHandle : EffectHandles)
+			continue;
+		}
+
+		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
+
+		if (ULLL_GE_GiveAbilityComponent* AbilitiesGameplayEffectComponent = &Effect->FindOrAddComponent<ULLL_GE_GiveAbilityComponent>())
+		{
+			for (auto& AbilitySpecConfig : AbilitiesGameplayEffectComponent->GetAbilitySpecConfigs())
 			{
-				if (EffectHandle.IsValid())
+				if (FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(AbilitySpecConfig.Ability))
 				{
-					ASC->RemoveActiveGameplayEffect(EffectHandle);
-					UE_LOG(LogTemp, Log, TEXT("- %s 삭제"), *EffectHandle.ToString());
+					// EGameplayAbilityInstancingPolicy::InstancedPerActor로 설정된 어빌리티 한정 정상작동
+					Cast<ULLL_PGA_RewardAbilityBase>(Spec->GetPrimaryInstance())->SetAbilityInfo(CurrentAbilityData);
+					UE_LOG(LogTemp, Log, TEXT("스펙에 접근해서 값 바꾸기 시도"));
 				}
 			}
-		
-			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-			UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
 		}
 	}
+	CurrentAbilityData = nullptr;
 }
