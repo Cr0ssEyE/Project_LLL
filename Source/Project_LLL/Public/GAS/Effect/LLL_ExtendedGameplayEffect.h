@@ -27,9 +27,7 @@ public:
 	FORCEINLINE EEffectOwnerType GetOwnership() const { return EffectOwnership; }
 	FORCEINLINE EEffectAccessRange GetAccessRange() const { return EffectAccessRange; }
 	FORCEINLINE int32 GetID() const { return Id; }
-	FORCEINLINE void SetAbilityInfo(FAbilityDataTable* InAbilityData);
-
-	void SendInfoToAbility();
+	FORCEINLINE void SetAbilityInfo(FAbilityDataTable* InAbilityData) { AbilityData = InAbilityData; }
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS", DisplayName = "이펙트 소유자 종류", meta=(DisplayPriority = 1))
@@ -42,30 +40,4 @@ protected:
 	int32 Id;
 	
 	FAbilityDataTable* AbilityData;
-	
-	/*
-	UPROPERTY()
-	EAbilityType AbilityType;
-	
-	UPROPERTY()
-	EAbilityRank AbilityRank;
-	
-	UPROPERTY()
-	EAbilityCategory AbilityCategory;
-	
-	UPROPERTY()
-	FName AbilityName;
-
-	UPROPERTY()
-	FString AbilityInformation;
-
-	UPROPERTY()
-	float AbilityValue;
-
-	UPROPERTY()
-	float ChangeValue;
-
-	UPROPERTY()
-	EAbilityCategory RequireCategory;
-	*/
 };
