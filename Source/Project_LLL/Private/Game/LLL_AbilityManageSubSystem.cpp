@@ -47,19 +47,14 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByTag(FAsyncLoadEffectDelegate
 		for (auto Data : DataSet)
 		{
 			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
-			if (AccessRange == EEffectAccessRange::None)
+			if (AccessRange != EEffectAccessRange::None && EffectObject->GetAccessRange() != AccessRange)
 			{
-				if(EffectObject->GetAssetTags().IsEmpty())
-				{
-					continue;
-				}
+				continue;
 			}
-			else
+			
+			if(EffectObject->GetAssetTags().IsEmpty())
 			{
-				if(EffectObject->GetAssetTags().IsEmpty() || EffectObject->GetAccessRange() == AccessRange)
-				{
-					continue;
-				}
+				continue;
 			}
 		
 			if (TagHasMatching)
@@ -103,18 +98,15 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 	{
 		Paths.Emplace(Effect.ToSoftObjectPath());
 	}
-	StreamableManager.RequestAsyncLoad(Paths, FStreamableDelegate::CreateWeakLambda(this, [=]()
+	StreamableManager.RequestAsyncLoad(Paths, FStreamableDelegate::CreateWeakLambda(this, [&]()
 	{
 		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FilteredDataSet;
 		for (auto Data : DataSet)
 		{
 			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
-			if (AccessRange != EEffectAccessRange::None)
+			if (AccessRange != EEffectAccessRange::None && EffectObject->GetAccessRange() != AccessRange)
 			{
-				if(EffectObject->GetAccessRange() == AccessRange)
-				{
-					continue;
-				}
+				continue;
 			}
 			
 			if (EffectObject->GetID() == ID)
