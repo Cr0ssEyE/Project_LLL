@@ -7,6 +7,7 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
@@ -154,6 +155,14 @@ void ULLL_PGA_Dash::DashActionEvent()
 
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
 		PlayerAnimInstance->SetDash(true);
+
+		/*UAbilitySystemComponent* ASC = PlayerCharacter->GetAbilitySystemComponent();
+		TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
+		ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_PLAYER_DASH));
+		for (const auto AbilitySpecHandle : AbilitySpecHandles)
+		{
+			ASC->TryActivateAbility(AbilitySpecHandle);
+		}*/
 
 		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, DashCueTag);
 		
