@@ -47,14 +47,19 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByTag(FAsyncLoadEffectDelegate
 		for (auto Data : DataSet)
 		{
 			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
-			if (AccessRange != EEffectAccessRange::None && EffectObject->GetAccessRange() != AccessRange)
+			if (AccessRange == EEffectAccessRange::None)
 			{
-				continue;
+				if(EffectObject->GetAssetTags().IsEmpty())
+				{
+					continue;
+				}
 			}
-			
-			if(EffectObject->GetAssetTags().IsEmpty())
+			else
 			{
-				continue;
+				if(EffectObject->GetAssetTags().IsEmpty() || EffectObject->GetAccessRange() != AccessRange)
+				{
+					continue;
+				}
 			}
 		
 			if (TagHasMatching)
@@ -90,7 +95,7 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 			UE_LOG(LogTemp, Log, TEXT("부여 가능 %s 이펙트"), *OwnerName);
 			Flag = true;
 		}
-		UE_LOG(LogTemp, Log, TEXT("- %s"), *PlayerGameplayEffect.Get()->GetName());
+		//UE_LOG(LogTemp, Log, TEXT("- %s"), *PlayerGameplayEffect.Get()->GetName());
 	}
 	
 	TArray<FSoftObjectPath> Paths;
@@ -98,15 +103,18 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 	{
 		Paths.Emplace(Effect.ToSoftObjectPath());
 	}
-	StreamableManager.RequestAsyncLoad(Paths, FStreamableDelegate::CreateWeakLambda(this, [&]()
+	StreamableManager.RequestAsyncLoad(Paths, FStreamableDelegate::CreateWeakLambda(this, [=]()
 	{
 		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FilteredDataSet;
 		for (auto Data : DataSet)
 		{
 			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
-			if (AccessRange != EEffectAccessRange::None && EffectObject->GetAccessRange() != AccessRange)
+			if (AccessRange != EEffectAccessRange::None)
 			{
-				continue;
+				if(EffectObject->GetAccessRange() != AccessRange)
+				{
+					continue;
+				}
 			}
 			
 			if (EffectObject->GetID() == ID)
