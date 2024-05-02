@@ -158,8 +158,8 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		{
 			continue;
 		}
-			
-		const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
+		
+		/*const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
 		TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
 		for (auto EffectHandle : EffectHandles)
 		{
@@ -167,6 +167,24 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 			{
 				ASC->RemoveActiveGameplayEffect(EffectHandle);
 				UE_LOG(LogTemp, Log, TEXT("- %s 삭제"), *EffectHandle.ToString());
+			}
+		}*/
+
+		FActiveGameplayEffectsContainer EffectsContainer = ASC->GetActiveGameplayEffects();
+		TArray<FActiveGameplayEffectHandle> EffectHandles = EffectsContainer.GetAllActiveEffectHandles();
+		for (auto EffectHandle : EffectHandles)
+		{
+			if (EffectHandle.IsValid())
+			{
+				const ULLL_ExtendedGameplayEffect* OldEffect = CastChecked<ULLL_ExtendedGameplayEffect>(ASC->GetGameplayEffectDefForHandle(EffectHandle));
+				const EAbilityPart OldAbilityPart = static_cast<EAbilityPart>(OldEffect->GetID() / 10000 % 10 - 1);
+				const EAbilityPart LoadAbilityPart = static_cast<EAbilityPart>(Effect->GetID() / 10000 % 10 - 1);
+
+				if (OldAbilityPart == LoadAbilityPart)
+				{
+					ASC->RemoveActiveGameplayEffect(EffectHandle);
+					UE_LOG(LogTemp, Log, TEXT("- %s 삭제"), *EffectHandle.ToString());
+				}
 			}
 		}
 
