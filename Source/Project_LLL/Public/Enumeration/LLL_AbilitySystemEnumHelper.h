@@ -4,7 +4,7 @@
 
 // TMap<>과 같은 형식으로 키 값에 따라 고유한 어빌리티를 지정하는 경우 사용하기 위함
 UENUM(BlueprintType)
-enum class EAbilityInputName
+enum class EAbilityInputName : uint8
 {
 	Attack UMETA(Displayname="공격"),
 	Skill UMETA(Displayname="스킬"),
@@ -35,6 +35,6 @@ UENUM(BlueprintType)
 enum class EEffectAccessRange : uint8
 {
 	None UMETA(Displayname="미지정(필터링 되지 않음)"),
-	Attribute UMETA(Displayname="스테이터스 변화"),
-	Ability UMETA(Displayname="어빌리티 추가")
+	AttributeOnly UMETA(Displayname="스테이터스 변화"),
+	AbilityOnly UMETA(Displayname="어빌리티 추가")
 };

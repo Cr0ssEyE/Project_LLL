@@ -19,7 +19,7 @@ enum class ERewardType : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FTestRewardDataTable : public FTableRowBase
+struct FRewardDataTable : public FTableRowBase
 {
 	GENERATED_BODY()
 	

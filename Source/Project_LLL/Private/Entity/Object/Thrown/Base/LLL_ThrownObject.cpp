@@ -8,7 +8,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Object/ThrownObject/Base/LLL_ThrownObjectAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
 
 ALLL_ThrownObject::ALLL_ThrownObject()
 {
