@@ -182,7 +182,7 @@ void FFMODAudioLinkInputClient::Start(USceneComponent* InComponent)
     auto SelfSP = AsShared();
     auto PlayLambda = [SelfSP, LinkEvent, InComponent]()
         {
-            UE_LOG(LogFMODAudioLink, Verbose, TEXT("FFMODAudioLinkInputClient::Start: SelSP = %" PRIu64 ", LinkEvent = %s, InComponent = %" PRIu64 "."), &SelfSP, LinkEvent.Get(), &InComponent);
+            // UE_LOG(LogFMODAudioLink, Verbose, TEXT("FFMODAudioLinkInputClient::Start: SelSP = %" PRIu64 ", LinkEvent = %s, InComponent = %" PRIu64 "."), &SelfSP, LinkEvent.Get(), &InComponent);
 
             FMOD::Studio::EventDescription* EventDesc = IFMODStudioModule::Get().GetEventDescription(LinkEvent.Get());
             if (EventDesc != nullptr)
