@@ -100,7 +100,12 @@ void ALLL_MapGimmick::CreateMap()
 		{
 			ShoppingMapComponent = Cast<ULLL_ShoppingMapComponent>(ChildComponent);
 		}
-		PlayerSpawnPointComponent = Cast<ULLL_PlayerSpawnPointComponent>(ChildComponent);
+
+		if (!IsValid(ShoppingMapComponent))
+		{
+			PlayerSpawnPointComponent = Cast<ULLL_PlayerSpawnPointComponent>(ChildComponent);
+		}
+
 		const ULLL_GateSpawnPointComponent* SpawnPoint = Cast<ULLL_GateSpawnPointComponent>(ChildComponent);
 		if (IsValid(SpawnPoint))
 		{
