@@ -15,7 +15,7 @@
 #include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
 
 ULLL_PGA_ChaseToTarget::ULLL_PGA_ChaseToTarget()
 {
@@ -31,8 +31,8 @@ void ULLL_PGA_ChaseToTarget::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	const ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
-	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-
+	const ULLL_PlayerChaseHandAttributeSet* ChaseHandAttributeSet = Cast<ULLL_PlayerChaseHandAttributeSet>(PlayerChaseHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerChaseHandAttributeSet::StaticClass()));
+	
 	PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER_EVADE);
 	PlayerCharacter->SetActorRotation((PlayerChaseHand->GetActorLocation() - PlayerCharacter->GetActorLocation()).GetSafeNormal().Rotation());
@@ -43,7 +43,7 @@ void ULLL_PGA_ChaseToTarget::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 
 	TargetLocation = PlayerChaseHand->GetActorLocation();
 	Direction = (TargetLocation - PlayerCharacter->GetActorLocation()).GetSafeNormal();
-	RushSpeed = PlayerAttributeSet->GetChaseSpeed();
+	RushSpeed = ChaseHandAttributeSet->GetChaseSpeed();
 
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("SkillMontage"), AbilityActionMontage, 1.0f, SECTION_FLY);
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_ChaseToTarget::OnCompleteCallBack);

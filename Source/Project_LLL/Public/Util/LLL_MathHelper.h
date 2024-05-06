@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "GameFramework/Character.h"
 #include "Game/ProtoGameInstance.h"
 
 class PROJECT_LLL_API FLLL_MathHelper
@@ -85,6 +86,7 @@ public:
 		Params.AddIgnoredActor(Owner);
 		FVector LaunchLocation = Owner->GetActorLocation() + LaunchDirection.GetSafeNormal2D() * LaunchDistance;
 		FVector2d CapsuleExtent = FVector2d(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.2f, Owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f);
+		
 		// 끼임 방지용 캐릭터 충돌 캡슐보다 1.2배 큰 반지름 체크
 		World->SweepSingleByChannel(
 			CapsuleHitResult,
@@ -130,7 +132,7 @@ public:
 		for (float MultiplyValue = 10.f; MultiplyValue < CorrectionDistance; MultiplyValue += 10.f)
 		{
 			FHitResult CorrectionLocationHitResult;
-			FVector NewLocation = LaunchLocation + LaunchDirection.GetSafeNormal2D() * MultiplyValue;
+			FVector NewLocation = CorrectionLaunchLocation + LaunchDirection.GetSafeNormal2D() * MultiplyValue;
 			World->SweepSingleByChannel(
 				CorrectionLocationHitResult,
 				NewLocation,

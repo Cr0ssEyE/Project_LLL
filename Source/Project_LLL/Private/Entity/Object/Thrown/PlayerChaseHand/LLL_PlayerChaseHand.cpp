@@ -3,6 +3,8 @@
 
 #include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
 
+#include "AbilitySystemGlobals.h"
+#include "GameplayAbilitiesModule.h"
 #include "GameplayTagContainer.h"
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -55,6 +57,8 @@ void ALLL_PlayerChaseHand::SetHiddenState()
 void ALLL_PlayerChaseHand::BeginPlay()
 {
 	Super::BeginPlay();
+
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, FName("Player"), 1.f, true);
 }
 
 void ALLL_PlayerChaseHand::NotifyActorBeginOverlap(AActor* OtherActor)

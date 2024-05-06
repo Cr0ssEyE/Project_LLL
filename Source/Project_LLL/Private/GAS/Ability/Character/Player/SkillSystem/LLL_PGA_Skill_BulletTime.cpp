@@ -9,6 +9,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 
 ULLL_PGA_Skill_BulletTime::ULLL_PGA_Skill_BulletTime()
 {
@@ -21,13 +22,13 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetCurrentActorInfo()->AbilitySystemComponent->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-	if (IsValid(PlayerCharacterAttributeSet) && IsValid(BulletTimeActivateSequence))
+	const ULLL_PlayerSkillAttributeSet* PlayerSkillAttributeSet = Cast<ULLL_PlayerSkillAttributeSet>(GetCurrentActorInfo()->AbilitySystemComponent->GetAttributeSet(ULLL_PlayerSkillAttributeSet::StaticClass()));
+	if (IsValid(PlayerSkillAttributeSet) && IsValid(BulletTimeActivateSequence))
 	{
 		ActorSpawnedDelegateHandle = GetWorld()->AddOnActorSpawnedHandler(WorldActorSpawnedDelegate.CreateUObject(this, &ULLL_PGA_Skill_BulletTime::OnBulletTimeEffectedActorSpawnCheck));
 	
-		SkillDuration = PlayerCharacterAttributeSet->GetBulletTimeDuration();
-		WorldDecelerationRate = PlayerCharacterAttributeSet->GetBulletTimeWorldDecelerationRate();
+		SkillDuration = PlayerSkillAttributeSet->GetBulletTimeDuration();
+		WorldDecelerationRate = PlayerSkillAttributeSet->GetBulletTimeWorldDecelerationRate();
 		
 		if (!IsValid(BulletTimeActivateSequenceActor))
 		{

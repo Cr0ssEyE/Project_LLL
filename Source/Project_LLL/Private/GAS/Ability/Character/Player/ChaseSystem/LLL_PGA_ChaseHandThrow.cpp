@@ -82,6 +82,15 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	// 마우스 위치가 투척 최소거리 보다 가까운 거리일 경우 보정
 	if (TargetDistance < ChaseHandAttributeSet->GetMinimumThrowDistance())
 	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 최소거리 보정. 보정 전 좌표 : %f, %f, %f"), TargetLocation.X, TargetLocation.Y, TargetLocation.Z));
+			}
+		}
+#endif
 		TargetLocation *= ChaseHandAttributeSet->GetMinimumThrowDistance() / TargetDistance;
 	}
 	TargetLocation.Z = PlayerCharacter->GetActorLocation().Z;

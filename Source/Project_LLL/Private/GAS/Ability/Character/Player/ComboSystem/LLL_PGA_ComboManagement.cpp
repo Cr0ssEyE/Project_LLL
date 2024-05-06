@@ -30,7 +30,7 @@ void ULLL_PGA_ComboManagement::ActivateAbility(const FGameplayAbilitySpecHandle 
 	if(IsValid(PlayerAttributes))
 	{
 		CurrentComboCount = 0;
-		MaxComboStackDuration = PlayerAttributes->GetMaxComboStackDuration();
+		MaxComboStackDuration = PlayerAttributes->GetMaxComboKeepingDuration();
 		CurrentComboStackDuration = MaxComboStackDuration;
 	}
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ComboManagement::ComboTimerTick);
