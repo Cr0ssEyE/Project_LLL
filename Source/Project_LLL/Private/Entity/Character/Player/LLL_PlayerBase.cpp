@@ -70,9 +70,15 @@ void ALLL_PlayerBase::BeginPlay()
 
 	if (IsValid(CameraDataAsset))
 	{
+		Camera->SetProjectionMode(CameraDataAsset->ProjectionType);
 		Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
+
+		SpringArm->TargetArmLength = 0.f;
+		if (Camera->ProjectionMode != ECameraProjectionMode::Orthographic)
+		{
+			SpringArm->TargetArmLength = CameraDataAsset->SpringArmLength;
+		}
 		
-		SpringArm->TargetArmLength = CameraDataAsset->SpringArmLength;
 		SpringArm->SetRelativeRotation(CameraDataAsset->SpringArmAngle);
 	}
 

@@ -6,8 +6,8 @@
 
 
 // Object Channel
-#define ECC_PLAYER ECC_GameTraceChannel11
-#define ECC_ENEMY ECC_GameTraceChannel12
+#define ECC_PLAYER ECC_GameTraceChannel1
+#define ECC_ENEMY ECC_GameTraceChannel2
 #define ECC_GIMMICK ECC_EngineTraceChannel3
 
 // Trace Channel
@@ -16,11 +16,13 @@
 #define ECC_PLAYER_CHECK ECC_GameTraceChannel13
 #define ECC_ENTITY_CHECK ECC_GameTraceChannel14
 #define ECC_WALL_ONLY ECC_GameTraceChannel15
+#define ECC_TRACE_FIELD ECC_GameTraceChannel16
 
 // Collision Profile
 #define CP_STATIC_ONLY TEXT("IgnoreOnlyPawn")
 #define CP_PLAYER TEXT("Player")
 #define CP_PLAYER_EVADE TEXT("Player_Evade")
+#define CP_PLAYER_CHASE_HAND TEXT("Player_ChaseHand")
 #define CP_MONSTER TEXT("Monster")
 #define CP_INTERACTION TEXT("Interaction")
 #define CP_MONSTER_ATTACK TEXT("MonsterAttack")

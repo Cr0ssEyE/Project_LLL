@@ -93,6 +93,7 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 #endif
 		TargetLocation *= ChaseHandAttributeSet->GetMinimumThrowDistance() / TargetDistance;
 	}
+	
 	TargetLocation.Z = PlayerCharacter->GetActorLocation().Z;
 	
 	const FVector ThrowDirection = PlayerCharacter->GetActorForwardVector();
@@ -103,15 +104,14 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	USphereComponent* HandCollision = PlayerChaseHand->GetCollisionComponent();
 	USkeletalMeshComponent* HandMesh = PlayerChaseHand->GetHandMesh();
 	
-	HandCollision->SetCollisionObjectType(ECC_ENEMY_HIT);
-	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	HandCollision->SetCollisionProfileName(CP_PLAYER_CHASE_HAND);
+	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	HandMesh->SetHiddenInGame(false);
 	HandMesh->SetAnimation(ThrowAnim);
 	
 	UProjectileMovementComponent* HandProjectile = PlayerChaseHand->GetProjectileMovementComponent();
 	HandProjectile->Activate();
 	HandProjectile->Velocity = ThrowDirection * ChaseHandAttributeSet->GetThrowSpeed();
-	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandThrow::CheckReached);
 
 	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, WireHandThrowCueTag);
@@ -121,6 +121,7 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	{
 		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 이동 시작. 투사체 속도 : %f"), ChaseHandAttributeSet->GetThrowSpeed()));
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 이동 시작. 목표 좌표 : %f, %f, %f"), TargetLocation.X, TargetLocation.Y, TargetLocation.Z));
 		}
 	}

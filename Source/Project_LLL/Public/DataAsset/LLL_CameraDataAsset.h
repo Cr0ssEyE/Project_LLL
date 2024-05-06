@@ -18,6 +18,9 @@ public:
 	ULLL_CameraDataAsset();
 	
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 투영 종류")
+	TEnumAsByte<ECameraProjectionMode::Type> ProjectionType;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV")
 	float CameraFOV;
 
