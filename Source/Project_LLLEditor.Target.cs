@@ -7,9 +7,10 @@ public class Project_LLLEditorTarget : TargetRules
 {
 	public Project_LLLEditorTarget(TargetInfo Target) : base(Target)
 	{
+		bOverrideBuildEnvironment = true;
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V4;
-		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_3;
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
+		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		ExtraModuleNames.Add("Project_LLL");
 	}
 }
