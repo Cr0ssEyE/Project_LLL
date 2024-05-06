@@ -48,7 +48,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
-	
+
+	SpringArm->TargetArmLength = 0.f;
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->bUsePawnControlRotation = false;
 	SpringArm->bInheritPitch = false;
@@ -72,11 +73,14 @@ void ALLL_PlayerBase::BeginPlay()
 	{
 		Camera->SetProjectionMode(CameraDataAsset->ProjectionType);
 		Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
-
-		SpringArm->TargetArmLength = 0.f;
-		if (Camera->ProjectionMode != ECameraProjectionMode::Orthographic)
+		
+		if (Camera->ProjectionMode == ECameraProjectionMode::Orthographic)
 		{
-			SpringArm->TargetArmLength = CameraDataAsset->SpringArmLength;
+			Camera->OrthoWidth = CameraDataAsset->CameraDistance;
+		}
+		else
+		{
+			SpringArm->TargetArmLength = CameraDataAsset->CameraDistance;
 		}
 		
 		SpringArm->SetRelativeRotation(CameraDataAsset->SpringArmAngle);

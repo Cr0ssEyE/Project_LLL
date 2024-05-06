@@ -6,6 +6,6 @@
 ULLL_CameraDataAsset::ULLL_CameraDataAsset()
 {
 	CameraFOV = 40.f;
-	SpringArmLength = 3000.f;
+	CameraDistance = 3000.f;
 	SpringArmAngle = FRotator(-45.f, -45.f, 0.f);
 }

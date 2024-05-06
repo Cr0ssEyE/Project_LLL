@@ -25,7 +25,7 @@ public:
 	float CameraFOV;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리")
-	float SpringArmLength;
+	float CameraDistance;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 회전값")
 	FRotator SpringArmAngle;
