@@ -135,7 +135,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 			DashDirection = PlayerCharacter->GetActorForwardVector().GetSafeNormal2D();
 		}
 
-		FVector DashLocation = FLLL_MathHelper::CalculatePlayerLaunchableLocation(GetWorld(), PlayerCharacter, DashDistance, DashCorrectionDistance, DashDirection);
+		const FVector DashLocation = FLLL_MathHelper::CalculatePlayerLaunchableLocation(GetWorld(), PlayerCharacter, DashDistance, DashCorrectionDistance, DashDirection);
 		PlayerCharacter->GetMovementComponent()->Velocity = FVector::Zero();
 		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER_EVADE);
 		if (IsValid(DashTask) && DashTask->IsActive())
@@ -155,14 +155,6 @@ void ULLL_PGA_Dash::DashActionEvent()
 
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
 		PlayerAnimInstance->SetDash(true);
-
-		/*UAbilitySystemComponent* ASC = PlayerCharacter->GetAbilitySystemComponent();
-		TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
-		ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_PLAYER_DASH));
-		for (const auto AbilitySpecHandle : AbilitySpecHandles)
-		{
-			ASC->TryActivateAbility(AbilitySpecHandle);
-		}*/
 
 		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, DashCueTag);
 		

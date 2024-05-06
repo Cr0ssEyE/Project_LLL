@@ -81,17 +81,7 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> DataSet = GetDataSetByOwner(Owner);
 
 	const FString OwnerName = StaticEnum<EEffectOwnerType>()->GetNameStringByValue(static_cast<int64>(Owner));
-	UE_LOG(LogTemp, Log, TEXT("[ 로드된 %s 이펙트 수 : %d ]"), *OwnerName, PlayerGameplayEffects.Num());
-	bool Flag = false;
-	for (auto PlayerGameplayEffect : PlayerGameplayEffects)
-	{
-		if (!Flag)
-		{
-			UE_LOG(LogTemp, Log, TEXT("부여 가능 %s 이펙트"), *OwnerName);
-			Flag = true;
-		}
-		UE_LOG(LogTemp, Log, TEXT("- %s"), *PlayerGameplayEffect.Get()->GetName());
-	}
+	UE_LOG(LogTemp, Log, TEXT("[ 로드된 %s 이펙트 수 : %d ]"), *OwnerName, DataSet.Num());
 	
 	TArray<FSoftObjectPath> Paths;
 	for (auto& Effect : DataSet)
@@ -114,6 +104,18 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 				FilteredDataSet.Emplace(Data);
 			}
 		}
+		
+		bool Flag = false;
+		for (auto FilteredDataSetElement : FilteredDataSet)
+		{
+			if (!Flag)
+			{
+				UE_LOG(LogTemp, Log, TEXT("부여 가능 %s 이펙트"), *OwnerName);
+				Flag = true;
+			}
+			UE_LOG(LogTemp, Log, TEXT("- %s"), *FilteredDataSetElement.Get()->GetName());
+		}
+		
 		Delegate.Broadcast(FilteredDataSet);
 	}));
 }
