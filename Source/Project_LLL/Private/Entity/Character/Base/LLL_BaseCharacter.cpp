@@ -134,16 +134,12 @@ void ALLL_BaseCharacter::BeginPlay()
 		UpdateWidgetDelegate.Broadcast();
 	}
 
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_BaseCharacter::MovementInit);
-}
-
-void ALLL_BaseCharacter::MovementInit()
-{
-	const ULLL_CharacterAttributeSetBase* CharacterAttributeSetBase = CastChecked<ULLL_CharacterAttributeSetBase>(ASC->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
-	
-	GetCharacterMovement()->MaxAcceleration = CharacterAttributeSetBase->GetAccelerateSpeed();
-	GetCharacterMovement()->GroundFriction = CharacterAttributeSetBase->GetGroundFriction();
-	GetCharacterMovement()->RotationRate = FRotator(0.f, CharacterAttributeSetBase->GetTurnSpeed() * 360.f, 0.f);
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
+		const ULLL_CharacterAttributeSetBase* CharacterAttributeSetBase = CastChecked<ULLL_CharacterAttributeSetBase>(ASC->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
+		GetCharacterMovement()->MaxAcceleration = CharacterAttributeSetBase->GetAccelerateSpeed();
+		GetCharacterMovement()->GroundFriction = CharacterAttributeSetBase->GetGroundFriction();
+		GetCharacterMovement()->RotationRate = FRotator(0.f, CharacterAttributeSetBase->GetTurnSpeed() * 360.f, 0.f);
+	}));
 }
 
 // Called every frame

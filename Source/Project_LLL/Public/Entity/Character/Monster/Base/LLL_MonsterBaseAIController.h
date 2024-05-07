@@ -21,8 +21,6 @@ class PROJECT_LLL_API ALLL_MonsterBaseAIController : public AAIController
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
-	void MontageDelegateInit();
-
 	UFUNCTION()
 	void StartDamagedHandle(UAnimMontage* Montage);
 

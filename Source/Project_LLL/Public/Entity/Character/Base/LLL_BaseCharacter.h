@@ -48,8 +48,6 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
-
-	void MovementInit();
 	
 protected:
 	virtual void Tick(float DeltaTime) override;

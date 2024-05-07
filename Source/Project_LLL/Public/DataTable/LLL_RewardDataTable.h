@@ -11,7 +11,7 @@
  */
 
 USTRUCT(BlueprintType)
-struct FTestRewardDataTable : public FTableRowBase
+struct FRewardDataTable : public FTableRowBase
 {
 	GENERATED_BODY()
 	

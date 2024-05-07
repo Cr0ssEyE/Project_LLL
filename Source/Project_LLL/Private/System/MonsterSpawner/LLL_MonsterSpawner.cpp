@@ -30,22 +30,22 @@ void ALLL_MonsterSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TArray<FMonsterSpawnDataTable*> LoadDataArray;
-	MonsterSpawnDataTable->GetAllRows<FMonsterSpawnDataTable>(TEXT("Failed To Load Monster Spawn Data Tables"), LoadDataArray);
+	TArray<FMonsterSpawnDataTable*> LoadSpawnDataArray;
+	MonsterSpawnDataTable->GetAllRows<FMonsterSpawnDataTable>(TEXT("Failed To Load Monster Spawn Data Tables"), LoadSpawnDataArray);
 
 	int rowNum = 0;
-	for (const FMonsterSpawnDataTable* LoadData : LoadDataArray)
+	for (const FMonsterSpawnDataTable* LoadSpawnData : LoadSpawnDataArray)
 	{
-		FMonsterSpawnDataTable TempData;
-		TempData.Group = LoadData->Group;
-		TempData.SpawnPoint = LoadData->SpawnPoint;
-		TempData.MonsterClass = LoadData->MonsterClass;
-		MonsterSpawnDataArray.Emplace(TempData);
+		FMonsterSpawnDataTable TempSpawnData;
+		TempSpawnData.Group = LoadSpawnData->Group;
+		TempSpawnData.SpawnPoint = LoadSpawnData->SpawnPoint;
+		TempSpawnData.MonsterClass = LoadSpawnData->MonsterClass;
+		MonsterSpawnDataArray.Emplace(TempSpawnData);
 
 		rowNum++;
-		if (rowNum == LoadDataArray.Num())
+		if (rowNum == LoadSpawnDataArray.Num())
 		{
-			LastGroup = LoadData->Group;
+			LastGroup = LoadSpawnData->Group;
 		}
 	}
 
