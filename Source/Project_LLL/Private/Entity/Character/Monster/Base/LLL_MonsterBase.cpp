@@ -18,6 +18,7 @@
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Ability/Character/Monster/Base/LLL_MGA_Attack.h"
+#include "GAS/Ability/Character/Monster/Base/LLL_MGA_Charge.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
@@ -126,6 +127,7 @@ void ALLL_MonsterBase::Dead()
 
 void ALLL_MonsterBase::Attack() const
 {
+	CharacterAnimInstance->StopAllMontages(1.0f);
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK)))
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -134,6 +136,23 @@ void ALLL_MonsterBase::Attack() const
 			if (ProtoGameInstance->CheckMonsterAttackDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
+			}
+		}
+#endif
+	}
+}
+
+void ALLL_MonsterBase::Charge() const
+{
+	CharacterAnimInstance->StopAllMontages(1.0f);
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE)))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
 			}
 		}
 #endif
@@ -199,6 +218,34 @@ bool ALLL_MonsterBase::CanPlayAttackAnimation() const
 		}
 	}
 
+	return false;
+}
+
+bool ALLL_MonsterBase::CanPlayChargeAnimation() const
+{
+	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
+	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE));
+	for (const auto AbilitySpecHandle : AbilitySpecHandles)
+	{
+		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
+		{
+			const UAnimMontage* ChargeAnimMontage = Cast<ULLL_MGA_Charge>(AbilitySpec->GetPrimaryInstance())->GetChargeMontage();
+	
+			if (IsValid(CharacterAnimInstance) && IsValid(ChargeAnimMontage))
+			{
+				if (CharacterAnimInstance->Montage_IsPlaying(ChargeAnimMontage))
+				{
+					UE_LOG(LogTemp, Log, TEXT("재생중"));
+					return false;
+				}
+
+				UE_LOG(LogTemp, Log, TEXT("재생아님"));
+				return true;
+			}
+		}
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("오류"));
 	return false;
 }
 

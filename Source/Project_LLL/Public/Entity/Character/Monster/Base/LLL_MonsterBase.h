@@ -30,9 +30,11 @@ protected:
 	
 public:
 	void Attack() const;
+	void Charge() const;
 	virtual void Damaged() override;
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity) override;
 	bool CanPlayAttackAnimation() const;
+	bool CanPlayChargeAnimation() const;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
