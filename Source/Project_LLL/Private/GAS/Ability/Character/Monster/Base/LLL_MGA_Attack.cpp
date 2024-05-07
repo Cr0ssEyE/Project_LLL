@@ -10,7 +10,7 @@ void ULLL_MGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	if(!IsValid(AttackMontage))
+	if (!IsValid(AttackMontage))
 	{
 		return;
 	}

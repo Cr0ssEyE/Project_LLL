@@ -127,7 +127,6 @@ void ALLL_MonsterBase::Dead()
 
 void ALLL_MonsterBase::Attack() const
 {
-	CharacterAnimInstance->StopAllMontages(1.0f);
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK)))
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -144,7 +143,6 @@ void ALLL_MonsterBase::Attack() const
 
 void ALLL_MonsterBase::Charge() const
 {
-	CharacterAnimInstance->StopAllMontages(1.0f);
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE)))
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -194,59 +192,6 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity)
 	{
 		
 	}
-}
-
-bool ALLL_MonsterBase::CanPlayAttackAnimation() const
-{
-	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
-	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK));
-	for (const auto AbilitySpecHandle : AbilitySpecHandles)
-	{
-		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
-		{
-			const UAnimMontage* AttackAnimMontage = Cast<ULLL_MGA_Attack>(AbilitySpec->GetPrimaryInstance())->GetAttackMontage();
-	
-			if (IsValid(CharacterAnimInstance) && IsValid(AttackAnimMontage))
-			{
-				if (CharacterAnimInstance->Montage_IsPlaying(AttackAnimMontage))
-				{
-					return false;
-				}
-
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
-bool ALLL_MonsterBase::CanPlayChargeAnimation() const
-{
-	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
-	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE));
-	for (const auto AbilitySpecHandle : AbilitySpecHandles)
-	{
-		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
-		{
-			const UAnimMontage* ChargeAnimMontage = Cast<ULLL_MGA_Charge>(AbilitySpec->GetPrimaryInstance())->GetChargeMontage();
-	
-			if (IsValid(CharacterAnimInstance) && IsValid(ChargeAnimMontage))
-			{
-				if (CharacterAnimInstance->Montage_IsPlaying(ChargeAnimMontage))
-				{
-					UE_LOG(LogTemp, Log, TEXT("재생중"));
-					return false;
-				}
-
-				UE_LOG(LogTemp, Log, TEXT("재생아님"));
-				return true;
-			}
-		}
-	}
-
-	UE_LOG(LogTemp, Log, TEXT("오류"));
-	return false;
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)

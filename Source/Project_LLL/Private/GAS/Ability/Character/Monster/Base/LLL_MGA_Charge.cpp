@@ -11,11 +11,11 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if(!IsValid(ChargeMontage))
+	if (!IsValid(ChargeMontage))
 	{
 		return;
 	}
-
+	
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ChargeMontage"), ChargeMontage, 1.0f);
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_MGA_Charge::OnCompleteCallBack);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_MGA_Charge::OnInterruptedCallBack);
