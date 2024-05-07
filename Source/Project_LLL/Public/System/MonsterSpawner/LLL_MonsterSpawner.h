@@ -34,7 +34,6 @@ protected:
 	
 public:
 	void SpawnMonster();
-	void SpawnMonsterTimerHandle();
 
 	FMonsterSpawnerDestroyDelegate MonsterSpawnerDestroyDelegate;
 	

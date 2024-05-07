@@ -4,14 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-#include "Enumeration/LLL_FModParameterHelper.h"
 #include "LLL_FModParameterDataTable.generated.h"
 
 /**
  * 
  */
 
-enum class EFModParameter : uint8;
+UENUM(BlueprintType)
+enum class EFModParameter : uint8
+{
+	None UMETA(Hidden),
+	PlayerWalkMaterialParameter,
+	PlayerAttackCountParameter
+};
+
+UENUM(BlueprintType)
+enum class EPlayerWalkMaterialParameter : uint8
+{
+	Dirt,
+	Grass,
+	Wood,
+	Steel
+};
 
 USTRUCT(BlueprintType)
 struct FFModParameterDataTable : public FTableRowBase

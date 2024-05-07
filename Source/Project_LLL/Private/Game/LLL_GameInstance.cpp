@@ -9,6 +9,11 @@
 ULLL_GameInstance::ULLL_GameInstance()
 {
 	FModParameterDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_FMOD_PARAMETER_NAME_DATA, EAssertionLevel::Check);
+	
+	AbilityDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_ABILITY_DATA_TABLE, EAssertionLevel::Check);
+
+	RewardDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_REWARD_DATA_TABLE, EAssertionLevel::Check);
+	
 }
 
 void ULLL_GameInstance::Init()
@@ -24,6 +29,37 @@ void ULLL_GameInstance::Init()
 		TempData.Parameter = LoadData->Parameter;
 		TempData.Name = LoadData->Name;
 		FModParameterDataArray.Emplace(TempData);
+	}
+
+	TArray<FAbilityDataTable*> LoadAbilityDataArray;
+	AbilityDataTable->GetAllRows<FAbilityDataTable>(TEXT("Failed To Load Ability Data Tables"), LoadAbilityDataArray);
+
+	for (const FAbilityDataTable* LoadAbilityData : LoadAbilityDataArray)
+	{
+		FAbilityDataTable TempAbilityData;
+		TempAbilityData.ID = LoadAbilityData->ID;
+		TempAbilityData.AbilityType = LoadAbilityData->AbilityType;
+		TempAbilityData.AbilityPart = LoadAbilityData->AbilityPart;
+		TempAbilityData.AbilityRank = LoadAbilityData->AbilityRank;
+		TempAbilityData.AbilityCategory = LoadAbilityData->AbilityCategory;
+		TempAbilityData.AbilityName = LoadAbilityData->AbilityName;
+		TempAbilityData.AbilityValue = LoadAbilityData->AbilityValue;
+		TempAbilityData.ChangeValue = LoadAbilityData->ChangeValue;
+		TempAbilityData.RequireCategory = LoadAbilityData->RequireCategory;
+		
+		AbilityData.Emplace(TempAbilityData);
+	}
+
+	TArray<FRewardDataTable*> LoadRewardDataArray;
+	RewardDataTable->GetAllRows<FRewardDataTable>(TEXT("Failed To Load Reward Data Tables"), LoadRewardDataArray);
+
+	for (const FRewardDataTable* LoadRewardData : LoadRewardDataArray)
+	{
+		FRewardDataTable TempRewardData;
+		TempRewardData.RewardType = LoadRewardData->RewardType;
+		TempRewardData.RewardValue = LoadRewardData->RewardValue;
+		TempRewardData.bIsHardReward = LoadRewardData->bIsHardReward;
+		RewardData.Emplace(TempRewardData);
 	}
 }
 

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "DataTable/LLL_FModParameterDataTable.h"
+#include "DataTable/LLL_RewardDataTable.h"
+#include "DataTable/LLL_AbilityDataTable.h"
 #include "LLL_GameInstance.generated.h"
 
 /**
@@ -21,6 +23,11 @@ public:
 	virtual void Init() override;
 
 	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterDataArray; }
+
+public:
+	// 데이터 테이블 Getter
+	FORCEINLINE TArray<FAbilityDataTable> GetAbilityDataTable() const { return AbilityData; }
+	FORCEINLINE TArray<FRewardDataTable> GetRewardDataTable() const { return RewardData; }
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -40,4 +47,19 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TArray<FFModParameterDataTable> FModParameterDataArray;
+
+	// 데이터 테이블 변수
+protected:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<const UDataTable> AbilityDataTable;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+	TArray<FAbilityDataTable> AbilityData;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<const UDataTable> RewardDataTable;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+	TArray<FRewardDataTable> RewardData;
+	
 };

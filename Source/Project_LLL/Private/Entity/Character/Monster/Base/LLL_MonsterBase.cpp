@@ -17,7 +17,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GAS/Ability/Monster/Base/LLL_MGA_Attack.h"
+#include "GAS/Ability/Character/Monster/Base/LLL_MGA_Attack.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
@@ -118,8 +118,10 @@ void ALLL_MonsterBase::Dead()
 
 	MonsterStatusWidgetComponent->SetHiddenInGame(true);
 	
-	FTimerHandle HideTimerHandle;
-	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_MonsterBase::DestroyHandle, 3.0f, false);
+	FTimerHandle DestroyTimerHandle;
+	GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		Destroy();
+	}), 3.0f, false);
 }
 
 void ALLL_MonsterBase::Attack() const

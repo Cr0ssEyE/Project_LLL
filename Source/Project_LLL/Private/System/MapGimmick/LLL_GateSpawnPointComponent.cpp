@@ -2,6 +2,7 @@
 
 
 #include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values for this component's properties
 ULLL_GateSpawnPointComponent::ULLL_GateSpawnPointComponent()
@@ -11,6 +12,7 @@ ULLL_GateSpawnPointComponent::ULLL_GateSpawnPointComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
+	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("VisibleCollision"));
 }
 
 

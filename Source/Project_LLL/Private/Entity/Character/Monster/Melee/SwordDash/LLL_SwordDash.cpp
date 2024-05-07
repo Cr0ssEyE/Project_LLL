@@ -33,7 +33,10 @@ void ALLL_SwordDash::BeginPlay()
 
 	SwordDashDataAsset = Cast<ULLL_SwordDashDataAsset>(MeleeMonsterDataAsset);
 	
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_SwordDash::DashDamageRangeBoxInit);
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
+		const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(ASC->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
+		DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), SwordDashAttributeSet->GetDashDamageRange(), SwordDashAttributeSet->GetDashDamageRange()));
+	}));
 }
 
 void ALLL_SwordDash::Tick(float DeltaSeconds)
@@ -84,12 +87,6 @@ void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
 #endif
 		}
 	}
-}
-
-void ALLL_SwordDash::DashDamageRangeBoxInit() const
-{
-	const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(ASC->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
-	DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), SwordDashAttributeSet->GetDashDamageRange(), SwordDashAttributeSet->GetDashDamageRange()));
 }
 
 void ALLL_SwordDash::Dash() const

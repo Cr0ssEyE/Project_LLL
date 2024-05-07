@@ -3,7 +3,7 @@
 
 #include "System/MapGimmick/LLL_ShoppingMapComponent.h"
 
-#include "Entity/Object/Interactive/LLL_RewardObject.h"
+#include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "System/MapGimmick/LLL_ProductSpawnPointComponent.h"
 
 // Sets default values for this component's properties

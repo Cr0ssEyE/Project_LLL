@@ -6,18 +6,17 @@
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "FMODAudioComponent.h"
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
-#include "Game/LLL_AbilityManageSubSystem.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -25,8 +24,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
-#include "GAS/LLL_ExtendedGameplayEffect.h"
-#include "Util/LLL_ExecuteCueHelper.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
@@ -64,7 +61,7 @@ void ALLL_PlayerBase::BeginPlay()
 	if (IsValid(CharacterAnimInstance))
 	{
 		PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
-		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DestroyHandle);
+		PlayerAnimInstance->DeadMotionEndedDelegate.AddUObject(this, &ALLL_PlayerBase::DeadMotionEndedHandle);
 	}
 
 	if (IsValid(CameraDataAsset))
@@ -91,17 +88,6 @@ void ALLL_PlayerBase::BeginPlay()
 				ASC->GiveAbility(SkillSpec);
 			}
 		}
-	}
-	
-	// 서브시스템 접근 테스트용
-	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
-	if (IsValid(AbilityManageSubSystem))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Silver, FString::Printf(TEXT("서브 시스템 생성 확인")));
-		// AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_PlayerBase::DelegateReceiveTest);
-		FAsyncLoadEffectDelegate Delegate;
-		Delegate.AddDynamic(this, &ALLL_PlayerBase::DelegateReceiveTest);
-		AbilityManageSubSystem->ASyncLoadEffectsByTag(Delegate, EEffectOwnerType::Player, FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Tests.Dummy"))), true);
 	}
 }
 
@@ -156,21 +142,6 @@ void ALLL_PlayerBase::PossessedBy(AController* NewController)
 	{
 		PlayerController->SetAudioListenerOverride(SpringArm, FVector::ZeroVector, FRotator::ZeroRotator);
 	}
-}
-
-void ALLL_PlayerBase::DelegateReceiveTest(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& Effects)
-{
-	for (auto Effect : Effects)
-	{
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
-		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(Effect.Get(), 1.0, EffectContextHandle);
-		if(EffectSpecHandle.IsValid())
-		{
-			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-		}
-	}
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Silver, FString::Printf(TEXT("비동기 로딩 확인")));
 }
 
 void ALLL_PlayerBase::AddInteractiveObject(ALLL_InteractiveObject* Object)
@@ -425,8 +396,7 @@ void ALLL_PlayerBase::Dead()
 	PlayerAnimInstance->PlayDeadAnimation();
 }
 
-void ALLL_PlayerBase::DestroyHandle()
+void ALLL_PlayerBase::DeadMotionEndedHandle()
 {
-	// Super::DestroyHandle();
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }
