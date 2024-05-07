@@ -13,6 +13,7 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 
 	if (!IsValid(ChargeMontage))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("%s 어빌리티에 몽타주가 없음"), *GetName());
 		return;
 	}
 	

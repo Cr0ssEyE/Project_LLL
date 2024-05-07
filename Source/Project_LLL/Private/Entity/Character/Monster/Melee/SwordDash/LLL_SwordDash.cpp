@@ -26,11 +26,8 @@ ALLL_SwordDash::ALLL_SwordDash()
 	DashDamageRangeBox->SetCollisionProfileName(CP_INTERACTION);
 	DashDamageRangeBox->SetupAttachment(RootComponent);
 
-	// 임시 소켓 무기 부착
 	SwordMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sword"));
-	SwordMeshComponent->SetStaticMesh(FLLL_ConstructorHelper::FindAndGetObject<UStaticMesh>(
-		TEXT("/Script/Engine.StaticMesh'/Game/Entity/Characters/Monster/MeleeMonster/SwordDash/Meshes/ProjectLLL_BaseMonster_0503_Deer_Equipment_Share_Low_Blade.ProjectLLL_BaseMonster_0503_Deer_Equipment_Share_Low_Blade'"
-			), EAssertionLevel::Check));
+	SwordMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	SwordMeshComponent->SetupAttachment(RootComponent);
 }
 
@@ -45,8 +42,11 @@ void ALLL_SwordDash::BeginPlay()
 		DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), SwordDashAttributeSet->GetDashDamageRange(), SwordDashAttributeSet->GetDashDamageRange()));
 	}));
 
-	SwordMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
-	SwordMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Hand_LSocket"));
+	SwordMeshComponent->SetStaticMesh(SwordDashDataAsset->SwordMesh);
+	SwordMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->SwordAttachSocketName);
+	SwordMeshComponent->SetRelativeLocation(SwordDashDataAsset->SwordLocation);
+	SwordMeshComponent->SetRelativeRotation(SwordDashDataAsset->SwordRotation);
+	SwordMeshComponent->SetRelativeScale3D(SwordDashDataAsset->SwordScale);
 }
 
 void ALLL_SwordDash::Tick(float DeltaSeconds)

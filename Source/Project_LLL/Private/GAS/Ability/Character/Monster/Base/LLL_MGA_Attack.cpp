@@ -12,6 +12,7 @@ void ULLL_MGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	
 	if (!IsValid(AttackMontage))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("%s 어빌리티에 몽타주가 없음"), *GetName());
 		return;
 	}
 
