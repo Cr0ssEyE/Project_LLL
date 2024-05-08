@@ -13,9 +13,6 @@ UCLASS()
 class PROJECT_LLL_API ULLL_MGA_Charge : public ULLL_MonsterGameplayAbilityBase
 {
 	GENERATED_BODY()
-
-public:
-	UAnimMontage* GetChargeMontage() const { return ChargeMontage; }
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;

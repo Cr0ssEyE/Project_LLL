@@ -78,7 +78,7 @@ public:
 		return CalculateResult;
 	}
 
-		static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)
+	static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)
 	{
 		FHitResult CapsuleHitResult;
 		FCollisionQueryParams Params;
