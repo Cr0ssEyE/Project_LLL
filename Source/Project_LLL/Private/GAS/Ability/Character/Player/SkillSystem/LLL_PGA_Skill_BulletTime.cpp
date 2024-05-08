@@ -10,6 +10,7 @@
 #include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
+#include "Interface/LLL_KnockBackInterface.h"
 
 ULLL_PGA_Skill_BulletTime::ULLL_PGA_Skill_BulletTime()
 {
@@ -148,6 +149,10 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 		if (Actor.IsValid())
 		{
 			Actor.Get()->CustomTimeDilation = 1.0f;
+			if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor.Get()))
+			{
+				KnockBackActor->ApplyStackedKnockBack();
+			}
 		}
 	}
 	BulletTimeEffectedActors.Empty();

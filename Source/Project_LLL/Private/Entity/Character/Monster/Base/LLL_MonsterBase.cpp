@@ -22,6 +22,7 @@
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
 #include "Util/LLL_ConstructorHelper.h"
+#include "Util/LLL_MathHelper.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
@@ -176,9 +177,23 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 	}
 	else
 	{
-		StackedKnockBackedPower += StackedKnockBackedPower;
+		StackedKnockBackedPower += KnockBackPower;
 		StackedKnockBackVelocity += KnockBackVelocity;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackedPower));
 	}
+}
+
+void ALLL_MonsterBase::ApplyStackedKnockBack()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackVelocity.Length()));
+	if (FLLL_MathHelper::CheckFallableKnockBackPower(StackedKnockBackedPower))
+	{
+		GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
+	}
+	
+	LaunchCharacter(StackedKnockBackVelocity, true, true);
+
+	// ResetKnockBackStack();
 }
 
 bool ALLL_MonsterBase::CanPlayAttackAnimation() const

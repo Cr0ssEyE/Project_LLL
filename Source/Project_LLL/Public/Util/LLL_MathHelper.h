@@ -70,7 +70,16 @@ public:
 		
 		return !HitResult.GetActor();
 	}
-	
+
+	static bool CheckFallableKnockBackPower(float KnockBackPower)
+	{
+		if (KnockBackPower > 500.f)
+		{
+			return true;
+		}
+		
+		return false;
+	}
 	// 플레이어
 public:
 	static float CalculatePlayerSkillGaugeIncrement(const float BaseValue, const float ComboAmplify, const float ItemAmplify)

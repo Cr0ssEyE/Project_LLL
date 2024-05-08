@@ -31,11 +31,13 @@ protected:
 public:
 	void Attack() const;
 	virtual void Damaged() override;
-	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	bool CanPlayAttackAnimation() const;
-
-	FORCEINLINE float GetKnockBackedPower() const { return StackedKnockBackedPower; }
-	FORCEINLINE void ResetKnockBackStack() { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
+	
+	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
+	virtual void ApplyStackedKnockBack() override;
+	
+	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
+	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)

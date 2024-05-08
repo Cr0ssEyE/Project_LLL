@@ -63,6 +63,9 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		return;
 	}
 #endif
+
+	GetMesh()->SetRenderCustomDepth(true);
+	GetMesh()->SetCustomDepthStencilValue(1);
 	
 	if (IsValid(CharacterDataAsset))
 	{
