@@ -37,8 +37,9 @@
 #define TAG_GAS_CHASE_GRAB FGameplayTag::RequestGameplayTag(FName("Object.Chase.Action.Grab"))
 #define TAG_GAS_CHASE_STATE_GRABBED FGameplayTag::RequestGameplayTag(FName("Object.Chase.State.Grabbed"))
 
-// 몬스터 게임플레이 태그
+// 몬스터 관련 게임플레이 태그
 #define TAG_GAS_MONSTER_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Attack"))
+#define TAG_GAS_MONSTER_FALLABLE  FGameplayTag::RequestGameplayTag(FName("Character.Monster.State.Fallable"))
 
 // 소드 대시 게임플레이 태그
 #define TAG_GAS_SWORD_DASH_DASH FGameplayTag::RequestGameplayTag(FName("Character.Monster.Melee.SwordDash.Action.Dash"))

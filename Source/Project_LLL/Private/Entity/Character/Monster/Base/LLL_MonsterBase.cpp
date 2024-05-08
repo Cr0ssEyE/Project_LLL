@@ -37,7 +37,9 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 
 	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
 	DropGoldEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'"), EAssertionLevel::Check);
-	
+
+	StackedKnockBackedPower = 0.f;
+	StackedKnockBackVelocity = FVector::Zero();
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -164,16 +166,18 @@ void ALLL_MonsterBase::Damaged()
 	}
 }
 
-void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity)
+void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower)
 {
 	if (CustomTimeDilation == 1.f)
 	{
+		StackedKnockBackedPower = KnockBackPower;
 		GetCharacterMovement()->Velocity = FVector::Zero();
 		LaunchCharacter(KnockBackVelocity, true, true);
 	}
 	else
 	{
-		
+		StackedKnockBackedPower += StackedKnockBackedPower;
+		StackedKnockBackVelocity += KnockBackVelocity;
 	}
 }
 

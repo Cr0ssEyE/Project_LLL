@@ -22,7 +22,7 @@ class PROJECT_LLL_API ILLL_KnockBackInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity) = 0;
+	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) = 0;
 
 	
 };

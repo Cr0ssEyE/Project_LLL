@@ -46,12 +46,10 @@ ALLL_PlayerChaseHand::ALLL_PlayerChaseHand()
 void ALLL_PlayerChaseHand::SetHiddenState()
 {
 	bIsGrabbed = false;
-	HandMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	HandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HandCollision->SetCollisionObjectType(ECC_PLAYER);
 	HandCollision->SetCollisionProfileName(CP_NO_COLLISION);
 	HandMesh->SetHiddenInGame(true);
-	
+
 	ProjectileMovementComponent->Velocity = FVector::Zero();
 	ProjectileMovementComponent->Deactivate();
 	
@@ -82,17 +80,16 @@ void ALLL_PlayerChaseHand::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other,
 	// ThrownObject 쪽 NotifyHit 함수 별도로 옮기기 전까진 부모 클래스 함수 호출 막아놓기
 	// Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
+	if (bIsGrabbed)
+	{
+		return;
+	}
+	
 	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Other);
 	if (IsValid(Monster))
 	{
-		if(bIsGrabbed)
-		{
-			return;
-		}
-		
 		// PGA_WireHandGrab
-		const FGameplayTagContainer GrabTag(TAG_GAS_CHASE_GRAB);
-		if (ASC->TryActivateAbilitiesByTag(GrabTag))
+		if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_GRAB)))
 		{
 			GrabbedActor = Other;
 			bIsGrabbed = true;

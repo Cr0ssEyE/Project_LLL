@@ -27,6 +27,11 @@ void ULLL_PGA_ChaseHandThrow::ActivateAbility(const FGameplayAbilitySpecHandle H
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerChaseHand->GetOwner());
 
+	if (IsValid(PlayerChaseHand->GetAttachParentActor()))
+	{
+		PlayerChaseHand->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	}
+	
 	PlayerChaseHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_ChaseHandThrow::OnInterruptedCallBack);
 	PlayerChaseHand->OnGrabbedDelegate.AddDynamic(this, &ULLL_PGA_ChaseHandThrow::OnInterruptedCallBack);
 	PlayerCharacter->PlayerRotateToMouseCursor();
@@ -109,13 +114,14 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	USkeletalMeshComponent* HandMesh = PlayerChaseHand->GetHandMesh();
 	
 	HandCollision->SetCollisionProfileName(CP_PLAYER_CHASE_HAND);
-	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	HandMesh->SetHiddenInGame(false);
 	HandMesh->SetAnimation(ThrowAnim);
 	
 	UProjectileMovementComponent* HandProjectile = PlayerChaseHand->GetProjectileMovementComponent();
+	HandProjectile->SetUpdatedComponent(PlayerChaseHand->GetRootComponent());
 	HandProjectile->Activate();
 	HandProjectile->Velocity = ThrowDirection * ChaseHandAttributeSet->GetThrowSpeed();
+	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandThrow::CheckReached);
 
 	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, WireHandThrowCueTag);
@@ -133,12 +139,6 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 
 void ULLL_PGA_ChaseHandThrow::CheckReached()
 {
-	if (GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_GRAB)))
-	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-		return;
-	}
-	
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
 	const ULLL_PlayerChaseHandAttributeSet* ChaseHandAttributeSet = CastChecked<ULLL_PlayerChaseHandAttributeSet>(PlayerChaseHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerChaseHandAttributeSet::StaticClass()));
 

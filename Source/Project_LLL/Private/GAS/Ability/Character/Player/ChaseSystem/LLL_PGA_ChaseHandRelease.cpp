@@ -42,7 +42,13 @@ void ULLL_PGA_ChaseHandRelease::EndAbility(const FGameplayAbilitySpecHandle Hand
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
 	PlayerChaseHand->ReleaseCompleteDelegate.RemoveDynamic(this, &ULLL_PGA_ChaseHandRelease::OnCompleteCallBack);
 	PlayerChaseHand->SetHiddenState();
+
+	if (IsValid(PlayerChaseHand->GetAttachParentActor()))
+	{
+		PlayerChaseHand->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	}
 	
+	PlayerChaseHand->SetActorLocation(PlayerChaseHand->GetOwner()->GetActorLocation());
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -86,15 +92,15 @@ void ULLL_PGA_ChaseHandRelease::ReleaseToOwnerLocation()
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
 
 	const FVector WorldLocation = PlayerChaseHand->GetActorLocation();
-	PlayerChaseHand->K2_DetachFromActor();
+	PlayerChaseHand->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	PlayerChaseHand->SetActorLocation(WorldLocation);
 	PlayerChaseHand->GetHandMesh()->SetAnimation(ReleaseAnim);
 	
 	USphereComponent* HandCollision = PlayerChaseHand->GetCollisionComponent();
 	USkeletalMeshComponent* HandMesh = PlayerChaseHand->GetHandMesh();
-	
+
+	HandCollision->SetCollisionProfileName(CP_PLAYER_CHASE_HAND);
 	HandCollision->SetCollisionObjectType(ECC_PLAYER_CHECK);
-	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	HandMesh->SetHiddenInGame(false);
 	
 	UProjectileMovementComponent* ChaseHandProjectile = PlayerChaseHand->GetProjectileMovementComponent();
