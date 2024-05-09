@@ -32,7 +32,7 @@ public:
 		return PredictedLocation;
 	}
 
-	static bool IsInFieldOfView(const AActor* Owner, const AActor* Target, float Distance, float FieldOfView)
+	static bool IsInFieldOfView(const AActor* Owner, const AActor* Target, float Distance, float FieldOfView, const FRotator& Rotation = FRotator::ZeroRotator)
 	{
 		if (Distance < Owner->GetDistanceTo(Target))
 		{
@@ -42,8 +42,8 @@ public:
 		FVector DirectionToTarget = Target->GetActorLocation() - Owner->GetActorLocation();
 		DirectionToTarget.Normalize();
 
-		const FVector OwnerForwardVector = Owner->GetActorForwardVector();
-		const float DotProduct = FVector::DotProduct(OwnerForwardVector, DirectionToTarget);
+		const FVector ForwardVector = Rotation.RotateVector(Owner->GetActorForwardVector());
+		const float DotProduct = FVector::DotProduct(ForwardVector, DirectionToTarget);
 
 		if (FMath::Acos(DotProduct) > FMath::DegreesToRadians(FieldOfView / 2.0f))
 		{
@@ -88,7 +88,7 @@ public:
 		return CalculateResult;
 	}
 
-		static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)
+	static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)
 	{
 		FHitResult CapsuleHitResult;
 		FCollisionQueryParams Params;

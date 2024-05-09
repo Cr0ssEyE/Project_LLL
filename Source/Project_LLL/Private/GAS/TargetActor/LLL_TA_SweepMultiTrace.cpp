@@ -54,7 +54,7 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 
 			if (HitActor && !HitActors.Contains(HitActor))
 			{
-				if (BaseShape == ESelectShapeTypes::Cone && !FLLL_MathHelper::IsInFieldOfView(SourceActor, HitActor, ConeDistance, ConeFieldOfView))
+				if (BaseShape == ESelectShapeTypes::Cone && !FLLL_MathHelper::IsInFieldOfView(SourceActor, HitActor, ConeDistance, ConeFieldOfView, ConeRotation))
 				{
 					continue;
 				}
@@ -88,7 +88,7 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 			{
 				if (HitActor.IsValid())
 				{
-					if (BaseShape == ESelectShapeTypes::Cone && !FLLL_MathHelper::IsInFieldOfView(SourceActor, HitActor.Get(), ConeDistance, ConeFieldOfView))
+					if (BaseShape == ESelectShapeTypes::Cone && !FLLL_MathHelper::IsInFieldOfView(SourceActor, HitActor.Get(), ConeDistance, ConeFieldOfView, ConeRotation))
 					{
 						continue;
 					}
@@ -97,7 +97,7 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 					break;
 				}
 			}
-			FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, DebugColor, 2.f, BoxExtents, CapsuleExtents, SphereRadius, ConeDistance, ConeFieldOfView, SweepQuat);
+			FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, DebugColor, 2.f, BoxExtents, CapsuleExtents, SphereRadius, ConeDistance, ConeFieldOfView, ConeRotation, SweepQuat);
 		}
 	}
 #endif

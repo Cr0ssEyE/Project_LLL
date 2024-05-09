@@ -158,7 +158,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		{
 			continue;
 		}
-			
+		
 		const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
 		TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
 		for (auto EffectHandle : EffectHandles)
@@ -166,7 +166,10 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 			if (EffectHandle.IsValid())
 			{
 				ASC->RemoveActiveGameplayEffect(EffectHandle);
-				UE_LOG(LogTemp, Log, TEXT("- %s 삭제"), *EffectHandle.ToString());
+				for (auto GameplayTag : TagContainer.GetGameplayTagArray())
+				{
+					UE_LOG(LogTemp, Log, TEXT("- %s 태그를 가진 이펙트 삭제"), *GameplayTag.ToString());
+				}
 			}
 		}
 
