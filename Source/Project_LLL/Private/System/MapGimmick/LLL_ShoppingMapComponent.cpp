@@ -3,6 +3,10 @@
 
 #include "System/MapGimmick/LLL_ShoppingMapComponent.h"
 
+#include "DataTable/LLL_RewardDataTable.h"
+#include "Entity/Object/Interactive/LLL_AbilityRewardObject.h"
+#include "Entity/Object/Interactive/LLL_EnhanceRewardObject.h"
+#include "Entity/Object/Interactive/LLL_MaxHPRewardObject.h"
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "System/MapGimmick/LLL_ProductSpawnPointComponent.h"
 
@@ -53,7 +57,21 @@ void ULLL_ShoppingMapComponent::SetProducts()
 		ULLL_ProductSpawnPointComponent* SpawnPoint = Cast<ULLL_ProductSpawnPointComponent>(ChildComponent);
 		if (IsValid(SpawnPoint))
 		{
-			ALLL_RewardObject* Product = GetWorld()->SpawnActor<ALLL_RewardObject>(ALLL_RewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+			ALLL_RewardObject* Product = nullptr;
+			switch (static_cast<ERewardCategory>(FMath::RandRange(2, 4)))
+			{
+			case ERewardCategory::Ability:
+				Product = GetWorld()->SpawnActor<ALLL_AbilityRewardObject>(ALLL_AbilityRewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+				break;
+			case ERewardCategory::Enhance:
+				Product = GetWorld()->SpawnActor<ALLL_EnhanceRewardObject>(ALLL_EnhanceRewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+				break;
+			case ERewardCategory::MaxHP:
+				Product = GetWorld()->SpawnActor<ALLL_MaxHPRewardObject>(ALLL_MaxHPRewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+				break;
+			default: ;
+			}
+			
 			Product->ApplyProductEvent();
 			ProductList.Add(Product);
 		}

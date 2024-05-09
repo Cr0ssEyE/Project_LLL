@@ -6,9 +6,15 @@
 #include "Engine/DataTable.h"
 #include "LLL_RewardDataTable.generated.h"
 
-/**
- * 
- */
+
+UENUM()
+enum class ERewardCategory : uint8
+{
+	Gold = 1,
+	Ability,
+	Enhance,
+	MaxHP
+};
 
 USTRUCT(BlueprintType)
 struct FRewardDataTable : public FTableRowBase

@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Object/Interactive/LLL_RewardObject.h"
+#include "DataTable/LLL_AbilityDataTable.h"
+#include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "LLL_AbilityRewardObject.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnAbilityRewardInteractionDelegate);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnAbilityRewardInteractionDelegate, EAbilityCategory);
 /**
  * 
  */
@@ -16,17 +17,16 @@ class PROJECT_LLL_API ALLL_AbilityRewardObject : public ALLL_RewardObject
 	GENERATED_BODY()
 
 public:
-	FORCEINLINE FOnAbilityRewardInteractionDelegate* GetAbilityRewardInteractionDelegate() { return AbilityRewardInteractionDelegate; }
-	
-	virtual void SetInformation(FTestRewardDataTable* Data) override;
+	virtual void SetInformation(FRewardDataTable* Data) override;
 
 	virtual void InteractiveEvent() override;
 
-	void SetAbilityData(TArray<FTestAbilityDataTable> AbilityData);
-
+	void SetAbilityCategory(EAbilityCategory AbilityData);
+	
+	FOnAbilityRewardInteractionDelegate* AbilityRewardInteractionDelegate;
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TArray<FTestAbilityDataTable> RewardAbilityData;
+	EAbilityCategory AbilityCategory;
 
-	FOnAbilityRewardInteractionDelegate* AbilityRewardInteractionDelegate;
+	
 };

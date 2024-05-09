@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DataTable/LLL_AbilityDataTable.h"
-#include "GameFramework/Actor.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_RewardGimmick.generated.h"
 
@@ -39,8 +38,6 @@ public:
 
 	UFUNCTION()
 	void SetRewardToGate(ALLL_GateObject* Gate);
-
-	void SetAbilityToReward(ALLL_AbilityRewardObject* RewardObject);
 	
 	UFUNCTION()
 	void SetRewardButtons();

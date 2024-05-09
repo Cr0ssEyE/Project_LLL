@@ -5,7 +5,7 @@
 
 #include "Game/ProtoGameInstance.h"
 
-void ALLL_MaxHPRewardObject::SetInformation(FTestRewardDataTable* Data)
+void ALLL_MaxHPRewardObject::SetInformation(FRewardDataTable* Data)
 {
 	Super::SetInformation(Data);
 

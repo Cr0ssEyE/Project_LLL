@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Entity/Object/Interactive/LLL_RewardObject.h"
+#include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "LLL_MaxHPRewardObject.generated.h"
 
 /**
@@ -17,7 +17,7 @@ class PROJECT_LLL_API ALLL_MaxHPRewardObject : public ALLL_RewardObject
 
 public:
 
-	virtual void SetInformation(FTestRewardDataTable* Data) override;
+	virtual void SetInformation(FRewardDataTable* Data) override;
 
 	virtual void InteractiveEvent() override;
 };

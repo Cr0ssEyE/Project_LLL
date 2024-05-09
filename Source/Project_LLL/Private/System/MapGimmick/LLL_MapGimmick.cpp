@@ -146,6 +146,10 @@ void ALLL_MapGimmick::RandomMap()
 
 void ALLL_MapGimmick::ChangeMap(AActor* DestroyedActor)
 {
+	if(IsValid(ShoppingMapComponent))
+	{
+		ShoppingMapComponent->DeleteProducts();
+	}
 	AllGatesDestroy();
 	RandomMap();
 	CreateMap();
@@ -243,5 +247,17 @@ void ALLL_MapGimmick::RewardSpawn()
 	{
 		RewardObject->SetInformation(RewardData);
 		RewardObject->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::RewardDestroyed);
+	}
+	switch (RewardData->ID)
+	{
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	default: ;
 	}
 }

@@ -27,7 +27,7 @@ public:
 
 	virtual void ApplyProductEvent() override;
 
-	void SetInformation(FRewardDataTable* Data);
+	virtual void SetInformation(FRewardDataTable* Data);
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
