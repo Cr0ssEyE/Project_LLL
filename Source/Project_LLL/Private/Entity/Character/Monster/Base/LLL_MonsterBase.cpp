@@ -190,8 +190,10 @@ void ALLL_MonsterBase::ApplyStackedKnockBack()
 	{
 		GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
 	}
-	
-	LaunchCharacter(StackedKnockBackVelocity, true, true);
+
+	// TODO: 나중에 몬스터별 최대 넉백값 같은거 나오면 수정하기
+	const FVector ScaledStackedKnockBackVelocity = ClampVector(FVector::Zero(), FVector::One() * 2000.f, StackedKnockBackVelocity);
+	LaunchCharacter(ScaledStackedKnockBackVelocity, true, true);
 
 	// ResetKnockBackStack();
 }

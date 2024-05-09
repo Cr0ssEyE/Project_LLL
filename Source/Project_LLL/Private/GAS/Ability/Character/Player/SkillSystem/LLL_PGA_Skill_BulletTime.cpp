@@ -8,6 +8,7 @@
 #include "LevelSequencePlayer.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Game/ProtoGameInstance.h"
+#include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 #include "Interface/LLL_KnockBackInterface.h"
@@ -52,7 +53,10 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("불릿타임 스킬 발동 취소됨. 시퀀스 또는 어트리뷰트 셋 접근 유효하지 않음")));
+			if (ProtoGameInstance->CheckPlayerSkillDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("불릿타임 스킬 발동 취소됨. 시퀀스 또는 어트리뷰트 셋 접근 유효하지 않음")));
+			}
 		}
 #endif
 		
@@ -144,6 +148,23 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 		}
 	}
 
+	if (BulletTimeEffectedActors.IsEmpty())
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
+	}
+
+	FGameplayAbilityTargetData_ActorArray* ActorArray = new FGameplayAbilityTargetData_ActorArray();
+	ActorArray->SetActors(BulletTimeEffectedActors);
+	FGameplayAbilityTargetDataHandle TargetDataHandle;
+	TargetDataHandle.Add(ActorArray);
+
+	ULLL_BaseASC* LLLASC = CastChecked<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked());
+	if (LLLASC->TryActivateAbilitiesByTag(FGameplayTagContainer(KnockBackCollideCheckTag)))
+	{
+		LLLASC->ReceiveTargetData(this, TargetDataHandle);
+	}
+	
 	for (auto Actor : BulletTimeEffectedActors)
 	{
 		if (Actor.IsValid())
@@ -155,6 +176,7 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 			}
 		}
 	}
+	
 	BulletTimeEffectedActors.Empty();
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

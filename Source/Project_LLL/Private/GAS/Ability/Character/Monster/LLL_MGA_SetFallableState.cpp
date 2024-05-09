@@ -27,12 +27,30 @@ void ULLL_MGA_SetFallableState::ActivateAbility(const FGameplayAbilitySpecHandle
 		}
 	}), KnockBackTime, false);
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("낙하 상태 어빌리티 발동 %s"), *CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo())->GetCapsuleComponent()->GetCollisionProfileName().ToString()));
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckMonsterCollisionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("낙하 상태 어빌리티 발동 %s"), *CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo())->GetCapsuleComponent()->GetCollisionProfileName().ToString()));
+		}
+	}
+#endif
 }
 
 void ULLL_MGA_SetFallableState::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("낙하 상태 어빌리티 종료")));
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckMonsterCollisionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("낙하 상태 어빌리티 종료")));
+			ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+		}
+	}
+#endif
+	
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
 	
 	FHitResult HitResult;
