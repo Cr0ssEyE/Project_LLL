@@ -296,10 +296,7 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputNa
 		}
 	}
 
-	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_PLAYER_DASH)))
-	{
-		
-	}
+	ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_PLAYER_DASH));
 }
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInputName InputName)
