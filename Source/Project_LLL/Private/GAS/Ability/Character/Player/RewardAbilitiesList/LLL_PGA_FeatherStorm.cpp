@@ -9,8 +9,7 @@ void ULLL_PGA_FeatherStorm::ActivateAbility(const FGameplayAbilitySpecHandle Han
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	UE_LOG(LogTemp, Log, TEXT("어빌리티 : %s, 랭크 : %s"), *GetName(), *StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(AbilityData->AbilityRank)));
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString::Printf(TEXT("%f, %f, %f"), static_cast<float>(AbilityData->AbilityRank), AbilityData->AbilityValue, AbilityData->ChangeValue));
+	UE_LOG(LogTemp, Log, TEXT("깃털 폭풍 발동"));
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

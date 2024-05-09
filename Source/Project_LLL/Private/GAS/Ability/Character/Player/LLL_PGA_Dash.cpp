@@ -156,6 +156,8 @@ void ULLL_PGA_Dash::DashActionEvent()
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
 		PlayerAnimInstance->SetDash(true);
 
+		PlayerCharacter->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_PLAYER_DASH));
+		
 		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, DashCueTag);
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
