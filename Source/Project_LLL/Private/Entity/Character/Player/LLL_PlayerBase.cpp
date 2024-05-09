@@ -283,7 +283,7 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
 	const int32 InputID = static_cast<int32>(InputName);
-	if(FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID))
+	if (FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
 		DashSpec->InputPressed = true;
 		if (DashSpec->IsActive())
@@ -294,6 +294,11 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputNa
 		{
 			ASC->TryActivateAbility(DashSpec->Handle);
 		}
+	}
+
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_PLAYER_DASH)))
+	{
+		
 	}
 }
 
