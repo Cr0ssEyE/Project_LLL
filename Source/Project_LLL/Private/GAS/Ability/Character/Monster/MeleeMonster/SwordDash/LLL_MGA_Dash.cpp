@@ -25,13 +25,13 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	FHitResult StaticResult;
 	FHitResult PlayerResult;
 	const FVector SweepStartLocation = Monster->GetActorLocation();
-	FVector SweepEndLocation = SweepStartLocation + Monster->GetActorForwardVector() * SwordDashAttributeSet->GetDashDistance();
-	FQuat SweepQuat = Monster->GetActorQuat();
-	ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
-	ECollisionChannel PlayerTraceChannel = ECC_PLAYER;
+	const FVector SweepEndLocation = SweepStartLocation + Monster->GetActorForwardVector() * SwordDashAttributeSet->GetDashDistance();
+	const FQuat SweepQuat = Monster->GetActorQuat();
+	constexpr ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
+	constexpr ECollisionChannel PlayerTraceChannel = ECC_PLAYER;
 
-	UCapsuleComponent* Capsule = Monster->GetCapsuleComponent();
-	FCollisionShape TraceShape = FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius(), Capsule->GetScaledCapsuleHalfHeight() / 2.0f);
+	const UCapsuleComponent* Capsule = Monster->GetCapsuleComponent();
+	const FCollisionShape TraceShape = FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius(), Capsule->GetScaledCapsuleHalfHeight() / 2.0f);
 		
 	GetWorld()->SweepSingleByChannel(
 		StaticResult,
@@ -54,8 +54,8 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	{
 		if (PlayerResult.GetActor())
 		{
-			float StaticDistance = Monster->GetDistanceTo(StaticResult.GetActor());
-			float PlayerDistance = Monster->GetDistanceTo(PlayerResult.GetActor());
+			const float StaticDistance = Monster->GetDistanceTo(StaticResult.GetActor());
+			const float PlayerDistance = Monster->GetDistanceTo(PlayerResult.GetActor());
 
 			DashLocation = (StaticDistance <= PlayerDistance) ? StaticResult.Location : PlayerResult.Location;
 		}

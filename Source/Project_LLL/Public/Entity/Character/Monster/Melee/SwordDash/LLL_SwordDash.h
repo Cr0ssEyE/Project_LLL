@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_SwordDashDataAsset.h"
-#include "Interface/LLL_ChargeMonsterInterface.h"
 #include "Interface/LLL_DashMonsterInterface.h"
 #include "Entity/Character/Monster/Melee/Base/LLL_MeleeMonster.h"
 #include "LLL_SwordDash.generated.h"
@@ -14,7 +13,7 @@ class UBoxComponent;
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster, public ILLL_DashMonsterInterface, public ILLL_ChargeMonsterInterface
+class PROJECT_LLL_API ALLL_SwordDash : public ALLL_MeleeMonster, public ILLL_DashMonsterInterface
 {
 	GENERATED_BODY()
 
@@ -28,7 +27,6 @@ protected:
 
 public:
 	virtual void Dash() const override;
-	virtual void Charge() const override;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -36,4 +34,7 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UBoxComponent> DashDamageRangeBox;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UStaticMeshComponent> SwordMeshComponent;
 };
