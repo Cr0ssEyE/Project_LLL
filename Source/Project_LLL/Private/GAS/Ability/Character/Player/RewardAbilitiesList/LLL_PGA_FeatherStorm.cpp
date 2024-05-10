@@ -9,7 +9,6 @@ void ULLL_PGA_FeatherStorm::ActivateAbility(const FGameplayAbilitySpecHandle Han
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	UE_LOG(LogTemp, Log, TEXT("깃털 폭풍 발동"));
 	const FVector Location = GetAvatarActorFromActorInfo()->GetActorLocation();
 	const FRotator Rotation = GetAvatarActorFromActorInfo()->GetActorRotation();
 	GetWorld()->SpawnActor(ALLL_PlayerFeatherStorm::StaticClass(), &Location, &Rotation);

@@ -7,7 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "DataAsset/LLL_SkillObjectDataAsset.h"
-#include "Game/ProtoGameInstance.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GameFramework/Character.h"
 #include "GAS/Attribute/Object/Skill//Base/LLL_SkillObjectAttributeSet.h"
 
@@ -30,12 +30,9 @@ void ALLL_SkillObject::BeginPlay()
 
 	SetOwner(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	SkillCollisionBox->SetBoxExtent(SkillObjectDataAsset->OverlapCollisionSize);
-
-	UE_LOG(LogTemp, Log, TEXT("%s 생성"), *GetName())
 	
 	FTimerHandle DestroyTimerHandle;
 	GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
-		UE_LOG(LogTemp, Log, TEXT("%s 파괴"), *GetName())
 		Destroy();
 	}), SkillObjectAttributeSet->GetDestroyTimer(), false);
 }
@@ -44,5 +41,14 @@ void ALLL_SkillObject::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	UE_LOG(LogTemp, Log, TEXT("%s에게 스킬 상호작용 발생"), *OtherActor->GetName())
+	if (const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(OtherActor))
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(SkillObjectDataAsset->DamageEffect, 1.0, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Monster->GetAbilitySystemComponent());
+		}
+	}
 }

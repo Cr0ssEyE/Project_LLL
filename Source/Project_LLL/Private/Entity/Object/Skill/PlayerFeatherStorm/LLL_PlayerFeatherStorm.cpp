@@ -30,15 +30,8 @@ void ALLL_PlayerFeatherStorm::BeginPlay()
 	{
 		if (ProtoGameInstance->CheckPlayerDashDebug())
 		{
-			DrawDebugBox(GetWorld(), GetActorLocation(), SkillCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, 2.0f);
+			DrawDebugBox(GetWorld(), GetActorLocation(), SkillCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, SkillObjectAttributeSet->GetDestroyTimer());
 		}
 	}
 #endif
-}
-
-void ALLL_PlayerFeatherStorm::NotifyActorBeginOverlap(AActor* OtherActor)
-{
-	Super::NotifyActorBeginOverlap(OtherActor);
-
-	UE_LOG(LogTemp, Log, TEXT("%s 상호작용"), *GetName())
 }

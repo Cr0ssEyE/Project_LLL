@@ -20,7 +20,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_FeatherStormDataAsset> FeatherStormDataAsset;
