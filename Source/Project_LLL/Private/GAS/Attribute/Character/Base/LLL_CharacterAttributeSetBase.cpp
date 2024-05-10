@@ -4,6 +4,7 @@
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 
 #include "GameplayEffectExtension.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -73,6 +74,7 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 			}
 		}
 		OwnerCharacter->TakeDamageDelegate.Broadcast();
+		OwnerCharacter->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_DAMAGED));
 	}
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }
