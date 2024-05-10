@@ -7,7 +7,7 @@
 #include "Components/CanvasPanel.h"
 #include "LLL_TitleScreenWidget.generated.h"
 
-class ULLL_GameSettingWidget;
+class ULLL_SettingWidget;
 class UCanvasPanel;
 class UButton;
 class ULevelSequence;
@@ -77,7 +77,7 @@ protected:
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
-	TObjectPtr<ULLL_GameSettingWidget> SettingWidget;
+	TObjectPtr<ULLL_SettingWidget> SettingWidget;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidgetAnim))

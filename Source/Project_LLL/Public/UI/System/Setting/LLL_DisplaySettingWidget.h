@@ -4,27 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/ComboBoxString.h"
-#include "LLL_GameSettingWidget.generated.h"
+#include "LLL_DisplaySettingWidget.generated.h"
 
 enum class EResolutionTypes : uint8;
-class UComboBoxString;
-class USlider;
-class UProgressBar;
 class UButton;
+class UComboBoxString;
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_GameSettingWidget : public UUserWidget
+class PROJECT_LLL_API ULLL_DisplaySettingWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
 	virtual void NativeConstruct() override;
-
-	UFUNCTION(BlueprintCallable)
-	void CloseSettingWidget();
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -35,25 +29,15 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyWindowScreen();
-
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UComboBoxString> ResolutionComboBox;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UButton> UseFullScreenBtn;
+	TObjectPtr<UButton> UseFullScreenButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UButton> UseWindowBtn;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UButton> CloseBtn;
-
-protected:
-	UPROPERTY()
-	EResolutionTypes ResolutionTypes;
-
-	UPROPERTY()
-	uint8 bIsFullScreenActivate : 1;
+	TObjectPtr<UButton> UseWindowButton;
 	
 };

@@ -27,14 +27,6 @@ void ULLL_GraphicSettingWidget::NativeConstruct()
 	ShadowOptionButtons.Emplace(ShadowQualityMiddleButton);
 	ShadowOptionButtons.Emplace(ShadowQualityHighButton);
 	
-	ShadingQualityLowButton->OnClicked.AddDynamic(this, &ULLL_GraphicSettingWidget::ApplyShadingQualityLow);
-	ShadingQualityMiddleButton->OnClicked.AddDynamic(this, &ULLL_GraphicSettingWidget::ApplyShadingQualityMiddle);
-	ShadingQualityHighButton->OnClicked.AddDynamic(this, &ULLL_GraphicSettingWidget::ApplyShadingQualityHigh);
-
-	ShadingOptionButtons.Emplace(ShadingQualityLowButton);
-	ShadingOptionButtons.Emplace(ShadingQualityMiddleButton);
-	ShadingOptionButtons.Emplace(ShadingQualityHighButton);
-	
 	GIQualityLowButton->OnClicked.AddDynamic(this, &ULLL_GraphicSettingWidget::ApplyGIQualityLow);
 	GIQualityMiddleButton->OnClicked.AddDynamic(this, &ULLL_GraphicSettingWidget::ApplyGIQualityMiddle);
 	GIQualityHighButton->OnClicked.AddDynamic(this, &ULLL_GraphicSettingWidget::ApplyGIQualityHigh);
@@ -42,6 +34,14 @@ void ULLL_GraphicSettingWidget::NativeConstruct()
 	GIOptionButtons.Emplace(GIQualityLowButton);
 	GIOptionButtons.Emplace(GIQualityMiddleButton);
 	GIOptionButtons.Emplace(GIQualityHighButton);
+
+	ShadingQualityLowButton->OnClicked.AddDynamic(this, &ULLL_GraphicSettingWidget::ApplyShadingQualityLow);
+	ShadingQualityMiddleButton->OnClicked.AddDynamic(this, &ULLL_GraphicSettingWidget::ApplyShadingQualityMiddle);
+	ShadingQualityHighButton->OnClicked.AddDynamic(this, &ULLL_GraphicSettingWidget::ApplyShadingQualityHigh);
+
+	ShadingOptionButtons.Emplace(ShadingQualityLowButton);
+	ShadingOptionButtons.Emplace(ShadingQualityMiddleButton);
+	ShadingOptionButtons.Emplace(ShadingQualityHighButton);
 	
 	PPQualityLowButton->OnClicked.AddDynamic(this, &ULLL_GraphicSettingWidget::ApplyPPQualityLow);
 	PPQualityMiddleButton->OnClicked.AddDynamic(this, &ULLL_GraphicSettingWidget::ApplyPPQualityMiddle);
