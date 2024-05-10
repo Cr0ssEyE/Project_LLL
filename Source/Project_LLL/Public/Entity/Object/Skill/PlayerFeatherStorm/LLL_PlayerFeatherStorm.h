@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DataAsset/LLL_FeatherStormDataAsset.h"
+#include "DataAsset/LLL_PlayerFeatherStormDataAsset.h"
 #include "Entity/Object/Skill/Base/LLL_SkillObject.h"
 #include "LLL_PlayerFeatherStorm.generated.h"
 
@@ -22,5 +22,5 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_FeatherStormDataAsset> FeatherStormDataAsset;
+	TObjectPtr<const ULLL_PlayerFeatherStormDataAsset> FeatherStormDataAsset;
 };

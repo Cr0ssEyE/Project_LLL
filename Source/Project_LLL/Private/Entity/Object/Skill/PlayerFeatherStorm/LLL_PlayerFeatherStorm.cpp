@@ -12,7 +12,7 @@
 
 ALLL_PlayerFeatherStorm::ALLL_PlayerFeatherStorm()
 {
-	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_FeatherStormDataAsset>(PATH_FEATHER_STORM_DATA, EAssertionLevel::Check);
+	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerFeatherStormDataAsset>(PATH_PLAYER_FEATHER_STORM_DATA, EAssertionLevel::Check);
 
 	SkillObjectAttributeSet = CreateDefaultSubobject<ULLL_PlayerFeatherStormAttributeSet>(TEXT("PlayerFeatherStormAttributeSet"));
 }
@@ -21,7 +21,7 @@ void ALLL_PlayerFeatherStorm::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FeatherStormDataAsset = Cast<ULLL_FeatherStormDataAsset>(SkillObjectDataAsset);
+	FeatherStormDataAsset = Cast<ULLL_PlayerFeatherStormDataAsset>(SkillObjectDataAsset);
 	
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), FeatherStormDataAsset->Particle, GetActorLocation(), GetActorRotation());
 

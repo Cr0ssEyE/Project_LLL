@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "LLL_SkillObjectDataAsset.h"
-#include "LLL_FeatherStormDataAsset.generated.h"
+#include "LLL_PlayerFeatherStormDataAsset.generated.h"
 
 class UNiagaraSystem;
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_FeatherStormDataAsset : public ULLL_SkillObjectDataAsset
+class PROJECT_LLL_API ULLL_PlayerFeatherStormDataAsset : public ULLL_SkillObjectDataAsset
 {
 	GENERATED_BODY()
 

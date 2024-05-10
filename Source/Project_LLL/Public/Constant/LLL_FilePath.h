@@ -11,11 +11,14 @@
 
 // 플레이어 관련
 #define PATH_PLAYER_DATA TEXT("/Script/Project_LLL.LLL_PlayerBaseDataAsset'/Game/DataAsset/DA_Player.DA_Player'")
-#define PATH_PLAYER_CHASE_HAND_DATA TEXT("/Script/Project_LLL.LLL_PlayerChaseHandDataAsset'/Game/DataAsset/DA_PlayerChaseHand.DA_PlayerChaseHand'")
 #define PATH_CAMERA_DATA TEXT("/Script/Project_LLL.LLL_CameraDataAsset'/Game/DataAsset/DA_Camera.DA_Camera'")
 
 // 플레이어 스킬 관련
-#define PATH_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_FeatherStormDataAsset'/Game/DataAsset/DA_FeatherStorm.DA_FeatherStorm'")
+#define PATH_PLAYER_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_PlayerFeatherStormDataAsset'/Game/DataAsset/DA_PlayerFeatherStorm.DA_PlayerFeatherStorm'")
+
+// 플레이어 투사체 관련
+#define PATH_PLAYER_CHASE_HAND_DATA TEXT("/Script/Project_LLL.LLL_PlayerChaseHandDataAsset'/Game/DataAsset/DA_PlayerChaseHand.DA_PlayerChaseHand'")
+#define PATH_PLAYER_THROWN_FEATHER_DATA TEXT("/Script/Project_LLL.LLL_PlayerThrownFeatherDataAsset'/Game/DataAsset/DA_PlayerThrownFeather.DA_PlayerThrownFeather'")
 
 // 몬스터 캐릭터 관련
 #define PATH_ORAWAVE_DATA TEXT("/Script/Project_LLL.LLL_OrawaveDataAsset'/Game/DataAsset/DA_Orawave.DA_Orawave'")
