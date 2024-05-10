@@ -14,3 +14,12 @@ enum class EResolutionTypes : uint8
 	FHD UMETA(DisplayName = "1920x1080"),
 	QHD UMETA(DisplayName = "2560x1440")
 };
+
+UENUM(BlueprintType)
+enum class EGraphicQuality : uint8
+{
+	None,
+	Low,
+	Middle,
+	High
+};

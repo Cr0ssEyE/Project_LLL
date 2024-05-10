@@ -9,7 +9,7 @@
 #include "Constant/LLL_LevelNames.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "UI/System/LLL_GameSettingWidget.h"
+#include "UI/System/Setting/LLL_GameSettingWidget.h"
 
 void ULLL_TitleScreenWidget::NativeConstruct()
 {
