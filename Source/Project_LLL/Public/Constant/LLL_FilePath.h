@@ -14,6 +14,9 @@
 #define PATH_PLAYER_CHASE_HAND_DATA TEXT("/Script/Project_LLL.LLL_PlayerChaseHandDataAsset'/Game/DataAsset/DA_PlayerChaseHand.DA_PlayerChaseHand'")
 #define PATH_CAMERA_DATA TEXT("/Script/Project_LLL.LLL_CameraDataAsset'/Game/DataAsset/DA_Camera.DA_Camera'")
 
+// 플레이어 스킬 관련
+#define PATH_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_FeatherStormDataAsset'/Game/DataAsset/DA_FeatherStorm.DA_FeatherStorm'")
+
 // 몬스터 캐릭터 관련
 #define PATH_ORAWAVE_DATA TEXT("/Script/Project_LLL.LLL_OrawaveDataAsset'/Game/DataAsset/DA_Orawave.DA_Orawave'")
 #define PATH_ENERGY_BLASTER_DATA TEXT("/Script/Project_LLL.LLL_EnergyBlasterDataAsset'/Game/DataAsset/DA_EnergyBlaster.DA_EnergyBlaster'")

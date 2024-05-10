@@ -21,6 +21,7 @@
 #define CP_STATIC_ONLY TEXT("IgnoreOnlyPawn")
 #define CP_PLAYER TEXT("Player")
 #define CP_PLAYER_EVADE TEXT("Player_Evade")
+#define CP_PLAYER_SKILL TEXT("PlayerSkill")
 #define CP_MONSTER TEXT("Monster")
 #define CP_INTERACTION TEXT("Interaction")
 #define CP_MONSTER_ATTACK TEXT("MonsterAttack")
