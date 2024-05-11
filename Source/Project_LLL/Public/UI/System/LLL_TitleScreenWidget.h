@@ -20,23 +20,26 @@ class PROJECT_LLL_API ULLL_TitleScreenWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	virtual void NativeConstruct();
-
+	virtual void NativeConstruct() override;
+	
 protected:
 	UFUNCTION()
-	void GameStartBtnEvent();
+	void NewGameStartButtonEvent();
 
 	UFUNCTION()
-	void SettingBtnEvent();
+	void LoadGameButtonEvent();
+	
+	UFUNCTION()
+	void SettingButtonEvent();
 
 	UFUNCTION()
-	void ExitGameBtnEvent();
+	void ExitGameButtonEvent();
 
 	UFUNCTION()
-	void ExitConfirmBtnEvent();
+	void ExitConfirmButtonEvent();
 
 	UFUNCTION()
-	void ExitCancelBtnEvent();
+	void ExitCancelButtonEvent();
 
 
 protected:
@@ -57,23 +60,26 @@ protected:
 	TObjectPtr<UCanvasPanel> LobbyUIPanel;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
-	TObjectPtr<UButton> GameStartBtn;
+	TObjectPtr<UButton> NewGameStartButton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
-	TObjectPtr<UButton> SettingBtn;
+	TObjectPtr<UButton> LoadGameButton;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
+	TObjectPtr<UButton> SettingButton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
-	TObjectPtr<UButton> ExitGameBtn;
+	TObjectPtr<UButton> ExitGameButton;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> ExitGameCheckPanel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
-	TObjectPtr<UButton> ConfirmBtn;
+	TObjectPtr<UButton> ExitConfirmButton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
-	TObjectPtr<UButton> CancelBtn;
+	TObjectPtr<UButton> ExitCancelButton;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))

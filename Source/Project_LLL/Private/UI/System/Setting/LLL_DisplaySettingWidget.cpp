@@ -7,6 +7,7 @@
 #include "Components/ComboBoxString.h"
 #include "GameFramework/GameUserSettings.h"
 #include "UI/System/Setting/LLL_SettingWidget.h"
+#include "Util/Save/LLL_CustomGameUserSettings.h"
 
 void ULLL_DisplaySettingWidget::NativeConstruct()
 {
@@ -34,8 +35,8 @@ void ULLL_DisplaySettingWidget::ApplyResolutionType(FString ResolutionName, ESel
 	ResolutionName.ParseIntoArray(ScreenResolutionString, TEXT("×"));
 	uint32 ScreenWidthValue = FCString::Atoi(*ScreenResolutionString[0]);
 	uint32 ScreenHeightValue = FCString::Atoi(*ScreenResolutionString[1]);
-	GEngine->GetGameUserSettings()->SetScreenResolution(FIntPoint(ScreenWidthValue, ScreenHeightValue));
-	GEngine->GetGameUserSettings()->ApplySettings(false);
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetScreenResolution(FIntPoint(ScreenWidthValue, ScreenHeightValue));
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->ApplySettings(false);
 }
 
 void ULLL_DisplaySettingWidget::ApplyFullScreen()
@@ -43,9 +44,9 @@ void ULLL_DisplaySettingWidget::ApplyFullScreen()
 	UseFullScreenButton->SetIsEnabled(false);
 	UseWindowButton->SetIsEnabled(true);
 	
-	GEngine->GetGameUserSettings()->SetFullscreenMode(EWindowMode::WindowedFullscreen);
-	GEngine->GetGameUserSettings()->ApplySettings(true);
-	GEngine->GetGameUserSettings()->ConfirmVideoMode();
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetFullscreenMode(EWindowMode::WindowedFullscreen);
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->ApplySettings(true);
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->ConfirmVideoMode();
 }
 
 void ULLL_DisplaySettingWidget::ApplyWindowScreen()
@@ -53,7 +54,7 @@ void ULLL_DisplaySettingWidget::ApplyWindowScreen()
 	UseFullScreenButton->SetIsEnabled(true);
 	UseWindowButton->SetIsEnabled(false);
 	
-	GEngine->GetGameUserSettings()->SetFullscreenMode(EWindowMode::Windowed);
-	GEngine->GetGameUserSettings()->ApplySettings(true);
-	GEngine->GetGameUserSettings()->ConfirmVideoMode();
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetFullscreenMode(EWindowMode::Windowed);
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->ApplySettings(true);
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->ConfirmVideoMode();
 }

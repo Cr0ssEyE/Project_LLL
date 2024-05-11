@@ -20,7 +20,7 @@ public:
 	virtual void NativeConstruct() override;
 	
 protected:
-	// TODO: FMOD 사운드 구분에 맞춰 적용하기
+	// TODO: FMOD 사운드 구분에 맞춰 적용하기. LLL_CustomGameUserSettings에서 해야 함
 	UFUNCTION(BlueprintCallable)
 	void ApplyMasterSliderValue(const float Value);
 

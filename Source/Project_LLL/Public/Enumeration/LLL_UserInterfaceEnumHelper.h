@@ -40,3 +40,34 @@ enum class ESettingWidgetType : uint8
 	Sound,
 	Gameplay
 };
+
+// UKismetInternationalizationLibrary::SetCurrentLanguageAndLocale 사용
+UENUM(BlueprintType)
+enum class ELanguageType : uint8
+{
+	KO UMETA(DisplayName = "KO"),
+	EN UMETA(DisplayName = "EN"),
+	JP UMETA(DisplayName = "JP")
+};
+
+
+// 값을 폰트 사이즈로 사용
+UENUM(BlueprintType)
+enum class ESubtitleSize : uint8
+{
+	Disable = 0,
+	Small = 12,
+	Medium = 24,
+	Large = 36
+};
+
+// 값을 %로 사용
+UENUM(BlueprintType)
+enum class ESubtitleSpeed : uint8
+{
+	None = 0,
+	VerySlow = 50,
+	Slow = 75,
+	Normal = 100,
+	Fast = 200,
+};

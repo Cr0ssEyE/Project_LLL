@@ -58,10 +58,16 @@ void ULLL_GraphicSettingWidget::NativeConstruct()
 	AAOptionButtons.Emplace(AAQualityOffButton);
 	AAOptionButtons.Emplace(AAQualityMiddleButton);
 	AAOptionButtons.Emplace(AAQualityHighButton);
+
+	SetButtonStates();
 }
 
 void ULLL_GraphicSettingWidget::SetButtonStates()
 {
+	/* 그래픽 퀄리티는 0 - low, 1 - middle, 2 - High, 3- Epic 로 나뉘는데,
+	 low는 품질 저하가 너무 심하기도 하고 현재 프로젝트 그래픽 수준이 높지 않아
+	 Middle이 실질적인 low로 동작하게끔 함
+	*/
 	UGameUserSettings* Settings = GEngine->GetGameUserSettings();
 	TextureOptionButtons[Settings->GetTextureQuality() - 1]->OnClicked.Broadcast();
 	ShadowOptionButtons[Settings->GetShadowQuality() - 1]->OnClicked.Broadcast();

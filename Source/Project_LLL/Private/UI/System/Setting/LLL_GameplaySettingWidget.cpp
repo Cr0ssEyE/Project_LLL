@@ -19,7 +19,7 @@ void ULLL_GameplaySettingWidget::NativeConstruct()
 	SubtitleSpeedComboBox->OnSelectionChanged.AddDynamic(this, &ULLL_GameplaySettingWidget::ApplySubtitleSpeed);
 
 	CameraShakeActivateCheckBox->OnCheckStateChanged.AddDynamic(this, &ULLL_GameplaySettingWidget::ToggleCameraShake);
-	MouseInputCorrectionActivateCheckBox->OnCheckStateChanged.AddDynamic(this, &ULLL_GameplaySettingWidget::ToggleMouseInputCorrection);
+	TargetingCorrectionActivateCheckBox->OnCheckStateChanged.AddDynamic(this, &ULLL_GameplaySettingWidget::ToggleTargetingCorrection);
 }
 
 void ULLL_GameplaySettingWidget::OpenInputSettingWidget()
@@ -52,7 +52,7 @@ void ULLL_GameplaySettingWidget::ToggleCameraShake(bool Value)
 	
 }
 
-void ULLL_GameplaySettingWidget::ToggleMouseInputCorrection(bool Value)
+void ULLL_GameplaySettingWidget::ToggleTargetingCorrection(bool Value)
 {
 	
 }

@@ -40,7 +40,7 @@ protected:
 	void ToggleCameraShake(bool Value);
 
 	UFUNCTION(BlueprintCallable)
-	void ToggleMouseInputCorrection(bool Value);
+	void ToggleTargetingCorrection(bool Value);
 	
 protected:
 	// UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
@@ -67,7 +67,7 @@ protected:
 	TObjectPtr<UCheckBox> CameraShakeActivateCheckBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCheckBox> MouseInputCorrectionActivateCheckBox;
+	TObjectPtr<UCheckBox> TargetingCorrectionActivateCheckBox;
 
 	
 };

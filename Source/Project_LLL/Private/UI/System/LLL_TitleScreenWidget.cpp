@@ -15,19 +15,19 @@ void ULLL_TitleScreenWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
-	GameStartBtn->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::GameStartBtnEvent);
-	SettingBtn->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::SettingBtnEvent);
-	ExitGameBtn->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::ExitGameBtnEvent);
-	ConfirmBtn->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::ExitConfirmBtnEvent);
-	CancelBtn->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::ExitCancelBtnEvent);
+	NewGameStartButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::NewGameStartButtonEvent);
+	LoadGameButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::LoadGameButtonEvent);
+	SettingButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::SettingButtonEvent);
+	ExitGameButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::ExitGameButtonEvent);
+	ExitConfirmButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::ExitConfirmButtonEvent);
+	ExitCancelButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::ExitCancelButtonEvent);
 	
 	LobbyUIPanel->SetIsEnabled(false);
 	ExitGameCheckPanel->SetRenderScale(FVector2d::Zero());
 	SettingWidget->SetRenderScale(FVector2d::Zero());
-	
 }
 
-void ULLL_TitleScreenWidget::GameStartBtnEvent()
+void ULLL_TitleScreenWidget::NewGameStartButtonEvent()
 {
 	FWidgetAnimationDynamicEvent AnimationEndDelegate;
 	AnimationEndDelegate.BindDynamic(this, &ULLL_TitleScreenWidget::OpenIntroLevel);
@@ -37,18 +37,23 @@ void ULLL_TitleScreenWidget::GameStartBtnEvent()
 	PlayAnimation(LobbyFadeAnimation);
 }
 
-void ULLL_TitleScreenWidget::SettingBtnEvent()
+void ULLL_TitleScreenWidget::LoadGameButtonEvent()
+{
+	
+}
+
+void ULLL_TitleScreenWidget::SettingButtonEvent()
 {
 	bool IsOpened = !SettingWidget->GetRenderTransform().Scale.X;
 	SettingWidget->SetRenderScale(FVector2d::One() * IsOpened);
 }
 
-void ULLL_TitleScreenWidget::ExitGameBtnEvent()
+void ULLL_TitleScreenWidget::ExitGameButtonEvent()
 {
 	ExitGameCheckPanel->SetRenderScale(FVector2d::One());
 }
 
-void ULLL_TitleScreenWidget::ExitConfirmBtnEvent()
+void ULLL_TitleScreenWidget::ExitConfirmButtonEvent()
 {
 	SetLobbyUIActivation(false);
 	FWidgetAnimationDynamicEvent AnimationEndDelegate;
@@ -59,7 +64,7 @@ void ULLL_TitleScreenWidget::ExitConfirmBtnEvent()
 	PlayAnimation(LobbyFadeAnimation);
 }
 
-void ULLL_TitleScreenWidget::ExitCancelBtnEvent()
+void ULLL_TitleScreenWidget::ExitCancelButtonEvent()
 {
 	ExitGameCheckPanel->SetRenderScale(FVector2d::Zero());
 }
