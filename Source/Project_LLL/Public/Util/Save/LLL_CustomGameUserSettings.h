@@ -49,33 +49,39 @@ public:
 	// 그래픽
 public:
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE FString GetDisplayResolution() const { return DisplayResolution; }
+	FORCEINLINE FString GetDisplayResolutionString() const { return DisplayResolution; }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetDisplayResolution(FString Type) { DisplayResolution = Type; }
+	FORCEINLINE void SaveScreenResolutionString(FString& Type) { DisplayResolution = Type; }
 
 	// 게임플레이
 public:
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE bool CheckTargetingCorrection() const { return bUseTargetingCorrection; }
+	FORCEINLINE bool CheckUsingCameraShake() const { return bUseCameraShake; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetCameraShake(bool Value) { bUseCameraShake = Value; }
+	
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool CheckUsingTargetingCorrection() const { return bUseTargetingCorrection; }
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetTargetingCorrection(bool Value) { bUseTargetingCorrection = Value; } 
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE FName GetGameLanguage() const { return GameLanguageName; }
+	FORCEINLINE FString GetGameLanguage() const { return GameLanguageName; }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetGameLanguage(FName NewLanguage) { GameLanguageName = NewLanguage; }
+	FORCEINLINE void SetGameLanguage(FString NewLanguage) { GameLanguageName = NewLanguage; }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE FName GetSubtitleLanguage() const { return SubtitleLanguageName; }
+	FORCEINLINE FString GetSubtitleLanguage() const { return SubtitleLanguageName; }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetSubtitleLanguage(FName NewLanguage) { SubtitleLanguageName = NewLanguage; }
+	FORCEINLINE void SetSubtitleLanguage(FString NewLanguage) { SubtitleLanguageName = NewLanguage; }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE uint8 GetSubtitleSizeIndex() const { return SubtitleSize; }
+	FORCEINLINE uint8 GetSubtitleSize() const { return SubtitleSize; }
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetSubtitleSize(uint8 Size) { SubtitleSize = Size; }
@@ -102,13 +108,16 @@ protected:
 
 protected:
 	UPROPERTY(Config)
+	uint8 bUseCameraShake : 1;
+	
+	UPROPERTY(Config)
 	uint8 bUseTargetingCorrection : 1;
 
 	UPROPERTY(Config)
-	FName GameLanguageName;
+	FString GameLanguageName;
 
 	UPROPERTY(Config)
-	FName SubtitleLanguageName;
+	FString SubtitleLanguageName;
 
 	UPROPERTY(Config)
 	uint8 SubtitleSize;

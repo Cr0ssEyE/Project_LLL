@@ -10,6 +10,7 @@ ULLL_CustomGameUserSettings::ULLL_CustomGameUserSettings(const FObjectInitialize
 MasterSoundVolume(100),
 BGMSoundVolume(100),
 SFXSoundVolume(100),
+bUseCameraShake(true),
 bUseTargetingCorrection(true),
 SubtitleSize(static_cast<uint8>(ESubtitleSize::Medium)),
 SubtitleSpeed(static_cast<uint8>(ESubtitleSpeed::Normal))

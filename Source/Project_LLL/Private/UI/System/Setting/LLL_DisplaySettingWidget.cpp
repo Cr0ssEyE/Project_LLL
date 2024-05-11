@@ -14,14 +14,26 @@ void ULLL_DisplaySettingWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	ResolutionComboBox->ClearOptions();
-	for (uint32 ResolutionIndex = 0; ResolutionIndex <= static_cast<uint32>(EResolutionTypes::QHD); ResolutionIndex++)
+	for (auto ResolutionType : TEnumRange<EResolutionTypes>())
 	{
-		ResolutionComboBox->AddOption(StaticEnum<EResolutionTypes>()->GetDisplayNameTextByIndex(ResolutionIndex).ToString());
+		ResolutionComboBox->AddOption(StaticEnum<EResolutionTypes>()->GetDisplayNameTextByIndex(static_cast<int32>(ResolutionType)).ToString());
 	}
-	
 	ResolutionComboBox->OnSelectionChanged.AddDynamic(this, &ULLL_DisplaySettingWidget::ApplyResolutionType);
+	
 	UseFullScreenButton->OnClicked.AddDynamic(this, &ULLL_DisplaySettingWidget::ApplyFullScreen);
 	UseWindowButton->OnClicked.AddDynamic(this, &ULLL_DisplaySettingWidget::ApplyWindowScreen);
+
+	ResolutionComboBox->SetSelectedOption(ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->GetDisplayResolutionString());
+	ResolutionComboBox->OnSelectionChanged.Broadcast(ResolutionComboBox->GetSelectedOption(),  ESelectInfo::Type::OnMouseClick);
+
+	if (ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->GetFullscreenMode() == EWindowMode::WindowedFullscreen)
+	{
+		UseFullScreenButton->OnClicked.Broadcast();
+	}
+	else
+	{
+		UseWindowButton->OnClicked.Broadcast();
+	}
 }
 
 void ULLL_DisplaySettingWidget::ApplyResolutionType(FString ResolutionName, ESelectInfo::Type Info)
@@ -35,6 +47,7 @@ void ULLL_DisplaySettingWidget::ApplyResolutionType(FString ResolutionName, ESel
 	ResolutionName.ParseIntoArray(ScreenResolutionString, TEXT("×"));
 	uint32 ScreenWidthValue = FCString::Atoi(*ScreenResolutionString[0]);
 	uint32 ScreenHeightValue = FCString::Atoi(*ScreenResolutionString[1]);
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SaveScreenResolutionString(ResolutionName);
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetScreenResolution(FIntPoint(ScreenWidthValue, ScreenHeightValue));
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->ApplySettings(false);
 }

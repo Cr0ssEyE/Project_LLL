@@ -55,7 +55,6 @@ protected:
 	
 	UFUNCTION(BlueprintCallable)
 	void ApplyShadingQualityHigh();
-
 	
 protected:
 	UFUNCTION(BlueprintCallable)

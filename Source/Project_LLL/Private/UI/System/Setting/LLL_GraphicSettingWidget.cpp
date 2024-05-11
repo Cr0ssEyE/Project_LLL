@@ -151,7 +151,7 @@ void ULLL_GraphicSettingWidget::ApplyGIQualityMiddle()
 {
 	GIQualityLowButton->SetIsEnabled(true);
 	GIQualityMiddleButton->SetIsEnabled(false);
-	GIQualityHighButton->SetIsEnabled(false);
+	GIQualityHighButton->SetIsEnabled(true);
 	
 	GEngine->GetGameUserSettings()->SetGlobalIlluminationQuality(static_cast<int32>(EGraphicQuality::Middle));
 	GEngine->GetGameUserSettings()->ApplySettings(true);
@@ -173,7 +173,7 @@ void ULLL_GraphicSettingWidget::ApplyShadingQualityLow()
 	ShadingQualityMiddleButton->SetIsEnabled(true);
 	ShadingQualityHighButton->SetIsEnabled(true);
 	
-	GEngine->GetGameUserSettings()->SetGlobalIlluminationQuality(static_cast<int32>(EGraphicQuality::Low));
+	GEngine->GetGameUserSettings()->SetShadingQuality(static_cast<int32>(EGraphicQuality::Low));
 	GEngine->GetGameUserSettings()->ApplySettings(true);
 }
 
@@ -183,7 +183,7 @@ void ULLL_GraphicSettingWidget::ApplyShadingQualityMiddle()
 	ShadingQualityMiddleButton->SetIsEnabled(false);
 	ShadingQualityHighButton->SetIsEnabled(true);
 	
-	GEngine->GetGameUserSettings()->SetGlobalIlluminationQuality(static_cast<int32>(EGraphicQuality::Middle));
+	GEngine->GetGameUserSettings()->SetShadingQuality(static_cast<int32>(EGraphicQuality::Middle));
 	GEngine->GetGameUserSettings()->ApplySettings(true);
 }
 
@@ -193,7 +193,7 @@ void ULLL_GraphicSettingWidget::ApplyShadingQualityHigh()
 	ShadingQualityMiddleButton->SetIsEnabled(true);
 	ShadingQualityHighButton->SetIsEnabled(false);
 	
-	GEngine->GetGameUserSettings()->SetGlobalIlluminationQuality(static_cast<int32>(EGraphicQuality::High));
+	GEngine->GetGameUserSettings()->SetShadingQuality(static_cast<int32>(EGraphicQuality::High));
 	GEngine->GetGameUserSettings()->ApplySettings(true);
 }
 

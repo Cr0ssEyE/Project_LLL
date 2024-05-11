@@ -25,16 +25,16 @@ protected:
 	void OpenInputSettingWidget();
 	
 	UFUNCTION(BlueprintCallable)
-	void ApplyGameLanguage(FString ResolutionName, ESelectInfo::Type Info);
+	void ApplyGameLanguage(FString SelectionName, ESelectInfo::Type Info);
 
 	UFUNCTION(BlueprintCallable)
-	void ApplySubtitleLanguage(FString ResolutionName, ESelectInfo::Type Info);
+	void ApplySubtitleLanguage(FString SelectionName, ESelectInfo::Type Info);
 
 	UFUNCTION(BlueprintCallable)
-	void ApplySubtitleOpacity(FString ResolutionName, ESelectInfo::Type Info);
+	void ApplySubtitleSize(FString SelectionName, ESelectInfo::Type Info);
 
 	UFUNCTION(BlueprintCallable)
-	void ApplySubtitleSpeed(FString ResolutionName, ESelectInfo::Type Info);
+	void ApplySubtitleSpeed(FString SelectionName, ESelectInfo::Type Info);
 	
 	UFUNCTION(BlueprintCallable)
 	void ToggleCameraShake(bool Value);
@@ -57,7 +57,7 @@ protected:
 	TObjectPtr<UComboBoxString> SubtitleLanguageComboBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UComboBoxString> SubtitleOpacityComboBox;
+	TObjectPtr<UComboBoxString> SubtitleSizeComboBox;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UComboBoxString> SubtitleSpeedComboBox;
