@@ -13,5 +13,7 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PGA_Deer_PhysicalProof : public ULLL_PGA_RewardAbilityBase
 {
 	GENERATED_BODY()
-	
+
+protected:
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 };
