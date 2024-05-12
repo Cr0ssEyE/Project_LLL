@@ -56,6 +56,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Shape", meta=(EditCondition = "BaseShape == ESelectShapeTypes::Cone", EditConditionHides))
 	float ConeFieldOfView;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Shape", meta=(EditCondition = "BaseShape == ESelectShapeTypes::Cone", EditConditionHides))
+	FRotator ConeRotation;
+
 	UPROPERTY()
 	TSet<AActor*> IgnoreActors;
 

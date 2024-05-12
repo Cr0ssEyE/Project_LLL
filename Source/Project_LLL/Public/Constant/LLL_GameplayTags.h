@@ -5,6 +5,7 @@
 
 // 캐릭터 이벤트 게임플레이 태그
 #define TAG_GAS_COLLIDE_WALL FGameplayTag::RequestGameplayTag(FName("Character.Event.CollideWithWall"))
+#define TAG_GAS_DAMAGED FGameplayTag::RequestGameplayTag(FName("Character.Event.Damaged"))
 
 // 플레이어 이벤트 게임플레이 태그
 #define TAG_GAS_COMBO_ADDITIVE FGameplayTag::RequestGameplayTag(FName("Character.Player.Event.AddCombo"))
@@ -39,10 +40,10 @@
 
 // 몬스터 게임플레이 태그
 #define TAG_GAS_MONSTER_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Attack"))
+#define TAG_GAS_MONSTER_CHARGE FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Charge"))
 
 // 소드 대시 게임플레이 태그
 #define TAG_GAS_SWORD_DASH_DASH FGameplayTag::RequestGameplayTag(FName("Character.Monster.Melee.SwordDash.Action.Dash"))
-#define TAG_GAS_SWORD_DASH_CHARGE FGameplayTag::RequestGameplayTag(FName("Character.Monster.Melee.SwordDash.Action.Charge"))
 
 // 시스템 게임플레이 태그
 #define TAG_GAS_SYSTEM_DROP_GOLD FGameplayTag::RequestGameplayTag(FName("System.Drop.Gold"))

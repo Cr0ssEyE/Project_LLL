@@ -75,14 +75,24 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	}
 
 	//보상쪽 상세 시스템 기획이 나오면 바뀔 부분
-	uint8 Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	ButtonAbilityData1 = &AbilityData[0];
+	/*uint8 Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	ButtonAbilityData1 = &AbilityData[Index];
 	
 	Index = FMath::RandRange(0, AbilityData.Num() - 1);
 	ButtonAbilityData2 = &AbilityData[Index];
 
 	Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	ButtonAbilityData3 = &AbilityData[Index];
+	ButtonAbilityData3 = &AbilityData[Index];*/
+
+	//임시 테스트
+	uint8 Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	ButtonAbilityData1 = &AbilityData[0];
+	
+	Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	ButtonAbilityData2 = &AbilityData[1];
+
+	Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	ButtonAbilityData3 = &AbilityData[2];
 }
 
 void ALLL_RewardGimmick::SetDataTable()
@@ -158,7 +168,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		{
 			continue;
 		}
-			
+		
 		const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
 		TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
 		for (auto EffectHandle : EffectHandles)
@@ -166,7 +176,10 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 			if (EffectHandle.IsValid())
 			{
 				ASC->RemoveActiveGameplayEffect(EffectHandle);
-				UE_LOG(LogTemp, Log, TEXT("- %s 삭제"), *EffectHandle.ToString());
+				for (auto GameplayTag : TagContainer.GetGameplayTagArray())
+				{
+					UE_LOG(LogTemp, Log, TEXT("- %s 태그를 가진 이펙트 삭제"), *GameplayTag.ToString());
+				}
 			}
 		}
 
