@@ -1,9 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Util/Save/LLL_GameSaveData.h"
+#include "Constant/LLL_GameplayInfo.h"
+#include "Constant/LLL_LevelNames.h"
+#include "Util/Save/LLL_SaveGameData.h"
 
-ULLL_GameSaveData::ULLL_GameSaveData()
+ULLL_SaveGameData::ULLL_SaveGameData()
 {
-	SaveFileName = "SettingOptionsData";
+	SaveFileName = DEFAULT_FILE_NAME;
+	SaveFileIndex = DEFAULT_FILE_INDEX;
+	StoryProgress = STORY_BEGIN;
+	LastPlayLevelName = LEVEL_INTRO;
 }

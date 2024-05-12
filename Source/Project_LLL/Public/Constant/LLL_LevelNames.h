@@ -2,6 +2,6 @@
 
 #include "CoreMinimal.h"
 
-#define LEVEL_TITLE TEXT("LVL_Title")
-#define LEVEL_INTRO TEXT("LVL_Intro")
-#define LEVEL_MAIN TEXT("LVL_Main")
+#define LEVEL_TITLE TEXT("LV_Title")
+#define LEVEL_INTRO TEXT("LV_Intro")
+#define LEVEL_MAIN TEXT("LV_Main")

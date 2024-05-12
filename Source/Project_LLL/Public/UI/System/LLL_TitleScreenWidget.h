@@ -7,6 +7,7 @@
 #include "Components/CanvasPanel.h"
 #include "LLL_TitleScreenWidget.generated.h"
 
+class UVerticalBox;
 class ULLL_SettingWidget;
 class UCanvasPanel;
 class UButton;
@@ -21,6 +22,8 @@ class PROJECT_LLL_API ULLL_TitleScreenWidget : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
 protected:
 	UFUNCTION()
@@ -41,16 +44,15 @@ protected:
 	UFUNCTION()
 	void ExitCancelButtonEvent();
 
-
 protected:
 	UFUNCTION()
-	FORCEINLINE void SetLobbyUIActivation(bool Value) { LobbyUIPanel->SetIsEnabled(Value); }
+	void DisableWidgetActivation();
 	
-	UFUNCTION()
-	void PlayShowLobbyUIAnimation();
-
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OpenIntroLevel();
+
+	UFUNCTION(BlueprintCallable)
+	void OpenSavedLevel();
 	
 	UFUNCTION()
 	void CloseGame();
@@ -58,6 +60,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> LobbyUIPanel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
+	TObjectPtr<UVerticalBox> LobbyButtonVerticalBox;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
 	TObjectPtr<UButton> NewGameStartButton;
@@ -86,10 +91,9 @@ protected:
 	TObjectPtr<ULLL_SettingWidget> SettingWidget;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> LobbyIntroAnimation;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> LobbyFadeAnimation;
-
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditDefaultsOnly)
+	uint8 bTestNoneSaveFileUI : 1;
+#endif
+	
 };

@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "ProtoGameModeBase.generated.h"
+#include "LLL_GameModeBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_ProtoGameModeBase : public AGameModeBase
+class PROJECT_LLL_API ALLL_GameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 
 public:
-	ALLL_ProtoGameModeBase();
+	ALLL_GameModeBase();
 };
