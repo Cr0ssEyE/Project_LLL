@@ -2,20 +2,44 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LLL_UserInterfaceEnumHelper.generated.h"
 
 UENUM(BlueprintType)
 enum class EResolutionTypes : uint8
 {
-	SD UMETA(DisplayName = "854×480"),
-	WSVGA UMETA(DisplayName = "1024×576"),
-	HD UMETA(DisplayName = "1280×720"),
-	FWXGA UMETA(DisplayName = "1366×768"),
-	HDP UMETA(DisplayName = "1600×900"),
-	FHD UMETA(DisplayName = "1920×1080"),
-	QHD UMETA(DisplayName = "2560×1440"),
+	SD,
+	WSVGA,
+	HD,
+	FWXGA,
+	HDP,
+	FHD,
+	QHD,
 	EnumEnd UMETA(Hidden)
 };
 ENUM_RANGE_BY_COUNT(EResolutionTypes, EResolutionTypes::EnumEnd);
+
+USTRUCT(BlueprintType)
+struct FResolutionValueHelper
+{
+	GENERATED_BODY()
+	
+	FResolutionValueHelper()
+	{
+		ResolutionValues.Emplace("854", "480");	// SD
+		ResolutionValues.Emplace("1024", "576"); // WSVGA
+		ResolutionValues.Emplace("1280", "720"); // HD
+		ResolutionValues.Emplace("1366", "768"); // FWXGA
+		ResolutionValues.Emplace("1600", "900"); // HDP
+		ResolutionValues.Emplace("1920", "1080"); // FHD
+		ResolutionValues.Emplace("2560", "1440"); // QHD
+
+		EnumPath = TEXT("/Script/Project_LLL.EResolutionTypes");
+	}
+
+	TArray<TTuple<FString, FString>> ResolutionValues;
+
+	FString EnumPath;
+};
 
 UENUM(BlueprintType)
 enum class EGraphicQuality : uint8
@@ -25,7 +49,6 @@ enum class EGraphicQuality : uint8
 	Middle,
 	High
 };
-
 UENUM(BlueprintType)
 enum class EDebugWidgetType : uint8
 {
@@ -47,9 +70,9 @@ enum class ESettingWidgetType : uint8
 UENUM(BlueprintType)
 enum class ELanguageType : uint8
 {
-	KO UMETA(DisplayName = "KO"),
-	EN UMETA(DisplayName = "EN"),
-	JP UMETA(DisplayName = "JP"),
+	KO,
+	EN,
+	JP,
 	EnumEnd UMETA(Hidden)
 };
 ENUM_RANGE_BY_COUNT(ELanguageType, ELanguageType::EnumEnd);

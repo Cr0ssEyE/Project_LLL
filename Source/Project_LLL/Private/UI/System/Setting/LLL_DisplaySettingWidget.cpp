@@ -14,9 +14,18 @@ void ULLL_DisplaySettingWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	ResolutionComboBox->ClearOptions();
+	FResolutionValueHelper ResolutionValueHelper;
+	UEnum* ResolutionEnum = FindObject<UEnum>(nullptr, *ResolutionValueHelper.EnumPath, true);
 	for (auto ResolutionType : TEnumRange<EResolutionTypes>())
 	{
-		ResolutionComboBox->AddOption(StaticEnum<EResolutionTypes>()->GetDisplayNameTextByIndex(static_cast<int32>(ResolutionType)).ToString());
+		FString ResolutionString = ResolutionEnum->GetNameStringByValue(static_cast<int64>(ResolutionType));
+		ResolutionString.Append(TEXT("("));
+		ResolutionString.Append(ResolutionValueHelper.ResolutionValues[static_cast<uint8>(ResolutionType)].Key);
+		ResolutionString.Append(TEXT("×"));	
+		ResolutionString.Append(ResolutionValueHelper.ResolutionValues[static_cast<uint8>(ResolutionType)].Value);
+		ResolutionString.Append(TEXT(")"));	
+		
+		ResolutionComboBox->AddOption(ResolutionString);
 	}
 	ResolutionComboBox->OnSelectionChanged.AddDynamic(this, &ULLL_DisplaySettingWidget::ApplyResolutionType);
 	
@@ -42,11 +51,10 @@ void ULLL_DisplaySettingWidget::ApplyResolutionType(FString ResolutionName, ESel
 	{
 		return;
 	}
-
-	TArray<FString> ScreenResolutionString;
-	ResolutionName.ParseIntoArray(ScreenResolutionString, TEXT("×"));
-	uint32 ScreenWidthValue = FCString::Atoi(*ScreenResolutionString[0]);
-	uint32 ScreenHeightValue = FCString::Atoi(*ScreenResolutionString[1]);
+	
+	FResolutionValueHelper ResolutionValueHelper;
+	uint32 ScreenWidthValue = FCString::Atoi(*ResolutionValueHelper.ResolutionValues[ResolutionComboBox->GetSelectedIndex()].Key);
+	uint32 ScreenHeightValue = FCString::Atoi(*ResolutionValueHelper.ResolutionValues[ResolutionComboBox->GetSelectedIndex()].Value);
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SaveScreenResolutionString(ResolutionName);
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetScreenResolution(FIntPoint(ScreenWidthValue, ScreenHeightValue));
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->ApplySettings(false);
