@@ -9,8 +9,8 @@
 #include "Game/ProtoGameInstance.h"
 #include "Util/LLL_MathHelper.h"
 
-ULLL_PlayerCharacterAttributeSet::ULLL_PlayerCharacterAttributeSet()
-
+ULLL_PlayerCharacterAttributeSet::ULLL_PlayerCharacterAttributeSet() :
+TargetingCorrectionRadius(100.f)
 {
 	
 }
