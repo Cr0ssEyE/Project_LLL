@@ -17,7 +17,7 @@
 ULLL_PGA_ChaseHandThrow::ULLL_PGA_ChaseHandThrow()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-	TargetLocation = FVector::Zero();
+	StartLocation = TargetLocation = FVector::Zero();
 }
 
 void ULLL_PGA_ChaseHandThrow::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -27,6 +27,11 @@ void ULLL_PGA_ChaseHandThrow::ActivateAbility(const FGameplayAbilitySpecHandle H
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerChaseHand->GetOwner());
 
+	if (IsValid(PlayerChaseHand->GetAttachParentActor()))
+	{
+		PlayerChaseHand->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	}
+	
 	PlayerChaseHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_ChaseHandThrow::OnInterruptedCallBack);
 	PlayerChaseHand->OnGrabbedDelegate.AddDynamic(this, &ULLL_PGA_ChaseHandThrow::OnInterruptedCallBack);
 	PlayerCharacter->PlayerRotateToMouseCursor();
@@ -76,30 +81,44 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerChaseHand->GetOwner());
 	const ULLL_PlayerChaseHandAttributeSet* ChaseHandAttributeSet = CastChecked<ULLL_PlayerChaseHandAttributeSet>(PlayerChaseHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerChaseHandAttributeSet::StaticClass()));
-	
+
+	StartLocation = PlayerCharacter->GetActorLocation();
 	TargetLocation = PlayerCharacter->GetMouseLocation();
-	const float TargetDistance = FVector::DistXY(TargetLocation, PlayerCharacter->GetActorLocation());
+	TargetLocation.Z = StartLocation.Z;
+	const float TargetDistance =  FVector::Distance(TargetLocation, StartLocation);
 	// 마우스 위치가 투척 최소거리 보다 가까운 거리일 경우 보정
 	if (TargetDistance < ChaseHandAttributeSet->GetMinimumThrowDistance())
 	{
-		TargetLocation *= ChaseHandAttributeSet->GetMinimumThrowDistance() / TargetDistance;
+		TargetLocation = StartLocation + (TargetLocation - StartLocation).GetSafeNormal2D() * ChaseHandAttributeSet->GetMinimumThrowDistance();
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("와이어 투사체 최소거리 보정 동작.")));
+			}
+		}
+#endif
+		
 	}
-	TargetLocation.Z = PlayerCharacter->GetActorLocation().Z;
+	
+	TargetLocation.Z = StartLocation.Z;
 	
 	const FVector ThrowDirection = PlayerCharacter->GetActorForwardVector();
 
-	PlayerChaseHand->SetActorLocationAndRotation(PlayerCharacter->GetActorLocation(), ThrowDirection.Rotation());
+	PlayerChaseHand->SetActorLocationAndRotation(StartLocation, ThrowDirection.Rotation());
 	PlayerChaseHand->SetActorRotation(ThrowDirection.Rotation());
 	
 	USphereComponent* HandCollision = PlayerChaseHand->GetCollisionComponent();
 	USkeletalMeshComponent* HandMesh = PlayerChaseHand->GetHandMesh();
 	
-	HandCollision->SetCollisionObjectType(ECC_ENEMY_HIT);
-	HandCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	HandCollision->SetCollisionProfileName(CP_PLAYER_CHASE_HAND);
 	HandMesh->SetHiddenInGame(false);
 	HandMesh->SetAnimation(ThrowAnim);
 	
 	UProjectileMovementComponent* HandProjectile = PlayerChaseHand->GetProjectileMovementComponent();
+	HandProjectile->SetUpdatedComponent(PlayerChaseHand->GetRootComponent());
 	HandProjectile->Activate();
 	HandProjectile->Velocity = ThrowDirection * ChaseHandAttributeSet->GetThrowSpeed();
 	
@@ -112,7 +131,7 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	{
 		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 이동 시작. 목표 좌표 : %f, %f, %f"), TargetLocation.X, TargetLocation.Y, TargetLocation.Z));
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 이동 거리 : %f"), FVector::Distance(TargetLocation, StartLocation)));
 		}
 	}
 #endif
@@ -120,27 +139,18 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 
 void ULLL_PGA_ChaseHandThrow::CheckReached()
 {
-	if (GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_GRAB)))
-	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-		return;
-	}
-	
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
-	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerChaseHand->GetOwner());
 	const ULLL_PlayerChaseHandAttributeSet* ChaseHandAttributeSet = CastChecked<ULLL_PlayerChaseHandAttributeSet>(PlayerChaseHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerChaseHandAttributeSet::StaticClass()));
 
 	const float LocationDistance = FVector::Distance(PlayerChaseHand->GetActorLocation(), TargetLocation);
-	const float OwnerDistance = FVector::DistXY(PlayerChaseHand->GetActorLocation(), PlayerCharacter->GetActorLocation());
-	
+	const float MoveDistance =  FVector::Distance(PlayerChaseHand->GetActorLocation(), StartLocation);
 	if (LocationDistance <= ChaseHandAttributeSet->GetCorrectionReachStateDistance())
 	{
 		PlayerChaseHand->SetActorLocation(TargetLocation);
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	}
-	else if (OwnerDistance >= ChaseHandAttributeSet->GetMaximumThrowDistance())
+	else if (MoveDistance >= ChaseHandAttributeSet->GetMaximumThrowDistance())
 	{
-		GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_RELEASE));
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	}
 	else
