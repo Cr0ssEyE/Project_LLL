@@ -56,10 +56,9 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, 1.0, EffectContextHandle);
 	if(EffectSpecHandle.IsValid())
 	{
-		const ALLL_BaseCharacter* Character = Cast<ALLL_BaseCharacter>(Other);
-		if (IsValid(Character))
+		if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other))
 		{
-			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Character->GetAbilitySystemComponent());
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 		}
 	}
 	
