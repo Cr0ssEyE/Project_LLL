@@ -5,6 +5,7 @@
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/PlayerFeather/LLL_PlayerThrownFeather.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 
 void ULLL_PGA_PersistentRevenge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -14,8 +15,8 @@ void ULLL_PGA_PersistentRevenge::ActivateAbility(const FGameplayAbilitySpecHandl
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	ALLL_PlayerThrownFeather* ThrownFeather = CastChecked<ALLL_PlayerThrownFeather>(Player->GetObjectPoolingComponent()->GetActor(ALLL_PlayerThrownFeather::StaticClass()));
 
-	ThrownFeather->SetActorLocationAndRotation(Player->GetActorLocation(), Player->GetActorRotation());
-	ThrownFeather->Throw(Player);
+	ThrownFeather->SetActorLocationAndRotation(Player->GetActorLocation(), FRotationMatrix::MakeFromX(Player->GetMesh()->GetForwardVector()).Rotator().GetInverse());
+	ThrownFeather->Throw(Player, CurrentEventData.Instigator);
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

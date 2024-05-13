@@ -16,6 +16,8 @@ void ULLL_MGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 		return;
 	}
 
+	MontageStop();
+
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackMontage, 1.0f);
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_MGA_Attack::OnCompleteCallBack);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_MGA_Attack::OnInterruptedCallBack);

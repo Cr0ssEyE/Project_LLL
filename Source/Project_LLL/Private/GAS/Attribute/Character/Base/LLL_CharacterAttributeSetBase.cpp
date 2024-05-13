@@ -76,20 +76,19 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 			}
 		}
 		OwnerCharacter->TakeDamageDelegate.Broadcast();
-		OwnerCharacter->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_DAMAGED));
+		//OwnerCharacter->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_DAMAGED));
 
-		/* 05/11 조강건 코드리뷰 중 주석 추가
-		 * 어빌리티에게 피해를 입힌 대상을 전달하는 방법. TryActivate가 아닌 SendGameplayEvent라 Ability Triggers에 태그 할당 필요
+		//05/11 조강건 코드리뷰 중 주석 추가
+		//어빌리티에게 피해를 입힌 대상을 전달하는 방법. TryActivate가 아닌 SendGameplayEvent라 Ability Triggers에 태그 할당 필요
 		FGameplayEventData PayloadData;
 		AActor* Instigator = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
-		if (ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Instigator))
+		if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Instigator))
 		{
 			Instigator = ThrownObject->GetOwner();
 		}
 		PayloadData.Instigator = Instigator;
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("데미지 입음. 피해 액터: %s, 가해 액터: %s"), *GetOwningActor()->GetName(), *PayloadData.Instigator.GetName()));
-		*/
 	}
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }

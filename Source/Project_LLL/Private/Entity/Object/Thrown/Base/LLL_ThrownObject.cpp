@@ -35,9 +35,10 @@ void ALLL_ThrownObject::BeginPlay()
 	ASC->AddSpawnedAttribute(ThrownObjectAttributeSet);
 }
 
-void ALLL_ThrownObject::Throw(AActor* NewOwner)
+void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget)
 {
 	SetOwner(NewOwner);
+	Target = NewTarget;
 
 	Activate();
 	ProjectileMovementComponent->MaxSpeed = ThrownObjectAttributeSet->GetThrowSpeed();

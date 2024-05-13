@@ -16,4 +16,13 @@ class PROJECT_LLL_API ALLL_PlayerThrownFeather : public ALLL_ThrownObject
 
 public:
 	ALLL_PlayerThrownFeather();
+
+protected:
+	virtual void Tick(float DeltaSeconds) override;
+	virtual void Deactivate() override;
+
+	float CurrentCurveSize;
+
+	UPROPERTY(EditAnywhere)
+	float CurveSize;
 };
