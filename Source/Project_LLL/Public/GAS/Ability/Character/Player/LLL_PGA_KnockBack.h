@@ -35,5 +35,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "넉백 발생시 넉백 거리 배율")
 	float KnockBackMultiplier;
-	
 };
