@@ -10,6 +10,11 @@ void ALLL_MapSoundManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!IsValid(GetWorld()->GetFirstPlayerController()->GetPawn()))
+	{
+		return;
+	}
+	
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	Player->CharacterDeadDelegate.AddDynamic(this, &ALLL_MapSoundManager::PlayerDeadHandle);
 

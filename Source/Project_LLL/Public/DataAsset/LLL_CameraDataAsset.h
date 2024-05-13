@@ -18,11 +18,14 @@ public:
 	ULLL_CameraDataAsset();
 	
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 투영 종류")
+	TEnumAsByte<ECameraProjectionMode::Type> ProjectionType;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV")
 	float CameraFOV;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리")
-	float SpringArmLength;
+	float CameraDistance;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 회전값")
 	FRotator SpringArmAngle;

@@ -9,7 +9,7 @@
 
 ULLL_AnimNotify_GameplayTag::ULLL_AnimNotify_GameplayTag()
 {
-	
+	NotifyLevel = 1.f;
 }
 
 void ULLL_AnimNotify_GameplayTag::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
