@@ -215,31 +215,6 @@ void ALLL_MonsterBase::ApplyStackedKnockBack()
 	// ResetKnockBackStack();
 }
 
-bool ALLL_MonsterBase::CanPlayAttackAnimation() const
-{
-	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
-	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK));
-	for (const auto AbilitySpecHandle : AbilitySpecHandles)
-	{
-		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
-		{
-			const UAnimMontage* AttackAnimMontage = Cast<ULLL_MGA_Attack>(AbilitySpec->GetPrimaryInstance())->GetAttackMontage();
-	
-			if (IsValid(CharacterAnimInstance) && IsValid(AttackAnimMontage))
-			{
-				if (CharacterAnimInstance->Montage_IsPlaying(AttackAnimMontage))
-				{
-					return false;
-				}
-
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
 void ALLL_MonsterBase::ToggleAIHandle(bool value)
 {
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = Cast<ALLL_MonsterBaseAIController>(GetController());

@@ -71,16 +71,20 @@ void ALLL_PlayerBase::BeginPlay()
 
 	if (IsValid(CameraDataAsset))
 	{
+		SpringArm->TargetArmLength = CameraDataAsset->SpringArmDistance;
 		Camera->SetProjectionMode(CameraDataAsset->ProjectionType);
-		Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
 		
 		if (Camera->ProjectionMode == ECameraProjectionMode::Orthographic)
 		{
 			Camera->OrthoWidth = CameraDataAsset->CameraDistance;
+			Camera->SetAutoCalculateOrthoPlanes(false);
+			Camera->SetAutoPlaneShift(false);
+			Camera->SetOrthoNearClipPlane(CameraDataAsset->OrthographicNearClipDistance);
+			Camera->SetOrthoFarClipPlane(CameraDataAsset->OrthographicFarClipDistance);
 		}
 		else
 		{
-			SpringArm->TargetArmLength = CameraDataAsset->CameraDistance;
+			Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
 		}
 		
 		SpringArm->SetRelativeRotation(CameraDataAsset->SpringArmAngle);
@@ -231,14 +235,14 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 	FVector TrueMouseWorldLocation = HitResult.ImpactPoint;
 	
 	HitResult.Init();
-	bResult = false;
+	float CorrectionCheckRadius = Cast<ULLL_PlayerCharacterAttributeSet>(CharacterAttributeSet)->GetTargetingCorrectionRadius();
 	bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
 		TrueMouseWorldLocation,
 		TrueMouseWorldLocation,
 		FQuat::Identity,
-		ECC_ENEMY_HIT,
-		FCollisionShape::MakeSphere(PlayerDataAsset->MouseCursorCorrectRadius),
+		ECC_ENTITY_CHECK,
+		FCollisionShape::MakeSphere(CorrectionCheckRadius),
 		Params
 		);
 	
