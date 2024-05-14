@@ -51,12 +51,13 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 
 	SpringArm->TargetArmLength = 0.f;
 	SpringArm->bDoCollisionTest = false;
+	SpringArm->bEnableCameraLag = true;
 	SpringArm->bUsePawnControlRotation = false;
 	SpringArm->bInheritPitch = false;
 	SpringArm->bInheritYaw = false;
 	SpringArm->bInheritRoll = false;
 	SpringArm->SetUsingAbsoluteRotation(true);
-	SpringArm->SetupAttachment(RootComponent);
+	// SpringArm->SetupAttachment(RootComponent);
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -117,7 +118,8 @@ void ALLL_PlayerBase::BeginPlay()
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
+
+	MoveCameraToMouseCursor();
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -403,8 +405,42 @@ void ALLL_PlayerBase::PlayerRotateToMouseCursor()
 	const FVector MouseWorldLocation = GetMouseLocation();
 	FVector ViewDirection = (MouseWorldLocation - GetActorLocation()).GetSafeNormal();
 	ViewDirection.Z = 0.f;
-	SetActorRotation(ViewDirection.Rotation());
+	MouseDirectionRotator = ViewDirection.Rotation();
+
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
+}
+
+void ALLL_PlayerBase::TurnToMouseCursor()
+{
+	if (abs(abs(MouseDirectionRotator.Yaw) - abs(GetActorRotation().Yaw)) <= 1.f)
+	{
+		MouseDirectionRotator = FRotator::ZeroRotator;
+		return;
+	}
 	
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), MouseDirectionRotator, GetWorld()->GetDeltaSeconds(), CharacterAttributeSet->GetTurnSpeed()));
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
+}
+
+void ALLL_PlayerBase::MoveCameraToMouseCursor()
+{
+	const APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	FVector2d MouseScreenLocation;
+	FVector2d ScreenViewport;
+	int32 ViewportX;
+	int32 ViewportY;
+	PlayerController->GetMousePosition(MouseScreenLocation.X, MouseScreenLocation.Y);
+	PlayerController->GetViewportSize(ViewportX, ViewportY);
+	ScreenViewport.X = ViewportX;
+	ScreenViewport.Y = ViewportY;
+	
+	FVector2d MovementDirection = (MouseScreenLocation / ScreenViewport - FVector2d(0.5f, 0.5f)) * FVector2d(1.f, -1.f);
+	FVector CameraMoveVector = FVector(MovementDirection.X, MovementDirection.Y, 0.f);
+	CameraMoveVector = SpringArm->GetDesiredRotation().UnrotateVector(CameraMoveVector);
+	
+	CameraMoveVector *= 500.f;
+	SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
 }
 
 void ALLL_PlayerBase::Dead()

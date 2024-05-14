@@ -53,6 +53,10 @@ public:
 
 	FVector GetMouseLocation() const;
 	void PlayerRotateToMouseCursor();
+
+protected:
+	void TurnToMouseCursor();
+	void MoveCameraToMouseCursor();
 	
 	// 카메라
 private:
@@ -107,6 +111,9 @@ private:
 	UPROPERTY()
 	uint32 InteractionRange;
 
+private:
+	FRotator MouseDirectionRotator;
+	
 	// 상태 관련 함수
 protected:
 	virtual void Dead() override;
