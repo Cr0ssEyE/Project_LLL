@@ -63,7 +63,7 @@ void ALLL_RewardGimmick::SetRewardButtons()
 		SetDataTable();
 	}
 	
-	if (!bIsButtonEventSetup)
+	if (!bIsButtonEventSetup && IsValid(GetWorld()->GetFirstPlayerController()->GetPawn()))
 	{
 		const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 		const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();

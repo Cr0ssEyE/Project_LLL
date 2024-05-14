@@ -11,6 +11,7 @@
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ULLL_PlayerSkillAttributeSet;
 class ULLL_ObjectPoolingComponent;
 class ALLL_PlayerChaseHand;
 class ULLL_PlayerCharacterAttributeSet;
@@ -73,6 +74,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ALLL_PlayerChaseHand> ChaseHandActor;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_PlayerSkillAttributeSet> SkillAttributeSet;
 	
 	// 입력 액션 관련
 private:

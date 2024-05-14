@@ -70,7 +70,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 		ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, SkillGaugeEffectSpecHandle);
 	}
 	
-	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect);
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect, CurrentLevel);
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect);
 
 	Cast<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked())->ReceiveTargetData(this, TargetDataHandle);
