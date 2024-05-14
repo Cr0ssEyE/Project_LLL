@@ -18,7 +18,7 @@ ALLL_PlayerThrownFeather::ALLL_PlayerThrownFeather()
 	
 	BaseMesh->SetCollisionProfileName(CP_PLAYER_THROWN_OBJECT);
 
-	CurveSize = 3.0f;
+	CurveSize = 3.0f; // 추후 어트리뷰트 또는 데이터화 필요
 	CurrentCurveSize = 1.0f / CurveSize;
 }
 
