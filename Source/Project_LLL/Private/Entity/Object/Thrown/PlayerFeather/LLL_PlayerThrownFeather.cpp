@@ -18,25 +18,28 @@ ALLL_PlayerThrownFeather::ALLL_PlayerThrownFeather()
 	
 	BaseMesh->SetCollisionProfileName(CP_PLAYER_THROWN_OBJECT);
 
-	CurveSize = 10.0f;
-	CurrentCurveSize = 0.001f / CurveSize;
+	CurveSize = 3.0f;
+	CurrentCurveSize = 1.0f / CurveSize;
 }
 
 void ALLL_PlayerThrownFeather::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	FVector Direction = Target->GetActorLocation() - GetActorLocation();
-	Direction.Z = 0.0f;
-	const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-	SetActorRotation(FMath::RInterpTo(GetActorRotation(), Rotation, DeltaSeconds, CurrentCurveSize * ProjectileMovementComponent->MaxSpeed));
-	CurrentCurveSize += 0.001f / CurveSize;
-	ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
+	if (!IsHidden())
+	{
+		FVector Direction = Target->GetActorLocation() - GetActorLocation();
+		Direction.Z = 0.0f;
+		const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
+		SetActorRotation(FMath::RInterpTo(GetActorRotation(), Rotation, DeltaSeconds, CurrentCurveSize));
+		CurrentCurveSize += 1.0f / CurveSize;
+		ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
+	}
 }
 
 void ALLL_PlayerThrownFeather::Deactivate()
 {
-	CurrentCurveSize = 0.001f / CurveSize;
-	
 	Super::Deactivate();
+	
+	CurrentCurveSize = 1.0f / CurveSize;
 }

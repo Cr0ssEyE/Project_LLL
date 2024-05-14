@@ -70,6 +70,7 @@ void ALLL_ThrownObject::Activate()
 {
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ProjectileMovementComponent->Activate();
+	SetActorHiddenInGame(false);
 }
 
 void ALLL_ThrownObject::Deactivate()
