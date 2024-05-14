@@ -11,7 +11,7 @@ bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCue
 	const UObject* SourceObject = Parameters.EffectContext.GetSourceObject();
 	if (IsValid(SourceObject))
 	{
-		ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(MyTarget);
+		const ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(MyTarget);
 
 		UFMODAudioComponent* FModAudioComponent = FModInterface->GetFModAudioComponent();
 		if (IsValid(FModAudioComponent))

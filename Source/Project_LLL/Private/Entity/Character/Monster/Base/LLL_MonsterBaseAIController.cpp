@@ -6,6 +6,7 @@
 #include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
@@ -36,26 +37,9 @@ void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
 	{
 		BrainComponent->StopLogic("Monster Is Damaged");
-		/*float time = MonsterDataAsset->DamagedAnimMontage->GetSectionLength(0);
-		FTimerHandle asdf;
-		GetWorldTimerManager().SetTimer(asdf, FTimerDelegate::CreateWeakLambda(this, [&]
-		{
-			//const UAnimInstance* AnimInstance = Monster->GetCharacterAnimInstance();
-			//if (!AnimInstance->Montage_IsPlaying(MonsterDataAsset->DamagedAnimMontage) && !Monster->CheckCharacterIsDead())
-			if (!Monster->CheckCharacterIsDead())
-			{
-				BrainComponent->StartLogic();
 
-				if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
-				{
-					ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-					if (IsValid(Player))
-					{
-						BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
-					}
-				}
-			}
-		}), time * 1.1f, false);*/
+		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+		Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
 	}
 }
 
@@ -63,11 +47,7 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
 	{
-		//const UAnimInstance* AnimInstance = Monster->GetCharacterAnimInstance();
-		//if (!AnimInstance->Montage_IsPlaying(MonsterDataAsset->DamagedAnimMontage) && !Monster->CheckCharacterIsDead())
-		//if (!AnimInstance->IsAnyMontagePlaying() && !Monster->CheckCharacterIsDead())
 		if (!Monster->CheckCharacterIsDead())
-		//if (!bInterrupted && !Monster->CheckCharacterIsDead())
 		{
 			BrainComponent->StartLogic();
 
@@ -79,21 +59,6 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 					BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
 				}
 			}
-
-			/*FTimerHandle asdf;
-			GetWorldTimerManager().SetTimer(asdf, FTimerDelegate::CreateWeakLambda(this, [&]
-			{
-				BrainComponent->StartLogic();
-
-				if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
-				{
-					ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-					if (IsValid(Player))
-					{
-						BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
-					}
-				}
-			}), 0.1f, false);*/
 		}
 	}
 }

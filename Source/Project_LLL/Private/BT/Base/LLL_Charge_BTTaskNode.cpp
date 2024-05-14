@@ -32,7 +32,6 @@ void ULLL_Charge_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!Monster->GetCharacterAnimInstance()->IsAnyMontagePlaying())
 	{
-		//Monster->GetCharacterAnimInstance()->StopAllMontages(0.01f);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 }

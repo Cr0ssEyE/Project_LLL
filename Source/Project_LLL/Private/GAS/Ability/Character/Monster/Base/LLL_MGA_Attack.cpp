@@ -16,12 +16,9 @@ void ULLL_MGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 		return;
 	}
 
-	//MontageStop();
-	MontageJumpToSection(TEXT("Attack"));
-
-	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackMontage, 1.0f);
+	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackMontage, 1.0f, TEXT("Attack"));
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_MGA_Attack::OnCompleteCallBack);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_MGA_Attack::OnInterruptedCallBack);
-
+	
 	PlayMontageTask->ReadyForActivation();
 }
