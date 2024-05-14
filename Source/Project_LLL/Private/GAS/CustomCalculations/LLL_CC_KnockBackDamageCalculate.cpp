@@ -16,7 +16,7 @@ float ULLL_CC_KnockBackDamageCalculate::CalculateBaseMagnitude_Implementation(co
 {
 	float Result = Super::CalculateBaseMagnitude_Implementation(Spec);
 	
-	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(Spec.GetEffectContext().GetInstigator());
+	const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(Spec.GetEffectContext().GetInstigator());
 	if (!IsValid(PlayerCharacter))
 	{
 		return Result;

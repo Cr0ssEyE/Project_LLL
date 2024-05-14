@@ -8,7 +8,7 @@
 ULLL_CharacterGameplayAbilityBase::ULLL_CharacterGameplayAbilityBase()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-	CurrentNotifyLevel = 0.f;
+	CurrentNotifyLevel = 1.f;
 }
 
 void ULLL_CharacterGameplayAbilityBase::PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
