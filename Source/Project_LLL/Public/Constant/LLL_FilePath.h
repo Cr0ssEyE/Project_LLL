@@ -21,8 +21,6 @@
 #define PATH_PLAYER_THROWN_FEATHER_DATA TEXT("/Script/Project_LLL.LLL_PlayerThrownFeatherDataAsset'/Game/DataAsset/DA_PlayerThrownFeather.DA_PlayerThrownFeather'")
 
 // 몬스터 캐릭터 관련
-#define PATH_ORAWAVE_DATA TEXT("/Script/Project_LLL.LLL_OrawaveDataAsset'/Game/DataAsset/DA_Orawave.DA_Orawave'")
-#define PATH_ENERGY_BLASTER_DATA TEXT("/Script/Project_LLL.LLL_EnergyBlasterDataAsset'/Game/DataAsset/DA_EnergyBlaster.DA_EnergyBlaster'")
 #define PATH_SWORD_DASH_DATA TEXT("/Script/Project_LLL.LLL_SwordDashDataAsset'/Game/DataAsset/DA_SwordDash.DA_SwordDash'")
 #define PATH_STAFF_BASIC_DATA TEXT("/Script/Project_LLL.LLL_StaffBasicDataAsset'/Game/DataAsset/DA_StaffBasic.DA_StaffBasic'")
 #define PATH_CLAW_BASIC_DATA TEXT("/Script/Project_LLL.LLL_ClawBasicDataAsset'/Game/DataAsset/DA_ClawBasic.DA_ClawBasic'")

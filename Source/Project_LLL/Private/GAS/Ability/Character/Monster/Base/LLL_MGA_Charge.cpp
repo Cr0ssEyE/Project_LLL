@@ -18,7 +18,7 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	}
 
 	//MontageStop();
-	MontageJumpToSection(TEXT("Default"));
+	MontageJumpToSection(TEXT("Charge"));
 	
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ChargeMontage"), ChargeMontage, 1.0f);
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_MGA_Charge::OnCompleteCallBack);
