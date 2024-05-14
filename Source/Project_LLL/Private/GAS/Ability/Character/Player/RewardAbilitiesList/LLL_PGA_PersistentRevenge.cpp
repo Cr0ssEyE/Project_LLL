@@ -15,7 +15,6 @@ void ULLL_PGA_PersistentRevenge::ActivateAbility(const FGameplayAbilitySpecHandl
 	ALLL_PlayerThrownFeather* ThrownFeather = CastChecked<ALLL_PlayerThrownFeather>(Player->GetObjectPoolingComponent()->GetActor(ALLL_PlayerThrownFeather::StaticClass()));
 
 	ThrownFeather->SetActorLocationAndRotation(Player->GetActorLocation(), FRotationMatrix::MakeFromX(Player->GetActorLocation() - CurrentEventData.Instigator->GetActorLocation()).Rotator());
-	//ThrownFeather->SetActorLocationAndRotation(Player->GetActorLocation(), FRotationMatrix::MakeFromX(Player->GetMesh()->GetForwardVector()).Rotator().GetInverse());
 	ThrownFeather->Throw(Player, CurrentEventData.Instigator);
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
