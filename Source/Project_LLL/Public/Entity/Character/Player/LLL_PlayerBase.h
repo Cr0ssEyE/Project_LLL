@@ -52,7 +52,7 @@ public:
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 
 	FVector GetMouseLocation() const;
-	void PlayerRotateToMouseCursor();
+	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f);
 
 protected:
 	void TurnToMouseCursor();
@@ -113,9 +113,11 @@ private:
 
 private:
 	FRotator MouseDirectionRotator;
+	float ToCursorRotationMultiplyValue;
 	
 	// 상태 관련 함수
 protected:
+	virtual void Damaged() override;
 	virtual void Dead() override;
 
 	UFUNCTION()
@@ -126,7 +128,7 @@ protected:
 	// 상태 관련 변수
 protected:
 	uint8 bIsMoveInputPressed : 1;
-	
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerGoldComponent> GoldComponent;

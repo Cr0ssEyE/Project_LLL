@@ -58,9 +58,9 @@ void ULLL_PGA_ChaseHandThrow::EndAbility(const FGameplayAbilitySpecHandle Handle
 			}
 		}
 #endif
-		if (!GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_GRAB)))
+		if (!GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_GRAB)))
 		{
-			GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_RELEASE));
+			GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_RELEASE));
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 			if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 			{
@@ -105,10 +105,9 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	
 	TargetLocation.Z = StartLocation.Z;
 	
-	const FVector ThrowDirection = PlayerCharacter->GetActorForwardVector();
+	const FVector ThrowDirection = (TargetLocation - StartLocation).GetSafeNormal2D();
 
 	PlayerChaseHand->SetActorLocationAndRotation(StartLocation, ThrowDirection.Rotation());
-	PlayerChaseHand->SetActorRotation(ThrowDirection.Rotation());
 	
 	USphereComponent* HandCollision = PlayerChaseHand->GetCollisionComponent();
 	USkeletalMeshComponent* HandMesh = PlayerChaseHand->GetHandMesh();

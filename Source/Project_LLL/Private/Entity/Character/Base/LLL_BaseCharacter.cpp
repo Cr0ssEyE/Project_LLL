@@ -188,6 +188,7 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 void ALLL_BaseCharacter::Damaged()
 {
 	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DamagedCueTag);
+	
 }
 
 void ALLL_BaseCharacter::Dead()
@@ -196,11 +197,6 @@ void ALLL_BaseCharacter::Dead()
 	{
 		return;
 	}
-
-	CharacterAnimInstance->StopAllMontages(1.0f);
-
-	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
-	GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
 	
 	bIsDead = true;
 

@@ -89,7 +89,7 @@ void ALLL_PlayerChaseHand::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other,
 	if (IsValid(Monster))
 	{
 		// PGA_WireHandGrab
-		if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_GRAB)))
+		if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_GRAB)))
 		{
 			GrabbedActor = Other;
 			bIsGrabbed = true;

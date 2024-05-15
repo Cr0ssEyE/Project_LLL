@@ -77,7 +77,7 @@ void ULLL_PGA_ChaseToTarget::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 	PlayerCharacter->GetCharacterMovement()->Velocity = PlayerCharacter->GetCharacterMovement()->Velocity.GetSafeNormal() * PlayerCharacter->GetCharacterMovement()->GetMaxSpeed();
 	
-	PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_RELEASE));
+	PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_RELEASE));
 	
 	PlayerCharacter->GetAbilitySystemComponent()->CancelAbilities( new FGameplayTagContainer(TAG_GAS_PLAYER_CHASE_THROW));
 
@@ -109,7 +109,7 @@ void ULLL_PGA_ChaseToTarget::OwnerLaunchToChaseHand()
 	
 	if(RushSpeed <= 0.f || Distance2D < AbilityEndDistance)
 	{
-		PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_RELEASE));
+		PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_RELEASE));
 		PlayerCharacter->GetCharacterAnimInstance()->Montage_JumpToSectionsEnd(SECTION_FLY, AbilityActionMontage);
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;

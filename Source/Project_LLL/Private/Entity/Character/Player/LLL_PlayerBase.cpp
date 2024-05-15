@@ -11,6 +11,7 @@
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Constant/LLL_AnimMontageSlotName.h"
 #include "Constant/LLL_AttributeInitalizeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
@@ -58,6 +59,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	SpringArm->bInheritRoll = false;
 	SpringArm->SetUsingAbsoluteRotation(true);
 	// SpringArm->SetupAttachment(RootComponent);
+
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -400,25 +402,31 @@ void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }
 
-void ALLL_PlayerBase::PlayerRotateToMouseCursor()
+void ALLL_PlayerBase::PlayerRotateToMouseCursor(float RotationMultiplyValue)
 {
 	const FVector MouseWorldLocation = GetMouseLocation();
 	FVector ViewDirection = (MouseWorldLocation - GetActorLocation()).GetSafeNormal();
 	ViewDirection.Z = 0.f;
 	MouseDirectionRotator = ViewDirection.Rotation();
-
+	ToCursorRotationMultiplyValue = RotationMultiplyValue;
+	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
 }
 
 void ALLL_PlayerBase::TurnToMouseCursor()
 {
-	if (abs(abs(MouseDirectionRotator.Yaw) - abs(GetActorRotation().Yaw)) <= 1.f)
+	// if (abs(abs(MouseDirectionRotator.Yaw) - abs(GetActorRotation().Yaw)) <= 1.f)
+	// {
+	// 	MouseDirectionRotator = FRotator::ZeroRotator;
+	// 	return;
+	// }
+	
+	if (GetActorRotation() == MouseDirectionRotator || !GetCharacterAnimInstance()->IsSlotActive(ANIM_SLOT_ATTACK))
 	{
-		MouseDirectionRotator = FRotator::ZeroRotator;
 		return;
 	}
 	
-	SetActorRotation(FMath::RInterpTo(GetActorRotation(), MouseDirectionRotator, GetWorld()->GetDeltaSeconds(), CharacterAttributeSet->GetTurnSpeed()));
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), MouseDirectionRotator, GetWorld()->GetDeltaSeconds(), CharacterAttributeSet->GetTurnSpeed() * ToCursorRotationMultiplyValue));
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
 }
@@ -443,6 +451,17 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
 }
 
+void ALLL_PlayerBase::Damaged()
+{
+	Super::Damaged();
+
+	if (IsValid(PlayerDataAsset->DamagedAnimMontage))
+	{
+		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
+	}
+	
+}
+
 void ALLL_PlayerBase::Dead()
 {
 	Super::Dead();
@@ -450,9 +469,12 @@ void ALLL_PlayerBase::Dead()
 	// TODO: 목숨 같은거 생기면 사이에 추가하기
 	
 	DisableInput(Cast<APlayerController>(GetController()));
-
-	PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
-	PlayerAnimInstance->PlayDeadAnimation();
+	
+	PlayerAnimInstance->StopAllMontages(1.f);
+	if (IsValid(PlayerDataAsset->DeadAnimMontage))
+	{
+		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DeadAnimMontage);
+	}
 }
 
 void ALLL_PlayerBase::DeadMotionEndedHandle()

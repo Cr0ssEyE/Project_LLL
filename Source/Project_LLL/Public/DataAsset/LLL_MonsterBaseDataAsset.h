@@ -18,9 +18,6 @@ class PROJECT_LLL_API ULLL_MonsterBaseDataAsset : public ULLL_BaseCharacterDataA
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "피격 애님 몽타주")
-	TObjectPtr<UAnimMontage> DamagedAnimMontage;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "블랙보드")
 	TObjectPtr<UBlackboardData> BlackBoard;
 

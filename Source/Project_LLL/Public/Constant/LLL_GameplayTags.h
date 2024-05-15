@@ -16,12 +16,15 @@
 #define TAG_GAS_ATTACK_HIT_CHECK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck"))
 #define TAG_GAS_ATTACK_HIT_CHECK_COMPLETE FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.CheckComplete"))
 
-// 플레이어 행동, 상태 관련 게임플레이 태그
+// 플레이어 행동 관련 게임플레이 태그
 #define TAG_GAS_PLAYER_DASH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash"))
-#define TAG_GAS_PLAYER_CHASE_THROW FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Throw"))
+#define TAG_GAS_PLAYER_CHASE_THROW FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.ChaserThrow"))
 #define TAG_GAS_PLAYER_CHASE_RUSH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Rush"))
 #define TAG_GAS_PLAYER_CHASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Attack"))
-#define TAG_GAS_PLAYER_CHASE_RETURN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaseReturned"))
+#define TAG_GAS_PLAYER_THROW_TRIGGERED FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.ChaserThrow.Trigger"))
+
+// 플레이어 상태 관련 게임플레이 태그
+#define TAG_GAS_PLAYER_CHASE_RETURN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserReturned"))
 #define TAG_GAS_PLAYER_WAIT_ATTACK_INPUT FGameplayTag::RequestGameplayTag(FName("Character.Player.State.WaitAttackInput"))
 
 // 플레이어 부가 효과 구분용 게임플레이 태그
@@ -31,11 +34,11 @@
 #define TAG_GAS_PERKS_STAT FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Stat")
 #define TAG_GAS_PERKS_CHASE FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Chase")
 
-// 와이어 게임플레이 태그
-#define TAG_GAS_CHASE_THROW FGameplayTag::RequestGameplayTag(FName("Object.Chase.Action.Throw"))
-#define TAG_GAS_CHASE_RELEASE FGameplayTag::RequestGameplayTag(FName("Object.Chase.Action.Release"))
-#define TAG_GAS_CHASE_GRAB FGameplayTag::RequestGameplayTag(FName("Object.Chase.Action.Grab"))
-#define TAG_GAS_CHASE_STATE_GRABBED FGameplayTag::RequestGameplayTag(FName("Object.Chase.State.Grabbed"))
+// 체이서 게임플레이 태그
+#define TAG_GAS_CHASER_THROW FGameplayTag::RequestGameplayTag(FName("Object.Chaser.Action.Throw"))
+#define TAG_GAS_CHASER_RELEASE FGameplayTag::RequestGameplayTag(FName("Object.Chaser.Action.Release"))
+#define TAG_GAS_CHASER_GRAB FGameplayTag::RequestGameplayTag(FName("Object.Chaser.Action.Grab"))
+#define TAG_GAS_CHASER_STATE_GRABBED FGameplayTag::RequestGameplayTag(FName("Object.Chaser.State.Grabbed"))
 
 // 몬스터 관련 게임플레이 태그
 #define TAG_GAS_MONSTER_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Attack"))

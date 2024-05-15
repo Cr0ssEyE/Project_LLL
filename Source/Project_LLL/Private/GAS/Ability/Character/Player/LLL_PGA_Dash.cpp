@@ -46,8 +46,9 @@ void ULLL_PGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		MaxDashCount = PlayerAttributeSet->GetMaxDashCount();
 	}
 	bIsInputPressed = true;
-	
-	DashActionEvent();
+	MontageStop();
+
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_Dash::DashActionEvent);
 }
 
 void ULLL_PGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

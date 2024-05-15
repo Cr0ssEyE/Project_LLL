@@ -6,18 +6,18 @@
 
 
 // Object Channel
-#define ECC_PLAYER ECC_GameTraceChannel1
-#define ECC_ENEMY ECC_GameTraceChannel2
-#define ECC_GIMMICK ECC_EngineTraceChannel3
-#define ECC_FALLOUT_WALL ECC_GameTraceChannel4
+#define ECC_PLAYER ECC_GameTraceChannel1 // Player
+#define ECC_ENEMY ECC_GameTraceChannel2 // Monster
+#define ECC_GIMMICK ECC_EngineTraceChannel3 // Gimmick
+#define ECC_FALLOUT_WALL ECC_GameTraceChannel4 // FallOutableWall
 
 // Trace Channel
-#define ECC_PLAYER_HIT ECC_GameTraceChannel11
-#define ECC_ENEMY_HIT ECC_GameTraceChannel12
-#define ECC_PLAYER_CHECK ECC_GameTraceChannel13
-#define ECC_ENTITY_CHECK ECC_GameTraceChannel14
-#define ECC_WALL_ONLY ECC_GameTraceChannel15
-#define ECC_TRACE_FIELD ECC_GameTraceChannel16
+#define ECC_PLAYER_HIT ECC_GameTraceChannel11 // TracePlayerHit
+#define ECC_ENEMY_HIT ECC_GameTraceChannel12 // TraceNonPlayerHit
+#define ECC_PLAYER_CHECK ECC_GameTraceChannel13 // TracePlayerOverlap
+#define ECC_ENTITY_CHECK ECC_GameTraceChannel14 // TraceNonPlayerOverlap
+#define ECC_WALL_ONLY ECC_GameTraceChannel15 // TraceStaticOnly
+#define ECC_TRACE_FIELD ECC_GameTraceChannel16 // TraceField
 
 // Collision Profile
 #define CP_NO_COLLISION TEXT("NoCollision")
