@@ -7,6 +7,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
@@ -23,7 +24,8 @@ void ULLL_PGA_ControlChaseHand::ActivateAbility(const FGameplayAbilitySpecHandle
 	
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
-	
+
+	PlayerCharacter->GetMesh()->HideBoneByName(BONE_PLAYER_RIGHT_HAND, PBO_Term);
 	PlayerChaseHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_ControlChaseHand::OnCompleteCallBack);
 
 	if (IsValid(ThrowAnimMontage))
@@ -42,7 +44,8 @@ void ULLL_PGA_ControlChaseHand::EndAbility(const FGameplayAbilitySpecHandle Hand
 {
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
-	
+
+	PlayerCharacter->GetMesh()->UnHideBoneByName(BONE_PLAYER_RIGHT_HAND);
 	PlayerChaseHand->ReleaseCompleteDelegate.RemoveDynamic(this, &ULLL_PGA_ControlChaseHand::OnCompleteCallBack);
 	
 	bIsAlreadyThrown = false;

@@ -73,7 +73,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	MontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
 	MontageTask->ReadyForActivation();
 
-	WaitTagTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, TAG_GAS_PLAYER_WAIT_ATTACK_INPUT);
+	WaitTagTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, TAG_GAS_PLAYER_STATE_WAIT_ATTACK_INPUT);
 	WaitTagTask->Added.AddDynamic(this, &ULLL_PGA_AttackBase::WaitInputForNextAction);
 	WaitTagTask->ReadyForActivation();
 
@@ -136,7 +136,7 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 
 void ULLL_PGA_AttackBase::WaitInputForNextAction()
 {
-	GetAbilitySystemComponentFromActorInfo_Checked()->RemoveLooseGameplayTag(TAG_GAS_PLAYER_WAIT_ATTACK_INPUT);
+	GetAbilitySystemComponentFromActorInfo_Checked()->RemoveLooseGameplayTag(TAG_GAS_PLAYER_STATE_WAIT_ATTACK_INPUT);
 	bIsCanPlayNextAction = true;
 }
 
@@ -148,6 +148,13 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 	const UAnimInstance* PlayerAnimInstance = PlayerCharacter->GetCharacterAnimInstance();
 	if(IsValid(PlayerCharacter) && bIsCanPlayNextAction && PlayerAnimInstance->Montage_IsPlaying(AttackAnimMontage))
 	{
+		FGameplayTagContainer OwnedTagsContainer;
+		GetAbilitySystemComponentFromActorInfo_Checked()->GetOwnedGameplayTags(OwnedTagsContainer);
+		if (OwnedTagsContainer.HasTag(TAG_GAS_PLAYER_STATE_CHASE_THREW))
+		{
+			CurrentComboAction++;
+		}
+		
 		if(CurrentComboAction == MaxAttackAction)
 		{
 			CurrentComboAction = 0;
@@ -189,15 +196,15 @@ void ULLL_PGA_AttackBase::EndAttackInputWait()
 void ULLL_PGA_AttackBase::ExecuteAttackCueWithDelay()
 {
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	if (AttackEventDelayArray.Num() >= 1)
+	if (AttackCueDelayArray.Num() >= 1)
 	{
 		int32 AttackEventDelayIndex = CurrentComboAction - 1;
-		if (AttackEventDelayArray.Num() <= AttackEventDelayIndex)
+		if (AttackCueDelayArray.Num() <= AttackEventDelayIndex)
 		{
-			AttackEventDelayIndex = AttackEventDelayArray.Num() - 1;
+			AttackEventDelayIndex = AttackCueDelayArray.Num() - 1;
 		}
 
-		if (AttackEventDelayArray[AttackEventDelayIndex] > 0)
+		if (AttackCueDelayArray[AttackEventDelayIndex] > 0)
 		{
 			const UAnimInstance* PlayerAnimInstance = PlayerCharacter->GetCharacterAnimInstance();
 			const float MontagePlayRate = PlayerAnimInstance->Montage_GetPlayRate(AttackAnimMontage);
@@ -209,7 +216,7 @@ void ULLL_PGA_AttackBase::ExecuteAttackCueWithDelay()
 				const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 				FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
 				PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerAttackCountParameterName, CapturedCurrentComboAction - 1);
-			}), AttackEventDelayArray[AttackEventDelayIndex] * MontagePlayRate, false);
+			}), AttackCueDelayArray[AttackEventDelayIndex] * MontagePlayRate, false);
 		}
 		else
 		{
