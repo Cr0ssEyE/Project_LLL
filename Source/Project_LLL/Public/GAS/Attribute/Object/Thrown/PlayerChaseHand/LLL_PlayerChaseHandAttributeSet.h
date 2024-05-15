@@ -26,7 +26,8 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, MaximumThrowDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, CorrectionReachStateDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, ReleaseSpeed);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, CollisionRadius);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, ChaseSpeed);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, GrabCollisionRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerChaseHandAttributeSet, GrabDuration);
 	
 protected:
@@ -41,9 +42,12 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ReleaseSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ChaseSpeed;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData CollisionRadius;
+	FGameplayAttributeData GrabCollisionRadius;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData GrabDuration;

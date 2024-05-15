@@ -24,7 +24,6 @@ class PROJECT_LLL_API ULLL_ExtendedGameplayEffect : public UGameplayEffect
 	GENERATED_BODY()
 	
 public:
-	FORCEINLINE EEffectOwnerType GetOwnership() const { return EffectOwnership; }
 	FORCEINLINE EEffectAccessRange GetAccessRange() const { return EffectAccessRange; }
 	FORCEINLINE int32 GetID() const { return Id; }
 	FORCEINLINE void SetAbilityInfo(FAbilityDataTable* InAbilityData) { AbilityData = InAbilityData; }

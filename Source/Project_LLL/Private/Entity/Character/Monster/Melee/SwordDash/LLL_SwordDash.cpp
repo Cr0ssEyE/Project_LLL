@@ -18,13 +18,17 @@
 ALLL_SwordDash::ALLL_SwordDash()
 {
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_SwordDashAttributeSet>(TEXT("SwordDashAttributeSet"));
-
+	
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_SwordDashDataAsset>(PATH_SWORD_DASH_DATA, EAssertionLevel::Check);
 	AIControllerClass = ALLL_SwordDashAIController::StaticClass();
 
 	DashDamageRangeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	DashDamageRangeBox->SetCollisionProfileName(CP_INTERACTION);
 	DashDamageRangeBox->SetupAttachment(RootComponent);
+
+	SwordMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sword"));
+	SwordMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
+	SwordMeshComponent->SetupAttachment(RootComponent);
 }
 
 void ALLL_SwordDash::BeginPlay()
@@ -37,6 +41,12 @@ void ALLL_SwordDash::BeginPlay()
 		const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(ASC->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
 		DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), SwordDashAttributeSet->GetDashDamageRange(), SwordDashAttributeSet->GetDashDamageRange()));
 	}));
+
+	SwordMeshComponent->SetStaticMesh(SwordDashDataAsset->SwordMesh);
+	SwordMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->SwordAttachSocketName);
+	SwordMeshComponent->SetRelativeLocation(SwordDashDataAsset->SwordLocation);
+	SwordMeshComponent->SetRelativeRotation(SwordDashDataAsset->SwordRotation);
+	SwordMeshComponent->SetRelativeScale3D(SwordDashDataAsset->SwordScale);
 }
 
 void ALLL_SwordDash::Tick(float DeltaSeconds)
@@ -99,22 +109,6 @@ void ALLL_SwordDash::Dash() const
 			if (ProtoGameInstance->CheckMonsterAttackDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 대시 수행"), *GetName()));
-			}
-		}
-#endif
-	}
-}
-
-void ALLL_SwordDash::Charge() const
-{
-	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_SWORD_DASH_CHARGE)))
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
 			}
 		}
 #endif
