@@ -403,9 +403,18 @@ void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }
 
-void ALLL_PlayerBase::PlayerRotateToMouseCursor(float RotationMultiplyValue)
+void ALLL_PlayerBase::PlayerRotateToMouseCursor(float RotationMultiplyValue, bool UseLastLocation)
 {
-	const FVector MouseWorldLocation = CheckMouseLocation();
+	FVector MouseWorldLocation;
+	if (UseLastLocation)
+	{
+		MouseWorldLocation = LastCheckedMouseLocation;
+	}
+	else
+	{
+		MouseWorldLocation = CheckMouseLocation();
+	}
+	
 	FVector ViewDirection = (MouseWorldLocation - GetActorLocation()).GetSafeNormal();
 	ViewDirection.Z = 0.f;
 	MouseDirectionRotator = ViewDirection.Rotation();

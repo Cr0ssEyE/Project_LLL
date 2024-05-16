@@ -16,6 +16,11 @@ class PROJECT_LLL_API FLLL_MathHelper
 public:
 	static FVector CalculateComponentFrontPoint(const USceneComponent* Component, const float Multiply)
 	{
+		if (!IsValid(Component))
+		{
+			return FVector::Zero();
+		}
+		
 		const FVector CalculateResult = Component->GetComponentLocation() + Multiply * Component->GetForwardVector();
 		return CalculateResult;
 	}
@@ -28,6 +33,11 @@ public:
 
 	static FVector GetPredictedLocation(const AActor* Owner, const AActor* Target, float TargetSpeed, float PredictionRate)
 	{
+		if (!IsValid(Owner) || !IsValid(Target))
+		{
+			return FVector::Zero();
+		}
+		
 		const float Distance = Owner->GetDistanceTo(Target);
 		const FVector PredictedMove = Target->GetVelocity() * (Distance / TargetSpeed);
 		const FVector PredictedLocation = Target->GetActorLocation() + PredictedMove * PredictionRate;
@@ -57,6 +67,11 @@ public:
 	
 	static bool CheckLaunchablePosition(const UWorld* World, const ACharacter* Owner, const float LaunchDistance, const FVector& LaunchDirection, const FName CollisionProfile)
 	{
+		if (!IsValid(World) || !IsValid(Owner))
+		{
+			return false;
+		}
+		
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(Owner);
@@ -75,6 +90,11 @@ public:
 
 	static bool CheckFallableKnockBackPower(const UWorld* World, float KnockBackPower)
 	{
+		if (!IsValid(World))
+		{
+			return false;
+		}
+		
 		float FallableCheckPower = 500.f;
 		if (const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(World->GetFirstPlayerController()->GetCharacter()))
 		{
@@ -105,12 +125,22 @@ public:
 
 	static float CalculateKnockBackPower(const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet, const float NotifyLevel = 1.f)
 	{
+		if (!IsValid(PlayerCharacterAttributeSet))
+		{
+			return 0.f;
+		}
+		
 		const float CalculateResult = PlayerCharacterAttributeSet->GetKnockBackPower() * NotifyLevel + PlayerCharacterAttributeSet->GetOffensePower() * PlayerCharacterAttributeSet->GetKnockBackOffensePowerRate();
 		return CalculateResult;
 	}
 	
 	static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)
 	{
+		if (!IsValid(World) || !IsValid(Owner))
+        {
+        	return FVector::Zero();
+        }
+        		
 		FHitResult CapsuleHitResult;
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(Owner);

@@ -39,6 +39,7 @@
 #define TAG_GAS_CHASER_THROW FGameplayTag::RequestGameplayTag(FName("Object.Chaser.Action.Throw"))
 #define TAG_GAS_CHASER_RELEASE FGameplayTag::RequestGameplayTag(FName("Object.Chaser.Action.Release"))
 #define TAG_GAS_CHASER_GRAB FGameplayTag::RequestGameplayTag(FName("Object.Chaser.Action.Grab"))
+#define TAG_GAS_CHASER_STATE_THROWING FGameplayTag::RequestGameplayTag(FName("Object.Chaser.State.Throwing"))
 #define TAG_GAS_CHASER_STATE_GRABBED FGameplayTag::RequestGameplayTag(FName("Object.Chaser.State.Grabbed"))
 
 // 몬스터 관련 게임플레이 태그

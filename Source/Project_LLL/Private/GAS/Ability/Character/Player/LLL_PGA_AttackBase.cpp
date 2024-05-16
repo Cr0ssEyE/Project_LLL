@@ -123,6 +123,8 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 
 	if (IsValid(WaitTagTask) && WaitTagTask->IsActive())
 	{
+		ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+		PlayerCharacter->CheckMouseLocation();
 		bIsCanPlayNextAction = true;
 	}
 }
@@ -166,7 +168,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 			CurrentComboAction = 0;
 		}
 		
-		PlayerCharacter->PlayerRotateToMouseCursor();
+		PlayerCharacter->PlayerRotateToMouseCursor(1.f, true);
 		
 		MontageJumpToSection(*FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 		GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));

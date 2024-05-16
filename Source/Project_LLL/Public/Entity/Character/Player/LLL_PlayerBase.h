@@ -53,7 +53,7 @@ public:
 
 	FVector CheckMouseLocation();
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
-	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f);
+	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
 
 protected:
 	void TurnToMouseCursor();

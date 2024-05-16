@@ -46,7 +46,11 @@ void ULLL_PGA_ControlChaseHand::EndAbility(const FGameplayAbilitySpecHandle Hand
 
 	PlayerCharacter->GetMesh()->UnHideBoneByName(BONE_PLAYER_LEFT_WEAPON);
 	PlayerChaseHand->ReleaseCompleteDelegate.RemoveDynamic(this, &ULLL_PGA_ControlChaseHand::OnCompleteCallBack);
-	
+
+	if (PlayerChaseHand->GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_CHASER_STATE_THROWING))
+	{
+		PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_RELEASE));
+	}
 	bIsAlreadyThrown = false;
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);

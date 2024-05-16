@@ -2,6 +2,8 @@
 
 
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -165,23 +167,15 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	if (HitLocation.Z >= GetActorLocation().Z)
 	{
 		OtherActorCollidedDelegate.Broadcast(this, Other);
-	}
 
-	const ECollisionResponse Response = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
-	// Static Actor 중에서 벽과 바닥을 구분하는 좋은 방법이 뭐가 있을지 고민. 지금은 머릿속에서 생각나는게 이게 최선
-	if (Response == ECR_Block && FMath::Abs(HitNormal.Z) < 0.2f)
-	{
-		ASC->AddLooseGameplayTag(TAG_GAS_COLLIDE_WALL);
-
-		// 게임플레이 이펙트 없이 인스턴스 태그를 부착하기 위해 타이머 델리게이트로 다음 틱에서 제거
-		// 이번엔 빌드에서 람다식 안터졌으니 괜?찮?을?거?에?요???
-		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]()
+		const ECollisionResponse WallResponse = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
+		const ECollisionResponse FieldResponse = Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD);
+	
+		if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
 		{
-			if(IsValid(ASC))
-			{
-				ASC->RemoveLooseGameplayTag(TAG_GAS_COLLIDE_WALL);
-			}
-		}));
+			FGameplayEventData PayloadData;
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
+		}
 	}
 }
 

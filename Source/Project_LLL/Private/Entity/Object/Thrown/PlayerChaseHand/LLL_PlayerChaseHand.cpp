@@ -85,8 +85,8 @@ void ALLL_PlayerChaseHand::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other,
 		return;
 	}
 	
-	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Other);
-	if (IsValid(Monster))
+	ECollisionResponse Response = Other->GetComponentsCollisionResponseToChannel(ECC_ENEMY_HIT);
+	if (Response != ECR_Ignore)
 	{
 		// PGA_WireHandGrab
 		if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_GRAB)))
