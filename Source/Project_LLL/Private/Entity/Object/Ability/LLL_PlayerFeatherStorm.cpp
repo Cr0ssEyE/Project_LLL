@@ -3,7 +3,6 @@
 
 #include "Entity/Object/Ability/LLL_PlayerFeatherStorm.h"
 
-#include "NiagaraFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_FilePath.h"
 #include "Game/ProtoGameInstance.h"
@@ -22,15 +21,13 @@ void ALLL_PlayerFeatherStorm::BeginPlay()
 	Super::BeginPlay();
 
 	FeatherStormDataAsset = Cast<ULLL_PlayerFeatherStormDataAsset>(AbilityObjectDataAsset);
-	
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), FeatherStormDataAsset->Particle, GetActorLocation(), GetActorRotation());
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if (ProtoGameInstance->CheckPlayerDashDebug())
 		{
-			DrawDebugBox(GetWorld(), GetActorLocation(), AbilityCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, AbilityObjectAttributeSet->GetDestroyTimer());
+			DrawDebugBox(GetWorld(), GetActorLocation(), OverlapCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, AbilityObjectAttributeSet->GetDestroyTimer());
 		}
 	}
 #endif

@@ -27,5 +27,6 @@ public:
 	
 	virtual void Dash() const = 0;
 
-	uint8 bIsDashing : 1;
+protected:
+	uint8 bIsDashing : 1 = false;
 };

@@ -6,7 +6,6 @@
 #include "LLL_AbilityObjectDataAsset.h"
 #include "LLL_PlayerFeatherStormDataAsset.generated.h"
 
-class UNiagaraSystem;
 /**
  * 
  */
@@ -15,7 +14,4 @@ class PROJECT_LLL_API ULLL_PlayerFeatherStormDataAsset : public ULLL_AbilityObje
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "파티클")
-	TObjectPtr<UNiagaraSystem> Particle;
 };

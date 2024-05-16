@@ -26,7 +26,7 @@ public:
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<UBoxComponent> AbilityCollisionBox;
+	TObjectPtr<UBoxComponent> OverlapCollisionBox;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_AbilityObjectDataAsset> AbilityObjectDataAsset;

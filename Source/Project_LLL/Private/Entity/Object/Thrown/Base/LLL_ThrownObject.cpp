@@ -40,7 +40,6 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget)
 	SetOwner(NewOwner);
 	Target = NewTarget;
 
-	Activate();
 	ProjectileMovementComponent->MaxSpeed = ThrownObjectAttributeSet->GetThrowSpeed();
 	ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
 	
@@ -68,13 +67,17 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 
 void ALLL_ThrownObject::Activate()
 {
-	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ILLL_ObjectPoolingObjectInterface::Activate();
+	
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ProjectileMovementComponent->Activate();
 	SetActorHiddenInGame(false);
 }
 
 void ALLL_ThrownObject::Deactivate()
 {
+	ILLL_ObjectPoolingObjectInterface::Deactivate();
+	
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProjectileMovementComponent->Deactivate();
 	SetActorHiddenInGame(true);

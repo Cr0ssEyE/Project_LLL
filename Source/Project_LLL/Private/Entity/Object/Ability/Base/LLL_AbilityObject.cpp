@@ -15,10 +15,10 @@ ALLL_AbilityObject::ALLL_AbilityObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
-	AbilityCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Skill Collision"));
-	AbilityCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	AbilityCollisionBox->SetCollisionProfileName(CP_PLAYER_SKILL);
-	AbilityCollisionBox->SetupAttachment(RootComponent);
+	OverlapCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Skill Collision"));
+	OverlapCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	OverlapCollisionBox->SetCollisionProfileName(CP_PLAYER_SKILL);
+	OverlapCollisionBox->SetupAttachment(RootComponent);
 }
 
 void ALLL_AbilityObject::BeginPlay()
@@ -29,7 +29,7 @@ void ALLL_AbilityObject::BeginPlay()
 	ASC->AddSpawnedAttribute(AbilityObjectAttributeSet);
 
 	SetOwner(GetWorld()->GetFirstPlayerController()->GetCharacter());
-	AbilityCollisionBox->SetBoxExtent(AbilityObjectDataAsset->OverlapCollisionSize);
+	OverlapCollisionBox->SetBoxExtent(AbilityObjectDataAsset->OverlapCollisionSize);
 	
 	FTimerHandle DestroyTimerHandle;
 	GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
