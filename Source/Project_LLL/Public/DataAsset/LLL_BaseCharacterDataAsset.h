@@ -53,4 +53,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "피격 이벤트 태그", meta=(Categories = "GameplayCue"))
 	FGameplayTag DamagedCueTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "사망 이벤트 태그", meta=(Categories = "GameplayCue"))
+	FGameplayTag DeadCueTag;
 };

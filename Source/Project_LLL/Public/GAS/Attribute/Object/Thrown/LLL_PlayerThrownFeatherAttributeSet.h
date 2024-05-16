@@ -13,4 +13,11 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PlayerThrownFeatherAttributeSet : public ULLL_ThrownObjectAttributeSet
 {
 	GENERATED_BODY()
+
+public:
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerThrownFeatherAttributeSet, CurveSize);
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData CurveSize;
 };

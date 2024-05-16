@@ -4,6 +4,7 @@
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 
 #include "AbilitySystemComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
@@ -72,6 +73,7 @@ void ALLL_ThrownObject::Activate()
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ProjectileMovementComponent->Activate();
 	SetActorHiddenInGame(false);
+	UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
 }
 
 void ALLL_ThrownObject::Deactivate()

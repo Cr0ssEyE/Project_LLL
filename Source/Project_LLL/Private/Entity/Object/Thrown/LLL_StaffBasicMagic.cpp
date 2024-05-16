@@ -7,6 +7,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_StaffBasicMagicDataAsset.h"
+#include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Object/Thrown/LLL_StaffBasicMagicAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
@@ -28,6 +29,25 @@ void ALLL_StaffBasicMagic::BeginPlay()
 	StaffBasicMagicDataAsset = Cast<ULLL_StaffBasicMagicDataAsset>(ThrownObjectDataAsset);
 
 	HitCollisionBox->SetBoxExtent(StaffBasicMagicDataAsset->HitCollisionSize);
+}
+
+void ALLL_StaffBasicMagic::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckMonsterAttackDebug())
+		{
+			HitCollisionBox->SetHiddenInGame(false);
+		}
+		else
+		{
+			HitCollisionBox->SetHiddenInGame(true);
+		}
+	}
+#endif
 }
 
 void ALLL_StaffBasicMagic::Activate()

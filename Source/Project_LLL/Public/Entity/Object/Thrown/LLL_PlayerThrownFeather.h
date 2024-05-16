@@ -6,6 +6,7 @@
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "LLL_PlayerThrownFeather.generated.h"
 
+class ULLL_PlayerThrownFeatherAttributeSet;
 /**
  * 
  */
@@ -18,6 +19,7 @@ public:
 	ALLL_PlayerThrownFeather();
 
 protected:
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void Deactivate() override;
 
@@ -25,4 +27,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float CurveSize;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_PlayerThrownFeatherAttributeSet> PlayerThrownFeatherAttributeSet;
 };

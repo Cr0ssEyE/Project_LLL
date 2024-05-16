@@ -17,8 +17,15 @@ ALLL_PlayerThrownFeather::ALLL_PlayerThrownFeather()
 	ThrownObjectAttributeSet = CreateDefaultSubobject<ULLL_PlayerThrownFeatherAttributeSet>(TEXT("PlayerThrownFeatherAttributeSet"));
 	
 	BaseMesh->SetCollisionProfileName(CP_PLAYER_THROWN_OBJECT);
+}
 
-	CurveSize = 3.0f; // 추후 어트리뷰트 또는 데이터화 필요
+void ALLL_PlayerThrownFeather::BeginPlay()
+{
+	Super::BeginPlay();
+
+	PlayerThrownFeatherAttributeSet = Cast<ULLL_PlayerThrownFeatherAttributeSet>(ThrownObjectAttributeSet);
+
+	CurveSize = PlayerThrownFeatherAttributeSet->GetCurveSize();
 	CurrentCurveSize = 1.0f / CurveSize;
 }
 
