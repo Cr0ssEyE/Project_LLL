@@ -48,9 +48,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<ALLL_TA_TraceBase> TargetActorClass;
 
-	UPROPERTY(EditAnywhere, DisplayName = "충돌 이벤트 태그", meta=(Categories = "GameplayCue"))
-	FGameplayTag HitCueTag;
-
 	UPROPERTY()
 	TObjectPtr<ULLL_AT_Trace> TraceTask;
 	
