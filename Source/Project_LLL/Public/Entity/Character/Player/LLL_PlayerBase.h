@@ -51,7 +51,8 @@ public:
 	FORCEINLINE ALLL_PlayerChaseHand* GetChaseHand() const { return ChaseHandActor; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 
-	FVector GetMouseLocation() const;
+	FVector CheckMouseLocation();
+	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f);
 
 protected:
@@ -112,7 +113,10 @@ private:
 	uint32 InteractionRange;
 
 private:
+	FVector LastCheckedMouseLocation;
+	
 	FRotator MouseDirectionRotator;
+	
 	float ToCursorRotationMultiplyValue;
 	
 	// 상태 관련 함수

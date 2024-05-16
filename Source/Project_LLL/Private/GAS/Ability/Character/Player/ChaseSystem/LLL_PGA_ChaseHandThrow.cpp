@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
@@ -25,7 +26,6 @@ void ULLL_PGA_ChaseHandThrow::ActivateAbility(const FGameplayAbilitySpecHandle H
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
-	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerChaseHand->GetOwner());
 
 	if (IsValid(PlayerChaseHand->GetAttachParentActor()))
 	{
@@ -34,7 +34,6 @@ void ULLL_PGA_ChaseHandThrow::ActivateAbility(const FGameplayAbilitySpecHandle H
 	
 	PlayerChaseHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_ChaseHandThrow::OnInterruptedCallBack);
 	PlayerChaseHand->OnGrabbedDelegate.AddDynamic(this, &ULLL_PGA_ChaseHandThrow::OnInterruptedCallBack);
-	PlayerCharacter->PlayerRotateToMouseCursor();
 	
 	ThrowToCursorLocation();
 }
@@ -81,9 +80,9 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerChaseHand->GetOwner());
 	const ULLL_PlayerChaseHandAttributeSet* ChaseHandAttributeSet = CastChecked<ULLL_PlayerChaseHandAttributeSet>(PlayerChaseHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerChaseHandAttributeSet::StaticClass()));
-
-	StartLocation = PlayerCharacter->GetActorLocation();
-	TargetLocation = PlayerCharacter->GetMouseLocation();
+	
+	StartLocation = PlayerCharacter->GetMesh()->GetSocketLocation(SOCKET_LEFT_WEAPON);
+	TargetLocation = PlayerCharacter->GetLastCheckedMouseLocation();
 	TargetLocation.Z = StartLocation.Z;
 	const float TargetDistance =  FVector::Distance(TargetLocation, StartLocation);
 	// 마우스 위치가 투척 최소거리 보다 가까운 거리일 경우 보정

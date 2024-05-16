@@ -20,11 +20,13 @@
 #define TAG_GAS_PLAYER_DASH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash"))
 #define TAG_GAS_PLAYER_CHASE_RUSH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Rush"))
 #define TAG_GAS_PLAYER_CHASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Attack"))
+#define TAG_GAS_PLAYER_CHASER_THROW FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.ChaserThrow"))
 #define TAG_GAS_PLAYER_THROW_TRIGGERED FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.ChaserThrow.Trigger"))
 
 // 플레이어 상태 관련 게임플레이 태그
-#define TAG_GAS_PLAYER_CHASE_RETURN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserReturned"))
-#define TAG_GAS_PLAYER_WAIT_ATTACK_INPUT FGameplayTag::RequestGameplayTag(FName("Character.Player.State.WaitAttackInput"))
+#define TAG_GAS_PLAYER_STATE_CHASE_THREW FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserThrew"))
+#define TAG_GAS_PLAYER_STATE_CHASE_RETURN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserReturned"))
+#define TAG_GAS_PLAYER_STATE_ATTACK_INPUT_CHECK FGameplayTag::RequestGameplayTag(FName("Character.Player.State.AttackInputCheck"))
 
 // 플레이어 부가 효과 구분용 게임플레이 태그
 #define TAG_GAS_PERKS_ATTACK FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Attack")

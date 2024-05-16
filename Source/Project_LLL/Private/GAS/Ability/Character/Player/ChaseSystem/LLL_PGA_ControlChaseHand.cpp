@@ -24,8 +24,7 @@ void ULLL_PGA_ControlChaseHand::ActivateAbility(const FGameplayAbilitySpecHandle
 	
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
-
-	PlayerCharacter->GetMesh()->HideBoneByName(BONE_PLAYER_RIGHT_HAND, PBO_Term);
+	
 	PlayerChaseHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_ControlChaseHand::OnCompleteCallBack);
 
 	if (IsValid(ThrowAnimMontage))
@@ -45,7 +44,7 @@ void ULLL_PGA_ControlChaseHand::EndAbility(const FGameplayAbilitySpecHandle Hand
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
 
-	PlayerCharacter->GetMesh()->UnHideBoneByName(BONE_PLAYER_RIGHT_HAND);
+	PlayerCharacter->GetMesh()->UnHideBoneByName(BONE_PLAYER_LEFT_WEAPON);
 	PlayerChaseHand->ReleaseCompleteDelegate.RemoveDynamic(this, &ULLL_PGA_ControlChaseHand::OnCompleteCallBack);
 	
 	bIsAlreadyThrown = false;
@@ -87,7 +86,8 @@ void ULLL_PGA_ControlChaseHand::ThrowHand(const FGameplayEventData EventData)
 	{
 		EndAbility(CurrentSpecHandle,  CurrentActorInfo, CurrentActivationInfo, true, true);
 	}
-	
+
+	PlayerCharacter->GetMesh()->HideBoneByName(BONE_PLAYER_LEFT_WEAPON, PBO_Term);
 	const FGameplayTagContainer ThrowHandTags(TAG_GAS_CHASER_THROW);
 	HandASC->TryActivateAbilitiesByTag(ThrowHandTags);
 	bIsAlreadyThrown = true;
