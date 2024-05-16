@@ -18,7 +18,7 @@
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
-#include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
+#include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"

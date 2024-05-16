@@ -21,7 +21,6 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ChargeMontage"), ChargeMontage, 1.0f, TEXT("Charge"));
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_MGA_Charge::OnCompleteCallBack);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_MGA_Charge::OnInterruptedCallBack);
-
 	PlayMontageTask->ReadyForActivation();
 
 	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());

@@ -3,7 +3,7 @@
 
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_FeatherStorm.h"
 
-#include "Entity/Object/Skill/PlayerFeatherStorm/LLL_PlayerFeatherStorm.h"
+#include "Entity/Object/Ability/LLL_PlayerFeatherStorm.h"
 
 void ULLL_PGA_FeatherStorm::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
