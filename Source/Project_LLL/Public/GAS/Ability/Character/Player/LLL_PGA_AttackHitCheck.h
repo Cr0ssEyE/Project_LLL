@@ -23,7 +23,6 @@ public:
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
 	UFUNCTION()
@@ -48,6 +47,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<ALLL_TA_TraceBase> TargetActorClass;
+
+	UPROPERTY(EditAnywhere, DisplayName = "충돌 이벤트 태그", meta=(Categories = "GameplayCue"))
+	FGameplayTag HitCueTag;
 
 	UPROPERTY()
 	TObjectPtr<ULLL_AT_Trace> TraceTask;

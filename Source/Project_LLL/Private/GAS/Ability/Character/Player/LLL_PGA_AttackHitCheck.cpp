@@ -9,6 +9,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Task/LLL_AT_Trace.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 ULLL_PGA_AttackHitCheck::ULLL_PGA_AttackHitCheck()
 {
@@ -74,6 +75,8 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect);
 
 	Cast<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked())->ReceiveTargetData(this, TargetDataHandle);
+
+	FLLL_ExecuteCueHelper::ExecuteCue(GetAvatarActorFromActorInfo(), HitCueTag);
 }
 
 void ULLL_PGA_AttackHitCheck::OnTraceEndCallBack()
