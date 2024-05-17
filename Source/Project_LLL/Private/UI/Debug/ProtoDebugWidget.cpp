@@ -4,6 +4,7 @@
 #include "UI/Debug/ProtoDebugWidget.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
+#include "Enumeration/LLL_UserInterfaceEnumHelper.h"
 
 void UProtoDebugWidget::NativeConstruct()
 {
@@ -17,17 +18,17 @@ void UProtoDebugWidget::NativeConstruct()
 
 void UProtoDebugWidget::EnablePlayerDebugWidget()
 {
-	DebugWidgetSwitcher->SetActiveWidgetIndex(static_cast<int>(EDebugWidgetTypes::Player));
+	DebugWidgetSwitcher->SetActiveWidgetIndex(static_cast<int>(EDebugWidgetType::Player));
 }
 
 void UProtoDebugWidget::EnableMonsterDebugWidget()
 {
-	DebugWidgetSwitcher->SetActiveWidgetIndex(static_cast<int>(EDebugWidgetTypes::Monster));
+	DebugWidgetSwitcher->SetActiveWidgetIndex(static_cast<int>(EDebugWidgetType::Monster));
 }
 
 void UProtoDebugWidget::EnableObjectDebugWidget()
 {
-	DebugWidgetSwitcher->SetActiveWidgetIndex(static_cast<int>(EDebugWidgetTypes::Object));
+	DebugWidgetSwitcher->SetActiveWidgetIndex(static_cast<int>(EDebugWidgetType::Object));
 }
 
 void UProtoDebugWidget::ToggleWidget()

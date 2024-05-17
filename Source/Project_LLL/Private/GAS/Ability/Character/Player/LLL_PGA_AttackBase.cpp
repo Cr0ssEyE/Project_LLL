@@ -20,8 +20,6 @@ ULLL_PGA_AttackBase::ULLL_PGA_AttackBase()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	CurrentComboAction = 0;
-	AttackActionIntervalTime = 0.f;
-	AttackActionInputDelayTime = 0.f;
 	MaxAttackAction = 0;
 	bIsCanPlayNextAction = false;
 	bIsInputPressed = false;
@@ -60,9 +58,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	
 	if(IsValid(PlayerCharacter) && IsValid(PlayerAttributeSet) && IsValid(AttackAnimMontage))
 	{
-		MaxAttackAction = PlayerAttributeSet->GetMaxAttackAction();
-		AttackActionIntervalTime = PlayerAttributeSet->GetAttackActionIntervalTime();
-		AttackActionInputDelayTime = PlayerAttributeSet->GetAttackActionInputDelayTime();
+		MaxAttackAction = PlayerAttributeSet->GetMaxAttackActionCount();
 	}
 	else
 	{

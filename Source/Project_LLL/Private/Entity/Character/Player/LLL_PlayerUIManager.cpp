@@ -158,9 +158,7 @@ void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
 void ULLL_PlayerUIManager::UpdateWidget()
 {
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwner());
-	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-
-	SkillGaugeWidget->UpdateWidgetView(PlayerAttributeSet);
+	SkillGaugeWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
 	
 	Super::UpdateWidget();
 }

@@ -26,7 +26,7 @@ protected:
 	FGameplayTag TriggerGameplayTag;
 	
 	UPROPERTY(EditAnywhere)
-	float NotifyLevel = 0.0f;
+	float NotifyLevel;
 
 	UPROPERTY(EditAnywhere)
 	FGameplayTag OwnerGiveTag;

@@ -43,10 +43,6 @@ protected:
 	TObjectPtr<UAnimMontage> AttackAnimMontage;
 
 	FTimerHandle WaitInputTimerHandle;
-
-	float AttackActionIntervalTime;
-
-	float AttackActionInputDelayTime;
 	
 	uint32 CurrentComboAction;
 

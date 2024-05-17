@@ -23,6 +23,7 @@
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
 #include "Util/LLL_ConstructorHelper.h"
+#include "Util/LLL_MathHelper.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
@@ -38,7 +39,9 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 
 	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
 	DropGoldEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'"), EAssertionLevel::Check);
-	
+
+	StackedKnockBackedPower = 0.f;
+	StackedKnockBackVelocity = FVector::Zero();
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -159,6 +162,8 @@ void ALLL_MonsterBase::Charge() const
 
 void ALLL_MonsterBase::Damaged()
 {
+	Super::Damaged();
+	
 	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(MonsterBaseAnimInstance))
 	{
@@ -181,17 +186,35 @@ void ALLL_MonsterBase::Damaged()
 	}
 }
 
-void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity)
+void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower)
 {
 	if (CustomTimeDilation == 1.f)
 	{
+		StackedKnockBackedPower = KnockBackPower;
 		GetCharacterMovement()->Velocity = FVector::Zero();
 		LaunchCharacter(KnockBackVelocity, true, true);
 	}
 	else
 	{
-		
+		StackedKnockBackedPower += KnockBackPower;
+		StackedKnockBackVelocity += KnockBackVelocity;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackedPower));
 	}
+}
+
+void ALLL_MonsterBase::ApplyStackedKnockBack()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackVelocity.Length()));
+	if (FLLL_MathHelper::CheckFallableKnockBackPower(StackedKnockBackedPower))
+	{
+		GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
+	}
+
+	// TODO: 나중에 몬스터별 최대 넉백값 같은거 나오면 수정하기
+	const FVector ScaledStackedKnockBackVelocity = ClampVector(FVector::Zero(), FVector::One() * 2000.f, StackedKnockBackVelocity);
+	LaunchCharacter(ScaledStackedKnockBackVelocity, true, true);
+
+	// ResetKnockBackStack();
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)
