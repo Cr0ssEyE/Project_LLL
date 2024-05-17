@@ -20,6 +20,7 @@
 #include "Util/LLL_ConstructorHelper.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
+#include "Enumeration/LLL_GameSystemEnumHelper.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {

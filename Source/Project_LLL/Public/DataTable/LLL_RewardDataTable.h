@@ -6,20 +6,18 @@
 #include "Engine/DataTable.h"
 #include "LLL_RewardDataTable.generated.h"
 
-
-UENUM()
-enum class ERewardCategory : uint8
-{
-	Gold = 1,
-	Ability,
-	Enhance,
-	MaxHP
-};
-
 USTRUCT(BlueprintType)
 struct FRewardDataTable : public FTableRowBase
 {
 	GENERATED_BODY()
+
+	FRewardDataTable()
+	{
+		GroupID = 0;
+		ID = 0;
+		Value = 0;
+		bIsHardReward = false;
+	}
 	
 	// 해당 FName과 일치하는 열의 값 읽어옴
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
@@ -41,7 +39,7 @@ struct FRewardDataTable : public FTableRowBase
 	uint8 Value;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	bool bIsHardReward = false;
+	bool bIsHardReward;
 };
 
 

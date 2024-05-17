@@ -8,6 +8,7 @@
 #include "Entity/Object/Interactive/LLL_EnhanceRewardObject.h"
 #include "Entity/Object/Interactive/LLL_MaxHPRewardObject.h"
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
+#include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "System/MapGimmick/LLL_ProductSpawnPointComponent.h"
 
 // Sets default values for this component's properties

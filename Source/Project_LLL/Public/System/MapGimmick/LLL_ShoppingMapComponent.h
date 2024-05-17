@@ -6,15 +6,6 @@
 #include "Components/SceneComponent.h"
 #include "LLL_ShoppingMapComponent.generated.h"
 
-
-UENUM()
-enum class EProductType
-{
-	Gold = 1,
-	MaxHP,
-	Ability
-};
-
 class ALLL_RewardObject;
 //class ULLL_TestShopDataTable;
 //struct FTestShopDataTable;
