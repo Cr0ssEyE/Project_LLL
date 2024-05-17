@@ -7,6 +7,7 @@
 #include "GameplayAbilitiesModule.h"
 #include "GameplayTagContainer.h"
 #include "Components/SphereComponent.h"
+#include "Constant/LLL_AttributeInitalizeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -60,7 +61,7 @@ void ALLL_PlayerChaseHand::BeginPlay()
 {
 	Super::BeginPlay();
 
-	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, FName("Player"), 1.f, true);
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, 1.f, true);
 }
 
 void ALLL_PlayerChaseHand::NotifyActorBeginOverlap(AActor* OtherActor)
