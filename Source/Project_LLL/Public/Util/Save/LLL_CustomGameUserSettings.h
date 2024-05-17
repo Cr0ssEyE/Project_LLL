@@ -93,35 +93,35 @@ public:
 	FORCEINLINE void SetSubtitleSpeed(uint8 Speed) { SubtitleSpeed = Speed; }
 	
 protected:
-	UPROPERTY(Config)
+	UPROPERTY(Config, SaveGame)
 	float MasterSoundVolume;
 
-	UPROPERTY(Config)
+	UPROPERTY(Config, SaveGame)
 	float BGMSoundVolume;
 
-	UPROPERTY(Config)
+	UPROPERTY(Config, SaveGame)
 	float SFXSoundVolume;
 
 protected:
-	UPROPERTY(Config)
+	UPROPERTY(Config, SaveGame)
 	FString DisplayResolution;
 
 protected:
-	UPROPERTY(Config)
+	UPROPERTY(Config, SaveGame)
 	uint8 bUseCameraShake : 1;
 	
-	UPROPERTY(Config)
+	UPROPERTY(Config, SaveGame)
 	uint8 bUseTargetingCorrection : 1;
 
-	UPROPERTY(Config)
+	UPROPERTY(Config, SaveGame)
 	FString GameLanguageName;
 
-	UPROPERTY(Config)
+	UPROPERTY(Config, SaveGame)
 	FString SubtitleLanguageName;
 
-	UPROPERTY(Config)
+	UPROPERTY(Config, SaveGame)
 	uint8 SubtitleSize;
 	
-	UPROPERTY(Config)
+	UPROPERTY(Config, SaveGame)
 	uint8 SubtitleSpeed;
 };
