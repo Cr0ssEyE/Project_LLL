@@ -22,12 +22,12 @@ protected:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 	
 protected:
-	UPROPERTY(EditAnywhere, Meta=(Categories=Event))
+	UPROPERTY(EditAnywhere, DisplayName = "이벤트 트리거",  Meta=(Categories=Event))
 	FGameplayTag TriggerGameplayTag;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere , DisplayName = "이벤트 레벨")
 	float NotifyLevel;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, DisplayName = "태그 부착")
 	FGameplayTag OwnerGiveTag;
 };

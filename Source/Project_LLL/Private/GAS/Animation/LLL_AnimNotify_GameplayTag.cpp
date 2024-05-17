@@ -23,6 +23,7 @@ void ULLL_AnimNotify_GameplayTag::Notify(USkeletalMeshComponent* MeshComp, UAnim
 		{
 			FGameplayEventData PayloadData;
 			PayloadData.EventMagnitude = NotifyLevel;
+			
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, TriggerGameplayTag, PayloadData);
 		}
 
