@@ -3,6 +3,8 @@
 
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 
+#include "Interface/LLL_ObjectPoolingObjectInterface.h"
+
 // Sets default values for this component's properties
 ULLL_ObjectPoolingComponent::ULLL_ObjectPoolingComponent()
 {
@@ -38,7 +40,8 @@ AActor* ULLL_ObjectPoolingComponent::GetActor(UClass* Class)
 	{
 		if (Actor->IsHidden())
 		{
-			Actor->SetActorHiddenInGame(false);
+			ILLL_ObjectPoolingObjectInterface* ObjectPoolingObjectInterface = CastChecked<ILLL_ObjectPoolingObjectInterface>(Actor);
+			ObjectPoolingObjectInterface->Activate();
 			return Actor;
 		}
 	}

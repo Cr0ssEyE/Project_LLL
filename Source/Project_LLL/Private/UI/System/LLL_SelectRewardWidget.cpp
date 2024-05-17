@@ -33,5 +33,5 @@ void ULLL_SelectRewardWidget::CheckButton()
 	SetIsEnabled(false);
 	SetVisibility(ESlateVisibility::Hidden);
 
-	//보상 관련 로직, 버튼 클릭 시 효과
+	//버튼 클릭 시 이펙트 및 애니 재생
 }
