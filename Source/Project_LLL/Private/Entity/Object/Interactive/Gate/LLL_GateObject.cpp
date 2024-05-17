@@ -4,6 +4,7 @@
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 
 #include "Constant/LLL_FilePath.h"
+#include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_GateObject::ALLL_GateObject()

@@ -38,4 +38,5 @@ protected:
 
 	UPROPERTY()
 	TArray<TObjectPtr<ALLL_BaseCharacter>> KnockBackedCharacters;
+
 };
