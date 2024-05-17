@@ -162,6 +162,8 @@ void ALLL_MonsterBase::Charge() const
 
 void ALLL_MonsterBase::Damaged()
 {
+	Super::Damaged();
+	
 	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(MonsterBaseAnimInstance))
 	{
@@ -189,6 +191,10 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 	if (CustomTimeDilation == 1.f)
 	{
 		StackedKnockBackedPower = KnockBackPower;
+		if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower))
+		{
+			GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
+		}
 		GetCharacterMovement()->Velocity = FVector::Zero();
 		LaunchCharacter(KnockBackVelocity, true, true);
 	}
@@ -203,7 +209,7 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 void ALLL_MonsterBase::ApplyStackedKnockBack()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackVelocity.Length()));
-	if (FLLL_MathHelper::CheckFallableKnockBackPower(StackedKnockBackedPower))
+	if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower))
 	{
 		GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
 	}

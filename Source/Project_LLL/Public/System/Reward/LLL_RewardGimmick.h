@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DataTable/LLL_AbilityDataTable.h"
-#include "GameFramework/Actor.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_RewardGimmick.generated.h"
 
@@ -15,6 +14,7 @@ struct FRewardDataTable;
 struct FAbilityDataTable;
 class ULLL_RewardDataTable;
 class ULLL_TestAbilityDataTable;
+class ALLL_AbilityRewardObject;
 
 UCLASS()
 class PROJECT_LLL_API ALLL_RewardGimmick : public ALLL_SystemBase
@@ -59,6 +59,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsButtonEventSetup : 1;
+
+	UPROPERTY(EditAnywhere)
+	uint8 bIsTest : 1;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	uint8 bMapGimmickIsExist : 1;

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTable/LLL_AbilityDataTable.h"
 #include "DataTable/LLL_RewardDataTable.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "LLL_GateObject.generated.h"
@@ -36,6 +37,8 @@ protected:
 	uint8 bIsGateEnabled : 1;
 	
 	FRewardDataTable* RewardData;
+
+	EAbilityType AbilityType;
 	
 	void OpenGate();
 

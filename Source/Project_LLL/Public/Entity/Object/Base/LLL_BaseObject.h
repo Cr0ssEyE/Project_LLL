@@ -6,12 +6,13 @@
 #include "AbilitySystemInterface.h"
 #include "DataAsset/LLL_BaseObjectDataAsset.h"
 #include "GameFramework/Actor.h"
+#include "Interface/LLL_FModInterface.h"
 #include "LLL_BaseObject.generated.h"
 
 class UFMODAudioComponent;
 
 UCLASS()
-class PROJECT_LLL_API ALLL_BaseObject : public AActor, public IAbilitySystemInterface
+class PROJECT_LLL_API ALLL_BaseObject : public AActor, public IAbilitySystemInterface, public ILLL_FModInterface
 {
 	GENERATED_BODY()
 
@@ -20,7 +21,7 @@ public:
 	ALLL_BaseObject();
 
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
-	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
+	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
 	
 protected:
 	// Called when the game starts or when spawned

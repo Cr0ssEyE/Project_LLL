@@ -12,18 +12,11 @@ ALLL_InteractiveObject::ALLL_InteractiveObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	//BaseObjectDataAsset = FLLLConstructorHelper::FindAndGetObject<ULLL_InteractiveObjectDataAsset>(PATH_INTERACTIVE_OBJECT_DATA, EAssertionLevel::Check);
-
 	InteractOnlyCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Ineractive Collision"));
 	InteractOnlyCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	InteractOnlyCollisionBox->SetBoxExtent(FVector(100.0f, 100.0f, 100.0f));
 	InteractOnlyCollisionBox->SetCollisionProfileName(CP_INTERACTION);
 	InteractOnlyCollisionBox->SetupAttachment(RootComponent);
-}
-
-void ALLL_InteractiveObject::BeginPlay()
-{
-	Super::BeginPlay();
-
 }
 
 void ALLL_InteractiveObject::NotifyActorBeginOverlap(AActor* OtherActor)

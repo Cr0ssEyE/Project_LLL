@@ -116,17 +116,6 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 			}
 		}
 		
-		bool Flag = false;
-		for (auto FilteredDataSetElement : FilteredDataSet)
-		{
-			if (!Flag)
-			{
-				UE_LOG(LogTemp, Log, TEXT("부여 가능 %s 이펙트"), *OwnerName);
-				Flag = true;
-			}
-			UE_LOG(LogTemp, Log, TEXT("- %s"), *FilteredDataSetElement.Get()->GetName());
-		}
-		
 		Delegate.Broadcast(FilteredDataSet);
 	}));
 }
