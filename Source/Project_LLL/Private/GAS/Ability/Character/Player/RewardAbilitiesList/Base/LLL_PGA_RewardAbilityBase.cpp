@@ -16,5 +16,5 @@ void ULLL_PGA_RewardAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandl
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	UE_LOG(LogTemp, Log, TEXT("보상으로 얻은 어빌리티 발동"));
+	UE_LOG(LogTemp, Log, TEXT("보상 어빌리티 발동 : %s, 등급 : %s"), *GetName(), *StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(AbilityData->AbilityRank)));
 }

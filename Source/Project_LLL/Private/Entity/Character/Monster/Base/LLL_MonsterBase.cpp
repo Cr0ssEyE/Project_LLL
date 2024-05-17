@@ -167,6 +167,8 @@ void ALLL_MonsterBase::Charge() const
 
 void ALLL_MonsterBase::Damaged()
 {
+	Super::Damaged();
+	
 	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(MonsterBaseAnimInstance))
 	{

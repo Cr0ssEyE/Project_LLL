@@ -2,6 +2,8 @@
 
 
 #include "GAS/Ability/Character/Player/LLL_PGA_Dash.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
@@ -157,6 +159,9 @@ void ULLL_PGA_Dash::DashActionEvent()
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
 		PlayerAnimInstance->SetDash(true);
 
+		const FGameplayEventData PayloadData;
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_DASH, PayloadData);
+		
 		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, DashCueTag);
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)

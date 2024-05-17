@@ -6,6 +6,7 @@
 #include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
@@ -36,6 +37,9 @@ void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
 	{
 		BrainComponent->StopLogic("Monster Is Damaged");
+
+		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+		Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
 	}
 }
 
@@ -43,8 +47,7 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
 	{
-		const UAnimInstance* AnimInstance = Monster->GetCharacterAnimInstance();
-		if (!AnimInstance->Montage_IsPlaying(MonsterDataAsset->DamagedAnimMontage) && !Monster->CheckCharacterIsDead())
+		if (!Monster->CheckCharacterIsDead())
 		{
 			BrainComponent->StartLogic();
 

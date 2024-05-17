@@ -19,7 +19,7 @@ class PROJECT_LLL_API ALLL_RangedMonster : public ALLL_MonsterBase
 public:
 	ALLL_RangedMonster();
 
-	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPooling; }
+	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -28,5 +28,5 @@ protected:
 	TObjectPtr<const ULLL_RangedMonsterDataAsset> RangedMonsterDataAsset;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<ULLL_ObjectPoolingComponent> ObjectPooling;
+	TObjectPtr<ULLL_ObjectPoolingComponent> ObjectPoolingComponent;
 };
