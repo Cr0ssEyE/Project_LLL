@@ -56,8 +56,12 @@ void ULLL_GameInstance::Init()
 	for (const FRewardDataTable* LoadRewardData : LoadRewardDataArray)
 	{
 		FRewardDataTable TempRewardData;
-		TempRewardData.RewardType = LoadRewardData->RewardType;
-		TempRewardData.RewardValue = LoadRewardData->RewardValue;
+		TempRewardData.Value = LoadRewardData->Value;
+		TempRewardData.DropType = LoadRewardData->DropType;
+		TempRewardData.GetType = LoadRewardData->GetType;
+		TempRewardData.GroupID = LoadRewardData->GroupID;
+		TempRewardData.ID = LoadRewardData->ID;
+		TempRewardData.UseType = LoadRewardData->UseType;
 		TempRewardData.bIsHardReward = LoadRewardData->bIsHardReward;
 		RewardData.Emplace(TempRewardData);
 	}

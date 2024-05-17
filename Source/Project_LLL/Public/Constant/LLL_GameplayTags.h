@@ -5,6 +5,7 @@
 
 // 캐릭터 이벤트 게임플레이 태그
 #define TAG_GAS_COLLIDE_WALL FGameplayTag::RequestGameplayTag(FName("Character.Event.CollideWithWall"))
+#define TAG_GAS_DAMAGED FGameplayTag::RequestGameplayTag(FName("Character.Event.Damaged"))
 
 // 플레이어 이벤트 게임플레이 태그
 #define TAG_GAS_COMBO_ADDITIVE FGameplayTag::RequestGameplayTag(FName("Character.Player.Event.AddCombo"))
@@ -21,8 +22,9 @@
 #define TAG_GAS_PLAYER_CHASE_THROW FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Throw"))
 #define TAG_GAS_PLAYER_CHASE_RUSH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Rush"))
 #define TAG_GAS_PLAYER_CHASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Attack"))
-#define TAG_GAS_PLAYER_CHASE_RETURN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaseReturned"))
-#define TAG_GAS_PLAYER_WAIT_ATTACK_INPUT FGameplayTag::RequestGameplayTag(FName("Character.Player.State.WaitAttackInput"))
+#define TAG_GAS_PLAYER_STATE_CHASE_THREW FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaseThrew"))
+#define TAG_GAS_PLAYER_STATE_CHASE_RETURNED FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaseReturned"))
+#define TAG_GAS_PLAYER_STATE_WAIT_ATTACK_INPUT FGameplayTag::RequestGameplayTag(FName("Character.Player.State.WaitAttackInput"))
 
 // 플레이어 부가 효과 구분용 게임플레이 태그
 #define TAG_GAS_PERKS_ATTACK FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Attack")
@@ -40,10 +42,13 @@
 // 몬스터 관련 게임플레이 태그
 #define TAG_GAS_MONSTER_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Attack"))
 #define TAG_GAS_MONSTER_CHARGE FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Charge"))
-#define TAG_GAS_MONSTER_FALLABLE  FGameplayTag::RequestGameplayTag(FName("Character.Monster.State.Fallable"))
+#define TAG_GAS_MONSTER_FALLABLE FGameplayTag::RequestGameplayTag(FName("Character.Monster.State.Fallable"))
 
 // 소드 대시 게임플레이 태그
 #define TAG_GAS_SWORD_DASH_DASH FGameplayTag::RequestGameplayTag(FName("Character.Monster.Melee.SwordDash.Action.Dash"))
 
 // 시스템 게임플레이 태그
 #define TAG_GAS_SYSTEM_DROP_GOLD FGameplayTag::RequestGameplayTag(FName("System.Drop.Gold"))
+
+// 어빌리티 규칙 관련 태그
+#define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))

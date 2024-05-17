@@ -13,13 +13,14 @@
 ULLL_PGA_AttackHitCheck::ULLL_PGA_AttackHitCheck()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	
 }
 
 void ULLL_PGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	CurrentLevel = TriggerEventData->EventMagnitude;
+	CurrentNotifyLevel = TriggerEventData->EventMagnitude;
 
 	TraceTask = ULLL_AT_Trace::CreateTask(this, TargetActorClass, false);
 	TraceTask->TaskOnCompleteDelegate.AddDynamic(this, &ULLL_PGA_AttackHitCheck::OnTraceResultCallBack);
@@ -55,7 +56,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	
 	// 맞은 액터 갯수만큼 콤보 수 증가
 	const int Magnitude = TargetDataHandle.Data[0]->GetActors().Num();
-	const FGameplayEffectSpecHandle ComboEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ComboStackEffect, CurrentLevel);
+	const FGameplayEffectSpecHandle ComboEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ComboStackEffect, CurrentNotifyLevel);
 	if (ComboEffectSpecHandle.IsValid())
 	{
 		ComboEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_COMBO_ADDITIVE, Magnitude);
@@ -63,14 +64,14 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	}
 
 	// 맞은 액터 갯수만큼 스킬 게이지 증가
-	const FGameplayEffectSpecHandle SkillGaugeEffectSpecHandle = MakeOutgoingGameplayEffectSpec(IncreaseSkillGaugeEffect, CurrentLevel);
+	const FGameplayEffectSpecHandle SkillGaugeEffectSpecHandle = MakeOutgoingGameplayEffectSpec(IncreaseSkillGaugeEffect, CurrentNotifyLevel);
 	if (SkillGaugeEffectSpecHandle.IsValid())
 	{
 		SkillGaugeEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_SKILL_GAUGE_ADDITIVE, Magnitude);
 		ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, SkillGaugeEffectSpecHandle);
 	}
 	
-	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect, CurrentLevel);
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect, CurrentNotifyLevel);
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect);
 
 	Cast<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked())->ReceiveTargetData(this, TargetDataHandle);

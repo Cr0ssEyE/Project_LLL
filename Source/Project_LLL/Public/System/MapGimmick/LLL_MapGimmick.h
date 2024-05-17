@@ -9,6 +9,7 @@
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_MapGimmick.generated.h"
 
+enum class EStageState : uint8;
 class UBoxComponent;
 class ALLL_GateObject;
 class ALLL_RewardObject;
@@ -30,16 +31,6 @@ struct FStageChangedDelegateWrapper
 	FStageChangedDelegateWrapper() { }
 	FStageChangedDelegateWrapper(const FOnStageChangedDelegate& InDelegate) : StageDelegate(InDelegate) {}
 	FOnStageChangedDelegate StageDelegate;
-};
-
-UENUM(BlueprintType)
-enum class EStageState : uint8
-{
-	READY = 0,
-	FIGHT,
-	REWARD,
-	NEXT,
-	BURST
 };
 
 UCLASS()
