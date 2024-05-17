@@ -13,7 +13,7 @@
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
 #include "Util/LLL_MathHelper.h"
 
-ULLL_PGA_KnockBackCollisionCheck::ULLL_PGA_KnockBackCollisionCheck()
+ULLL_PGA_KnockBackCollisionCheck:: ULLL_PGA_KnockBackCollisionCheck()
 {
 	
 }
@@ -29,7 +29,6 @@ void ULLL_PGA_KnockBackCollisionCheck::ActivateAbility(const FGameplayAbilitySpe
 
 void ULLL_PGA_KnockBackCollisionCheck::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	
 	if (!KnockBackedCharacters.IsEmpty())
 	{
 		for (auto Character : KnockBackedCharacters)
@@ -39,7 +38,6 @@ void ULLL_PGA_KnockBackCollisionCheck::EndAbility(const FGameplayAbilitySpecHand
 				Character->OtherActorCollidedDelegate.RemoveDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack);
 			}
 		}
-		
 		KnockBackedCharacters.Empty();
 	}
 	

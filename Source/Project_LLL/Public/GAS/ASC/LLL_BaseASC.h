@@ -17,10 +17,13 @@ class PROJECT_LLL_API ULLL_BaseASC : public UAbilitySystemComponent
 public:
 	ULLL_BaseASC();
 
+	virtual void BeginPlay() override;
+	
 	FTargetDataDelegate TargetDataDelegate;
 
 	void ReceiveTargetData(const UGameplayAbility* OwnerAbility, const FGameplayAbilityTargetDataHandle& TargetDataHandle) const;
 	
 protected:
-	
+	virtual void OnFallableTagAdded(const FGameplayTag Tag, int32 count);
+
 };

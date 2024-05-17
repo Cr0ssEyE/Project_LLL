@@ -48,8 +48,9 @@ void ULLL_PGA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataH
 		if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor))
 		{
 			const FVector LaunchDirection = (Actor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
-			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, PlayerCharacterAttributeSet->GetKnockBackPower() * KnockBackMultiplier);
-			KnockBackActor->AddKnockBackVelocity(LaunchVelocity);
+			const float KnockBackPower = PlayerCharacterAttributeSet->GetKnockBackPower() * KnockBackMultiplier;
+			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
+			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 		}
 
 		// 만약 넉백 당하지는 않지만 넉백 관련 이벤트가 있는 대상일 경우를 위해 위와 별도 처리
