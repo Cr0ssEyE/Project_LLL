@@ -7,7 +7,7 @@
 #include "GameplayAbilitiesModule.h"
 #include "GameplayTagContainer.h"
 #include "Components/SphereComponent.h"
-#include "Constant/LLL_AttributeInitalizeGroupName.h"
+#include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
