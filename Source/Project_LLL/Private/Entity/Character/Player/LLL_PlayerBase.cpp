@@ -232,12 +232,11 @@ FVector ALLL_PlayerBase::CheckMouseLocation()
 		HitResult,
 		MouseWorldLocation,
 		MouseWorldLocation + MouseWorldDirection * 10000.f,
-		ECC_WorldStatic
+		ECC_TRACE_FIELD
 	);
 	
 	if (!bResult)
 	{
-		LastCheckedMouseLocation = FVector::Zero();
 		return FVector::Zero();
 	}
 	
