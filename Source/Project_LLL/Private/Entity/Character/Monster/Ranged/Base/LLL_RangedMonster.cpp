@@ -8,7 +8,7 @@
 
 ALLL_RangedMonster::ALLL_RangedMonster()
 {
-	ObjectPooling = CreateDefaultSubobject<ULLL_ObjectPoolingComponent>(TEXT("ObjectPooling"));
+	ObjectPoolingComponent = CreateDefaultSubobject<ULLL_ObjectPoolingComponent>(TEXT("ObjectPoolingComponent"));
 }
 
 void ALLL_RangedMonster::BeginPlay()

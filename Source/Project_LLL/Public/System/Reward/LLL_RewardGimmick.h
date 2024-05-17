@@ -60,6 +60,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsButtonEventSetup : 1;
 
+	UPROPERTY(EditAnywhere)
+	uint8 bIsTest : 1;
+
 	UPROPERTY(VisibleDefaultsOnly)
 	uint8 bMapGimmickIsExist : 1;
 
