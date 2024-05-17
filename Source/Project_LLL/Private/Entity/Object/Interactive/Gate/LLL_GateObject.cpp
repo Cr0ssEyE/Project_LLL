@@ -18,13 +18,18 @@ void ALLL_GateObject::SetGateInformation(FRewardDataTable* Data)
 	RewardData = Data;
 	
 	//TODO: gate의 보상 표시 변경
-	switch (RewardData->RewardType)
+	//데이터가 현재 확정되지 않아 임시로 Enum을 배정해서 사용중
+	switch (RewardData->ID)
 	{
-	case ERewardType::Ability :
+	case static_cast<int>(ERewardCategory::Gold):
 		break;
-	case ERewardType::MaxHealth :
+	case static_cast<int>(ERewardCategory::Ability):
+		//능력의 경우 현재 보상 데이터 테이블에서 어떤 동물의 능력인지 구분할 수 없어 임의로 코드 작성함
+		AbilityType = static_cast<EAbilityType>(FMath::RandRange(1, 3));
 		break;
-	case ERewardType::Gold :
+	case static_cast<int>(ERewardCategory::Enhance):
+		break;
+	case static_cast<int>(ERewardCategory::MaxHP):
 		break;
 	default:
 		break;

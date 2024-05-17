@@ -5,10 +5,11 @@
 #include "Constant/LLL_LevelNames.h"
 #include "Util/Save/LLL_SaveGameData.h"
 
-ULLL_SaveGameData::ULLL_SaveGameData()
+ULLL_SaveGameData::ULLL_SaveGameData() :
+SaveFileName(DEFAULT_FILE_NAME),
+SaveFileIndex(DEFAULT_FILE_INDEX),
+StoryProgress(STORY_BEGIN),
+LastPlayLevelName(LEVEL_INTRO)
 {
-	SaveFileName = DEFAULT_FILE_NAME;
-	SaveFileIndex = DEFAULT_FILE_INDEX;
-	StoryProgress = STORY_BEGIN;
-	LastPlayLevelName = LEVEL_INTRO;
+	
 }
