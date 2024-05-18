@@ -6,6 +6,7 @@
 #include "GameplayEffect.h"
 #include "LLL_ExtendedGameplayEffect.generated.h"
 
+enum class EEffectApplyTarget : uint8;
 struct FAbilityDataTable;
 class ULLL_PGA_RewardAbilityBase;
 enum class EEffectAccessRange : uint8;
@@ -24,7 +25,9 @@ class PROJECT_LLL_API ULLL_ExtendedGameplayEffect : public UGameplayEffect
 	GENERATED_BODY()
 	
 public:
+	FORCEINLINE EEffectOwnerType GetOwnerShip() const { return EffectOwnership; }
 	FORCEINLINE EEffectAccessRange GetAccessRange() const { return EffectAccessRange; }
+	FORCEINLINE EEffectApplyTarget GetEffectApplyTarget() const { return EffectApplyTarget; }
 	FORCEINLINE int32 GetID() const { return Id; }
 	FORCEINLINE void SetAbilityInfo(FAbilityDataTable* InAbilityData) { AbilityData = InAbilityData; }
 	
@@ -34,6 +37,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS", DisplayName = "이펙트 접근 범위", meta=(DisplayPriority = 1))
 	EEffectAccessRange EffectAccessRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS", DisplayName = "이펙트 적용 대상", meta=(DisplayPriority = 1))
+	EEffectApplyTarget EffectApplyTarget;
 	
 	UPROPERTY(EditAnywhere)
 	int32 Id;

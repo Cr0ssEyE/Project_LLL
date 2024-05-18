@@ -54,13 +54,10 @@ void ULLL_PGA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataH
 			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
 			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 		}
-
-		// 만약 넉백 당하지는 않지만 넉백 관련 이벤트가 있는 대상일 경우를 위해 위와 별도 처리
-		if (Cast<IAbilitySystemInterface>(Actor))
-		{
-			BP_ApplyGameplayEffectToTarget(TargetDataHandle, KnockBackEffect, CurrentNotifyLevel);
-		}
+		
 	}
+	// 만약 넉백 당하지는 않지만 넉백 관련 이벤트가 있는 대상일 경우를 위해 위와 별도 처리
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, KnockBackEffect, CurrentNotifyLevel);
 }
 
 void ULLL_PGA_KnockBack::OnTraceEndCallBack()

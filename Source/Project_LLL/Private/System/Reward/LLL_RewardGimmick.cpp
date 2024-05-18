@@ -16,17 +16,21 @@
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 
 // Sets default values
-ALLL_RewardGimmick::ALLL_RewardGimmick()
+ALLL_RewardGimmick::ALLL_RewardGimmick() :
+	ButtonAbilityData1(nullptr),
+	ButtonAbilityData2(nullptr),
+	ButtonAbilityData3(nullptr),
+	CurrentAbilityData(nullptr),
+	bIsButtonEventSetup(false),
+	bMapGimmickIsExist(false),
+	bIsTest(false),
+	TestAbilityDataArrayNum1(0),
+	TestAbilityDataArrayNum2(1),
+	TestAbilityDataArrayNum3(2)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
-	ButtonAbilityData1 = nullptr;
-	ButtonAbilityData2 = nullptr;
-	ButtonAbilityData3 = nullptr;
 	
-	bIsButtonEventSetup = false;
-	bMapGimmickIsExist = false;
 }
 
 // Called when the game starts or when spawned
@@ -73,25 +77,27 @@ void ALLL_RewardGimmick::SetRewardButtons()
 		RewardWidget->GetThirdButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickThirdButton);
 		bIsButtonEventSetup = true;
 	}
-
-	//보상쪽 상세 시스템 기획이 나오면 바뀔 부분
-	if (!bIsTest)
-	{
-		uint8 Index = FMath::RandRange(0, AbilityData.Num() - 1);
-		ButtonAbilityData1 = &AbilityData[Index];
 	
-		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-		ButtonAbilityData2 = &AbilityData[Index];
-
-		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-		ButtonAbilityData3 = &AbilityData[Index];
-	}
-	else
+#if  (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (bIsTest)
 	{
-		ButtonAbilityData1 = &AbilityData[0];
-		ButtonAbilityData2 = &AbilityData[1];
-		ButtonAbilityData3 = &AbilityData[2];
+		ButtonAbilityData1 = &AbilityData[TestAbilityDataArrayNum1];
+		ButtonAbilityData2 = &AbilityData[TestAbilityDataArrayNum2];
+		ButtonAbilityData3 = &AbilityData[TestAbilityDataArrayNum3];
+		return;
 	}
+#endif
+	
+	//보상쪽 상세 시스템 기획이 나오면 바뀔 부분
+	
+	uint8 Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	ButtonAbilityData1 = &AbilityData[Index];
+	
+	Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	ButtonAbilityData2 = &AbilityData[Index];
+
+	Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	ButtonAbilityData3 = &AbilityData[Index];
 }
 
 void ALLL_RewardGimmick::SetDataTable()
