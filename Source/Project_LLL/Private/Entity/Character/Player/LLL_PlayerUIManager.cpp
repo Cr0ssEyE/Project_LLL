@@ -10,6 +10,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "UI/Entity/Character/Player/LLL_InteractionWidget.h"
 #include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
+#include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
+#include "UI/Entity/Character/Player/LLL_PlayerComboWidget.h"
 #include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
 #include "UI/Entity/Character/Player/LLL_SkillWidget.h"
 #include "UI/System/LLL_GamePauseWidget.h"
@@ -34,6 +36,8 @@ void ULLL_PlayerUIManager::BeginPlay()
 	InteractionWidgetClass = PlayerBaseDataAsset->InteractionWidgetClass;
 	SkillGaugeWidgetClass = PlayerBaseDataAsset->SkillGaugeWidgetClass;
 	SelectRewardWidgetClass = PlayerBaseDataAsset->SelectRewardWidgetClass;
+	ChaseActionWidgetClass = PlayerBaseDataAsset->ChaseActionWidgetClass;
+	ComboWidgetClass = PlayerBaseDataAsset->ComboWidgetClass;
 	
 	if(IsValid(CharacterStatusWidgetClass))
 	{
@@ -75,6 +79,18 @@ void ULLL_PlayerUIManager::BeginPlay()
 		SelectRewardWidget->AddToViewport();
 		SelectRewardWidget->SetVisibility(ESlateVisibility::Hidden);
 		SelectRewardWidget->SetIsEnabled(false);
+	}
+	
+	if(IsValid(ChaseActionWidgetClass))
+	{
+		ChaseActionWidget = CastChecked<ULLL_PlayerChaseActionWidget>(CreateWidget(GetWorld(), ChaseActionWidgetClass));
+	}
+	
+	if(IsValid(ComboWidgetClass))
+	{
+		ComboWidget = CastChecked<ULLL_PlayerComboWidget>(CreateWidget(GetWorld(), ComboWidgetClass));
+		ComboWidget->AddToViewport();
+		ComboWidget->SetComboText(0);
 	}
 }
 

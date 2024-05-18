@@ -51,4 +51,4 @@
 // UI 관련
 #define PATH_REWARD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Reward/WBP_SelectRewordWidget.WBP_SelectRewordWidget_C'")
 #define PATH_PLAYER_GOLD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Player/WBP_PlayerGoldWidget.WBP_PlayerGoldWidget_C'")
-#define PATH_UI_PROGRESSBAR_INST TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Materials/Instances/M_UI_CircleProgressBer_Inst.M_UI_CircleProgressBer_Inst'")
+#define PATH_UI_PROGRESSBAR_MATERIAL TEXT("/Script/Engine.Material'/Game/Materials/MasterMaterials/M_UI_CircleProgressBer.M_UI_CircleProgressBer'")

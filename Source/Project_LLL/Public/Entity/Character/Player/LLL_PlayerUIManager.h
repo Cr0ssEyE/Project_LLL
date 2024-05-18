@@ -14,6 +14,8 @@ class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;
 class ULLL_GamePauseWidget;
 class ULLL_SelectRewardWidget;
+class ULLL_PlayerChaseActionWidget;
+class ULLL_PlayerComboWidget;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECT_LLL_API ULLL_PlayerUIManager : public ULLL_BaseCharacterUIManager
@@ -39,6 +41,7 @@ public:
 	FORCEINLINE ULLL_InventoryWidget* GetInventoryWidget() const { return InventoryWidget; }
 	FORCEINLINE ULLL_InteractionWidget* GetInteractionWidget() const { return InteractionWidget; }
 	FORCEINLINE ULLL_SelectRewardWidget* GetSelectRewardWidget() const { return SelectRewardWidget; }
+	FORCEINLINE ULLL_PlayerChaseActionWidget* GetChaseActionWidget() const { return ChaseActionWidget; }
 
 protected:
 	virtual void UpdateWidget() override;
@@ -73,4 +76,16 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_SelectRewardWidget> SelectRewardWidget;
+
+	UPROPERTY(VisibleAnywhere)
+	TSubclassOf<ULLL_PlayerComboWidget> ComboWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_PlayerComboWidget> ComboWidget;
+
+	UPROPERTY(VisibleAnywhere)
+	TSubclassOf<ULLL_PlayerChaseActionWidget> ChaseActionWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_PlayerChaseActionWidget> ChaseActionWidget;
 };

@@ -11,6 +11,7 @@
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Constant/LLL_AttributeInitalizeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
@@ -27,6 +28,7 @@
 #include "Util/LLL_ConstructorHelper.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
+#include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
@@ -36,6 +38,9 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
 	SkillAttributeSet = CreateDefaultSubobject<ULLL_PlayerSkillAttributeSet>(TEXT("SkillAttributeSet"));
+	ChaseActionGaugeWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("ChaseActionGaugeWidgetComponent"));
+
+	ChaseActionGaugeWidgetComponent->SetupAttachment(RootComponent);
 
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	CameraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_CameraDataAsset>(PATH_CAMERA_DATA, EAssertionLevel::Check);
@@ -112,6 +117,12 @@ void ALLL_PlayerBase::BeginPlay()
 		// DefaultGame.ini의 [/Script/GameplayAbilities.AbilitySystemGlobals] 항목에 테이블 미리 추가해놔야 정상 작동함.
 		IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, 1.f, true);
 	}
+
+	ChaseActionGaugeWidgetComponent->SetWidget(PlayerUIManager->GetChaseActionWidget());
+	ChaseActionGaugeWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	ChaseActionGaugeWidgetComponent->SetRelativeLocation(PlayerDataAsset->ChaseActionGaugeLocation);
+	ChaseActionGaugeWidgetComponent->SetDrawSize(PlayerDataAsset->ChaseActionGaugeSize);
+	ChaseActionGaugeWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)

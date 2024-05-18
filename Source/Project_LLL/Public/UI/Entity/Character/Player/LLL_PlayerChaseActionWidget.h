@@ -17,17 +17,14 @@ class PROJECT_LLL_API ULLL_PlayerChaseActionWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	FORCEINLINE void SetPercent(float value) { Percent = value; } 
+	FORCEINLINE TObjectPtr<UImage> GetCircleProgressBar() { return CircleProgressBar; }
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidget))
 	TObjectPtr<UImage> CircleProgressBar;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "MaterialVariable")
-	float Percent;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "MaterialVariable")
-	TObjectPtr<UMaterialInstanceDynamic> CircleProgressBarInst;
+	TObjectPtr<UMaterialInstanceDynamic> CircleProgressBarInstDynamic;
 
 	UFUNCTION(BlueprintCallable)
 	void SetCircleProgressBarValue(const float value);

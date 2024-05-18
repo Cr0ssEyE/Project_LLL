@@ -21,6 +21,7 @@ class ULLL_PlayerUIManager;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
+class UWidgetComponent;
 
 /**
  * 
@@ -123,4 +124,9 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerGoldComponent> GoldComponent;
+
+	//UI 관련
+protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetComponent> ChaseActionGaugeWidgetComponent;
 };
