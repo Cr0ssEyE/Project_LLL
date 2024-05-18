@@ -22,10 +22,15 @@ public:
 	
 protected:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
-
+	virtual FString GetNotifyName_Implementation() const override;
+	
 	virtual void Notify_TagEventTriggered(AActor* OwnerActor);
 	virtual void Notify_TagAddOrRemove(AActor* OwnerActor);
 	virtual void Notify_CueTriggered(AActor* OwnerActor);
+
+protected:
+	UPROPERTY(EditAnywhere, DisplayName = "노티파이 이름", meta=(DisplayPriority=1))
+	FString NotifyName;
 	
 protected:
 	UPROPERTY(EditAnywhere, DisplayName = "이벤트 트리거 사용")
