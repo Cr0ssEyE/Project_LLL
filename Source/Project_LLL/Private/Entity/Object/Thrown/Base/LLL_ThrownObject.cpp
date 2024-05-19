@@ -36,6 +36,25 @@ void ALLL_ThrownObject::BeginPlay()
 	ASC->AddSpawnedAttribute(ThrownObjectAttributeSet);
 }
 
+void ALLL_ThrownObject::Activate()
+{
+	bIsActivated = true;
+	
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ProjectileMovementComponent->Activate();
+	SetActorHiddenInGame(false);
+	UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+}
+
+void ALLL_ThrownObject::Deactivate()
+{
+	bIsActivated = false;
+	
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ProjectileMovementComponent->Deactivate();
+	SetActorHiddenInGame(true);
+}
+
 void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget)
 {
 	SetOwner(NewOwner);
@@ -64,23 +83,4 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	}
 	
 	Deactivate();
-}
-
-void ALLL_ThrownObject::Activate()
-{
-	ILLL_ObjectPoolingObjectInterface::Activate();
-	
-	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	ProjectileMovementComponent->Activate();
-	SetActorHiddenInGame(false);
-	UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
-}
-
-void ALLL_ThrownObject::Deactivate()
-{
-	ILLL_ObjectPoolingObjectInterface::Deactivate();
-	
-	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	ProjectileMovementComponent->Deactivate();
-	SetActorHiddenInGame(true);
 }
