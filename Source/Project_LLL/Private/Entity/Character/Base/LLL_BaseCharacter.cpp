@@ -185,7 +185,7 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	}
 }
 
-void ALLL_BaseCharacter::Damaged()
+void ALLL_BaseCharacter::Damaged(bool IsDOT)
 {
 	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DamagedCueTag);
 }

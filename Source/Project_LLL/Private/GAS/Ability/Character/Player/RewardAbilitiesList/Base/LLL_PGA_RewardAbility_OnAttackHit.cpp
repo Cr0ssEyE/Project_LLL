@@ -7,8 +7,12 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "DataTable/LLL_AbilityDataTable.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
+#include "Util/LLL_AbilityDataHelper.h"
 
 void ULLL_PGA_RewardAbility_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -30,9 +34,20 @@ void ULLL_PGA_RewardAbility_OnAttackHit::OnTraceResultCallBack(const FGameplayAb
 		return;
 	}
 
-	for (auto Effect : OnAttackHitEffects)
+	ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
+	FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
+	
+	float MagnitudeValue = AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel();
+	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, MagnitudeValue);
+	FLLL_AbilityDataHelper::SetAbnormalStatusAbilityDuration(this, EffectHandle.Data);
+	
+	if (Effect->GetEffectApplyTarget() == EEffectApplyTarget::Self)
 	{
-		BP_ApplyGameplayEffectToTarget(TargetDataHandle, Effect, GetAbilityLevel());
+		K2_ApplyGameplayEffectSpecToOwner(EffectHandle);
+	}
+	else
+	{
+		K2_ApplyGameplayEffectSpecToTarget(EffectHandle, TargetDataHandle);
 	}
 }
 

@@ -13,14 +13,19 @@ UCLASS()
 class PROJECT_LLL_API ULLL_MonsterAttributeSet : public ULLL_CharacterAttributeSetBase
 {
 	GENERATED_BODY()
-
+	
 public:
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, DetectDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FieldOfView);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FindPatrolPosRadius);
 
+protected:
+	virtual void CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data);
+	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData AttackDistance;

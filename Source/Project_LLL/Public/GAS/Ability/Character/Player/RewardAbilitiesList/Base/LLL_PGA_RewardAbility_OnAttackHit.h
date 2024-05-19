@@ -25,6 +25,7 @@ protected:
 	void OnTraceEndCallBack(FGameplayEventData EventData);
 	
 protected:
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TArray<TSubclassOf<UGameplayEffect>> OnAttackHitEffects;
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "적중시 발생하는 GE")
+	TSubclassOf<UGameplayEffect> OnAttackHitEffect;
+
 };

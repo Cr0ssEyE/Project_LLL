@@ -160,17 +160,19 @@ void ALLL_MonsterBase::Charge() const
 	}
 }
 
-void ALLL_MonsterBase::Damaged()
+void ALLL_MonsterBase::Damaged(bool IsDOT)
 {
 	Super::Damaged();
 	
 	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(MonsterBaseAnimInstance))
 	{
-		MonsterBaseAnimInstance->StopAllMontages(1.0f);
-		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
-
-		FModAudioComponent->Stop();
+		if (!IsDOT)
+		{
+			MonsterBaseAnimInstance->StopAllMontages(1.0f);
+			PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+			FModAudioComponent->Stop();
+		}
 		// 경직 사운드 이벤트 할당
 		// 경직 사운드 플레이
 

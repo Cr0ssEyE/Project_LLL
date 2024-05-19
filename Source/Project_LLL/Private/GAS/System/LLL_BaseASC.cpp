@@ -25,6 +25,14 @@ void ULLL_BaseASC::BeginPlay()
 	}
 }
 
+FActiveGameplayEffectHandle ULLL_BaseASC::ApplyGameplayEffectSpecToSelf(const FGameplayEffectSpec& GameplayEffect,
+	FPredictionKey PredictionKey)
+{
+	CheckAbnormalEffect(GameplayEffect);
+	
+	return Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
+}
+
 void ULLL_BaseASC::ReceiveTargetData(const UGameplayAbility* OwnerAbility, const FGameplayAbilityTargetDataHandle& TargetDataHandle) const
 {
 	FGameplayAbilitySpec* Spec = FindAbilitySpecFromClass(OwnerAbility->GetClass());
@@ -42,6 +50,28 @@ void ULLL_BaseASC::OnFallableTagAdded(const FGameplayTag Tag, int32 count)
 		if (TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_FALLABLE)))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("낙하 상태로 전환 %s"), *Tag.GetTagName().ToString()));
+		}
+	}
+}
+
+void ULLL_BaseASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEffectSpec)
+{
+	if (GameplayEffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_BLEEDING))
+	{
+		TArray<FGameplayTag> EffectGrantTags = GameplayEffectSpec.Def->GetGrantedTags().GetGameplayTagArray();
+		if (EffectGrantTags.Find(TAG_GAS_STATUS_BLEEDING_BASE_ATTACK) != INDEX_NONE)
+		{
+			RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING_BASE_ATTACK));
+		}
+		
+		if (EffectGrantTags.Find(TAG_GAS_STATUS_BLEEDING_CHASE_ATTACK) != INDEX_NONE)
+		{
+			RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING_CHASE_ATTACK));
+		}
+
+		if (EffectGrantTags.Find(TAG_GAS_STATUS_BLEEDING_DASH_ATTACK) != INDEX_NONE)
+		{
+			RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING_DASH_ATTACK));
 		}
 	}
 }

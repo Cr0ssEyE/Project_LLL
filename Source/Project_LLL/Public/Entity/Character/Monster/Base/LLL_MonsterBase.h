@@ -31,7 +31,7 @@ protected:
 public:
 	void Attack() const;
 	void Charge() const;
-	virtual void Damaged() override;
+	virtual void Damaged(bool IsDOT) override;
 
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	virtual void ApplyStackedKnockBack() override;

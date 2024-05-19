@@ -9,6 +9,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 
 ULLL_CharacterAttributeSetBase::ULLL_CharacterAttributeSetBase()
 {
@@ -44,7 +45,7 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 	Super::PostGameplayEffectExecute(Data);
 
 	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
-	
+	bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
 	if(Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
 		if(GetCurrentShield() > 0.f)
@@ -72,13 +73,11 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 			}
 			else
 			{
-				Character->Damaged();
+				Character->Damaged(DOT);
 			}
 		}
-		OwnerCharacter->TakeDamageDelegate.Broadcast();
-		//OwnerCharacter->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_DAMAGED));
-
-		//05/11 조강건 코드리뷰 중 주석 추가
+		OwnerCharacter->TakeDamageDelegate.Broadcast(DOT);
+		
 		//어빌리티에게 피해를 입힌 대상을 전달하는 방법. TryActivate가 아닌 SendGameplayEvent라 Ability Triggers에 태그 할당 필요
 		FGameplayEventData PayloadData;
 		AActor* Instigator = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
@@ -92,3 +91,4 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 	}
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }
+

@@ -18,7 +18,10 @@ public:
 	ULLL_BaseASC();
 
 	virtual void BeginPlay() override;
+
+	virtual FActiveGameplayEffectHandle ApplyGameplayEffectSpecToSelf(const FGameplayEffectSpec& GameplayEffect, FPredictionKey PredictionKey) override;
 	
+public:
 	FTargetDataDelegate TargetDataDelegate;
 
 	void ReceiveTargetData(const UGameplayAbility* OwnerAbility, const FGameplayAbilityTargetDataHandle& TargetDataHandle) const;
@@ -26,5 +29,6 @@ public:
 protected:
 	// TODO: 플레이어랑 몬스터 ASC 분리하기
 	virtual void OnFallableTagAdded(const FGameplayTag Tag, int32 count);
-
+	virtual void CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEffectSpec);
+	
 };

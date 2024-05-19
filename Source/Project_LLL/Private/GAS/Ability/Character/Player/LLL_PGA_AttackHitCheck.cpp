@@ -60,7 +60,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	if (ComboEffectSpecHandle.IsValid())
 	{
 		ComboEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_COMBO_ADDITIVE, Magnitude);
-		ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, ComboEffectSpecHandle);
+		K2_ApplyGameplayEffectSpecToOwner(ComboEffectSpecHandle);
 	}
 	
 	// 맞은 액터 갯수만큼 스킬 게이지 증가
@@ -68,7 +68,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	if (SkillGaugeEffectSpecHandle.IsValid())
 	{
 		SkillGaugeEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_SKILL_GAUGE_ADDITIVE, Magnitude);
-		ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, SkillGaugeEffectSpecHandle);
+		K2_ApplyGameplayEffectSpecToOwner(SkillGaugeEffectSpecHandle);
 	}
 	
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect, CurrentNotifyLevel);

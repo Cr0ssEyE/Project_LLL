@@ -7,6 +7,14 @@
 #define TAG_GAS_COLLIDE_WALL FGameplayTag::RequestGameplayTag(FName("Character.Event.CollideWithWall"))
 #define TAG_GAS_DAMAGED FGameplayTag::RequestGameplayTag(FName("Character.Event.Damaged"))
 
+// 캐릭터 상태 관련 게임플레이 태그
+#define TAG_GAS_STATUS_BLEEDING FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding"))
+#define TAG_GAS_STATUS_BLEEDING_BASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding.FromBaseAttack"))
+#define TAG_GAS_STATUS_BLEEDING_CHASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding.FromChaseAttack"))
+#define TAG_GAS_STATUS_BLEEDING_DASH_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding.FromDash"))
+#define TAG_GAS_STATUS_MARKED FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Marked"))
+#define TAG_GAS_STATUS_TARGETED FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Targeted"))
+
 // 플레이어 이벤트 게임플레이 태그
 #define TAG_GAS_COMBO_ADDITIVE FGameplayTag::RequestGameplayTag(FName("Character.Player.Event.AddCombo"))
 #define TAG_GAS_COMBO_SUBTRACTIVE FGameplayTag::RequestGameplayTag(FName("Character.Player.Event.SubtractCombo"))
@@ -26,12 +34,11 @@
 #define TAG_GAS_PLAYER_STATE_CHASE_RETURNED FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaseReturned"))
 #define TAG_GAS_PLAYER_STATE_WAIT_ATTACK_INPUT FGameplayTag::RequestGameplayTag(FName("Character.Player.State.WaitAttackInput"))
 
-// 플레이어 공격 효과 관련 게임플레이 태그 (SetByCaller)
-#define TAG_GAS_BLEEDING_DAMAGE FGameplayTag::RequestGameplayTag(FName("System.AbnromalStatus.Bleeding.Damage"))
-#define TAG_GAS_MARK_STACK FGameplayTag::RequestGameplayTag(FName("System.AbnromalStatus.Mark.Stack"))
-
-// 플레이어 보상 어빌리티 관련 게임플레이 태그 (SetByCaller)
-#define TAG_GAS_EFFECT_DURATION FGameplayTag::RequestGameplayTag(FName("System.Ability.Duration"))
+// 플레이어 공격 효과 관련 게임플레이 태그
+#define TAG_GAS_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Bleeding"))
+#define TAG_GAS_MARK FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Mark"))
+#define TAG_GAS_TARGETING FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Targeting"))
+#define TAG_GAS_MARK_STACK FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Mark.Stack"))
 
 // 플레이어 부가 효과 구분용 게임플레이 태그
 #define TAG_GAS_PERKS_ATTACK FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Attack")
@@ -59,6 +66,9 @@
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))
+
+// 플레이어 보상 어빌리티 관련 게임플레이 태그 (SetByCaller)
+#define TAG_GAS_ABILITY_EFFECT_VALUE FGameplayTag::RequestGameplayTag(FName("Ability.EffectValue"))
 
 // 어빌리티 슬롯 관련 태그
 #define TAG_GAS_ABILITY_PART FGameplayTag::RequestGameplayTag(FName("AbilityPart"))
