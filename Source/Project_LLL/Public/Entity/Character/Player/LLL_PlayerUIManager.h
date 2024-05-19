@@ -27,7 +27,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 public:	
 	void TogglePauseWidget(bool IsDead) const;
 	void ToggleInventoryWidget() const;
@@ -46,7 +47,7 @@ public:
 
 protected:
 	virtual void UpdateWidget() override;
-	
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<ULLL_GamePauseWidget> GamePauseWidgetClass;

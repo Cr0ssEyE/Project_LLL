@@ -3,6 +3,7 @@
 
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 
+#include "Components/WidgetComponent.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
@@ -87,6 +88,17 @@ void ULLL_PlayerUIManager::BeginPlay()
 	}
 }
 
+void ULLL_PlayerUIManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwner());
+	/*if (Player->GetChaseActionGaugeWidgetComponent()->GetWidget())
+	{
+		ChaseActionWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
+	}*/
+	ChaseActionWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
+}
+
 void ULLL_PlayerUIManager::TogglePauseWidget(bool IsDead) const
 {
 	if(GamePauseWidget->GetIsEnabled())
@@ -167,8 +179,6 @@ void ULLL_PlayerUIManager::UpdateWidget()
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwner());
 	const ULLL_PlayerStatusWidget* PlayerStatusWidget = CastChecked<ULLL_PlayerStatusWidget>(CharacterStatusWidget);
 	PlayerStatusWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
-	ChaseActionWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
-	
 	Super::UpdateWidget();
 }
 

@@ -21,14 +21,16 @@ public:
 	FORCEINLINE TObjectPtr<UImage> GetCircleProgressBar() { return CircleProgressBar; }
 	
 	UFUNCTION()
-	void SetCircleProgressBarValue(const float value) const;
+	void SetCircleProgressBarValue(const float value);
 
-	void UpdateWidgetView(const UAbilitySystemComponent* CharacterASC) const;
+	void UpdateWidgetView(const UAbilitySystemComponent* CharacterASC);
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidget))
 	TObjectPtr<UImage> CircleProgressBar;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "MaterialVariable")
 	TObjectPtr<UMaterialInstanceDynamic> CircleProgressBarInstDynamic;
-	
+
+	UPROPERTY(VisibleAnywhere)
+	float ChaseGauge;
 };
