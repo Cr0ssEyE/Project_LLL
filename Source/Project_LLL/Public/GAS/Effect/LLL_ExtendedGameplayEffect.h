@@ -29,6 +29,7 @@ public:
 	FORCEINLINE EEffectAccessRange GetAccessRange() const { return EffectAccessRange; }
 	FORCEINLINE EEffectApplyTarget GetEffectApplyTarget() const { return EffectApplyTarget; }
 	FORCEINLINE int32 GetID() const { return Id; }
+	FORCEINLINE FAbilityDataTable* GetAbilityData() const { return AbilityData; }
 	FORCEINLINE void SetAbilityInfo(FAbilityDataTable* InAbilityData) { AbilityData = InAbilityData; }
 	
 protected:

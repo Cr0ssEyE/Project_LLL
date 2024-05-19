@@ -182,7 +182,13 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 			TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
 			for (auto EffectHandle : EffectHandles)
 			{
-				if (EffectHandle.IsValid() && ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def->GetAssetTags().HasTag(TAG_GAS_ABILITY_PART))
+				const ULLL_ExtendedGameplayEffect* ActiveEffect = Cast<ULLL_ExtendedGameplayEffect>(ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def);
+				if (!IsValid(ActiveEffect))
+				{
+					continue;
+				}
+				
+				if (EffectHandle.IsValid() && CurrentAbilityData->AbilityPart == ActiveEffect->GetAbilityData()->AbilityPart)
 				{
 					ASC->RemoveActiveGameplayEffect(EffectHandle);
 					for (auto GameplayTag : TagContainer.GetGameplayTagArray())
@@ -196,8 +202,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		// 단순 수치 변화는 여기에서 적용.
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
-
-		// TODO: ASC에서 어빌리티 부여시 ApplyGameplayEffectSpecToSelf 가상 함수 상속받아서 UI 관련 상호작용 구현.
+		
 		// 어빌리티 부여 계열
 		if (ULLL_GE_GiveAbilityComponent* AbilitiesGameplayEffectComponent = &Effect->FindOrAddComponent<ULLL_GE_GiveAbilityComponent>())
 		{
@@ -212,6 +217,8 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 			}
 		}
 	}
+
+	// TODO: UI 관련 상호작용 구현.
 	
 	CurrentAbilityData = nullptr;
 }

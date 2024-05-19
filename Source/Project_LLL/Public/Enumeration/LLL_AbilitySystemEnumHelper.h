@@ -30,6 +30,18 @@ enum class EEffectOwnerType : uint8
 	Object UMETA(Displayname="오브젝트")
 };
 
+// 플레이어가 가하는 피해 유형에 따른 이벤트 발동을 제어하기 위해 사용
+UENUM(BlueprintType)
+enum class EEffectDamageEventType : uint8
+{
+	None UMETA(Displayname="피해 X"),
+	BaseAttack UMETA(Displayname="기본 공격"),
+	ChaseAttack UMETA(Displayname="추격"),
+	Eruria UMETA(Displayname="이누리아"),
+	AbnormalStatus UMETA(Displayname="상태이상"),
+	Skill UMETA(Displayname="스킬") // 현재는 스킬 자체에 피해를 가하는 기능이 없지만 추가 개발 상황 고려
+};
+
 // 이펙트가 접근하는 범위에 대한 설정. 필터링 목적
 UENUM(BlueprintType)
 enum class EEffectAccessRange : uint8
