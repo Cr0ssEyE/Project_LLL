@@ -24,41 +24,45 @@ class PROJECT_LLL_API ULLL_AbnormalStatusAttributeSet : public UAttributeSet
 public:
 	ULLL_AbnormalStatusAttributeSet();
 
-	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, MarkStatusDuration);
+	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, MaxMarkStack);
 	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, MarkStatusDamageAmplifyPerStack);
-	
-	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, TargetingStatusDuration);
+	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, MarkStatusDuration);
+
 	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, TargetingStatusDamageAmplifyByNormal);
 	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, TargetingStatusDamageAmplifyByBoss);
+	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, TargetingStatusDuration);
 
-	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, BleedingStatusDuration);
 	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, BleedingStatusPeriod);
+	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, BleedingStatusDuration);
 	
 	// 표식
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MarkStatusDuration;
+	FGameplayAttributeData MaxMarkStack;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MarkStatusDamageAmplifyPerStack;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MarkStatusDuration;
+	
 	// 표적
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData TargetingStatusDuration;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData TargetingStatusDamageAmplifyByNormal;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData TargetingStatusDamageAmplifyByBoss;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData TargetingStatusDuration;
+	
 	// 출혈
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData BleedingStatusDuration;
+	FGameplayAttributeData BleedingStatusPeriod;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData BleedingStatusPeriod;
+	FGameplayAttributeData BleedingStatusDuration;
 	
 };

@@ -4,6 +4,7 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbility_OnAttackHit.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
@@ -17,8 +18,8 @@ void ULLL_PGA_RewardAbility_OnAttackHit::ActivateAbility(const FGameplayAbilityS
 	TargetDataTask->TargetDataReceivedDelegate.AddDynamic(this, &ULLL_PGA_RewardAbility_OnAttackHit::OnTraceResultCallBack);
 	TargetDataTask->ReadyForActivation();
 
-	UAbilityTask_WaitGameplayTagAdded* TraceEndTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, TAG_GAS_ATTACK_HIT_CHECK_COMPLETE);
-	TraceEndTask->Added.AddDynamic(this, &ULLL_PGA_RewardAbility_OnAttackHit::OnTraceEndCallBack);
+	UAbilityTask_WaitGameplayEvent* TraceEndTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_ATTACK_HIT_CHECK_COMPLETE);
+	TraceEndTask->EventReceived.AddDynamic(this, &ULLL_PGA_RewardAbility_OnAttackHit::OnTraceEndCallBack);
 	TraceEndTask->ReadyForActivation();
 }
 
@@ -35,7 +36,8 @@ void ULLL_PGA_RewardAbility_OnAttackHit::OnTraceResultCallBack(const FGameplayAb
 	}
 }
 
-void ULLL_PGA_RewardAbility_OnAttackHit::OnTraceEndCallBack()
+void ULLL_PGA_RewardAbility_OnAttackHit::OnTraceEndCallBack(FGameplayEventData EventData)
 {
+	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

@@ -9,8 +9,10 @@
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Game/ProtoGameInstance.h"
 #include "AbilitySystemComponent.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
+#include "GameplayEffectComponents/AssetTagsGameplayEffectComponent.h"
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
@@ -175,22 +177,28 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		}
 		
 		const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
-		TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
-		for (auto EffectHandle : EffectHandles)
+		if (TagContainer.HasTag(TAG_GAS_ABILITY_PART) && !TagContainer.HasTagExact(TAG_GAS_ABILITY_PART_COMMON))
 		{
-			if (EffectHandle.IsValid())
+			TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
+			for (auto EffectHandle : EffectHandles)
 			{
-				ASC->RemoveActiveGameplayEffect(EffectHandle);
-				for (auto GameplayTag : TagContainer.GetGameplayTagArray())
+				if (EffectHandle.IsValid() && ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def->GetAssetTags().HasTag(TAG_GAS_ABILITY_PART))
 				{
-					UE_LOG(LogTemp, Log, TEXT("- %s 태그를 가진 이펙트 삭제"), *GameplayTag.ToString());
+					ASC->RemoveActiveGameplayEffect(EffectHandle);
+					for (auto GameplayTag : TagContainer.GetGameplayTagArray())
+					{
+						UE_LOG(LogTemp, Log, TEXT("- %s 태그를 가진 이펙트 삭제"), *GameplayTag.ToString());
+					}
 				}
 			}
 		}
 
+		// 단순 수치 변화는 여기에서 적용.
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
 
+		// TODO: ASC에서 어빌리티 부여시 ApplyGameplayEffectSpecToSelf 가상 함수 상속받아서 UI 관련 상호작용 구현.
+		// 어빌리티 부여 계열
 		if (ULLL_GE_GiveAbilityComponent* AbilitiesGameplayEffectComponent = &Effect->FindOrAddComponent<ULLL_GE_GiveAbilityComponent>())
 		{
 			for (const auto& AbilitySpecConfig : AbilitiesGameplayEffectComponent->GetAbilitySpecConfigs())

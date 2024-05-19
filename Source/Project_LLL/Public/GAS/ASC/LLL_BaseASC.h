@@ -22,8 +22,9 @@ public:
 	FTargetDataDelegate TargetDataDelegate;
 
 	void ReceiveTargetData(const UGameplayAbility* OwnerAbility, const FGameplayAbilityTargetDataHandle& TargetDataHandle) const;
-	
+
 protected:
+	// TODO: 플레이어랑 몬스터 ASC 분리하기
 	virtual void OnFallableTagAdded(const FGameplayTag Tag, int32 count);
 
 };
