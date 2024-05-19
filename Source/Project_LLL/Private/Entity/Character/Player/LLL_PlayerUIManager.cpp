@@ -34,7 +34,6 @@ void ULLL_PlayerUIManager::BeginPlay()
 	GamePauseWidgetClass = PlayerBaseDataAsset->GamePauseWidgetClass;
 	InventoryWidgetClass = PlayerBaseDataAsset->InventoryWidgetClass;
 	InteractionWidgetClass = PlayerBaseDataAsset->InteractionWidgetClass;
-	SkillGaugeWidgetClass = PlayerBaseDataAsset->SkillGaugeWidgetClass;
 	SelectRewardWidgetClass = PlayerBaseDataAsset->SelectRewardWidgetClass;
 	ChaseActionWidgetClass = PlayerBaseDataAsset->ChaseActionWidgetClass;
 	ComboWidgetClass = PlayerBaseDataAsset->ComboWidgetClass;
@@ -66,13 +65,7 @@ void ULLL_PlayerUIManager::BeginPlay()
 		InteractionWidget->AddToViewport();
 		InteractionWidget->SetIsEnabled(false);
 	}
-
-	if(IsValid(SkillGaugeWidgetClass))
-	{
-		SkillGaugeWidget = CastChecked<ULLL_SkillWidget>(CreateWidget(GetWorld(), SkillGaugeWidgetClass));
-		SkillGaugeWidget->AddToViewport();
-	}
-
+	
 	if(IsValid(SelectRewardWidgetClass))
 	{
 		SelectRewardWidget = CastChecked<ULLL_SelectRewardWidget>(CreateWidget(GetWorld(), SelectRewardWidgetClass));
@@ -160,21 +153,21 @@ void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
 		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
 		InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
 		CharacterStatusWidget->SetVisibility(ESlateVisibility::Hidden);
-		SkillGaugeWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
 		GamePauseWidget->SetVisibility(ESlateVisibility::Visible);
 		InventoryWidget->SetVisibility(ESlateVisibility::Visible);
 		CharacterStatusWidget->SetVisibility(ESlateVisibility::Visible);
-		SkillGaugeWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
 void ULLL_PlayerUIManager::UpdateWidget()
 {
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwner());
-	SkillGaugeWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
+	const ULLL_PlayerStatusWidget* PlayerStatusWidget = CastChecked<ULLL_PlayerStatusWidget>(CharacterStatusWidget);
+	PlayerStatusWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
+	ChaseActionWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
 	
 	Super::UpdateWidget();
 }

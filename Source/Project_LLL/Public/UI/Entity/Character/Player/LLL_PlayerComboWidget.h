@@ -16,11 +16,14 @@ class PROJECT_LLL_API ULLL_PlayerComboWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	
 	FORCEINLINE void PlayComboTextAnimation() { PlayAnimation(ComboTextScaleChangeAnimation); }
 
 	void SetComboText(float value);
-	
+
 protected:
+	virtual void NativeConstruct() override;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidget))
 	TObjectPtr<UTextBlock> ComboCount;
 

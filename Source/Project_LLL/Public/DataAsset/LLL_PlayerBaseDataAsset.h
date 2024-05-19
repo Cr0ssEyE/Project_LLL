@@ -40,9 +40,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "상호작용 정보 UI")
 	TSubclassOf<ULLL_InteractionWidget> InteractionWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스킬 게이지 UI")
-	TSubclassOf<ULLL_SkillWidget> SkillGaugeWidgetClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "보상 선택 UI")
 	TSubclassOf<ULLL_SelectRewardWidget> SelectRewardWidgetClass;

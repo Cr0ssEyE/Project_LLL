@@ -7,6 +7,7 @@
 #include "LLL_PlayerChaseActionWidget.generated.h"
 
 class UImage;
+class UAbilitySystemComponent;
 /**
  * 
  */
@@ -19,13 +20,15 @@ public:
 
 	FORCEINLINE TObjectPtr<UImage> GetCircleProgressBar() { return CircleProgressBar; }
 	
+	UFUNCTION()
+	void SetCircleProgressBarValue(const float value) const;
+
+	void UpdateWidgetView(const UAbilitySystemComponent* CharacterASC) const;
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidget))
 	TObjectPtr<UImage> CircleProgressBar;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "MaterialVariable")
 	TObjectPtr<UMaterialInstanceDynamic> CircleProgressBarInstDynamic;
-
-	UFUNCTION(BlueprintCallable)
-	void SetCircleProgressBarValue(const float value);
+	
 };

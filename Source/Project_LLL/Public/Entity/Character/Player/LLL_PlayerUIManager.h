@@ -42,6 +42,7 @@ public:
 	FORCEINLINE ULLL_InteractionWidget* GetInteractionWidget() const { return InteractionWidget; }
 	FORCEINLINE ULLL_SelectRewardWidget* GetSelectRewardWidget() const { return SelectRewardWidget; }
 	FORCEINLINE ULLL_PlayerChaseActionWidget* GetChaseActionWidget() const { return ChaseActionWidget; }
+	FORCEINLINE ULLL_PlayerComboWidget* GetComboWidget() const { return ComboWidget; }
 
 protected:
 	virtual void UpdateWidget() override;
@@ -64,12 +65,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_InteractionWidget> InteractionWidget;
-
-	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<ULLL_SkillWidget> SkillGaugeWidgetClass;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_SkillWidget> SkillGaugeWidget;
 
 	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<ULLL_SelectRewardWidget> SelectRewardWidgetClass;

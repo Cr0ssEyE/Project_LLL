@@ -118,11 +118,13 @@ void ALLL_PlayerBase::BeginPlay()
 		IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, 1.f, true);
 	}
 
-	ChaseActionGaugeWidgetComponent->SetWidget(PlayerUIManager->GetChaseActionWidget());
+	ULLL_PlayerChaseActionWidget* ChaseActionWidget = PlayerUIManager->GetChaseActionWidget();
+	ChaseActionGaugeWidgetComponent->SetWidget(ChaseActionWidget);
 	ChaseActionGaugeWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	ChaseActionGaugeWidgetComponent->SetRelativeLocation(PlayerDataAsset->ChaseActionGaugeLocation);
 	ChaseActionGaugeWidgetComponent->SetDrawSize(PlayerDataAsset->ChaseActionGaugeSize);
 	ChaseActionGaugeWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ChaseActionWidget->SetCircleProgressBarValue(1.0f);
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
