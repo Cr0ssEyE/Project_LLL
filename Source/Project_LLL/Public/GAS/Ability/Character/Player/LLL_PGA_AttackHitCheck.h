@@ -51,7 +51,4 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<ULLL_AT_Trace> TraceTask;
-	
-	float CurrentLevel = 0;
-	
 };

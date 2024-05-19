@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "Interface/LLL_EntityInterface.h"
+#include "Interface/LLL_FModInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
 class UFMODAudioComponent;
@@ -26,7 +27,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface, public ILLL_EntityInterface
+class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface, public ILLL_EntityInterface, public ILLL_FModInterface
 {
 	GENERATED_BODY()
 
@@ -39,7 +40,7 @@ public:
 	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
 	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
-	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
+	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
 
 	// 플레이어
 protected:

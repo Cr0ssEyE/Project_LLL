@@ -23,6 +23,8 @@ ULLL_PGA_KnockBack::ULLL_PGA_KnockBack()
 void ULLL_PGA_KnockBack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	CurrentNotifyLevel = TriggerEventData->EventMagnitude;
 	
 	ULLL_AT_WaitTargetData* TargetDataTask = ULLL_AT_WaitTargetData::CreateTask(this, ALLL_MonsterBase::StaticClass(), false, false);
 	TargetDataTask->TargetDataReceivedDelegate.AddDynamic(this, &ULLL_PGA_KnockBack::OnTraceResultCallBack);
@@ -48,7 +50,7 @@ void ULLL_PGA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataH
 		if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor))
 		{
 			const FVector LaunchDirection = (Actor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
-			const float KnockBackPower = PlayerCharacterAttributeSet->GetKnockBackPower() * KnockBackMultiplier;
+			const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerCharacterAttributeSet, CurrentNotifyLevel);
 			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
 			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 		}
@@ -56,7 +58,7 @@ void ULLL_PGA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataH
 		// 만약 넉백 당하지는 않지만 넉백 관련 이벤트가 있는 대상일 경우를 위해 위와 별도 처리
 		if (Cast<IAbilitySystemInterface>(Actor))
 		{
-			BP_ApplyGameplayEffectToTarget(TargetDataHandle, KnockBackEffect);
+			BP_ApplyGameplayEffectToTarget(TargetDataHandle, KnockBackEffect, CurrentNotifyLevel);
 		}
 	}
 }

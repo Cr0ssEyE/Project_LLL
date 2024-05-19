@@ -29,9 +29,10 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashInvincibleTime);
 	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackPower);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackDamage);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackInfluence);
-
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackRate);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackOffensePowerRate);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FalloutablePower);
+	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseActionDamageAmplify);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseCoolDown);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseReduceCoolDownPerHit);
@@ -101,10 +102,13 @@ protected:
 	FGameplayAttributeData KnockBackPower;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData KnockBackDamage;
+	FGameplayAttributeData KnockBackRate;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData KnockBackInfluence;
+	FGameplayAttributeData KnockBackOffensePowerRate;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData FalloutablePower;
 	
 	// 콤보 관련
 protected:

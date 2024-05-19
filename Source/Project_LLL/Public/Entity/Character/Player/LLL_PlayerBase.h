@@ -12,6 +12,7 @@
 #include "LLL_PlayerBase.generated.h"
 
 class ULLL_PlayerSkillAttributeSet;
+class ULLL_ObjectPoolingComponent;
 class ALLL_PlayerChaseHand;
 class ULLL_PlayerCharacterAttributeSet;
 class ULLL_PlayerWeaponComponent;
@@ -51,7 +52,8 @@ public:
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ALLL_PlayerChaseHand* GetChaseHand() const { return ChaseHandActor; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
-
+	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
+	
 	FVector GetMouseLocation() const;
 	void PlayerRotateToMouseCursor();
 	
@@ -125,6 +127,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerGoldComponent> GoldComponent;
 
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<ULLL_ObjectPoolingComponent> ObjectPoolingComponent;
 	//UI 관련
 protected:
 	UPROPERTY(VisibleAnywhere)
