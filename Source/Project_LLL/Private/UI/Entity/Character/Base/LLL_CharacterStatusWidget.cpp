@@ -16,8 +16,6 @@ void ULLL_CharacterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeS
 {
 	const float MaxHealth = CharacterAttributeSet->GetMaxHealth();
 	const float CurrentHealth = CharacterAttributeSet->GetCurrentHealth();
-	const float MaxShield = CharacterAttributeSet->GetMaxShield();
-	const float CurrentShield = CharacterAttributeSet->GetCurrentShield();
 	
 	if(MaxHealth)
 	{
@@ -27,12 +25,5 @@ void ULLL_CharacterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeS
 	{
 		HealthGaugeBar->SetPercent(0.f);
 	}
-	if(MaxShield)
-	{
-		ShieldGaugeBar->SetPercent(CurrentShield / MaxShield);
-	}
-	else
-	{
-		ShieldGaugeBar->SetPercent(0.f);
-	}
+	
 }

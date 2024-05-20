@@ -22,6 +22,7 @@ class ULLL_PlayerUIManager;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
+class UWidgetComponent;
 
 /**
  * 
@@ -52,6 +53,7 @@ public:
 	FORCEINLINE ALLL_PlayerChaseHand* GetChaseHand() const { return ChaseHandActor; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
+	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
 	
 	FVector GetMouseLocation() const;
 	void PlayerRotateToMouseCursor();
@@ -128,4 +130,8 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_ObjectPoolingComponent> ObjectPoolingComponent;
+	//UI 관련
+protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetComponent> ChaseActionGaugeWidgetComponent;
 };
