@@ -8,6 +8,7 @@
 #include "Entity/Character/Monster/Melee/Base/LLL_MeleeMonster.h"
 #include "LLL_SwordDash.generated.h"
 
+class ULLL_SwordDashAttributeSet;
 class UBoxComponent;
 /**
  * 
@@ -31,6 +32,9 @@ public:
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_SwordDashDataAsset> SwordDashDataAsset;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<ULLL_SwordDashAttributeSet> SwordDashAttributeSet;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UBoxComponent> DashDamageRangeBox;

@@ -111,9 +111,6 @@ void ALLL_PlayerBase::BeginPlay()
 		}
 
 		ASC->AddSpawnedAttribute(SkillAttributeSet);
-
-		// DefaultGame.ini의 [/Script/GameplayAbilities.AbilitySystemGlobals] 항목에 테이블 미리 추가해놔야 정상 작동함.
-		IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, 1.f, true);
 	}
 }
 
@@ -168,6 +165,14 @@ void ALLL_PlayerBase::PossessedBy(AController* NewController)
 	{
 		PlayerController->SetAudioListenerOverride(SpringArm, FVector::ZeroVector, FRotator::ZeroRotator);
 	}
+}
+
+void ALLL_PlayerBase::InitAttributeSet()
+{
+	Super::InitAttributeSet();
+
+	// DefaultGame.ini의 [/Script/GameplayAbilities.AbilitySystemGlobals] 항목에 테이블 미리 추가해놔야 정상 작동함.
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, Level, true);
 }
 
 void ALLL_PlayerBase::AddInteractiveObject(ALLL_InteractiveObject* Object)
@@ -234,11 +239,11 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 	{
 		return FVector::Zero();
 	}
-	
-	FVector TrueMouseWorldLocation = HitResult.ImpactPoint;
+
+	const FVector TrueMouseWorldLocation = HitResult.ImpactPoint;
 	
 	HitResult.Init();
-	float CorrectionCheckRadius = Cast<ULLL_PlayerCharacterAttributeSet>(CharacterAttributeSet)->GetTargetingCorrectionRadius();
+	const float CorrectionCheckRadius = Cast<ULLL_PlayerCharacterAttributeSet>(CharacterAttributeSet)->GetTargetingCorrectionRadius();
 	bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
 		TrueMouseWorldLocation,
@@ -250,7 +255,7 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 		);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug() || ProtoGameInstance->CheckPlayerChaseActionDebug())
 		{
@@ -269,9 +274,9 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 	}
 #endif
 	
-	if(bResult)
+	if (bResult)
 	{
-		FVector CorrectedMouseLocation = HitResult.GetActor()->GetActorLocation();
+		const FVector CorrectedMouseLocation = HitResult.GetActor()->GetActorLocation();
 		return CorrectedMouseLocation;
 	}
 	

@@ -8,19 +8,23 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_Monster_Id.h"
 #include "DataAsset/LLL_SwordDashDataAsset.h"
 #include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDashAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "GAS/Attribute/Character/Monster/Base/LLL_MonsterAttributeSet.h"
 #include "GAS/Attribute/Character/Monster/MeleeMonster/SwordDash/LLL_SwordDashAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_SwordDash::ALLL_SwordDash()
 {
-	CharacterAttributeSet = CreateDefaultSubobject<ULLL_SwordDashAttributeSet>(TEXT("SwordDashAttributeSet"));
+	SwordDashAttributeSet = CreateDefaultSubobject<ULLL_SwordDashAttributeSet>(TEXT("SwordDashAttributeSet"));
 	
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_SwordDashDataAsset>(PATH_SWORD_DASH_DATA, EAssertionLevel::Check);
 	AIControllerClass = ALLL_SwordDashAIController::StaticClass();
+
+	Id = ID_SWORD_DASH;
 
 	DashDamageRangeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	DashDamageRangeBox->SetCollisionProfileName(CP_INTERACTION);
@@ -36,9 +40,10 @@ void ALLL_SwordDash::BeginPlay()
 	Super::BeginPlay();
 
 	SwordDashDataAsset = Cast<ULLL_SwordDashDataAsset>(MeleeMonsterDataAsset);
+
+	//CastChecked<ULLL_MonsterAttributeSet>(CharacterAttributeSet)->OnLoadMaxHealthDelegate.AddDynamic();
 	
 	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
-		const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(ASC->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
 		DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), SwordDashAttributeSet->GetDashDamageRange(), SwordDashAttributeSet->GetDashDamageRange()));
 	}));
 
