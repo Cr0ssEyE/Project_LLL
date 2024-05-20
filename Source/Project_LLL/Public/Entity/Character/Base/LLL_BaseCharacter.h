@@ -78,9 +78,6 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_CharacterAttributeSetBase> CharacterAttributeSet;
 	
 	// 캐릭터 공용 변수
 protected:

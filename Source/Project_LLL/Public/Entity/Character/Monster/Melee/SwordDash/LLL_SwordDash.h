@@ -41,4 +41,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMeshComponent> SwordMeshComponent;
+
+	// Todo : 어빌리티 작업이 끝난 후 커브 데이터로 옮기기
+	TSubclassOf<UGameplayEffect> InitEffect;
 };

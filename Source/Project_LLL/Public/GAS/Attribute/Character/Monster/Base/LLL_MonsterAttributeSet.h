@@ -6,8 +6,6 @@
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 #include "LLL_MonsterAttributeSet.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLoadAttributeDataDelegate, float, Value);
-
 /**
  * 
  */
@@ -19,20 +17,25 @@ class PROJECT_LLL_API ULLL_MonsterAttributeSet : public ULLL_CharacterAttributeS
 public:
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, DetectDistance);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, ChargeTimer);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FieldOfView);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FindPatrolPosRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, DestroyTimer);
-
-	FOnLoadAttributeDataDelegate OnLoadMaxHealthDelegate;
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData1);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData2);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData3);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData4);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData5);
 
 protected:
-	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData AttackDistance;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DetectDistance;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ChargeTimer;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData FieldOfView;
@@ -42,4 +45,19 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DestroyTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData1;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData3;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData4;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData5;
 };

@@ -45,6 +45,9 @@ protected:
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 
 	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_MonsterAttributeSet> MonsterAttributeSet;
+
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> MonsterStatusWidgetComponent;
 
 	FVector StackedKnockBackVelocity;

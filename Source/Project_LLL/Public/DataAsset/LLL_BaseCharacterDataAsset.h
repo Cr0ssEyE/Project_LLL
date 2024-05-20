@@ -38,9 +38,6 @@ public:
 	FVector MeshSize = FVector::OneVector;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
-	TSubclassOf<UGameplayEffect> InitEffect;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "발동형 게임플레이 어빌리티")
 	TArray<TSubclassOf<UGameplayAbility>> ActiveGameplayAbility;
 	

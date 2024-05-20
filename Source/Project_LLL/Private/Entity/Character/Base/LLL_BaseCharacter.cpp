@@ -127,21 +127,6 @@ void ALLL_BaseCharacter::BeginPlay()
 			}
 		}
 
-		// GE 기반으로 자신의 어트리뷰트 초기화
-		ASC->AddSpawnedAttribute(CharacterAttributeSet);
-		
-		// TODO: 각 캐릭터 별로 테이블로 초기화 하도록 구현하기. 방법은 노션 https://abit.ly/6mlijv 및 LLL_PlayerBase 참고
-		/*if (IsValid(CharacterDataAsset->InitEffect))
-		{
-			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-			EffectContextHandle.AddSourceObject(this);
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(CharacterDataAsset->InitEffect, 1.0, EffectContextHandle);
-			if(EffectSpecHandle.IsValid())
-			{
-				ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-			}
-		}*/
-
 		UpdateWidgetDelegate.Broadcast();
 	}
 
@@ -156,12 +141,12 @@ void ALLL_BaseCharacter::BeginPlay()
 
 void ALLL_BaseCharacter::InitAttributeSet()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s 어트리뷰트 초기화"), *GetName())
+	UE_LOG(LogTemp, Log, TEXT("%s 어트리뷰트 초기화 리스트"), *GetName())
 
-	auto asdf = ASC->GetSpawnedAttributes();
-	for (auto Asdf : asdf)
+	TArray<UAttributeSet*> SpawnedAttributes = ASC->GetSpawnedAttributes();
+	for (const auto SpawnedAttribute : SpawnedAttributes)
 	{
-		UE_LOG(LogTemp, Log, TEXT("- %s"), *Asdf->GetName())
+		UE_LOG(LogTemp, Log, TEXT("- %s"), *SpawnedAttribute->GetName())
 	}
 }
 

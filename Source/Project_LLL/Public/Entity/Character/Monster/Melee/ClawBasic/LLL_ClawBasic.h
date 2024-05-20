@@ -7,6 +7,8 @@
 #include "Entity/Character/Monster/Melee/Base/LLL_MeleeMonster.h"
 #include "LLL_ClawBasic.generated.h"
 
+class ULLL_ClawBasicAttributeSet;
+
 UCLASS()
 class PROJECT_LLL_API ALLL_ClawBasic : public ALLL_MeleeMonster
 {
@@ -20,4 +22,7 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_ClawBasicDataAsset> ClawBasicDataAsset;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_ClawBasicAttributeSet> ClawBasicAttributeSet;
 };

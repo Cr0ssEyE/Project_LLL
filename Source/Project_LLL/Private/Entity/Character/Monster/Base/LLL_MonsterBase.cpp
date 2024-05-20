@@ -29,7 +29,7 @@
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
-	CharacterAttributeSet = CreateDefaultSubobject<ULLL_MonsterAttributeSet>(TEXT("MonsterAttributeSet"));
+	MonsterAttributeSet = CreateDefaultSubobject<ULLL_MonsterAttributeSet>(TEXT("MonsterAttributeSet"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("MonsterUIManageComponent"));
 	MonsterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("MonsterStatusWidgetComponent"));
 	
@@ -51,6 +51,9 @@ void ALLL_MonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
+	ASC->AddSpawnedAttribute(MonsterAttributeSet);
+
 	ASC->AddSpawnedAttribute(DropGoldAttributeSet);
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
@@ -59,8 +62,6 @@ void ALLL_MonsterBase::BeginPlay()
 	{
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}
-	
-	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
 
 	MonsterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
 	MonsterStatusWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
@@ -100,8 +101,7 @@ void ALLL_MonsterBase::InitAttributeSet()
 {
 	Super::InitAttributeSet();
 
-	//const int32 Data = Id * 100 + Level;
-	const int32 Data = 1;
+	const int32 Data = Id * 100 + Level;
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_MONSTER, Data, true);
 }
 
@@ -134,7 +134,7 @@ void ALLL_MonsterBase::Dead()
 
 	MonsterStatusWidgetComponent->SetHiddenInGame(true);
 
-	const float DestroyTimer = CastChecked<ULLL_MonsterAttributeSet>(CharacterAttributeSet)->GetDestroyTimer();
+	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();
 	FTimerHandle DestroyTimerHandle;
 	GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		Destroy();

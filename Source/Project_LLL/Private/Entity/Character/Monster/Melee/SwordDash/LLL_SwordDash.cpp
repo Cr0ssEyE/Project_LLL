@@ -33,6 +33,9 @@ ALLL_SwordDash::ALLL_SwordDash()
 	SwordMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sword"));
 	SwordMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	SwordMeshComponent->SetupAttachment(RootComponent);
+
+	// Todo : 어빌리티 작업이 끝난 후 커브 데이터로 옮기기
+	InitEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/Character/Monster/MeleeMonster/SwordDash/BPGE_SwordDash_Attribute_Initialize.BPGE_SwordDash_Attribute_Initialize_C'"), EAssertionLevel::Check);
 }
 
 void ALLL_SwordDash::BeginPlay()
@@ -41,7 +44,17 @@ void ALLL_SwordDash::BeginPlay()
 
 	SwordDashDataAsset = Cast<ULLL_SwordDashDataAsset>(MeleeMonsterDataAsset);
 
-	//CastChecked<ULLL_MonsterAttributeSet>(CharacterAttributeSet)->OnLoadMaxHealthDelegate.AddDynamic();
+	// Todo : 어빌리티 작업이 끝난 후 커브 데이터로 옮기기
+	if (IsValid(InitEffect))
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(InitEffect, 1.0, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
 	
 	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
 		DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), SwordDashAttributeSet->GetDashDamageRange(), SwordDashAttributeSet->GetDashDamageRange()));
