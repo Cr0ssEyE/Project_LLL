@@ -70,7 +70,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 		SkillGaugeEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_SKILL_GAUGE_ADDITIVE, Magnitude);
 		ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, SkillGaugeEffectSpecHandle);
 	}
-	
+
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect, CurrentNotifyLevel);
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect);
 

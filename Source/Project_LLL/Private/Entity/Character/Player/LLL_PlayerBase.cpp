@@ -11,6 +11,7 @@
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Constant/LLL_AnimMontageSlotName.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -59,12 +60,15 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 
 	SpringArm->TargetArmLength = 0.f;
 	SpringArm->bDoCollisionTest = false;
+	SpringArm->bEnableCameraLag = true;
 	SpringArm->bUsePawnControlRotation = false;
 	SpringArm->bInheritPitch = false;
 	SpringArm->bInheritYaw = false;
 	SpringArm->bInheritRoll = false;
 	SpringArm->SetUsingAbsoluteRotation(true);
-	SpringArm->SetupAttachment(RootComponent);
+	// SpringArm->SetupAttachment(RootComponent);
+
+	LastCheckedMouseLocation = FVector::Zero();
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -133,7 +137,8 @@ void ALLL_PlayerBase::BeginPlay()
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
+
+	MoveCameraToMouseCursor();
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -226,7 +231,7 @@ void ALLL_PlayerBase::RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObje
 	}
 }
 
-FVector ALLL_PlayerBase::GetMouseLocation() const
+FVector ALLL_PlayerBase::CheckMouseLocation()
 {
 	const APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	FVector MouseWorldLocation;
@@ -240,7 +245,7 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 		HitResult,
 		MouseWorldLocation,
 		MouseWorldLocation + MouseWorldDirection * 10000.f,
-		ECC_WorldStatic
+		ECC_TRACE_FIELD
 	);
 	
 	if (!bResult)
@@ -248,16 +253,16 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 		return FVector::Zero();
 	}
 	
-	FVector TrueMouseWorldLocation = HitResult.ImpactPoint;
+	LastCheckedMouseLocation = HitResult.ImpactPoint;
 	
 	HitResult.Init();
 	float CorrectionCheckRadius = Cast<ULLL_PlayerCharacterAttributeSet>(CharacterAttributeSet)->GetTargetingCorrectionRadius();
 	bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
-		TrueMouseWorldLocation,
-		TrueMouseWorldLocation,
+		LastCheckedMouseLocation,
+		LastCheckedMouseLocation,
 		FQuat::Identity,
-		ECC_ENTITY_CHECK,
+		ECC_ENEMY_HIT,
 		FCollisionShape::MakeSphere(CorrectionCheckRadius),
 		Params
 		);
@@ -268,15 +273,15 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug() || ProtoGameInstance->CheckPlayerChaseActionDebug())
 		{
 			DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
-			DrawDebugPoint(GetWorld(), TrueMouseWorldLocation, 10.f, FColor::Red, false, 3.f);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("마우스 월드 좌표: %f, %f, %f"), TrueMouseWorldLocation.X, TrueMouseWorldLocation.Y, TrueMouseWorldLocation.Z));
+			DrawDebugPoint(GetWorld(), LastCheckedMouseLocation, 10.f, FColor::Red, false, 3.f);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("마우스 월드 좌표: %f, %f, %f"), LastCheckedMouseLocation.X, LastCheckedMouseLocation.Y, LastCheckedMouseLocation.Z));
 			if(bResult)
 			{
-				DrawDebugSphere(GetWorld(), TrueMouseWorldLocation, PlayerDataAsset->MouseCursorCorrectRadius, 16, FColor::Green, false, 2.f);
+				DrawDebugSphere(GetWorld(), LastCheckedMouseLocation, CorrectionCheckRadius, 16, FColor::Green, false, 2.f);
 			}
 			else
 			{
-				DrawDebugSphere(GetWorld(), TrueMouseWorldLocation, PlayerDataAsset->MouseCursorCorrectRadius, 16, FColor::Red, false, 2.f);
+				DrawDebugSphere(GetWorld(), LastCheckedMouseLocation, CorrectionCheckRadius, 16, FColor::Red, false, 2.f);
 			}
 		}
 	}
@@ -284,11 +289,10 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 	
 	if(bResult)
 	{
-		FVector CorrectedMouseLocation = HitResult.GetActor()->GetActorLocation();
-		return CorrectedMouseLocation;
+		LastCheckedMouseLocation = HitResult.GetActor()->GetActorLocation();
 	}
 	
-	return TrueMouseWorldLocation;
+	return LastCheckedMouseLocation;
 }
 
 void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
@@ -414,12 +418,66 @@ void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }
 
-void ALLL_PlayerBase::PlayerRotateToMouseCursor()
+void ALLL_PlayerBase::PlayerRotateToMouseCursor(float RotationMultiplyValue, bool UseLastLocation)
 {
-	const FVector MouseWorldLocation = GetMouseLocation();
+	FVector MouseWorldLocation;
+	if (UseLastLocation)
+	{
+		MouseWorldLocation = LastCheckedMouseLocation;
+	}
+	else
+	{
+		MouseWorldLocation = CheckMouseLocation();
+	}
+	
 	FVector ViewDirection = (MouseWorldLocation - GetActorLocation()).GetSafeNormal();
 	ViewDirection.Z = 0.f;
-	SetActorRotation(ViewDirection.Rotation());
+	MouseDirectionRotator = ViewDirection.Rotation();
+	ToCursorRotationMultiplyValue = RotationMultiplyValue;
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
+}
+
+void ALLL_PlayerBase::TurnToMouseCursor()
+{
+	if (GetActorRotation() == MouseDirectionRotator || !GetCharacterAnimInstance()->IsSlotActive(ANIM_SLOT_ATTACK))
+	{
+		return;
+	}
+	
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), MouseDirectionRotator, GetWorld()->GetDeltaSeconds(), CharacterAttributeSet->GetTurnSpeed() * ToCursorRotationMultiplyValue));
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
+}
+
+void ALLL_PlayerBase::MoveCameraToMouseCursor()
+{
+	const APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	FVector2d MouseScreenLocation;
+	FVector2d ScreenViewport;
+	int32 ViewportX;
+	int32 ViewportY;
+	PlayerController->GetMousePosition(MouseScreenLocation.X, MouseScreenLocation.Y);
+	PlayerController->GetViewportSize(ViewportX, ViewportY);
+	ScreenViewport.X = ViewportX;
+	ScreenViewport.Y = ViewportY;
+	
+	FVector2d MovementDirection = (MouseScreenLocation / ScreenViewport - FVector2d(0.5f, 0.5f)) * FVector2d(1.f, -1.f);
+	FVector CameraMoveVector = FVector(MovementDirection.X, MovementDirection.Y, 0.f);
+	CameraMoveVector = SpringArm->GetDesiredRotation().UnrotateVector(CameraMoveVector);
+	
+	CameraMoveVector *= 500.f;
+	SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
+}
+
+void ALLL_PlayerBase::Damaged()
+{
+	Super::Damaged();
+
+	if (IsValid(PlayerDataAsset->DamagedAnimMontage))
+	{
+		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
+	}
 	
 }
 
@@ -430,9 +488,12 @@ void ALLL_PlayerBase::Dead()
 	// TODO: 목숨 같은거 생기면 사이에 추가하기
 	
 	DisableInput(Cast<APlayerController>(GetController()));
-
-	PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
-	PlayerAnimInstance->PlayDeadAnimation();
+	
+	PlayerAnimInstance->StopAllMontages(1.f);
+	if (IsValid(PlayerDataAsset->DeadAnimMontage))
+	{
+		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DeadAnimMontage);
+	}
 }
 
 void ALLL_PlayerBase::DeadMotionEndedHandle()
