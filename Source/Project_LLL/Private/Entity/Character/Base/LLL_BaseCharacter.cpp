@@ -206,5 +206,7 @@ void ALLL_BaseCharacter::Dead()
 
 	CharacterDeadDelegate.Broadcast(this);
 
+	ASC->CancelAbilities();
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("캐릭터 사망")));
 	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DeadCueTag);
 }
