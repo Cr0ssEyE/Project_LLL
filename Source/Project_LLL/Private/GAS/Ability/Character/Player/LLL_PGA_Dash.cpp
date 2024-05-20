@@ -176,7 +176,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 
 void ULLL_PGA_Dash::CheckInputPressed(FGameplayEventData EventData)
 {
-	if (!bIsInputPressed || CurrentDashCount >= MaxDashCount)
+ 	if (!bIsInputPressed || CurrentDashCount >= MaxDashCount)
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
