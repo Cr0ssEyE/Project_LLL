@@ -16,7 +16,6 @@ class PROJECT_LLL_API ULLL_MonsterAttributeSet : public ULLL_CharacterAttributeS
 
 public:
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackDistance);
-	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, DetectDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FieldOfView);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FindPatrolPosRadius);
@@ -24,9 +23,6 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData AttackDistance;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData AttackRadius;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DetectDistance;

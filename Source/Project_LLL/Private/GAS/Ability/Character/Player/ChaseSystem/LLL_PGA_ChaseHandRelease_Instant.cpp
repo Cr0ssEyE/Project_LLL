@@ -4,7 +4,7 @@
 #include "GAS/Ability/Character/Player/ChaseSystem/LLL_PGA_ChaseHandRelease_Instant.h"
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
+#include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
 
 ULLL_PGA_ChaseHandRelease_Instant::ULLL_PGA_ChaseHandRelease_Instant()
 {

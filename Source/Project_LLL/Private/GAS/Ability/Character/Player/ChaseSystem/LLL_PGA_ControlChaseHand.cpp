@@ -8,7 +8,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
+#include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
 
 ULLL_PGA_ControlChaseHand::ULLL_PGA_ControlChaseHand()
