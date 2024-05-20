@@ -123,14 +123,14 @@ public:
 		return CalculateResult;
 	}
 
-	static float CalculateKnockBackPower(const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet, const float NotifyLevel = 1.f)
+	static float CalculateKnockBackPower(const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet, const float ActionAmplify = 1.f)
 	{
 		if (!IsValid(PlayerCharacterAttributeSet))
 		{
 			return 0.f;
 		}
 		
-		const float CalculateResult = PlayerCharacterAttributeSet->GetKnockBackPower() * NotifyLevel + PlayerCharacterAttributeSet->GetOffensePower() * PlayerCharacterAttributeSet->GetKnockBackOffensePowerRate();
+		const float CalculateResult = (PlayerCharacterAttributeSet->GetKnockBackPower() + PlayerCharacterAttributeSet->GetOffensePower() * PlayerCharacterAttributeSet->GetKnockBackOffensePowerRate()) * ActionAmplify;
 		return CalculateResult;
 	}
 	

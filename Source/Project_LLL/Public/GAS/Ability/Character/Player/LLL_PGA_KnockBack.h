@@ -16,9 +16,6 @@ class PROJECT_LLL_API ULLL_PGA_KnockBack : public ULLL_PlayerGameplayAbilityBase
 {
 	GENERATED_BODY()
 
-public:
-	ULLL_PGA_KnockBack();
-
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
@@ -33,6 +30,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "넉백 발생시 적용 GE")
 	TSubclassOf<UGameplayEffect> KnockBackEffect;
 
-	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "넉백 발생시 넉백 거리 배율")
-	float KnockBackMultiplier;
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName ="커브 테이블 내 액션 넉백 배율 변화값 행")
+	FCurveTableRowHandle KnockBackAmplifyChangeSection;
 };
