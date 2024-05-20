@@ -5,7 +5,6 @@
 #include "Components/Image.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
-#include "GAS/Attribute/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
 
 void ULLL_PlayerChaseActionWidget::NativeConstruct()
 {
