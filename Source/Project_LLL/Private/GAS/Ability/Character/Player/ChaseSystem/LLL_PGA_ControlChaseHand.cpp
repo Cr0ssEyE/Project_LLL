@@ -6,11 +6,13 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
+#include "Components/SphereComponent.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
+#include "GAS/Attribute/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
 
 ULLL_PGA_ControlChaseHand::ULLL_PGA_ControlChaseHand()
 {
@@ -92,7 +94,10 @@ void ULLL_PGA_ControlChaseHand::ThrowHand(const FGameplayEventData EventData)
 	}
 
 	PlayerCharacter->GetMesh()->HideBoneByName(BONE_PLAYER_LEFT_WEAPON, PBO_Term);
-	const FGameplayTagContainer ThrowHandTags(TAG_GAS_CHASER_THROW);
-	HandASC->TryActivateAbilitiesByTag(ThrowHandTags);
+
+	const ULLL_PlayerChaseHandAttributeSet* ChaseHandAttributeSet = Cast<ULLL_PlayerChaseHandAttributeSet>(PlayerChaseHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerChaseHandAttributeSet::StaticClass()));
+	PlayerChaseHand->GetCollisionComponent()->SetSphereRadius(ChaseHandAttributeSet->GetGrabCollisionRadius());
+	
+	HandASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_THROW));
 	bIsAlreadyThrown = true;
 }

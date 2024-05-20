@@ -249,7 +249,7 @@ FVector ALLL_PlayerBase::CheckMouseLocation()
 		LastCheckedMouseLocation,
 		LastCheckedMouseLocation,
 		FQuat::Identity,
-		ECC_ENTITY_CHECK,
+		ECC_ENEMY_HIT,
 		FCollisionShape::MakeSphere(CorrectionCheckRadius),
 		Params
 		);
@@ -264,11 +264,11 @@ FVector ALLL_PlayerBase::CheckMouseLocation()
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("마우스 월드 좌표: %f, %f, %f"), LastCheckedMouseLocation.X, LastCheckedMouseLocation.Y, LastCheckedMouseLocation.Z));
 			if(bResult)
 			{
-				DrawDebugSphere(GetWorld(), LastCheckedMouseLocation, PlayerDataAsset->MouseCursorCorrectRadius, 16, FColor::Green, false, 2.f);
+				DrawDebugSphere(GetWorld(), LastCheckedMouseLocation, CorrectionCheckRadius, 16, FColor::Green, false, 2.f);
 			}
 			else
 			{
-				DrawDebugSphere(GetWorld(), LastCheckedMouseLocation, PlayerDataAsset->MouseCursorCorrectRadius, 16, FColor::Red, false, 2.f);
+				DrawDebugSphere(GetWorld(), LastCheckedMouseLocation, CorrectionCheckRadius, 16, FColor::Red, false, 2.f);
 			}
 		}
 	}
