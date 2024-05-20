@@ -22,11 +22,7 @@ class PROJECT_LLL_API ILLL_ObjectPoolingObjectInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	FORCEINLINE bool IsActivated() const { return bIsActivated; }
-	
-	virtual void Activate() { bIsActivated = true; }
-	virtual void Deactivate() { bIsActivated = false; }
-
-protected:
-	uint8 bIsActivated : 1 = false;
+	virtual bool IsActivated() const = 0;
+	virtual void Activate() = 0;
+	virtual void Deactivate() = 0;
 };
