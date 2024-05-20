@@ -117,10 +117,9 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	
 	UProjectileMovementComponent* HandProjectile = PlayerChaseHand->GetProjectileMovementComponent();
 	HandProjectile->SetUpdatedComponent(PlayerChaseHand->GetRootComponent());
-	HandProjectile->bSimulationEnabled = true;
+	HandProjectile->Activate();
 	HandProjectile->MaxSpeed = ChaseHandAttributeSet->GetThrowSpeed();
 	HandProjectile->Velocity = ThrowDirection * ChaseHandAttributeSet->GetThrowSpeed();
-	HandProjectile->Activate();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandThrow::CheckReached);
 
 	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, WireHandThrowCueTag);
