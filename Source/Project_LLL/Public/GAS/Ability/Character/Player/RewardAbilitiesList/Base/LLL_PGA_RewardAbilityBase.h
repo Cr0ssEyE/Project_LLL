@@ -19,7 +19,7 @@ class PROJECT_LLL_API ULLL_PGA_RewardAbilityBase : public ULLL_PlayerGameplayAbi
 	GENERATED_BODY()
 
 public:
-	FORCEINLINE void SetAbilityInfo(const FAbilityDataTable* InAbilityData);
+	void SetAbilityInfo(const FAbilityDataTable* InAbilityData);
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
