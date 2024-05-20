@@ -38,9 +38,9 @@ AActor* ULLL_ObjectPoolingComponent::GetActor(UClass* Class)
 {
 	for (AActor* Actor : Actors)
 	{
-		if (Actor->IsHidden())
+		ILLL_ObjectPoolingObjectInterface* ObjectPoolingObjectInterface = CastChecked<ILLL_ObjectPoolingObjectInterface>(Actor);
+		if (!ObjectPoolingObjectInterface->IsActivated())
 		{
-			ILLL_ObjectPoolingObjectInterface* ObjectPoolingObjectInterface = CastChecked<ILLL_ObjectPoolingObjectInterface>(Actor);
 			ObjectPoolingObjectInterface->Activate();
 			return Actor;
 		}

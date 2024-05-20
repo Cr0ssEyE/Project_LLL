@@ -4,6 +4,7 @@
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 
 #include "AbilitySystemComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
@@ -35,12 +36,30 @@ void ALLL_ThrownObject::BeginPlay()
 	ASC->AddSpawnedAttribute(ThrownObjectAttributeSet);
 }
 
+void ALLL_ThrownObject::Activate()
+{
+	bIsActivated = true;
+	
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ProjectileMovementComponent->Activate();
+	SetActorHiddenInGame(false);
+	UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+}
+
+void ALLL_ThrownObject::Deactivate()
+{
+	bIsActivated = false;
+	
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ProjectileMovementComponent->Deactivate();
+	SetActorHiddenInGame(true);
+}
+
 void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget)
 {
 	SetOwner(NewOwner);
 	Target = NewTarget;
 
-	Activate();
 	ProjectileMovementComponent->MaxSpeed = ThrownObjectAttributeSet->GetThrowSpeed();
 	ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
 	
@@ -64,18 +83,4 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	}
 	
 	Deactivate();
-}
-
-void ALLL_ThrownObject::Activate()
-{
-	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	ProjectileMovementComponent->Activate();
-	SetActorHiddenInGame(false);
-}
-
-void ALLL_ThrownObject::Deactivate()
-{
-	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	ProjectileMovementComponent->Deactivate();
-	SetActorHiddenInGame(true);
 }

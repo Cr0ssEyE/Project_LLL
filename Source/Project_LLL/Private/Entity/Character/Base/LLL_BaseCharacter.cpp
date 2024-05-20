@@ -195,4 +195,6 @@ void ALLL_BaseCharacter::Dead()
 	bIsDead = true;
 
 	CharacterDeadDelegate.Broadcast(this);
+
+	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DeadCueTag);
 }

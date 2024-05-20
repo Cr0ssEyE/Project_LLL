@@ -9,10 +9,10 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
+#include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 #include "Util/LLL_ExecuteCueHelper.h"
 
 ULLL_PGA_ChaseHandThrow::ULLL_PGA_ChaseHandThrow()
@@ -117,9 +117,10 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	
 	UProjectileMovementComponent* HandProjectile = PlayerChaseHand->GetProjectileMovementComponent();
 	HandProjectile->SetUpdatedComponent(PlayerChaseHand->GetRootComponent());
-	HandProjectile->Activate();
+	HandProjectile->bSimulationEnabled = true;
+	HandProjectile->MaxSpeed = ChaseHandAttributeSet->GetThrowSpeed();
 	HandProjectile->Velocity = ThrowDirection * ChaseHandAttributeSet->GetThrowSpeed();
-	
+	HandProjectile->Activate();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandThrow::CheckReached);
 
 	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, WireHandThrowCueTag);

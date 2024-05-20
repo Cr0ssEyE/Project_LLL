@@ -13,10 +13,10 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MonatgeSectionName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
+#include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GAS/Attribute/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 
 ULLL_PGA_ChaseToTarget::ULLL_PGA_ChaseToTarget()
 {
