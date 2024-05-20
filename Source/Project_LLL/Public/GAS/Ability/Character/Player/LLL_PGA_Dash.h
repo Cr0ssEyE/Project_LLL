@@ -6,6 +6,7 @@
 #include "GAS/Ability/Character/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_Dash.generated.h"
 
+class UAbilityTask_WaitGameplayEvent;
 class UAbilityTask_MoveToLocation;
 /**
  * 
@@ -27,8 +28,9 @@ protected:
 
 protected:
 	void DashActionEvent();
-	void StartDashInputWait();
-	void EndDashInputWait();
+	
+	UFUNCTION()
+	void CheckInputPressed(FGameplayEventData EventData);
 
 protected:
 	UPROPERTY()
@@ -37,15 +39,10 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, DisplayName = "대쉬 애님 몽타주")
 	TObjectPtr<UAnimMontage> DashAnimMontage;
-	
-	UPROPERTY(EditAnywhere, DisplayName = "대쉬 연속 사용 제한시간")
-	float DashInputCheckTime = 0.f;
-
-	UPROPERTY(EditAnywhere, DisplayName = "대쉬 연속 사용 딜레이")
-	float DashReActionTime = 0.f;
 
 protected:
-	FTimerHandle WaitInputTimerHandle;
+	UPROPERTY()
+	TObjectPtr<UAbilityTask_WaitGameplayEvent> WaitTagTask;
 	
 	uint32 CurrentDashCount;
 

@@ -7,6 +7,7 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -78,8 +79,6 @@ void ULLL_PGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 	}
 	CurrentDashCount = 0;
-	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
-	WaitInputTimerHandle.Invalidate();
 
 	if (IsValid(DashTask) && DashTask->IsActive())
 	{
@@ -96,13 +95,9 @@ void ULLL_PGA_Dash::InputPressed(const FGameplayAbilitySpecHandle Handle, const 
 {
 	Super::InputPressed(Handle, ActorInfo, ActivationInfo);
 	
-	// FTimerHandle.IsValid = 타이머가 실행중인 경우라고 봐도 됩니다.
-	// 해당 코드에서 타이머가 실행중인 경우 = 첫 대쉬 입력이 들어오고 입력이 더 안들어오나 확인하는 중
-	const float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(WaitInputTimerHandle);
-	if(CurrentDashCount < MaxDashCount && ElapsedTime > DashReActionTime)
+	if (IsValid(WaitTagTask) && WaitTagTask->IsActive())
 	{
 		bIsInputPressed = true;
-		DashActionEvent();
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
@@ -117,16 +112,13 @@ void ULLL_PGA_Dash::InputPressed(const FGameplayAbilitySpecHandle Handle, const 
 
 void ULLL_PGA_Dash::DashActionEvent()
 {
-	// TODO: MovementComponent의 LaunchCharacter 기반 물리에서 위치 기반으로 변경
-	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
-	
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	
 	if (IsValid(PlayerCharacter) && bIsInputPressed && CurrentDashCount < MaxDashCount)
 	{
+		bIsInputPressed = false;
 		CurrentDashCount++;
-		DashDistance = PlayerCharacterAttributeSet->GetDashDistance();
 		
 		FVector DashDirection;
 		if (PlayerCharacter->GetMoveInputPressed())
@@ -138,23 +130,29 @@ void ULLL_PGA_Dash::DashActionEvent()
 			DashDirection = PlayerCharacter->GetActorForwardVector().GetSafeNormal2D();
 		}
 
+		DashDistance = PlayerCharacterAttributeSet->GetDashDistance();
 		const FVector DashLocation = FLLL_MathHelper::CalculatePlayerLaunchableLocation(GetWorld(), PlayerCharacter, DashDistance, DashCorrectionDistance, DashDirection);
 		PlayerCharacter->GetMovementComponent()->Velocity = FVector::Zero();
 		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER_EVADE);
+		
 		if (IsValid(DashTask) && DashTask->IsActive())
 		{
 			DashTask->EndTask();
 		}
 		DashTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, DashDistance / DashSpeed, nullptr, nullptr);
 		DashTask->ReadyForActivation();
+
+		if (IsValid(WaitTagTask) && WaitTagTask->IsActive())
+		{
+			WaitTagTask->EndTask();
+		}
+		WaitTagTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_PLAYER_STATE_INPUT_CHECK_DASH, nullptr, true);
+		WaitTagTask->EventReceived.AddDynamic(this, &ULLL_PGA_Dash::CheckInputPressed);
+		WaitTagTask->ReadyForActivation();
 		
 		// 애님 몽타주 처음부터 다시 실행하거나 특정 시간부터 실행 시키도록 하는게 상당히 귀찮아서 땜빵 처리
 		PlayerCharacter->StopAnimMontage(DashAnimMontage);
 		PlayerCharacter->PlayAnimMontage(DashAnimMontage);
-		
-		// 여기서 타이머 델리게이트로 호출해서 다음 입력까지 대기시간을 주면 대쉬를 연타했을 때 낭비를 줄이도록 할 수 있습니다.
-		StartDashInputWait();
-		bIsInputPressed = false;
 
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
 		PlayerAnimInstance->SetDash(true);
@@ -176,23 +174,13 @@ void ULLL_PGA_Dash::DashActionEvent()
 	}
 }
 
-void ULLL_PGA_Dash::StartDashInputWait()
+void ULLL_PGA_Dash::CheckInputPressed(FGameplayEventData EventData)
 {
-	// 대쉬 입력 기다리는 시간. 만약 시간이 초과될 경우 어빌리티 종료하고 쿨타임 적용.
-	// 쿨타임의 경우에는 BP에서 지정 가능합니다.
-	GetWorld()->GetTimerManager().SetTimer(WaitInputTimerHandle, this, &ULLL_PGA_Dash::EndDashInputWait, DashInputCheckTime);
-}
-
-void ULLL_PGA_Dash::EndDashInputWait()
-{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (!bIsInputPressed || CurrentDashCount >= MaxDashCount)
 	{
-		if (ProtoGameInstance->CheckPlayerDashDebug())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("대쉬 어빌리티 종료")));
-		}
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
 	}
-#endif
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_Dash::DashActionEvent);
 }

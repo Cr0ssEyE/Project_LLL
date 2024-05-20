@@ -78,7 +78,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	MontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
 	MontageTask->ReadyForActivation();
 
-	WaitTagTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_PLAYER_STATE_ATTACK_INPUT_CHECK, nullptr, true);
+	WaitTagTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_PLAYER_STATE_INPUT_CHECK_ATTACK, nullptr, true);
 	WaitTagTask->EventReceived.AddDynamic(this, &ULLL_PGA_AttackBase::CheckInputPressed);
 	WaitTagTask->ReadyForActivation();
 
@@ -178,7 +178,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 		{
 			if(!bIsAbilityEnding)
 			{
-				WaitTagTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_PLAYER_STATE_ATTACK_INPUT_CHECK, nullptr, true);
+				WaitTagTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_PLAYER_STATE_INPUT_CHECK_ATTACK, nullptr, true);
 				WaitTagTask->EventReceived.AddDynamic(this, &ULLL_PGA_AttackBase::CheckInputPressed);
 				WaitTagTask->ReadyForActivation();
 			}
