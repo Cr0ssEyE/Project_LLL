@@ -3,6 +3,8 @@
 
 #include "Game/LLL_AbilityManageSubSystem.h"
 
+#include "AbilitySystemGlobals.h"
+#include "GameplayAbilitiesModule.h"
 #include "GameplayEffect.h"
 #include "GameplayTagContainer.h"
 #include "Constant/LLL_FilePath.h"
@@ -24,6 +26,15 @@ void ULLL_AbilityManageSubSystem::Initialize(FSubsystemCollectionBase& Collectio
 	LoadEffectsFromPath(MonsterGameplayEffects, PATH_MONSTER_EFFECTS);
 	LoadEffectsFromPath(ObjectGameplayEffects, PATH_OBJECT_EFFECTS);
 	LoadEffectsFromPath(ShareableGameplayEffects, PATH_SHARE_EFFECTS);
+
+	// AttributeSetInitter 사용 시 에디터 편의성용. 에디터에서는 최초 실행시 테이블 값만 읽어오고 이후에 값을 변경한 것을 적용하려면 재실행 해야 하는데 그거 보완
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	FSoftObjectPath DummyPath(PATH_DUMMY_TABLE);
+	TArray<FSoftObjectPath> DummyPaths;
+	DummyPaths.Emplace(DummyPath);
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->AddAttributeDefaultTables(TEXT("Dummy"), DummyPaths);
+#endif
+	
 }
 
 void ULLL_AbilityManageSubSystem::Deinitialize()
@@ -47,19 +58,14 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByTag(FAsyncLoadEffectDelegate
 		for (auto Data : DataSet)
 		{
 			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
-			if (AccessRange == EEffectAccessRange::None)
+			if (AccessRange != EEffectAccessRange::None && EffectObject->GetAccessRange() != AccessRange)
 			{
-				if(EffectObject->GetAssetTags().IsEmpty())
-				{
-					continue;
-				}
+				continue;
 			}
-			else
+
+			if(EffectObject->GetAssetTags().IsEmpty())
 			{
-				if(EffectObject->GetAssetTags().IsEmpty() || EffectObject->GetAccessRange() != AccessRange)
-				{
-					continue;
-				}
+				continue;
 			}
 		
 			if (TagHasMatching)
@@ -86,17 +92,7 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> DataSet = GetDataSetByOwner(Owner);
 
 	const FString OwnerName = StaticEnum<EEffectOwnerType>()->GetNameStringByValue(static_cast<int64>(Owner));
-	UE_LOG(LogTemp, Log, TEXT("[ 로드된 %s 이펙트 수 : %d ]"), *OwnerName, PlayerGameplayEffects.Num());
-	bool Flag = false;
-	for (auto PlayerGameplayEffect : PlayerGameplayEffects)
-	{
-		if (!Flag)
-		{
-			UE_LOG(LogTemp, Log, TEXT("부여 가능 %s 이펙트"), *OwnerName);
-			Flag = true;
-		}
-		//UE_LOG(LogTemp, Log, TEXT("- %s"), *PlayerGameplayEffect.Get()->GetName());
-	}
+	UE_LOG(LogTemp, Log, TEXT("[ 로드된 %s 이펙트 수 : %d ]"), *OwnerName, DataSet.Num());
 	
 	TArray<FSoftObjectPath> Paths;
 	for (auto& Effect : DataSet)
@@ -109,12 +105,9 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 		for (auto Data : DataSet)
 		{
 			const ULLL_ExtendedGameplayEffect* EffectObject = CastChecked<ULLL_ExtendedGameplayEffect>(Data->GetDefaultObject());
-			if (AccessRange != EEffectAccessRange::None)
+			if (AccessRange != EEffectAccessRange::None && EffectObject->GetAccessRange() != AccessRange)
 			{
-				if(EffectObject->GetAccessRange() != AccessRange)
-				{
-					continue;
-				}
+				continue;
 			}
 			
 			if (EffectObject->GetID() == ID)
@@ -122,6 +115,18 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 				FilteredDataSet.Emplace(Data);
 			}
 		}
+		
+		bool Flag = false;
+		for (auto FilteredDataSetElement : FilteredDataSet)
+		{
+			if (!Flag)
+			{
+				UE_LOG(LogTemp, Log, TEXT("부여 가능 %s 이펙트"), *OwnerName);
+				Flag = true;
+			}
+			UE_LOG(LogTemp, Log, TEXT("- %s"), *FilteredDataSetElement.Get()->GetName());
+		}
+		
 		Delegate.Broadcast(FilteredDataSet);
 	}));
 }

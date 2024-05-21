@@ -4,14 +4,16 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameplayAbilitiesModule.h"
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Constant/LLL_AttributeInitalizeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
-#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -24,6 +26,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
@@ -32,6 +35,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
+	SkillAttributeSet = CreateDefaultSubobject<ULLL_PlayerSkillAttributeSet>(TEXT("SkillAttributeSet"));
 
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	CameraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_CameraDataAsset>(PATH_CAMERA_DATA, EAssertionLevel::Check);
@@ -44,7 +48,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
-	
+
+	SpringArm->TargetArmLength = 0.f;
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->bUsePawnControlRotation = false;
 	SpringArm->bInheritPitch = false;
@@ -66,9 +71,22 @@ void ALLL_PlayerBase::BeginPlay()
 
 	if (IsValid(CameraDataAsset))
 	{
-		Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
+		SpringArm->TargetArmLength = CameraDataAsset->SpringArmDistance;
+		Camera->SetProjectionMode(CameraDataAsset->ProjectionType);
 		
-		SpringArm->TargetArmLength = CameraDataAsset->SpringArmLength;
+		if (Camera->ProjectionMode == ECameraProjectionMode::Orthographic)
+		{
+			Camera->OrthoWidth = CameraDataAsset->CameraDistance;
+			Camera->SetAutoCalculateOrthoPlanes(false);
+			Camera->SetAutoPlaneShift(false);
+			Camera->SetOrthoNearClipPlane(CameraDataAsset->OrthographicNearClipDistance);
+			Camera->SetOrthoFarClipPlane(CameraDataAsset->OrthographicFarClipDistance);
+		}
+		else
+		{
+			Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
+		}
+		
 		SpringArm->SetRelativeRotation(CameraDataAsset->SpringArmAngle);
 	}
 
@@ -88,6 +106,11 @@ void ALLL_PlayerBase::BeginPlay()
 				ASC->GiveAbility(SkillSpec);
 			}
 		}
+
+		ASC->AddSpawnedAttribute(SkillAttributeSet);
+
+		// DefaultGame.ini의 [/Script/GameplayAbilities.AbilitySystemGlobals] 항목에 테이블 미리 추가해놔야 정상 작동함.
+		IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, 1.f, true);
 	}
 }
 
@@ -212,14 +235,14 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 	FVector TrueMouseWorldLocation = HitResult.ImpactPoint;
 	
 	HitResult.Init();
-	bResult = false;
+	float CorrectionCheckRadius = Cast<ULLL_PlayerCharacterAttributeSet>(CharacterAttributeSet)->GetTargetingCorrectionRadius();
 	bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
 		TrueMouseWorldLocation,
 		TrueMouseWorldLocation,
 		FQuat::Identity,
-		ECC_ENEMY_HIT,
-		FCollisionShape::MakeSphere(PlayerDataAsset->MouseCursorCorrectRadius),
+		ECC_ENTITY_CHECK,
+		FCollisionShape::MakeSphere(CorrectionCheckRadius),
 		Params
 		);
 	

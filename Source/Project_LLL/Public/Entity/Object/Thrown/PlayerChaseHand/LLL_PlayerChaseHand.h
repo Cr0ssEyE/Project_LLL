@@ -39,7 +39,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+	
 	// 기본 컴포넌트 및 객체
 protected:
 	UPROPERTY(VisibleAnywhere)

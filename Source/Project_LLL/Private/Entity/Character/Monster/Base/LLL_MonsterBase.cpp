@@ -18,10 +18,12 @@
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Ability/Character/Monster/Base/LLL_MGA_Attack.h"
+#include "GAS/Ability/Character/Monster/Base/LLL_MGA_Charge.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
 #include "Util/LLL_ConstructorHelper.h"
+#include "Util/LLL_MathHelper.h"
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
@@ -37,7 +39,9 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 
 	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
 	DropGoldEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'"), EAssertionLevel::Check);
-	
+
+	StackedKnockBackedPower = 0.f;
+	StackedKnockBackVelocity = FVector::Zero();
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -140,6 +144,22 @@ void ALLL_MonsterBase::Attack() const
 	}
 }
 
+void ALLL_MonsterBase::Charge() const
+{
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE)))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
+			}
+		}
+#endif
+	}
+}
+
 void ALLL_MonsterBase::Damaged()
 {
 	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
@@ -164,42 +184,35 @@ void ALLL_MonsterBase::Damaged()
 	}
 }
 
-void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity)
+void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower)
 {
 	if (CustomTimeDilation == 1.f)
 	{
+		StackedKnockBackedPower = KnockBackPower;
 		GetCharacterMovement()->Velocity = FVector::Zero();
 		LaunchCharacter(KnockBackVelocity, true, true);
 	}
 	else
 	{
-		
+		StackedKnockBackedPower += KnockBackPower;
+		StackedKnockBackVelocity += KnockBackVelocity;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackedPower));
 	}
 }
 
-bool ALLL_MonsterBase::CanPlayAttackAnimation() const
+void ALLL_MonsterBase::ApplyStackedKnockBack()
 {
-	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
-	ASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK));
-	for (const auto AbilitySpecHandle : AbilitySpecHandles)
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackVelocity.Length()));
+	if (FLLL_MathHelper::CheckFallableKnockBackPower(StackedKnockBackedPower))
 	{
-		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
-		{
-			const UAnimMontage* AttackAnimMontage = Cast<ULLL_MGA_Attack>(AbilitySpec->GetPrimaryInstance())->GetAttackMontage();
-	
-			if (IsValid(CharacterAnimInstance) && IsValid(AttackAnimMontage))
-			{
-				if (CharacterAnimInstance->Montage_IsPlaying(AttackAnimMontage))
-				{
-					return false;
-				}
-
-				return true;
-			}
-		}
+		GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
 	}
 
-	return false;
+	// TODO: 나중에 몬스터별 최대 넉백값 같은거 나오면 수정하기
+	const FVector ScaledStackedKnockBackVelocity = ClampVector(FVector::Zero(), FVector::One() * 2000.f, StackedKnockBackVelocity);
+	LaunchCharacter(ScaledStackedKnockBackVelocity, true, true);
+
+	// ResetKnockBackStack();
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)

@@ -7,6 +7,7 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
@@ -134,7 +135,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 			DashDirection = PlayerCharacter->GetActorForwardVector().GetSafeNormal2D();
 		}
 
-		FVector DashLocation = FLLL_MathHelper::CalculatePlayerLaunchableLocation(GetWorld(), PlayerCharacter, DashDistance, DashCorrectionDistance, DashDirection);
+		const FVector DashLocation = FLLL_MathHelper::CalculatePlayerLaunchableLocation(GetWorld(), PlayerCharacter, DashDistance, DashCorrectionDistance, DashDirection);
 		PlayerCharacter->GetMovementComponent()->Velocity = FVector::Zero();
 		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER_EVADE);
 		if (IsValid(DashTask) && DashTask->IsActive())

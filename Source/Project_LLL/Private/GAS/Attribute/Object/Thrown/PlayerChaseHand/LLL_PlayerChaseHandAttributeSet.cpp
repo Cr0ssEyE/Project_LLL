@@ -7,7 +7,8 @@
 #include "Components/SphereComponent.h"
 #include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
 
-ULLL_PlayerChaseHandAttributeSet::ULLL_PlayerChaseHandAttributeSet()
+ULLL_PlayerChaseHandAttributeSet::ULLL_PlayerChaseHandAttributeSet() :
+	CorrectionReachStateDistance(100.f)
 {
 	
 }
@@ -25,10 +26,10 @@ void ULLL_PlayerChaseHandAttributeSet::PostGameplayEffectExecute(const FGameplay
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	if(Data.EvaluatedData.Attribute == GetCollisionRadiusAttribute())
+	if(Data.EvaluatedData.Attribute == GetGrabCollisionRadiusAttribute())
 	{
 		const ALLL_PlayerChaseHand* ChaseHand = CastChecked<ALLL_PlayerChaseHand>(GetOwningAbilitySystemComponentChecked()->GetAvatarActor());
-		SetCollisionRadius(Data.EvaluatedData.Magnitude);
-		ChaseHand->GetCollisionComponent()->SetSphereRadius(GetCollisionRadius());
+		SetGrabCollisionRadius(Data.EvaluatedData.Magnitude);
+		ChaseHand->GetCollisionComponent()->SetSphereRadius(GetGrabCollisionRadius());
 	}
 }

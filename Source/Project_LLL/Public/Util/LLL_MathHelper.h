@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "GameFramework/Character.h"
 #include "Game/ProtoGameInstance.h"
 
 class PROJECT_LLL_API FLLL_MathHelper
@@ -31,7 +32,7 @@ public:
 		return PredictedLocation;
 	}
 
-	static bool IsInFieldOfView(const AActor* Owner, const AActor* Target, float Distance, float FieldOfView)
+	static bool IsInFieldOfView(const AActor* Owner, const AActor* Target, float Distance, float FieldOfView, const FRotator& Rotation = FRotator::ZeroRotator)
 	{
 		if (Distance < Owner->GetDistanceTo(Target))
 		{
@@ -41,8 +42,8 @@ public:
 		FVector DirectionToTarget = Target->GetActorLocation() - Owner->GetActorLocation();
 		DirectionToTarget.Normalize();
 
-		const FVector OwnerForwardVector = Owner->GetActorForwardVector();
-		const float DotProduct = FVector::DotProduct(OwnerForwardVector, DirectionToTarget);
+		const FVector ForwardVector = Rotation.RotateVector(Owner->GetActorForwardVector());
+		const float DotProduct = FVector::DotProduct(ForwardVector, DirectionToTarget);
 
 		if (FMath::Acos(DotProduct) > FMath::DegreesToRadians(FieldOfView / 2.0f))
 		{
@@ -69,7 +70,16 @@ public:
 		
 		return !HitResult.GetActor();
 	}
-	
+
+	static bool CheckFallableKnockBackPower(float KnockBackPower)
+	{
+		if (KnockBackPower > 500.f)
+		{
+			return true;
+		}
+		
+		return false;
+	}
 	// 플레이어
 public:
 	static float CalculatePlayerSkillGaugeIncrement(const float BaseValue, const float ComboAmplify, const float ItemAmplify)
@@ -78,13 +88,14 @@ public:
 		return CalculateResult;
 	}
 
-		static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)
+	static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)
 	{
 		FHitResult CapsuleHitResult;
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(Owner);
 		FVector LaunchLocation = Owner->GetActorLocation() + LaunchDirection.GetSafeNormal2D() * LaunchDistance;
 		FVector2d CapsuleExtent = FVector2d(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.2f, Owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f);
+		
 		// 끼임 방지용 캐릭터 충돌 캡슐보다 1.2배 큰 반지름 체크
 		World->SweepSingleByChannel(
 			CapsuleHitResult,
@@ -130,7 +141,7 @@ public:
 		for (float MultiplyValue = 10.f; MultiplyValue < CorrectionDistance; MultiplyValue += 10.f)
 		{
 			FHitResult CorrectionLocationHitResult;
-			FVector NewLocation = LaunchLocation + LaunchDirection.GetSafeNormal2D() * MultiplyValue;
+			FVector NewLocation = CorrectionLaunchLocation + LaunchDirection.GetSafeNormal2D() * MultiplyValue;
 			World->SweepSingleByChannel(
 				CorrectionLocationHitResult,
 				NewLocation,
