@@ -19,6 +19,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Ability/Character/Monster/Base/LLL_MGA_Attack.h"
 #include "GAS/Ability/Character/Monster/Base/LLL_MGA_Charge.h"
+#include "GAS/ASC/LLL_MonsterASC.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
@@ -27,6 +28,7 @@
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
+	ASC = CreateDefaultSubobject<ULLL_MonsterASC>(TEXT("MonsterASC"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("MonsterUIManageComponent"));
 	MonsterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("MonsterStatusWidgetComponent"));
 	
