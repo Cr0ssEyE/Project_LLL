@@ -8,6 +8,7 @@
 #define TAG_GAS_DAMAGED FGameplayTag::RequestGameplayTag(FName("Character.Event.Damaged"))
 
 // 캐릭터 상태 관련 게임플레이 태그
+#define TAG_GAS_ABNORMAL_STATUS FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus"))
 #define TAG_GAS_STATUS_BLEEDING FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding"))
 #define TAG_GAS_STATUS_BLEEDING_BASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding.FromBaseAttack"))
 #define TAG_GAS_STATUS_BLEEDING_CHASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding.FromChaseAttack"))
@@ -27,6 +28,7 @@
 
 // 플레이어 행동, 상태 관련 게임플레이 태그
 #define TAG_GAS_PLAYER_DASH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash"))
+#define TAG_GAS_PLAYER_BULLET_TIME FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Skill.ActivateBulletTime"))
 #define TAG_GAS_PLAYER_CHASE_THROW FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Throw"))
 #define TAG_GAS_PLAYER_CHASE_RUSH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Rush"))
 #define TAG_GAS_PLAYER_CHASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Attack"))

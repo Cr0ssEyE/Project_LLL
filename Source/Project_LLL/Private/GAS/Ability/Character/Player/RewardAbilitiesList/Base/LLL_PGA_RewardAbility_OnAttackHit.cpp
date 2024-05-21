@@ -39,7 +39,11 @@ void ULLL_PGA_RewardAbility_OnAttackHit::OnTraceResultCallBack(const FGameplayAb
 	
 	float MagnitudeValue = AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel();
 	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, MagnitudeValue);
-	FLLL_AbilityDataHelper::SetAbnormalStatusAbilityDuration(this, EffectHandle.Data);
+	
+	if (AbilityTags.HasTag(TAG_GAS_ABNORMAL_STATUS))
+	{
+		FLLL_AbilityDataHelper::SetAbnormalStatusAbilityDuration(this, EffectHandle.Data);
+	}
 	
 	if (Effect->GetEffectApplyTarget() == EEffectApplyTarget::Self)
 	{

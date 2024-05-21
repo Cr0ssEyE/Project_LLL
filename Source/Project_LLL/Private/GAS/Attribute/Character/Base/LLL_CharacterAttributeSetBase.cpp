@@ -11,7 +11,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 
-ULLL_CharacterAttributeSetBase::ULLL_CharacterAttributeSetBase()
+ULLL_CharacterAttributeSetBase::ULLL_CharacterAttributeSetBase() :
+	AttackSpeed(100.f)
 {
 	
 }
