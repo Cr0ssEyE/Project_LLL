@@ -8,7 +8,7 @@
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 
-void ULLL_PlayerStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) const
+void ULLL_PlayerStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet)
 {
 	Super::UpdateWidgetView(CharacterAttributeSet);
 	const float MaxHealth = CharacterAttributeSet->GetMaxHealth();

@@ -6,7 +6,7 @@
 #include "Components/ProgressBar.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 
-void ULLL_MonsterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) const
+void ULLL_MonsterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet)
 {
 	Super::UpdateWidgetView(CharacterAttributeSet);
 
