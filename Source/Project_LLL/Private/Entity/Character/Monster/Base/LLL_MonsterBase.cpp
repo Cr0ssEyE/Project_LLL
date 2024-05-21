@@ -52,9 +52,7 @@ void ALLL_MonsterBase::BeginPlay()
 	Super::BeginPlay();
 	
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
-	ASC->AddSpawnedAttribute(MonsterAttributeSet);
 
-	ASC->AddSpawnedAttribute(DropGoldAttributeSet);
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(DropGoldEffect, 1.0, EffectContextHandle);

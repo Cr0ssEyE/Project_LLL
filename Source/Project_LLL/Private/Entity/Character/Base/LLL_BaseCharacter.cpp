@@ -150,13 +150,6 @@ void ALLL_BaseCharacter::InitAttributeSet()
 	}
 }
 
-// Called every frame
-void ALLL_BaseCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
@@ -173,7 +166,6 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 		ASC->AddLooseGameplayTag(TAG_GAS_COLLIDE_WALL);
 
 		// 게임플레이 이펙트 없이 인스턴스 태그를 부착하기 위해 타이머 델리게이트로 다음 틱에서 제거
-		// 이번엔 빌드에서 람다식 안터졌으니 괜?찮?을?거?에?요???
 		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]()
 		{
 			if(IsValid(ASC))

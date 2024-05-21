@@ -19,9 +19,9 @@
 
 ALLL_SwordDash::ALLL_SwordDash()
 {
-	SwordDashAttributeSet = CreateDefaultSubobject<ULLL_SwordDashAttributeSet>(TEXT("SwordDashAttributeSet"));
-	
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_SwordDashDataAsset>(PATH_SWORD_DASH_DATA, EAssertionLevel::Check);
+	
+	SwordDashAttributeSet = CreateDefaultSubobject<ULLL_SwordDashAttributeSet>(TEXT("SwordDashAttributeSet"));
 	AIControllerClass = ALLL_SwordDashAIController::StaticClass();
 
 	Id = ID_SWORD_DASH;

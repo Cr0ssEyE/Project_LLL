@@ -66,8 +66,6 @@ void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ASC->AddSpawnedAttribute(PlayerCharacterAttributeSet);
-
 	if (IsValid(CharacterAnimInstance))
 	{
 		PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
@@ -111,8 +109,6 @@ void ALLL_PlayerBase::BeginPlay()
 				ASC->GiveAbility(SkillSpec);
 			}
 		}
-
-		ASC->AddSpawnedAttribute(SkillAttributeSet);
 	}
 }
 

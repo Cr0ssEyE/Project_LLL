@@ -15,7 +15,7 @@ ALLL_StaffBasicMagic::ALLL_StaffBasicMagic()
 {
 	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_StaffBasicMagicDataAsset>(PATH_STAFF_BASIC_MAGIC_DATA, EAssertionLevel::Check);
 
-	ThrownObjectAttributeSet = CreateDefaultSubobject<ULLL_StaffBasicMagicAttributeSet>(TEXT("StaffBasicMagicAttributeSet"));
+	StaffBasicMagicAttributeSet = CreateDefaultSubobject<ULLL_StaffBasicMagicAttributeSet>(TEXT("StaffBasicMagicAttributeSet"));
 	
 	HitCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Skill Collision"));
 	HitCollisionBox->SetCollisionProfileName(CP_MONSTER_ATTACK);
@@ -27,6 +27,7 @@ void ALLL_StaffBasicMagic::BeginPlay()
 	Super::BeginPlay();
 
 	StaffBasicMagicDataAsset = Cast<ULLL_StaffBasicMagicDataAsset>(ThrownObjectDataAsset);
+	ThrownObjectAttributeSet = StaffBasicMagicAttributeSet;
 
 	HitCollisionBox->SetBoxExtent(StaffBasicMagicDataAsset->HitCollisionSize);
 }

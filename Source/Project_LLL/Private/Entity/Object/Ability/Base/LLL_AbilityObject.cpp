@@ -26,15 +26,17 @@ void ALLL_AbilityObject::BeginPlay()
 	Super::BeginPlay();
 
 	AbilityObjectDataAsset = Cast<ULLL_AbilityObjectDataAsset>(BaseObjectDataAsset);
-	ASC->AddSpawnedAttribute(AbilityObjectAttributeSet);
 
 	SetOwner(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	OverlapCollisionBox->SetBoxExtent(AbilityObjectDataAsset->OverlapCollisionSize);
-	
-	FTimerHandle DestroyTimerHandle;
-	GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
-		Destroy();
-	}), AbilityObjectAttributeSet->GetDestroyTimer(), false);
+
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]
+	{
+		FTimerHandle DestroyTimerHandle;
+		GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+			Destroy();
+		}), AbilityObjectAttributeSet->GetDestroyTimer(), false);
+	}));
 }
 
 void ALLL_AbilityObject::NotifyActorBeginOverlap(AActor* OtherActor)

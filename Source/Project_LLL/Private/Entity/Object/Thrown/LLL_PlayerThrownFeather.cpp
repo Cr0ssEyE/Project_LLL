@@ -14,7 +14,7 @@ ALLL_PlayerThrownFeather::ALLL_PlayerThrownFeather()
 {
 	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerThrownFeatherDataAsset>(PATH_PLAYER_THROWN_FEATHER_DATA, EAssertionLevel::Check);
 	
-	ThrownObjectAttributeSet = CreateDefaultSubobject<ULLL_PlayerThrownFeatherAttributeSet>(TEXT("PlayerThrownFeatherAttributeSet"));
+	PlayerThrownFeatherAttributeSet = CreateDefaultSubobject<ULLL_PlayerThrownFeatherAttributeSet>(TEXT("PlayerThrownFeatherAttributeSet"));
 	
 	BaseMesh->SetCollisionProfileName(CP_PLAYER_THROWN_OBJECT);
 }
@@ -23,7 +23,7 @@ void ALLL_PlayerThrownFeather::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerThrownFeatherAttributeSet = Cast<ULLL_PlayerThrownFeatherAttributeSet>(ThrownObjectAttributeSet);
+	ThrownObjectAttributeSet = PlayerThrownFeatherAttributeSet;
 
 	CurveSize = PlayerThrownFeatherAttributeSet->GetCurveSize();
 	CurrentCurveSize = 1.0f / CurveSize;

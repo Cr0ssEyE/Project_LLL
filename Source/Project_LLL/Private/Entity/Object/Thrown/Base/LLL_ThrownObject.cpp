@@ -32,8 +32,6 @@ void ALLL_ThrownObject::BeginPlay()
 	Super::BeginPlay();
 
 	ThrownObjectDataAsset = Cast<ULLL_ThrownObjectDataAsset>(BaseObjectDataAsset);
-	
-	ASC->AddSpawnedAttribute(ThrownObjectAttributeSet);
 }
 
 void ALLL_ThrownObject::Activate()

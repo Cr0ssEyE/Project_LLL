@@ -14,7 +14,6 @@
 class UFMODAudioComponent;
 class UWidgetComponent;
 class ULLL_BaseCharacterUIManager;
-class ULLL_CharacterAttributeSetBase;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
@@ -32,7 +31,6 @@ class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySys
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	ALLL_BaseCharacter();
 
 	// 외부 접근용 함수
@@ -52,7 +50,6 @@ protected:
 	virtual void InitAttributeSet();
 	
 protected:
-	virtual void Tick(float DeltaTime) override;
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	
 	// 캐릭터 상태 설정

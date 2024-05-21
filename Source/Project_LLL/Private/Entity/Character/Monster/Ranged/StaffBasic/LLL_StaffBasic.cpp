@@ -11,9 +11,9 @@
 
 ALLL_StaffBasic::ALLL_StaffBasic()
 {
-	StaffBasicAttributeSet = CreateDefaultSubobject<ULLL_StaffBasicAttributeSet>(TEXT("StaffBasicAttributeSet"));
-	
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_StaffBasicDataAsset>(PATH_STAFF_BASIC_DATA, EAssertionLevel::Check);
+	
+	StaffBasicAttributeSet = CreateDefaultSubobject<ULLL_StaffBasicAttributeSet>(TEXT("StaffBasicAttributeSet"));
 	AIControllerClass = ALLL_StaffBasicAIController::StaticClass();
 
 	Id = ID_STAFF_BASIC;
@@ -27,7 +27,6 @@ void ALLL_StaffBasic::BeginPlay()
 	Super::BeginPlay();
 
 	StaffBasicDataAsset = Cast<ULLL_StaffBasicDataAsset>(RangedMonsterDataAsset);
-	ASC->AddSpawnedAttribute(StaffBasicAttributeSet);
 
 	// Todo : 어빌리티 작업이 끝난 후 커브 데이터로 옮기기
 	if (IsValid(InitEffect))
