@@ -7,6 +7,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 #include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
 
 ALLL_ThrownObject::ALLL_ThrownObject()
@@ -71,6 +72,7 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
+	//Cast<ULLL_CharacterAttributeSetBase>(Cast<ALLL_BaseCharacter>(GetOwner())->GetAbilitySystemComponent()->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()))->GetOffensePower();
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, 1.0, EffectContextHandle);
 	if(EffectSpecHandle.IsValid())
 	{
