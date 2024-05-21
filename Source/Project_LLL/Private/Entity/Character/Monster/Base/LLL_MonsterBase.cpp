@@ -67,6 +67,14 @@ void ALLL_MonsterBase::BeginPlay()
 	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
 	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	// DefaultGame.ini에 +GlobalAttributeSetDefaultsTableNames = /Game/DataTable/AttributeInitializer/CT_MonsterData.CT_MonsterData 추가 필요
+	// 플레이어 데이터 테이블은 기획상으로 나온 플레이어 어트리뷰트 셋 테이블과 데이터가 같지만 몬스터 데이터 테이블은 현재 기획상으로 나온 몬스터 어트리븉 셋 테이블과 같지 않다.
+	// 따라서 시은님과 상의하여 테이블을 정리하고 몬스터 초기화 로직을 구현할 예정이다.
+	// 강건님의 코드를 분석해봤을때 IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, 1.f, true);로 초기화를 진행하는 것 같다.
+	// 그룹은 LLL_AttributeInitalizeGroupName.h에 정의하여 사용하면 될 것 같다.
+
+	
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{

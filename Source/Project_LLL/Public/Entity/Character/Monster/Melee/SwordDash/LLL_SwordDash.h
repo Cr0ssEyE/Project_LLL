@@ -26,6 +26,9 @@ protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 public:
+	FORCEINLINE virtual void SetDash(bool IsDashing) override { bIsDashing = IsDashing; }
+	FORCEINLINE virtual bool IsDashing() const override { return bIsDashing; }
+	
 	virtual void Dash() const override;
 
 protected:
@@ -37,4 +40,6 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMeshComponent> SwordMeshComponent;
+
+	uint8 bIsDashing : 1 = false;
 };

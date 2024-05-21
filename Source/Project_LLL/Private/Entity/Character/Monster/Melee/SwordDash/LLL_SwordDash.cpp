@@ -56,7 +56,7 @@ void ALLL_SwordDash::Tick(float DeltaSeconds)
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckMonsterHitCheckDebug())
+		if (ProtoGameInstance->CheckMonsterAttackDebug())
 		{
 			if (bIsDashing)
 			{

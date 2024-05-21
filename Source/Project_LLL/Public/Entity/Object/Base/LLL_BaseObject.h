@@ -9,6 +9,7 @@
 #include "Interface/LLL_FModInterface.h"
 #include "LLL_BaseObject.generated.h"
 
+class UNiagaraComponent;
 class UFMODAudioComponent;
 
 UCLASS()
@@ -38,9 +39,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UNiagaraComponent> NiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<const ULLL_BaseObjectDataAsset> BaseObjectDataAsset;
 };
