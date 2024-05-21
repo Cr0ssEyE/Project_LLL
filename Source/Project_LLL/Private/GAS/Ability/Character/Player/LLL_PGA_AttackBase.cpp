@@ -212,8 +212,7 @@ void ULLL_PGA_AttackBase::ExecuteAttackCueWithDelay()
 			int32 CapturedCurrentComboAction = CurrentComboAction;
 			FTimerHandle AttackEventDelayTimerHandle;
 
-			GetWorld()->GetTimerManager().SetTimer(AttackEventDelayTimerHandle, FTimerDelegate::CreateWeakLambda(this, [this, CapturedCurrentComboAction]{
-				const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+			GetWorld()->GetTimerManager().SetTimer(AttackEventDelayTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, CapturedCurrentComboAction]{
 				FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
 				PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerAttackCountParameterName, CapturedCurrentComboAction - 1);
 			}), AttackCueDelayArray[AttackEventDelayIndex] * MontagePlayRate, false);

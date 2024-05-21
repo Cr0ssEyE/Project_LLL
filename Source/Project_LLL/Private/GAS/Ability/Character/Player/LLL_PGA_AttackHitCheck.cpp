@@ -40,7 +40,6 @@ void ULLL_PGA_AttackHitCheck::EndAbility(const FGameplayAbilitySpecHandle Handle
 
 void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
-	// TODO: 람다식이 빌드에서 터지지 않나 주시 필요
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]()
 	{;
 		if(IsValid(TraceTask) && !bIsAbilityEnding)
@@ -75,6 +74,10 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect);
 
 	Cast<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked())->ReceiveTargetData(this, TargetDataHandle);
+
+	FGameplayEventData PayloadData;
+	PayloadData.Instigator = TargetDataHandle.Data[0]->GetActors()[0].Get();
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
 }
 
 void ULLL_PGA_AttackHitCheck::OnTraceEndCallBack()
