@@ -50,4 +50,6 @@ protected:
 	TObjectPtr<const AActor> Target;
 
 	uint8 bIsActivated : 1;
+	
+	FTimerHandle HideTimerHandle;
 };

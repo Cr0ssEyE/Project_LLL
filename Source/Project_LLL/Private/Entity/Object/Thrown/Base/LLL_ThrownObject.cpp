@@ -51,6 +51,7 @@ void ALLL_ThrownObject::Deactivate()
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProjectileMovementComponent->Deactivate();
 	SetActorHiddenInGame(true);
+	GetWorldTimerManager().ClearTimer(HideTimerHandle);
 }
 
 void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget)
@@ -61,7 +62,6 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget)
 	ProjectileMovementComponent->MaxSpeed = ThrownObjectAttributeSet->GetThrowSpeed();
 	ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
 	
-	FTimerHandle HideTimerHandle;
 	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_ThrownObject::Deactivate, ThrownObjectAttributeSet->GetHideTimer(), false);
 }
 
