@@ -174,26 +174,29 @@ void ALLL_MonsterBase::Charge() const
 void ALLL_MonsterBase::Damaged()
 {
 	Super::Damaged();
-	
-	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(MonsterBaseAnimInstance))
-	{
-		MonsterBaseAnimInstance->StopAllMontages(1.0f);
-		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
 
-		FModAudioComponent->Stop();
-		// 경직 사운드 이벤트 할당
-		// 경직 사운드 플레이
+	if (!bIsAttacking)
+	{
+		ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+		if (IsValid(MonsterBaseAnimInstance))
+		{
+			MonsterBaseAnimInstance->StopAllMontages(1.0f);
+			PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+
+			FModAudioComponent->Stop();
+			// 경직 사운드 이벤트 할당
+			// 경직 사운드 플레이
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckMonsterCollisionDebug())
+			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 피격"), *GetName()));
+				if (ProtoGameInstance->CheckMonsterCollisionDebug())
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 피격"), *GetName()));
+				}
 			}
-		}
 #endif
+		}
 	}
 }
 

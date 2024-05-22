@@ -27,7 +27,7 @@ protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 public:
-	FORCEINLINE virtual void SetDash(bool IsDashing) override { bIsDashing = IsDashing; }
+	FORCEINLINE virtual void SetDashing(bool IsDashing) override { bIsDashing = IsDashing; }
 	FORCEINLINE virtual bool IsDashing() const override { return bIsDashing; }
 	
 	virtual void Dash() const override;
@@ -45,6 +45,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMeshComponent> SwordMeshComponent;
 
+	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDashing : 1;
 	
 	// Todo : 어빌리티 작업이 끝난 후 커브 데이터로 옮기기

@@ -39,6 +39,8 @@ public:
 	
 	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
 	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
+	FORCEINLINE void SetCharging(bool IsCharging) { bIsCharging = IsCharging; }
+	FORCEINLINE bool IsCharging() const { return bIsCharging; }
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -53,6 +55,7 @@ protected:
 	FVector StackedKnockBackVelocity;
 	float StackedKnockBackedPower;
 	int32 Id;
+	uint8 bIsCharging : 1;
 	
 public:
 	UFUNCTION()

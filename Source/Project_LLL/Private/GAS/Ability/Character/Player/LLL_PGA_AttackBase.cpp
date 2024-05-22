@@ -77,6 +77,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	WaitTagTask->Added.AddDynamic(this, &ULLL_PGA_AttackBase::WaitInputForNextAction);
 	WaitTagTask->ReadyForActivation();
 
+	PlayerCharacter->SetAttacking(true);
 	ExecuteAttackCueWithDelay();
 }
 
@@ -99,7 +100,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 	}
 #endif
 
-	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	if(IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
@@ -107,6 +108,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 		bIsCanPlayNextAction = false;
 		GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
 		WaitInputTimerHandle.Invalidate();
+		PlayerCharacter->SetAttacking(false);
 	}
 	GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
 	WaitTagTask->EndTask();
@@ -174,6 +176,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 			}
 		}));
 		
+		PlayerCharacter->SetAttacking(true);
 		ExecuteAttackCueWithDelay();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)

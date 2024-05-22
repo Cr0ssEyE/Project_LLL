@@ -71,7 +71,7 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	}
 
 	ILLL_DashMonsterInterface* DashMonster = CastChecked<ILLL_DashMonsterInterface>(Monster);
-	DashMonster->SetDash(true);
+	DashMonster->SetDashing(true);
 
 	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, 0.1f, nullptr, nullptr);
 	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &ULLL_MGA_Dash::OnCompleteCallBack);
@@ -86,7 +86,7 @@ void ULLL_MGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 
 	ILLL_DashMonsterInterface* DashMonster = CastChecked<ILLL_DashMonsterInterface>(Monster);
-	DashMonster->SetDash(false);
+	DashMonster->SetDashing(false);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

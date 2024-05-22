@@ -39,6 +39,8 @@ public:
 	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
+	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
+	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
 
 	// 플레이어
 protected:
@@ -80,6 +82,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsAttacking : 1;
 
 	UPROPERTY(EditAnywhere)
 	int32 Level;
