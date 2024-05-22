@@ -19,6 +19,8 @@ public:
 	void SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes = ESelectShapeTypes::Box, FVector Extents = FVector::ZeroVector);
 	void SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes = ESelectShapeTypes::Capsule, FVector2D Extents = FVector2D::ZeroVector);
 	void SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes = ESelectShapeTypes::Sphere, float Radius = 0.0f);
+	void SetTraceInfo(const ESelectTraceTarget NewTraceTarget, const ESelectShapeTypes NewShapeTypes = ESelectShapeTypes::Cone, float Distance = 0.0f, float FieldOfView = 0.0f);
+	void SetIgnoreInfo(TSet<AActor*> Actors);
 	virtual void StartTargeting(UGameplayAbility* Ability) override;
 	virtual void ConfirmTargetingAndContinue() override;
 
@@ -47,6 +49,18 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Shape", meta=(EditCondition = "BaseShape == ESelectShapeTypes::Sphere", EditConditionHides))
 	float SphereRadius;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Shape", meta=(EditCondition = "BaseShape == ESelectShapeTypes::Cone", EditConditionHides))
+	float ConeDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shape", meta=(EditCondition = "BaseShape == ESelectShapeTypes::Cone", EditConditionHides))
+	float ConeFieldOfView;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shape", meta=(EditCondition = "BaseShape == ESelectShapeTypes::Cone", EditConditionHides))
+	FRotator ConeRotation;
+
+	UPROPERTY()
+	TSet<AActor*> IgnoreActors;
 
 	mutable FCollisionShape TraceShape;
 

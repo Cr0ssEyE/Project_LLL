@@ -3,9 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/CheckBox.h"
+#include "LLL_GameInstance.h"
 #include "Engine/GameInstance.h"
-#include "UI/Debug/MonsterDebugWidget.h"
 #include "ProtoGameInstance.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMonsterToggleAIDelegate, bool, value);
@@ -15,13 +14,13 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FObjectTrapActivateDelegate);
  * 
  */
 UCLASS(Blueprintable)
-class PROJECT_LLL_API UProtoGameInstance : public UGameInstance
+class PROJECT_LLL_API UProtoGameInstance : public ULLL_GameInstance
 {
 	GENERATED_BODY()
-	
+
 public:
 	UProtoGameInstance();
-
+	
 	// 디버그용 델리게이트
 public:
 	UPROPERTY(BlueprintCallable)
@@ -35,6 +34,7 @@ public:
 	FORCEINLINE void SetPlayerMovementDebug(bool value) { bPlayerMovementDebug = value; }
 	FORCEINLINE void SetPlayerDashDebug(bool value) { bPlayerDashDebug = value; }
 	FORCEINLINE void SetPlayerSkillDebug(bool value) { bPlayerSkillDebug = value; }
+	FORCEINLINE void SetPlayerChaseActionDebug(bool value) { bPlayerChaseActionDebug = value; }
 	FORCEINLINE void SetPlayerHitCheckDebug(bool value) { bPlayerHitCheckDebug = value; }
 	FORCEINLINE void SetPlayerAttackDebug(bool value) { bPlayerAttackDebug = value; }
 	FORCEINLINE void SetPlayerCollisionDebug(bool value) { bPlayerCollisionDebug = value; }
@@ -48,6 +48,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerSkillDebug() const { return bPlayerSkillDebug; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool CheckPlayerChaseActionDebug() const { return bPlayerChaseActionDebug; }
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerHitDebug() const { return bPlayerHitCheckDebug; }
@@ -113,13 +116,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckObjectCollisionDebug() const { return bObjectCollisionDebug; }
 
-
 	// 플레이어 디버그 변수
 protected:
 	uint8 bPlayerMovementDebug : 1;
 
 	uint8 bPlayerDashDebug : 1;
 
+	uint8 bPlayerChaseActionDebug : 1;
+	
 	uint8 bPlayerSkillDebug : 1;
 
 	uint8 bPlayerHitCheckDebug : 1;

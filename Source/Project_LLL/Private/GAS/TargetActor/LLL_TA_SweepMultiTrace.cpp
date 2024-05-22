@@ -4,13 +4,12 @@
 #include "GAS/TargetActor/LLL_TA_SweepMultiTrace.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Engine/DamageEvents.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "Util/LLL_DebugDrawHelper.h"
+#include "Util/LLL_MathHelper.h"
 
-// Sets default values
 ALLL_TA_SweepMultiTrace::ALLL_TA_SweepMultiTrace()
 {
 	
@@ -35,6 +34,7 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 	}
 	
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(ALLL_TA_SweepMultiTrace), false, SourceActor);
+	Params.AddIgnoredActors(IgnoreActors.Array());
 	
 	GetWorld()->SweepMultiByChannel(
 		Results,
@@ -44,6 +44,25 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 		TraceChannel,
 		TraceShape,
 		Params);
+
+	TArray<TWeakObjectPtr<AActor>> HitActors;
+	if(!Results.IsEmpty())
+	{
+		for (const FHitResult& Result : Results)
+		{
+			AActor* HitActor = Result.GetActor();
+
+			if (HitActor && !HitActors.Contains(HitActor))
+			{
+				if (BaseShape == ESelectShapeTypes::Cone && !FLLL_MathHelper::IsInFieldOfView(SourceActor, HitActor, ConeDistance, ConeFieldOfView, ConeRotation))
+				{
+					continue;
+				}
+				
+				HitActors.Add(HitActor);
+			}
+		}
+	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -64,34 +83,27 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 			const FVector DistanceVector = SweepEndLocation - SweepStartLocation;
 			const FVector SweepCenter = SweepStartLocation + DistanceVector / 2.0f;
 			
-			if(Results.IsEmpty())
+			FColor DebugColor = FColor::Blue;
+			for (auto HitActor : HitActors)
 			{
-				FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, FColor::Blue, 2.f, BoxExtents, CapsuleExtents, SphereRadius, SweepQuat);
+				if (HitActor.IsValid())
+				{
+					if (BaseShape == ESelectShapeTypes::Cone && !FLLL_MathHelper::IsInFieldOfView(SourceActor, HitActor.Get(), ConeDistance, ConeFieldOfView, ConeRotation))
+					{
+						continue;
+					}
+
+					DebugColor = FColor::Red;
+					break;
+				}
 			}
-			else
-			{
-				FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, FColor::Red, 2.f, BoxExtents, CapsuleExtents, SphereRadius, SweepQuat);
-			}
+			FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, DebugColor, 2.f, BoxExtents, CapsuleExtents, SphereRadius, ConeDistance, ConeFieldOfView, ConeRotation, SweepQuat);
 		}
 	}
 #endif
 	
-	TArray<TWeakObjectPtr<AActor>> HitActors;
-	if(!Results.IsEmpty())
-	{
-		for (const FHitResult& Result : Results)
-		{
-			AActor* HitActor = Result.GetActor();
-			
-			if (HitActor && !HitActors.Contains(HitActor))
-			{
-				HitActors.Add(HitActor);
-			}
-		}
-	}
-	
 	FGameplayAbilityTargetData_ActorArray* ActorsData = new FGameplayAbilityTargetData_ActorArray();
 	ActorsData->SetActors(HitActors);
-
+	
 	return FGameplayAbilityTargetDataHandle(ActorsData);
 }

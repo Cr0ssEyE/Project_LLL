@@ -24,7 +24,7 @@
 *.la
 *.a
 *.pdb
-*.lib
+#*.lib
 
 # Executables
 *.exe
@@ -81,3 +81,34 @@ Binaries/Win64/OpenImageDenoise.dll
 Binaries/Win64/tbb.dll
 Binaries/Win64/tbb12.dll
 Binaries/Win64/tbbmalloc.dll
+
+#FMODStudio     // Remove when not in use
+FMODProject/*
+!FMODProject/Assets
+!FMODProject/Metadata
+!FMODProject/FMODProject.fspro
+
+Project_LLL/Plugins/FMODStudio/Docs
+Project_LLL/Plugins/FMODStudio/Binaries/*
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64
+Project_LLL/Plugins/FMODStudio/Binaries/Win64/*
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64/fmod.dll
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64/fmod_vc.lib
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64/fmodL.dll
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64/fmodL_vc.lib
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64/fmodstudio.dll
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64/fmodstudio_vc.lib
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64/fmodstudioL.dll
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64/fmodstudioL_vc.lib
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64/resonanceaudio.dll
+
+#Build Data
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64/UnrealEditor.modules
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64/UnrealEditor-FMODStudio.dll
+!Project_LLL/Plugins/FMODStudio/Binaries/Win64/UnrealEditor-FMODStudioEditor.dll
+
+Project_LLL/Plugins/FMODStudio/Intermediate
+Binaries/Win64/UnrealEditor-Project_LLL.patch_*
+Binaries/Win64/Project_LLL.lib
+Content/StarterContent/Architecture/Floor_400x400.uasset
+Content/StarterContent/HDRI/HDRI_Epic_Courtyard_Daylight.uasset

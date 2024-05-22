@@ -4,6 +4,7 @@
 #include "UI/System/LLL_GamePauseWidget.h"
 
 #include "Components/Button.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Kismet/GameplayStatics.h"
 
 void ULLL_GamePauseWidget::NativeConstruct()
@@ -14,7 +15,7 @@ void ULLL_GamePauseWidget::NativeConstruct()
 	ExitButton->OnClicked.AddDynamic(this, &ULLL_GamePauseWidget::ExitButtonEvent);
 }
 
-void ULLL_GamePauseWidget::SetupDeadStateLayout()
+void ULLL_GamePauseWidget::SetupDeadStateLayout() const
 {
 	ResumeButton->SetIsEnabled(false);
 	SettingButton->SetIsEnabled(false);
@@ -35,5 +36,8 @@ void ULLL_GamePauseWidget::SettingButtonEvent()
 void ULLL_GamePauseWidget::ExitButtonEvent()
 {
 	//TODO: 정산창 Or 준비 공간으로 보내기
+	ULLL_GameProgressManageSubSystem* SubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	SubSystem->GetCurrentSaveGameData()->LastPlayLevelName = *GetWorld()->GetCurrentLevel()->GetName();
+	
 	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 }

@@ -3,8 +3,10 @@
 
 #include "UI/Debug/PlayerDebugWidget.h"
 
+#include "AbilitySystemComponent.h"
 #include "Components/Button.h"
 #include "Components/CheckBox.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 
 void UPlayerDebugWidget::NativeConstruct()
@@ -13,6 +15,7 @@ void UPlayerDebugWidget::NativeConstruct()
 	
 	PlayerMovementCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerMovementCheckBoxEvent);
 	PlayerDashCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerDashCheckBoxEvent);
+	PlayerWireActionCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent);
 	PlayerSkillCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerSkillCheckBoxEvent);
 
 	PlayerFillHealthButton->OnClicked.AddDynamic(this, &UPlayerDebugWidget::PlayerFillHealthButtonEvent);
@@ -27,6 +30,11 @@ void UPlayerDebugWidget::PlayerMovementCheckBoxEvent(bool value)
 void UPlayerDebugWidget::PlayerDashCheckBoxEvent(bool value)
 {
 	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerDashDebug(PlayerDashCheckBox->IsChecked());
+}
+
+void UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent(bool value)
+{
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerChaseActionDebug(PlayerWireActionCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerSkillCheckBoxEvent(bool value)
@@ -52,11 +60,47 @@ void UPlayerDebugWidget::CharacterCollisionCheckBoxEvent(bool value)
 void UPlayerDebugWidget::PlayerFillHealthButtonEvent()
 {
 	// TODO: 플레이어 클래스 만들고 처리
-	// Cast<>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if(!IsValid(Player))
+	{
+		return;
+	}
+	
+	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
+	if(!IsValid(ASC))
+	{
+		return;
+	}
+	
+	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(FillHealthEffect, 1.0, EffectContextHandle);
+	if(EffectSpecHandle.IsValid())
+	{
+		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+	}
 }
 
 void UPlayerDebugWidget::PlayerCoolDownResetButtonEvent()
 {
 	// TODO: 플레이어 클래스 만들고 처리
-	// Cast<>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if(!IsValid(Player))
+	{
+		return;
+	}
+
+	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
+	if(!IsValid(ASC))
+	{
+		return;
+	}
+	
+	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ResetCoolDownEffect, 1.0, EffectContextHandle);
+	if(EffectSpecHandle.IsValid())
+	{
+		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+	}
 }

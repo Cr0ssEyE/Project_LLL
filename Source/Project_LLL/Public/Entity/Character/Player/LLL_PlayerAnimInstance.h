@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacterAnimInstance.h"
 #include "LLL_PlayerAnimInstance.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FAttackHitCheckDelegate, bool)
-DECLARE_MULTICAST_DELEGATE_OneParam(FAttackComboCheckDelegate, bool)
+DECLARE_MULTICAST_DELEGATE(FDeadMotionEndedDelegate)
+
 /**
  * 
  */
@@ -18,19 +19,25 @@ class PROJECT_LLL_API ULLL_PlayerAnimInstance : public ULLL_BaseCharacterAnimIns
 	GENERATED_BODY()
 
 public:
-	FAttackHitCheckDelegate AttackHitCheckDelegate;
-	FAttackComboCheckDelegate AttackComboCheckDelegate;
-	
-private:
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_AttackHitCheckStart() { AttackHitCheckDelegate.Broadcast(true); }
+	FDeadMotionEndedDelegate DeadMotionEndedDelegate;
+
+protected:
+	virtual void NativeInitializeAnimation() override;
+	virtual void AnimNotify_LeftStep() override;
+	virtual void AnimNotify_RightStep() override;
+
+public:
+	FORCEINLINE void SetDash(bool IsDashing) { bIsDashing = IsDashing; }
+
+protected:
+	void SetStepEventParameter(FName FootSocketName) const;
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_AttackHitCheckEnd() { AttackHitCheckDelegate.Broadcast(false); }
+	FORCEINLINE void AnimNotify_DeadMotionEnded() { DeadMotionEndedDelegate.Broadcast(); }
 
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_AttackComboCheckStart() { AttackComboCheckDelegate.Broadcast(true); }
-	
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_AttackComboCheckEnd() { AttackComboCheckDelegate.Broadcast(false); }
+	UPROPERTY(BlueprintReadOnly, Category = "Character")
+	uint8 bIsDashing : 1;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;
 };

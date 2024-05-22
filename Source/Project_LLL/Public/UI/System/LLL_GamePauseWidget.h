@@ -7,6 +7,7 @@
 #include "LLL_GamePauseWidget.generated.h"
 
 class UButton;
+
 /**
  * 
  */
@@ -19,7 +20,7 @@ public:
 	virtual void NativeConstruct() override;
 
 public:
-	void SetupDeadStateLayout();
+	void SetupDeadStateLayout() const;
 	
 protected:
 	UFUNCTION(BlueprintCallable)

@@ -4,48 +4,51 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Entity/Character/Base/LLL_BaseCharacterUIManager.h"
 #include "LLL_PlayerUIManager.generated.h"
 
-
+class ULLL_SkillWidget;
 class ALLL_InteractiveObject;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;
 class ULLL_GamePauseWidget;
+class ULLL_SelectRewardWidget;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROJECT_LLL_API ULLL_PlayerUIManager : public UActorComponent
+class PROJECT_LLL_API ULLL_PlayerUIManager : public ULLL_BaseCharacterUIManager
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	ULLL_PlayerUIManager();
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	void TogglePauseWidget(bool IsDead) const;
 	void ToggleInventoryWidget() const;
 	void EnableInteractionWidget() const;
 	void DisableInteractionWidget() const;
-	void UpdateInteractionWidget(ALLL_InteractiveObject* CurrentObject, int Num) const;
-	void UpdateStatusWidget(int MaxHealth, int CurrentHealth, int MaxShield, int CurrentShield) const;
+	void UpdateInteractionWidget(const ALLL_InteractiveObject* CurrentObject, int Num) const;
 
-	UFUNCTION(BlueprintCallable)
-	void SetAllWidgetVisibility(const bool Visible);
+	void SetAllWidgetVisibility(const bool Visible) const;
+
+	FORCEINLINE ULLL_GamePauseWidget* GetGamePauseWidget() const { return GamePauseWidget; }
+	FORCEINLINE ULLL_InventoryWidget* GetInventoryWidget() const { return InventoryWidget; }
+	FORCEINLINE ULLL_InteractionWidget* GetInteractionWidget() const { return InteractionWidget; }
+	FORCEINLINE ULLL_SelectRewardWidget* GetSelectRewardWidget() const { return SelectRewardWidget; }
+
+protected:
+	virtual void UpdateWidget() override;
 	
 protected:
 	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<ULLL_GamePauseWidget> PauseWidgetClass;
+	TSubclassOf<ULLL_GamePauseWidget> GamePauseWidgetClass;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_GamePauseWidget> PauseWidget;
+	TObjectPtr<ULLL_GamePauseWidget> GamePauseWidget;
 
 	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<ULLL_InventoryWidget> InventoryWidgetClass;
@@ -58,10 +61,16 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_InteractionWidget> InteractionWidget;
-	
-	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<ULLL_PlayerStatusWidget> PlayerStatusWidgetClass;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_PlayerStatusWidget> PlayerStatusWidget;
+	TSubclassOf<ULLL_SkillWidget> SkillGaugeWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_SkillWidget> SkillGaugeWidget;
+
+	UPROPERTY(VisibleAnywhere)
+	TSubclassOf<ULLL_SelectRewardWidget> SelectRewardWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_SelectRewardWidget> SelectRewardWidget;
 };

@@ -15,13 +15,6 @@ class UWidgetSwitcher;
 /**
  * 
  */
-UENUM()
-enum class EDebugWidgetTypes
-{
-	Player,
-	Monster,
-	Object
-};
 
 UCLASS()
 class PROJECT_LLL_API UProtoDebugWidget : public UUserWidget
