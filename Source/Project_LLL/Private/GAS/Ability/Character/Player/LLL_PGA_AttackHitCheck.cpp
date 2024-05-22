@@ -6,7 +6,6 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Task/LLL_AT_Trace.h"
@@ -46,21 +45,21 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	
 	// 맞은 액터 갯수만큼 콤보 수 증가
 	const int Magnitude = TargetDataHandle.Data[0]->GetActors().Num();
-	const FGameplayEffectSpecHandle ComboEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ComboStackEffect, CurrentEventData.EventMagnitude);
-	if (ComboEffectSpecHandle.IsValid())
-	{
-		ComboEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_COMBO_ADDITIVE, Magnitude);
-		ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, ComboEffectSpecHandle);
-	}
 
-	// 맞은 액터 갯수만큼 스킬 게이지 증가
-	const FGameplayEffectSpecHandle SkillGaugeEffectSpecHandle = MakeOutgoingGameplayEffectSpec(IncreaseSkillGaugeEffect, CurrentEventData.EventMagnitude);
-	if (SkillGaugeEffectSpecHandle.IsValid())
+	if (!CheckHitCountEffects.IsEmpty())
 	{
-		SkillGaugeEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_SKILL_GAUGE_ADDITIVE, Magnitude);
-		ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, SkillGaugeEffectSpecHandle);
+		for (auto HitCountEffect : CheckHitCountEffects)
+		{
+			const FGameplayEffectSpecHandle HitCountEffectSpecHandle = MakeOutgoingGameplayEffectSpec(HitCountEffect, CurrentEventData.EventMagnitude);
+			if (!HitCountEffectSpecHandle.IsValid())
+			{
+				continue;
+			}
+			HitCountEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ATTACK_HIT_COUNT, Magnitude);
+			K2_ApplyGameplayEffectSpecToOwner(HitCountEffectSpecHandle);
+		}
 	}
-
+	
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect, CurrentEventData.EventMagnitude);
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect); 
 
