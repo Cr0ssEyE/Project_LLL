@@ -5,10 +5,13 @@
 
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Components/SphereComponent.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
+#include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
+#include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 
 ULLL_PGA_ControlChaseHand::ULLL_PGA_ControlChaseHand()
 {
@@ -20,26 +23,41 @@ void ULLL_PGA_ControlChaseHand::ActivateAbility(const FGameplayAbilitySpecHandle
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
+	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
 	
 	PlayerChaseHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_ControlChaseHand::OnCompleteCallBack);
-	ThrowHand(ActorInfo);
+
+	if (IsValid(ThrowAnimMontage))
+	{
+		PlayerCharacter->GetCharacterAnimInstance()->Montage_Play(ThrowAnimMontage);
+	}
+	
+	UAbilityTask_WaitGameplayEvent* ThrowTriggerTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_PLAYER_THROW_TRIGGERED, nullptr, true);
+	ThrowTriggerTask->EventReceived.AddDynamic(this, &ULLL_PGA_ControlChaseHand::ThrowHand);
+	ThrowTriggerTask->ReadyForActivation();
+
+	PlayerCharacter->PlayerRotateToMouseCursor(2.f);
 }
 
 void ULLL_PGA_ControlChaseHand::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
-	
+
+	PlayerCharacter->GetMesh()->UnHideBoneByName(BONE_PLAYER_LEFT_WEAPON);
 	PlayerChaseHand->ReleaseCompleteDelegate.RemoveDynamic(this, &ULLL_PGA_ControlChaseHand::OnCompleteCallBack);
-	
+
+	if (PlayerChaseHand->GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_CHASER_STATE_THROWING))
+	{
+		PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_RELEASE));
+	}
 	bIsAlreadyThrown = false;
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void ULLL_PGA_ControlChaseHand::ThrowHand(const FGameplayAbilityActorInfo* ActorInfo)
+void ULLL_PGA_ControlChaseHand::ThrowHand(const FGameplayEventData EventData)
 {
 	if(bIsAlreadyThrown)
 	{
@@ -65,15 +83,20 @@ void ULLL_PGA_ControlChaseHand::ThrowHand(const FGameplayAbilityActorInfo* Actor
 	}
 #endif
 	
-	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
+	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	const ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
 
 	UAbilitySystemComponent* HandASC = PlayerChaseHand->GetAbilitySystemComponent();
-	if(IsValid(HandASC))
+	if(!IsValid(HandASC))
 	{
-		const FGameplayTagContainer ThrowHandTags(TAG_GAS_CHASE_THROW);
-		HandASC->TryActivateAbilitiesByTag(ThrowHandTags);
+		EndAbility(CurrentSpecHandle,  CurrentActorInfo, CurrentActivationInfo, true, true);
 	}
+
+	PlayerCharacter->GetMesh()->HideBoneByName(BONE_PLAYER_LEFT_WEAPON, PBO_Term);
+
+	const ULLL_PlayerChaseHandAttributeSet* ChaseHandAttributeSet = Cast<ULLL_PlayerChaseHandAttributeSet>(PlayerChaseHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerChaseHandAttributeSet::StaticClass()));
+	PlayerChaseHand->GetCollisionComponent()->SetSphereRadius(ChaseHandAttributeSet->GetGrabCollisionRadius());
+	
+	HandASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_THROW));
 	bIsAlreadyThrown = true;
 }
-

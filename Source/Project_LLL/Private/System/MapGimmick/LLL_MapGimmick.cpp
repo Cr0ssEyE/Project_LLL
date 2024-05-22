@@ -20,6 +20,7 @@
 #include "Util/LLL_ConstructorHelper.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
+#include "Enumeration/LLL_GameSystemEnumHelper.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
@@ -146,6 +147,10 @@ void ALLL_MapGimmick::RandomMap()
 
 void ALLL_MapGimmick::ChangeMap(AActor* DestroyedActor)
 {
+	if(IsValid(ShoppingMapComponent))
+	{
+		ShoppingMapComponent->DeleteProducts();
+	}
 	AllGatesDestroy();
 	RandomMap();
 	CreateMap();
@@ -243,5 +248,17 @@ void ALLL_MapGimmick::RewardSpawn()
 	{
 		RewardObject->SetInformation(RewardData);
 		RewardObject->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::RewardDestroyed);
+	}
+	switch (RewardData->ID)
+	{
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	default: ;
 	}
 }

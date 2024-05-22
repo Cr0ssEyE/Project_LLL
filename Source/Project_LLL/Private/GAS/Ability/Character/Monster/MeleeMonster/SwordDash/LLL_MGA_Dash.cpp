@@ -11,6 +11,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Character/Monster/MeleeMonster/SwordDash/LLL_SwordDashAttributeSet.h"
 #include "Interface/LLL_DashMonsterInterface.h"
+#include "Util/LLL_ExecuteCueHelper.h"
 
 void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -28,7 +29,7 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	const FVector SweepEndLocation = SweepStartLocation + Monster->GetActorForwardVector() * SwordDashAttributeSet->GetDashDistance();
 	const FQuat SweepQuat = Monster->GetActorQuat();
 	constexpr ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
-	constexpr ECollisionChannel PlayerTraceChannel = ECC_PLAYER;
+	constexpr ECollisionChannel PlayerTraceChannel = ECC_PLAYER_CHECK;
 
 	const UCapsuleComponent* Capsule = Monster->GetCapsuleComponent();
 	const FCollisionShape TraceShape = FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius(), Capsule->GetScaledCapsuleHalfHeight() / 2.0f);
@@ -74,8 +75,9 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, 0.1f, nullptr, nullptr);
 	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &ULLL_MGA_Dash::OnCompleteCallBack);
-
 	MoveToLocationTask->ReadyForActivation();
+
+	FLLL_ExecuteCueHelper::ExecuteCue(Monster, DashCueTag);
 }
 
 void ULLL_MGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

@@ -7,11 +7,12 @@
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
+#include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 #include "Util/LLL_ExecuteCueHelper.h"
 
 ULLL_PGA_ChaseHandThrow::ULLL_PGA_ChaseHandThrow()
@@ -25,7 +26,6 @@ void ULLL_PGA_ChaseHandThrow::ActivateAbility(const FGameplayAbilitySpecHandle H
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
-	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerChaseHand->GetOwner());
 
 	if (IsValid(PlayerChaseHand->GetAttachParentActor()))
 	{
@@ -34,7 +34,6 @@ void ULLL_PGA_ChaseHandThrow::ActivateAbility(const FGameplayAbilitySpecHandle H
 	
 	PlayerChaseHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_ChaseHandThrow::OnInterruptedCallBack);
 	PlayerChaseHand->OnGrabbedDelegate.AddDynamic(this, &ULLL_PGA_ChaseHandThrow::OnInterruptedCallBack);
-	PlayerCharacter->PlayerRotateToMouseCursor();
 	
 	ThrowToCursorLocation();
 }
@@ -58,9 +57,9 @@ void ULLL_PGA_ChaseHandThrow::EndAbility(const FGameplayAbilitySpecHandle Handle
 			}
 		}
 #endif
-		if (!GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_GRAB)))
+		if (!GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_GRAB)))
 		{
-			GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_RELEASE));
+			GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_RELEASE));
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 			if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 			{
@@ -81,9 +80,9 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(PlayerChaseHand->GetOwner());
 	const ULLL_PlayerChaseHandAttributeSet* ChaseHandAttributeSet = CastChecked<ULLL_PlayerChaseHandAttributeSet>(PlayerChaseHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerChaseHandAttributeSet::StaticClass()));
-
-	StartLocation = PlayerCharacter->GetActorLocation();
-	TargetLocation = PlayerCharacter->GetMouseLocation();
+	
+	StartLocation = PlayerCharacter->GetMesh()->GetSocketLocation(SOCKET_LEFT_WEAPON);
+	TargetLocation = PlayerCharacter->GetLastCheckedMouseLocation();
 	TargetLocation.Z = StartLocation.Z;
 	const float TargetDistance =  FVector::Distance(TargetLocation, StartLocation);
 	// 마우스 위치가 투척 최소거리 보다 가까운 거리일 경우 보정
@@ -105,10 +104,9 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	
 	TargetLocation.Z = StartLocation.Z;
 	
-	const FVector ThrowDirection = PlayerCharacter->GetActorForwardVector();
+	const FVector ThrowDirection = (TargetLocation - StartLocation).GetSafeNormal2D();
 
 	PlayerChaseHand->SetActorLocationAndRotation(StartLocation, ThrowDirection.Rotation());
-	PlayerChaseHand->SetActorRotation(ThrowDirection.Rotation());
 	
 	USphereComponent* HandCollision = PlayerChaseHand->GetCollisionComponent();
 	USkeletalMeshComponent* HandMesh = PlayerChaseHand->GetHandMesh();
@@ -120,8 +118,8 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	UProjectileMovementComponent* HandProjectile = PlayerChaseHand->GetProjectileMovementComponent();
 	HandProjectile->SetUpdatedComponent(PlayerChaseHand->GetRootComponent());
 	HandProjectile->Activate();
+	HandProjectile->MaxSpeed = ChaseHandAttributeSet->GetThrowSpeed();
 	HandProjectile->Velocity = ThrowDirection * ChaseHandAttributeSet->GetThrowSpeed();
-	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandThrow::CheckReached);
 
 	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, WireHandThrowCueTag);

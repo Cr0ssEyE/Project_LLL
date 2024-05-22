@@ -12,18 +12,8 @@ class PROJECT_LLL_API FLLL_ExecuteCueHelper
 public:
 	static void ExecuteCue(const AActor* SourceActor, FGameplayTag CueTag)
 	{
-		const ALLL_BaseCharacter* Character = Cast<ALLL_BaseCharacter>(SourceActor);
-		const ALLL_BaseObject* Object = Cast<ALLL_BaseObject>(SourceActor);
-
-		UAbilitySystemComponent* ASC = nullptr;
-		if (IsValid(Character))
-		{
-			ASC = Character->GetAbilitySystemComponent();
-		}
-		else if (IsValid(Object))
-		{
-			ASC = Character->GetAbilitySystemComponent();
-		}
+		const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(SourceActor);
+		UAbilitySystemComponent* ASC = AbilitySystemInterface->GetAbilitySystemComponent();
 
 		if (IsValid(ASC))
 		{

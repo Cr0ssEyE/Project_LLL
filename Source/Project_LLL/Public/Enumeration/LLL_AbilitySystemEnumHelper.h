@@ -38,3 +38,42 @@ enum class EEffectAccessRange : uint8
 	AttributeOnly UMETA(Displayname="스테이터스 변화"),
 	AbilityOnly UMETA(Displayname="어빌리티 추가")
 };
+
+// 플레이어 어빌리티 종류 구분
+UENUM(BlueprintType)
+enum class EAbilityType : uint8
+{
+	None UMETA(Hidden),
+	Crow,
+	Deer,
+	Wolf
+};
+
+UENUM(BlueprintType)
+enum class EAbilityPart : uint8
+{
+	Common,
+	Attack,
+	Chase,
+	Dash,
+	ComboSkill
+};
+
+UENUM(BlueprintType)
+enum class EAbilityRank : uint8
+{
+	Normal,
+	Rare,
+	Epic,
+	Legend
+};
+
+UENUM(BlueprintType)
+enum class EAbilityCategory : uint8
+{
+	Null,
+	Feather,
+	Critical,
+	Marking,
+	Bleeding
+};
