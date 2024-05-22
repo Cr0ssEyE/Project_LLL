@@ -5,7 +5,6 @@
 #include "Components/Image.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
-#include "GAS/Attribute/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
 
 void ULLL_PlayerChaseActionWidget::NativeConstruct()
 {
@@ -31,7 +30,7 @@ void ULLL_PlayerChaseActionWidget::UpdateWidgetView(const UAbilitySystemComponen
 	
 	const float MaxCoolDownGauge = PlayerCharactarAttributeSet->GetChaseCoolDown();
 	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
-	CharacterASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_PLAYER_CHASE_THROW), true);
+	CharacterASC->FindAllAbilitiesWithTags(AbilitySpecHandles, FGameplayTagContainer(TAG_GAS_PLAYER_CHASER_THROW), true);
 
 	if (AbilitySpecHandles.IsEmpty())
 	{

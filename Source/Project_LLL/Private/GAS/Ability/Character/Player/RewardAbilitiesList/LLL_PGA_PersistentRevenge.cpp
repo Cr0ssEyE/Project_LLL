@@ -4,7 +4,7 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_PersistentRevenge.h"
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/PlayerFeather/LLL_PlayerThrownFeather.h"
+#include "Entity/Object/Thrown/LLL_PlayerThrownFeather.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 
 void ULLL_PGA_PersistentRevenge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

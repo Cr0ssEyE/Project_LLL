@@ -9,10 +9,10 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHand.h"
+#include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Object/Thrown/PlayerChaseHand/LLL_PlayerChaseHandAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 
 ULLL_PGA_ChaseHandLockTarget::ULLL_PGA_ChaseHandLockTarget()
 {
@@ -74,7 +74,7 @@ bool ULLL_PGA_ChaseHandLockTarget::TryGrabAroundEntity(const FGameplayAbilitySpe
 {
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
 	float SphereRadius = PlayerChaseHand->GetCollisionComponent()->GetScaledSphereRadius();
-
+	
 	FHitResult Result;
 	FCollisionQueryParams Params;
 
