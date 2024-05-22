@@ -53,8 +53,13 @@ public:
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	
-	FVector GetMouseLocation() const;
-	void PlayerRotateToMouseCursor();
+	FVector CheckMouseLocation();
+	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
+	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
+
+protected:
+	void TurnToMouseCursor();
+	void MoveCameraToMouseCursor();
 	
 	// 카메라
 private:
@@ -109,8 +114,16 @@ private:
 	UPROPERTY()
 	uint32 InteractionRange;
 
+private:
+	FVector LastCheckedMouseLocation;
+	
+	FRotator MouseDirectionRotator;
+	
+	float ToCursorRotationMultiplyValue;
+	
 	// 상태 관련 함수
 protected:
+	virtual void Damaged() override;
 	virtual void Dead() override;
 
 	UFUNCTION()
@@ -121,7 +134,7 @@ protected:
 	// 상태 관련 변수
 protected:
 	uint8 bIsMoveInputPressed : 1;
-	
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerGoldComponent> GoldComponent;

@@ -24,6 +24,9 @@ protected:
 protected:
 	virtual void OwnerLaunchToChaseHand();
 
+	UFUNCTION()
+	void OnCollideCallBack(FGameplayEventData EventData);
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	TObjectPtr<UAnimMontage> AbilityActionMontage;

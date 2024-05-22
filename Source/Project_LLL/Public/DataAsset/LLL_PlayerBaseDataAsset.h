@@ -50,11 +50,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
 	TObjectPtr<UAnimMontage> DeadAnimMontage;
 
-	// 상호작용 관련
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "Action", DisplayName = "마우스 입력시 위치 보정 처리 영역 반지름")
-	float MouseCursorCorrectRadius;
-	
 	// 입력 이벤트 관련
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "입력 어빌리티")
