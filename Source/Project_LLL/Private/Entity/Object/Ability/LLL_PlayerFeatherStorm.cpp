@@ -46,8 +46,8 @@ void ALLL_PlayerFeatherStorm::NotifyActorBeginOverlap(AActor* OtherActor)
 		{
 			if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor))
 			{
-				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 				UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *OtherActor->GetName())
+				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 			}
 		}
 	}), PlayerFeatherStormAttributeSet->GetDamageTimer(), true);

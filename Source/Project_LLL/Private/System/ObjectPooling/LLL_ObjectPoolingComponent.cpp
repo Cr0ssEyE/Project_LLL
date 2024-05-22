@@ -51,6 +51,7 @@ AActor* ULLL_ObjectPoolingComponent::GetActor(UClass* Class)
 
 	AActor* NewActor = GetWorld()->SpawnActor(Class);
 	Actors.Emplace(NewActor);
+	CastChecked<ILLL_ObjectPoolingObjectInterface>(NewActor)->Activate();
 	return NewActor;
 }
 

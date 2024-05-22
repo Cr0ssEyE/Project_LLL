@@ -53,7 +53,7 @@ void ALLL_PlayerThrownFeather::Tick(float DeltaSeconds)
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckPlayerCollisionDebug())
+		if (ProtoGameInstance->CheckPlayerAttackDebug())
 		{
 			HitCollisionBox->SetHiddenInGame(false);
 		}
