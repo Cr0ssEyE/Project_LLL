@@ -19,6 +19,8 @@ class ULLL_PlayerAnimInstance;
 class ULLL_SelectRewardWidget;
 class UInputAction;
 class UInputMappingContext;
+class ULLL_PlayerChaseActionWidget;
+class ULLL_PlayerComboWidget;
 
 /**
  * 
@@ -38,12 +40,21 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "상호작용 정보 UI")
 	TSubclassOf<ULLL_InteractionWidget> InteractionWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스킬 게이지 UI")
-	TSubclassOf<ULLL_SkillWidget> SkillGaugeWidgetClass;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "보상 선택 UI")
 	TSubclassOf<ULLL_SelectRewardWidget> SelectRewardWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "콤보 UI")
+	TSubclassOf<ULLL_PlayerComboWidget> ComboWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "추격 쿨타임 UI")
+	TSubclassOf<ULLL_PlayerChaseActionWidget> ChaseActionWidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "추격 쿨타임 UI 위치")
+	FVector ChaseActionGaugeLocation;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "추격 쿨타임 UI 크기")
+	FVector2D ChaseActionGaugeSize;
 	
 	// 애니메이션 관련
 public:
