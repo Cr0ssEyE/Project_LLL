@@ -37,6 +37,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "모델링 사이즈", meta=(DisplayPriority=1))
 	FVector MeshSize = FVector::OneVector;
 
+	// 캐릭터 기본 애니메이션 관련
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "피격 애님 몽타주")
+	TObjectPtr<UAnimMontage> DamagedAnimMontage;
+
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
 	TSubclassOf<UGameplayEffect> InitEffect;
@@ -53,4 +58,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "피격 이벤트 태그", meta=(Categories = "GameplayCue"))
 	FGameplayTag DamagedCueTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "사망 이벤트 태그", meta=(Categories = "GameplayCue"))
+	FGameplayTag DeadCueTag;
 };

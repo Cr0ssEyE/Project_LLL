@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "LLL_BaseObjectDataAsset.generated.h"
 
+class UNiagaraSystem;
 class UGameplayEffect;
 class UGameplayAbility;
 
@@ -29,6 +30,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh", DisplayName = "모델링 사이즈", meta=(DisplayPriority=1))
 	FVector MeshScale = FVector::OneVector;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "파티클")
+	TObjectPtr<UNiagaraSystem> Particle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "파티클 사이즈", meta=(DisplayPriority=1))
+	FVector ParticleScale = FVector::OneVector;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
 	TSubclassOf<UGameplayEffect> InitEffect;

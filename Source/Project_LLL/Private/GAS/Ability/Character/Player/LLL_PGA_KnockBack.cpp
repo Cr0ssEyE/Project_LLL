@@ -14,12 +14,6 @@
 #include "Interface/LLL_KnockBackInterface.h"
 #include "Util/LLL_MathHelper.h"
 
-ULLL_PGA_KnockBack::ULLL_PGA_KnockBack()
-{
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-	KnockBackMultiplier = 1.f;
-}
-
 void ULLL_PGA_KnockBack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -44,23 +38,22 @@ void ULLL_PGA_KnockBack::OnTraceResultCallBack(const FGameplayAbilityTargetDataH
 	
 	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	const FVector AvatarLocation = CurrentActorInfo->AvatarActor->GetActorLocation();
+	
 	for (auto Actor : TargetDataHandle.Data[0]->GetActors())
 	{
 		// 초기 구현은 MovementComponent의 LaunchCharacter 기반 물리 넉백으로 구현. 추후 방향성에 따른 수정 예정
 		if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor))
 		{
 			const FVector LaunchDirection = (Actor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
-			const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerCharacterAttributeSet, CurrentNotifyLevel);
+			const float ActionAmplify = KnockBackAmplifyChangeSection.Eval(CurrentNotifyLevel, KnockBackAmplifyChangeSection.RowName.ToString());
+ 			const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerCharacterAttributeSet, ActionAmplify);
 			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
+			
 			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 		}
-
-		// 만약 넉백 당하지는 않지만 넉백 관련 이벤트가 있는 대상일 경우를 위해 위와 별도 처리
-		if (Cast<IAbilitySystemInterface>(Actor))
-		{
-			BP_ApplyGameplayEffectToTarget(TargetDataHandle, KnockBackEffect, CurrentNotifyLevel);
-		}
 	}
+	
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, KnockBackEffect, CurrentNotifyLevel);
 }
 
 void ULLL_PGA_KnockBack::OnTraceEndCallBack()
