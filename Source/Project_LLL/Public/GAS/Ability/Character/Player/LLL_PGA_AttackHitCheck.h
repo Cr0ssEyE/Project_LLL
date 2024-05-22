@@ -29,7 +29,7 @@ protected:
 	void OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 
 	UFUNCTION()
-	void OnTraceEndCallBack();
+	void OnTraceEndCallBack(FGameplayEventData EventData);
 	
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
