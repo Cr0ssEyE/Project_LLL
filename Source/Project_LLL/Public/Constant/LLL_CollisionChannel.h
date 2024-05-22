@@ -36,3 +36,4 @@
 #define CP_INTERACTION TEXT("Interaction")
 #define CP_STAGE_TRIGGER TEXT("StageTrigger")
 #define CP_BULLET_TIME_INFLUENCED TEXT("BulletTimeInfluencedActor")
+#define CP_MAP_SOUND_MANAGER TEXT("MapSoundManager")

@@ -4,14 +4,16 @@
 #include "GAS/Ability/Character/Player/SkillSystem/LLL_PGA_Skill_BulletTime.h"
 
 #include "AbilitySystemComponent.h"
+#include "FMODAudioComponent.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/ASC/LLL_BaseASC.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
+#include "Interface/LLL_FModInterface.h"
 #include "Interface/LLL_KnockBackInterface.h"
+#include "System/MapSound/LLL_MapSoundManager.h"
 
 ULLL_PGA_Skill_BulletTime::ULLL_PGA_Skill_BulletTime()
 {
@@ -111,8 +113,14 @@ void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 
 	for (auto HitResult : HitResults)
 	{
-		BulletTimeEffectedActors.Emplace(HitResult.GetActor());
-		HitResult.GetActor()->CustomTimeDilation = WorldDecelerationRate;
+		AActor* HitActor = HitResult.GetActor();
+		BulletTimeEffectedActors.Emplace(HitActor);
+		HitActor->CustomTimeDilation = WorldDecelerationRate;
+
+		if (ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(HitActor))
+		{
+			FModInterface->SetPitch(WorldDecelerationRate);
+		}
 	}
 }
 
@@ -173,6 +181,11 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 			if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor.Get()))
 			{
 				KnockBackActor->ApplyStackedKnockBack();
+			}
+
+			if (ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(Actor.Get()))
+			{
+				FModInterface->SetPitch(1.0f);
 			}
 		}
 	}

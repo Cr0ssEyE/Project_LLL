@@ -139,6 +139,18 @@ void ALLL_BaseCharacter::BeginPlay()
 	}));
 }
 
+void ALLL_BaseCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (CurrentPitch != Pitch)
+	{
+		CurrentPitch = FMath::FInterpTo(CurrentPitch, Pitch, DeltaSeconds, 1.0f);
+		
+		FModAudioComponent->SetPitch(CurrentPitch);
+	}
+}
+
 void ALLL_BaseCharacter::InitAttributeSet()
 {
 	UE_LOG(LogTemp, Log, TEXT("%s 어트리뷰트 초기화 리스트"), *GetName())

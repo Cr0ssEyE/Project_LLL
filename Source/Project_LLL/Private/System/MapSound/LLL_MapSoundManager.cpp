@@ -4,7 +4,16 @@
 #include "System/MapSound/LLL_MapSoundManager.h"
 
 #include "FMODAudioComponent.h"
+#include "Components/BoxComponent.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+
+ALLL_MapSoundManager::ALLL_MapSoundManager()
+{
+	CollisionBoxForBulletTime = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision For Bullet Time"));
+	CollisionBoxForBulletTime->SetCollisionProfileName(CP_MAP_SOUND_MANAGER);
+	SetRootComponent(CollisionBoxForBulletTime);
+}
 
 void ALLL_MapSoundManager::BeginPlay()
 {
@@ -20,6 +29,19 @@ void ALLL_MapSoundManager::BeginPlay()
 
 	BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), BGM, true);
 	AMBWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), AMB, true);
+
+	CollisionBoxForBulletTime->SetBoxExtent(FVector::OneVector);
+}
+
+void ALLL_MapSoundManager::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (CurrentPitch != Pitch)
+	{
+		UFMODBlueprintStatics::EventInstanceSetPitch(BGMWrapper, CurrentPitch);
+		UFMODBlueprintStatics::EventInstanceSetPitch(AMBWrapper, CurrentPitch);
+	}
 }
 
 void ALLL_MapSoundManager::PlayerDeadHandle(ALLL_BaseCharacter* Character)
