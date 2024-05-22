@@ -13,5 +13,8 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PlayerThrownFeatherDataAsset : public ULLL_ThrownObjectDataAsset
 {
 	GENERATED_BODY()
-	
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Collision", DisplayName = "힛 콜리젼 사이즈")
+	FVector HitCollisionSize;
 };

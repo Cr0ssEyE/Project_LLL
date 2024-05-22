@@ -17,7 +17,7 @@ ALLL_StaffBasicMagic::ALLL_StaffBasicMagic()
 
 	StaffBasicMagicAttributeSet = CreateDefaultSubobject<ULLL_StaffBasicMagicAttributeSet>(TEXT("StaffBasicMagicAttributeSet"));
 	
-	HitCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Skill Collision"));
+	HitCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit Collision"));
 	HitCollisionBox->SetCollisionProfileName(CP_MONSTER_ATTACK);
 	SetRootComponent(HitCollisionBox);
 }

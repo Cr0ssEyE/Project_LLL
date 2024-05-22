@@ -15,7 +15,7 @@ ALLL_AbilityObject::ALLL_AbilityObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
-	OverlapCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Skill Collision"));
+	OverlapCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Overlap Collision"));
 	OverlapCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	OverlapCollisionBox->SetCollisionProfileName(CP_PLAYER_SKILL);
 	OverlapCollisionBox->SetupAttachment(RootComponent);

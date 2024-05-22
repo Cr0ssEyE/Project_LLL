@@ -3,9 +3,11 @@
 
 #include "Entity/Object/Thrown/LLL_PlayerThrownFeather.h"
 
+#include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_PlayerThrownFeatherDataAsset.h"
+#include "Game/ProtoGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/LLL_PlayerThrownFeatherAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -16,37 +18,64 @@ ALLL_PlayerThrownFeather::ALLL_PlayerThrownFeather()
 	
 	PlayerThrownFeatherAttributeSet = CreateDefaultSubobject<ULLL_PlayerThrownFeatherAttributeSet>(TEXT("PlayerThrownFeatherAttributeSet"));
 	
-	BaseMesh->SetCollisionProfileName(CP_PLAYER_THROWN_OBJECT);
+	HitCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit Collision"));
+	HitCollisionBox->SetCollisionProfileName(CP_PLAYER_THROWN_OBJECT);
+	SetRootComponent(HitCollisionBox);
 }
 
 void ALLL_PlayerThrownFeather::BeginPlay()
 {
 	Super::BeginPlay();
 
+	PlayerThrownFeatherDataAsset = Cast<ULLL_PlayerThrownFeatherDataAsset>(ThrownObjectDataAsset);
 	ThrownObjectAttributeSet = PlayerThrownFeatherAttributeSet;
 
+	HitCollisionBox->SetBoxExtent(PlayerThrownFeatherDataAsset->HitCollisionSize);
+	
 	CurveSize = PlayerThrownFeatherAttributeSet->GetCurveSize();
-	CurrentCurveSize = 1.0f / CurveSize;
+	CurveSpeed = 1.0f / CurveSize;
 }
 
 void ALLL_PlayerThrownFeather::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (!IsHidden())
+	if (IsActivated())
 	{
 		FVector Direction = Target->GetActorLocation() - GetActorLocation();
 		Direction.Z = 0.0f;
 		const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-		SetActorRotation(FMath::RInterpTo(GetActorRotation(), Rotation, DeltaSeconds, CurrentCurveSize));
-		CurrentCurveSize += 1.0f / CurveSize;
+		SetActorRotation(FMath::RInterpTo(GetActorRotation(), Rotation, DeltaSeconds, CurveSpeed));
+		CurveSpeed += 1.0f / CurveSize;
 		ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
 	}
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckPlayerCollisionDebug())
+		{
+			HitCollisionBox->SetHiddenInGame(false);
+		}
+		else
+		{
+			HitCollisionBox->SetHiddenInGame(true);
+		}
+	}
+#endif
+}
+
+void ALLL_PlayerThrownFeather::Activate()
+{
+	Super::Activate();
+
+	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void ALLL_PlayerThrownFeather::Deactivate()
 {
 	Super::Deactivate();
 	
-	CurrentCurveSize = 1.0f / CurveSize;
+	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CurveSpeed = 1.0f / CurveSize;
 }
