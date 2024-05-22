@@ -21,11 +21,20 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 투영 종류")
 	TEnumAsByte<ECameraProjectionMode::Type> ProjectionType;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV")
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Perspective", EditConditionHides))
 	float CameraFOV;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리")
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 암 거리")
+	float SpringArmDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
 	float CameraDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "근평면 클리핑 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	float OrthographicNearClipDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "원평면 클리핑 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	float OrthographicFarClipDistance;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 회전값")
 	FRotator SpringArmAngle;

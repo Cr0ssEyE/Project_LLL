@@ -20,6 +20,8 @@
 #define ECC_TRACE_FIELD ECC_GameTraceChannel16
 
 // Collision Profile
+#define CP_PLAYER_SKILL TEXT("PlayerSkill")
+#define CP_PLAYER_THROWN_OBJECT TEXT("PlayerThrownObject")
 #define CP_NO_COLLISION TEXT("NoCollision")
 #define CP_OVERLAP_ALL TEXT("OverlapAll")
 #define CP_STATIC_ONLY TEXT("IgnoreOnlyPawn")

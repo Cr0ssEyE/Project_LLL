@@ -53,11 +53,11 @@ protected:
 	uint8 bIsInputPressed : 1;
 
 protected:
-	UPROPERTY(EditAnywhere, DisplayName = "공격 이벤트 태그", meta=(Categories = "GameplayCue"))
+	UPROPERTY(EditAnywhere, DisplayName = "공격 이벤트 큐 태그", meta=(Categories = "GameplayCue"))
 	FGameplayTag AttackCueTag;
 
-	UPROPERTY(EditAnywhere, DisplayName = "콤보 공격 이벤트 딜레이")
-	TArray<float> AttackEventDelayArray;
+	UPROPERTY(EditAnywhere, DisplayName = "공격 모션 별 이벤트 큐 딜레이")
+	TArray<float> AttackCueDelayArray;
 
 	FName PlayerAttackCountParameterName;
 };

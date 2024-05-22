@@ -28,7 +28,7 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	const FVector SweepEndLocation = SweepStartLocation + Monster->GetActorForwardVector() * SwordDashAttributeSet->GetDashDistance();
 	const FQuat SweepQuat = Monster->GetActorQuat();
 	constexpr ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
-	constexpr ECollisionChannel PlayerTraceChannel = ECC_PLAYER;
+	constexpr ECollisionChannel PlayerTraceChannel = ECC_PLAYER_CHECK;
 
 	const UCapsuleComponent* Capsule = Monster->GetCapsuleComponent();
 	const FCollisionShape TraceShape = FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius(), Capsule->GetScaledCapsuleHalfHeight() / 2.0f);

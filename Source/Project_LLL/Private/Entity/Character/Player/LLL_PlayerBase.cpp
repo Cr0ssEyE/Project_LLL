@@ -27,13 +27,16 @@
 #include "Util/LLL_ConstructorHelper.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
+#include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
+	ObjectPoolingComponent = CreateDefaultSubobject<ULLL_ObjectPoolingComponent>(TEXT("ObjectPoolingComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
+	
 	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
 	SkillAttributeSet = CreateDefaultSubobject<ULLL_PlayerSkillAttributeSet>(TEXT("SkillAttributeSet"));
 
@@ -71,16 +74,20 @@ void ALLL_PlayerBase::BeginPlay()
 
 	if (IsValid(CameraDataAsset))
 	{
+		SpringArm->TargetArmLength = CameraDataAsset->SpringArmDistance;
 		Camera->SetProjectionMode(CameraDataAsset->ProjectionType);
-		Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
 		
 		if (Camera->ProjectionMode == ECameraProjectionMode::Orthographic)
 		{
 			Camera->OrthoWidth = CameraDataAsset->CameraDistance;
+			Camera->SetAutoCalculateOrthoPlanes(false);
+			Camera->SetAutoPlaneShift(false);
+			Camera->SetOrthoNearClipPlane(CameraDataAsset->OrthographicNearClipDistance);
+			Camera->SetOrthoFarClipPlane(CameraDataAsset->OrthographicFarClipDistance);
 		}
 		else
 		{
-			SpringArm->TargetArmLength = CameraDataAsset->CameraDistance;
+			Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
 		}
 		
 		SpringArm->SetRelativeRotation(CameraDataAsset->SpringArmAngle);
@@ -231,14 +238,14 @@ FVector ALLL_PlayerBase::GetMouseLocation() const
 	FVector TrueMouseWorldLocation = HitResult.ImpactPoint;
 	
 	HitResult.Init();
-	bResult = false;
+	float CorrectionCheckRadius = Cast<ULLL_PlayerCharacterAttributeSet>(CharacterAttributeSet)->GetTargetingCorrectionRadius();
 	bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
 		TrueMouseWorldLocation,
 		TrueMouseWorldLocation,
 		FQuat::Identity,
-		ECC_ENEMY_HIT,
-		FCollisionShape::MakeSphere(PlayerDataAsset->MouseCursorCorrectRadius),
+		ECC_ENTITY_CHECK,
+		FCollisionShape::MakeSphere(CorrectionCheckRadius),
 		Params
 		);
 	
@@ -302,7 +309,7 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
 	const int32 InputID = static_cast<int32>(InputName);
-	if(FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID))
+	if (FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
 		DashSpec->InputPressed = true;
 		if (DashSpec->IsActive())
