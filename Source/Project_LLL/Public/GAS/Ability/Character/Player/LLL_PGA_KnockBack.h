@@ -24,7 +24,7 @@ protected:
 	void OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 
 	UFUNCTION()
-	void OnTraceEndCallBack();
+	void OnTraceEndCallBack(FGameplayEventData TriggerEventData);
 	
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "넉백 발생시 적용 GE")

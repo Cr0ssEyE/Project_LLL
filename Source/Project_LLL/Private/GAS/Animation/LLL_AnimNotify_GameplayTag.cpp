@@ -69,7 +69,6 @@ void ULLL_AnimNotify_GameplayTag::Notify_TagEventTriggered(AActor* OwnerActor)
 	{
 		FGameplayEventData PayloadData;
 		PayloadData.EventMagnitude = NotifyLevel;
-
 		for (auto GameplayTag : TriggerGameplayTag.GetGameplayTagArray())
 		{
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, GameplayTag, PayloadData);

@@ -12,18 +12,60 @@ void ULLL_CharacterStatusWidget::NativeConstruct()
 	
 }
 
-void ULLL_CharacterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) const
+void ULLL_CharacterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet)
 {
+	if (!IsValid(HealthBarMaterial))
+	{
+		ensure(false);
+		return;
+	}
+	
+	if (!IsValid(HealthBarDynamicMaterial))
+	{
+		HealthBarDynamicMaterial = UMaterialInstanceDynamic::Create(HealthBarMaterial, this);
+		const FProgressBarStyle BaseWidgetStyle = HealthGaugeBar->GetWidgetStyle();
+		FProgressBarStyle NewWidgetStyle;
+		NewWidgetStyle.SetFillImage(BaseWidgetStyle.FillImage);
+		NewWidgetStyle.SetBackgroundImage(BaseWidgetStyle.BackgroundImage);
+		NewWidgetStyle.SetMarqueeImage(BaseWidgetStyle.MarqueeImage);
+		NewWidgetStyle.SetEnableFillAnimation(BaseWidgetStyle.EnableFillAnimation);
+		NewWidgetStyle.FillImage.SetResourceObject(HealthBarDynamicMaterial);
+
+		CurrentHealthBarPercent = CurrentHealthBarPercent = 1.f;
+		HealthGaugeBar->SetWidgetStyle(NewWidgetStyle);
+		HealthBarDynamicMaterial->SetScalarParameterValue(TEXT("TopProgress"), 1.f);
+		HealthBarDynamicMaterial->SetScalarParameterValue(TEXT("BottomProgress"), 1.f);
+	}
+	
 	const float MaxHealth = CharacterAttributeSet->GetMaxHealth();
 	const float CurrentHealth = CharacterAttributeSet->GetCurrentHealth();
-	
-	if(MaxHealth)
+	float UpdateHealthValue = CurrentHealth / MaxHealth;
+	if (GetWorld()->GetTimerManager().IsTimerActive(MaterialAnimTimerHandle) && CurrentHealthBarPercent != UpdateHealthValue)
 	{
-		HealthGaugeBar->SetPercent(CurrentHealth / MaxHealth);
+		HealthGaugeBar->SetPercent(CurrentHealthBarPercent);
+		MaterialAnimTimerHandle.Invalidate();
 	}
-	else
+
+	if (CurrentHealthBarPercent != UpdateHealthValue)
 	{
-		HealthGaugeBar->SetPercent(0.f);
+		CurrentHealthBarPercent = UpdateHealthValue;
+		HealthBarDynamicMaterial->SetScalarParameterValue(TEXT("TopProgress"), CurrentHealthBarPercent);
+		CurrentSemiHealthBarPercent = 1.f - CurrentHealthBarPercent;
+		GetWorld()->GetTimerManager().SetTimer(MaterialAnimTimerHandle, this, &ULLL_CharacterStatusWidget::UpdateFillMaterial, 0.01f, true);
+	}
+}
+
+void ULLL_CharacterStatusWidget::UpdateFillMaterial()
+{
+	CurrentSemiHealthBarPercent -= HealthDecrementBarSpeed;
+	if (CurrentSemiHealthBarPercent <= 0.f)
+	{
+		CurrentSemiHealthBarPercent = 0.f;
+		HealthBarDynamicMaterial->SetScalarParameterValue(TEXT("BottomProgress"), CurrentSemiHealthBarPercent);
+		HealthGaugeBar->SetPercent(CurrentHealthBarPercent);
+		MaterialAnimTimerHandle.Invalidate();
+		return;
 	}
 	
+	HealthBarDynamicMaterial->SetScalarParameterValue(TEXT("BottomProgress"), CurrentSemiHealthBarPercent);
 }

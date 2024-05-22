@@ -37,5 +37,4 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GameplayEffect", DisplayName = "종료시 호출되는 이펙트 리스트")
 	TMap<TSubclassOf<UGameplayEffect>, EEffectApplyTarget> OnEndedEffects;
 
-	float CurrentNotifyLevel;
 };
