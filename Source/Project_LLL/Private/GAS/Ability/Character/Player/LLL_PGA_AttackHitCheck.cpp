@@ -5,7 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Task/LLL_AT_Trace.h"
@@ -19,15 +19,13 @@ ULLL_PGA_AttackHitCheck::ULLL_PGA_AttackHitCheck()
 void ULLL_PGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	CurrentNotifyLevel = TriggerEventData->EventMagnitude;
-
+	
 	TraceTask = ULLL_AT_Trace::CreateTask(this, TargetActorClass, false);
 	TraceTask->TaskOnCompleteDelegate.AddDynamic(this, &ULLL_PGA_AttackHitCheck::OnTraceResultCallBack);
 	TraceTask->ReadyForActivation();
 
-	UAbilityTask_WaitGameplayTagAdded* TraceEndTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, TAG_GAS_ATTACK_HIT_CHECK_COMPLETE);
-	TraceEndTask->Added.AddDynamic(this, &ULLL_PGA_AttackHitCheck::OnTraceEndCallBack);
+	UAbilityTask_WaitGameplayEvent* TraceEndTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_ATTACK_HIT_CHECK_COMPLETE);
+	TraceEndTask->EventReceived.AddDynamic(this, &ULLL_PGA_AttackHitCheck::OnTraceEndCallBack);
 	TraceEndTask->ReadyForActivation();
 }
 
@@ -40,15 +38,6 @@ void ULLL_PGA_AttackHitCheck::EndAbility(const FGameplayAbilitySpecHandle Handle
 
 void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
-	// TODO: 람다식이 빌드에서 터지지 않나 주시 필요
-	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]()
-	{;
-		if(IsValid(TraceTask) && !bIsAbilityEnding)
-		{
-			TraceTask->Activate();
-		}
-	}));
-	
 	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{
 		return;
@@ -56,28 +45,36 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	
 	// 맞은 액터 갯수만큼 콤보 수 증가
 	const int Magnitude = TargetDataHandle.Data[0]->GetActors().Num();
-	const FGameplayEffectSpecHandle ComboEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ComboStackEffect, CurrentNotifyLevel);
-	if (ComboEffectSpecHandle.IsValid())
+
+	if (!CheckHitCountEffects.IsEmpty())
 	{
-		ComboEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_COMBO_ADDITIVE, Magnitude);
-		ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, ComboEffectSpecHandle);
+		for (auto HitCountEffect : CheckHitCountEffects)
+		{
+			const FGameplayEffectSpecHandle HitCountEffectSpecHandle = MakeOutgoingGameplayEffectSpec(HitCountEffect, CurrentEventData.EventMagnitude);
+			if (!HitCountEffectSpecHandle.IsValid())
+			{
+				continue;
+			}
+			HitCountEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ATTACK_HIT_COUNT, Magnitude);
+			K2_ApplyGameplayEffectSpecToOwner(HitCountEffectSpecHandle);
+		}
 	}
+	
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect, CurrentEventData.EventMagnitude);
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect); 
 
-	// 맞은 액터 갯수만큼 스킬 게이지 증가
-	const FGameplayEffectSpecHandle SkillGaugeEffectSpecHandle = MakeOutgoingGameplayEffectSpec(IncreaseSkillGaugeEffect, CurrentNotifyLevel);
-	if (SkillGaugeEffectSpecHandle.IsValid())
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [=, this]()
 	{
-		SkillGaugeEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_SKILL_GAUGE_ADDITIVE, Magnitude);
-		ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, SkillGaugeEffectSpecHandle);
-	}
-
-	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect, CurrentNotifyLevel);
-	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect);
-
-	Cast<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked())->ReceiveTargetData(this, TargetDataHandle);
+		if (!IsValid(GetAbilitySystemComponentFromActorInfo()))
+		{
+			return;
+		}
+		
+		Cast<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked())->ReceiveTargetData(this, TargetDataHandle);
+	}));
 }
 
-void ULLL_PGA_AttackHitCheck::OnTraceEndCallBack()
+void ULLL_PGA_AttackHitCheck::OnTraceEndCallBack(FGameplayEventData EventData)
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
