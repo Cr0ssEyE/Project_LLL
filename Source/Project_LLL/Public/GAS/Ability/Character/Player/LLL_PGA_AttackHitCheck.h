@@ -23,21 +23,17 @@ public:
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
 	UFUNCTION()
 	void OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 
 	UFUNCTION()
-	void OnTraceEndCallBack();
+	void OnTraceEndCallBack(FGameplayEventData EventData);
 	
 protected:
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TSubclassOf<UGameplayEffect> ComboStackEffect;
-
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TSubclassOf<UGameplayEffect> IncreaseSkillGaugeEffect;
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "공격 적중시 적중 갯수에 영향을 받는 이펙트(자신 적용)")
+	TArray<TSubclassOf<UGameplayEffect>> CheckHitCountEffects;
 	
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<UGameplayEffect> AttackDamageEffect;

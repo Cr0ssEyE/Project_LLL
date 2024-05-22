@@ -22,8 +22,6 @@ void ULLL_PGA_KnockBackCollisionCheck::ActivateAbility(const FGameplayAbilitySpe
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	CurrentNotifyLevel = TriggerEventData->EventMagnitude;
-	
 	ULLL_AT_WaitTargetData* TargetDataTask = ULLL_AT_WaitTargetData::CreateTask(this, ALLL_MonsterBase::StaticClass(), false, false);
 	TargetDataTask->TargetDataReceivedDelegate.AddDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnTraceResultCallBack);
 	TargetDataTask->ReadyForActivation();
@@ -95,13 +93,13 @@ void ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack(AActor* HitA
 	HitCharacter->GetCharacterMovement()->Velocity = FVector::Zero();
 	HitCharacter->OtherActorCollidedDelegate.RemoveDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack);
 	const FGameplayAbilityTargetDataHandle HitActorHandle = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(HitCharacter);
-	BP_ApplyGameplayEffectToTarget(HitActorHandle, CollideCauserApplyEffect, CurrentNotifyLevel);
+	BP_ApplyGameplayEffectToTarget(HitActorHandle, CollideCauserApplyEffect, CurrentEventData.EventMagnitude);
 	
 	// 넉백당한 대상에 충돌한 대상에 대한 처리
 	if (Cast<IAbilitySystemInterface>(OtherActor))
 	{
 		const FGameplayAbilityTargetDataHandle OtherActorHandle = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(OtherActor);
-		BP_ApplyGameplayEffectToTarget(OtherActorHandle, CollideTargetApplyEffect, CurrentNotifyLevel);
+		BP_ApplyGameplayEffectToTarget(OtherActorHandle, CollideTargetApplyEffect, CurrentEventData.EventMagnitude);
 	}
 
 	if (KnockBackedCharacters.Contains(HitCharacter))
