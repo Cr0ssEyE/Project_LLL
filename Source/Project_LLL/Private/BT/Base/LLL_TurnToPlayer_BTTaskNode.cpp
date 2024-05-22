@@ -23,8 +23,7 @@ EBTNodeResult::Type ULLL_TurnToPlayer_BTTaskNode::ExecuteTask(UBehaviorTreeCompo
 	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
 	if (IsValid(PlayerBase))
 	{
-		FVector Direction = PlayerBase->GetActorLocation() - MonsterBase->GetActorLocation();
-		Direction.Z = 0.0f;
+		const FVector Direction = PlayerBase->GetActorLocation() - MonsterBase->GetActorLocation();
 		const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
 		const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(MonsterBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 		const float TurnSpeed = MonsterAttributeSet->GetTurnSpeed();

@@ -42,8 +42,7 @@ void ALLL_PlayerThrownFeather::Tick(float DeltaSeconds)
 
 	if (IsActivated())
 	{
-		FVector Direction = Target->GetActorLocation() - GetActorLocation();
-		Direction.Z = 0.0f;
+		const FVector Direction = Target->GetActorLocation() - GetActorLocation();
 		const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
 		SetActorRotation(FMath::RInterpTo(GetActorRotation(), Rotation, DeltaSeconds, CurveSpeed));
 		CurveSpeed += 1.0f / CurveSize;
