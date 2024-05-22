@@ -7,6 +7,7 @@
 #include "LLL_PlayerChaseActionWidget.generated.h"
 
 class UImage;
+class UAbilitySystemComponent;
 /**
  * 
  */
@@ -17,18 +18,19 @@ class PROJECT_LLL_API ULLL_PlayerChaseActionWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	FORCEINLINE void SetPercent(float value) { Percent = value; } 
+	FORCEINLINE TObjectPtr<UImage> GetCircleProgressBar() { return CircleProgressBar; }
 	
+	UFUNCTION()
+	void SetCircleProgressBarValue(const float value);
+
+	void UpdateWidgetView(const UAbilitySystemComponent* CharacterASC);
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidget))
 	TObjectPtr<UImage> CircleProgressBar;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "MaterialVariable")
-	float Percent;
+	TObjectPtr<UMaterialInstanceDynamic> CircleProgressBarInstDynamic;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, Category = "MaterialVariable")
-	TObjectPtr<UMaterialInstanceDynamic> CircleProgressBarInst;
-
-	UFUNCTION(BlueprintCallable)
-	void SetCircleProgressBarValue(const float value);
+	UPROPERTY(VisibleAnywhere)
+	float ChaseGauge;
 };
