@@ -15,11 +15,11 @@ void UPlayerDebugWidget::NativeConstruct()
 	
 	PlayerMovementCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerMovementCheckBoxEvent);
 	PlayerDashCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerDashCheckBoxEvent);
-	PlayerWireActionCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent);
+	PlayerChaseActionCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent);
 	PlayerSkillCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerSkillCheckBoxEvent);
 
 	PlayerFillHealthButton->OnClicked.AddDynamic(this, &UPlayerDebugWidget::PlayerFillHealthButtonEvent);
-	PlayerCoolDownResetButton->OnClicked.AddDynamic(this, &UPlayerDebugWidget::PlayerCoolDownResetButtonEvent);
+	PlayerInvincibleCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerInvincibleCheckBoxEvent);
 }
 
 void UPlayerDebugWidget::PlayerMovementCheckBoxEvent(bool value)
@@ -34,7 +34,7 @@ void UPlayerDebugWidget::PlayerDashCheckBoxEvent(bool value)
 
 void UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerChaseActionDebug(PlayerWireActionCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerChaseActionDebug(PlayerChaseActionCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerSkillCheckBoxEvent(bool value)
@@ -81,26 +81,7 @@ void UPlayerDebugWidget::PlayerFillHealthButtonEvent()
 	}
 }
 
-void UPlayerDebugWidget::PlayerCoolDownResetButtonEvent()
+void UPlayerDebugWidget::PlayerInvincibleCheckBoxEvent(bool value)
 {
-	// TODO: 플레이어 클래스 만들고 처리
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	if(!IsValid(Player))
-	{
-		return;
-	}
-
-	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
-	if(!IsValid(ASC))
-	{
-		return;
-	}
-	
-	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-	EffectContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ResetCoolDownEffect, 1.0, EffectContextHandle);
-	if(EffectSpecHandle.IsValid())
-	{
-		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-	}
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerInvincibleMode(PlayerInvincibleCheckBox->IsChecked());
 }

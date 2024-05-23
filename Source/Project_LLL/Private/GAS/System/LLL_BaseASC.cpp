@@ -35,6 +35,14 @@ void ULLL_BaseASC::ReceiveTargetData(const UGameplayAbility* OwnerAbility, const
 	}
 }
 
+void ULLL_BaseASC::ReduceCoolDownEffectDuration(const FActiveGameplayEffectHandle& ActiveGameplayEffectHandle, float ReduceAmount)
+{
+	if (ActiveGameplayEffectHandle.IsValid())
+	{
+		ActiveGameplayEffects.ModifyActiveEffectStartTime(ActiveGameplayEffectHandle, -ReduceAmount);
+	}
+}
+
 void ULLL_BaseASC::OnFallableTagAdded(const FGameplayTag Tag, int32 count)
 {
 	if (Tag == TAG_GAS_MONSTER_FALLABLE && count > 0 && Cast<ILLL_KnockBackInterface>(GetAvatarActor()))

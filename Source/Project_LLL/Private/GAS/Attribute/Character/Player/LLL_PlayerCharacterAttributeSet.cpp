@@ -3,9 +3,11 @@
 
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/ProtoGameInstance.h"
 #include "Util/LLL_MathHelper.h"
 
@@ -30,6 +32,22 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
+			if (ProtoGameInstance->CheckPlayerIsInvincible())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 무적 상태")));
+				Player->TakeDamageDelegate.Broadcast();
+
+				FGameplayEventData PayloadData;
+				AActor* Instigator = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
+				if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Instigator))
+				{
+					Instigator = ThrownObject->GetOwner();
+				}
+				PayloadData.Instigator = Instigator;
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
+				return;
+			}
+			
 			if (ProtoGameInstance->CheckPlayerHitDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 데미지 입음. : %f"), Data.EvaluatedData.Magnitude));
