@@ -11,7 +11,7 @@ void ULLL_MonsterAttributeSet::ReceiveDamageEvent(const FGameplayEffectModCallba
 	Super::ReceiveDamageEvent(Data);
 
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
-	if(GetCurrentShield() > 0.f)
+	if (GetCurrentShield() > 0.f)
 	{
 		SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
 	}
@@ -21,7 +21,7 @@ void ULLL_MonsterAttributeSet::ReceiveDamageEvent(const FGameplayEffectModCallba
 	}
 	SetReceiveDamage(0.f);
 
-	if(GetCurrentShield() > 0)
+	if (GetCurrentShield() > 0)
 	{
 		SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
 	}
@@ -29,7 +29,7 @@ void ULLL_MonsterAttributeSet::ReceiveDamageEvent(const FGameplayEffectModCallba
 	{
 		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
 
-		if(GetCurrentHealth() == 0)
+		if (GetCurrentHealth() == 0)
 		{
 			Monster->Dead();
 		}
