@@ -29,9 +29,7 @@ public:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, MaxHealth);
-	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, CurrentHealth);
-	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, MaxShield);
-	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, CurrentShield);
+	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, CurrentHealth)
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, OffensePower);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, MoveSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, ReceiveDamage);
@@ -41,17 +39,13 @@ public:
 	
 	// 캐릭터 기본 어트리뷰트 데이터
 protected:
+	virtual void ReceiveDamageEvent(const FGameplayEffectModCallbackData& Data) {}
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxHealth;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData CurrentHealth;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MaxShield;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData CurrentShield;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData OffensePower;

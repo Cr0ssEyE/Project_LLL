@@ -126,12 +126,13 @@ private:
 	FRotator MouseDirectionRotator;
 	
 	float ToCursorRotationMultiplyValue;
-	
-	// 상태 관련 함수
-protected:
+
+public:
 	virtual void Damaged() override;
 	virtual void Dead() override;
 
+	// 상태 관련 함수
+protected:
 	UFUNCTION()
 	void DeadMotionEndedHandle();
 

@@ -68,6 +68,24 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 	Super::PostGameplayEffectExecute(Data);
 }
 
+void ULLL_PlayerCharacterAttributeSet::ReceiveDamageEvent(const FGameplayEffectModCallbackData& Data)
+{
+	Super::ReceiveDamageEvent(Data);
+
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
+	SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+	SetReceiveDamage(0.f);
+	SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+	if(GetCurrentHealth() == 0)
+	{
+		Player->Dead();
+	}
+	else
+	{
+		Player->Damaged();
+	}
+}
+
 void ULLL_PlayerCharacterAttributeSet::TryStartComboManagement(const FGameplayEffectModCallbackData& Data)
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)

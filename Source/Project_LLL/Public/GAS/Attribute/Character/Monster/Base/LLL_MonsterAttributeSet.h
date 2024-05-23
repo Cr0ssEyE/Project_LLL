@@ -15,6 +15,8 @@ class PROJECT_LLL_API ULLL_MonsterAttributeSet : public ULLL_CharacterAttributeS
 	GENERATED_BODY()
 
 public:
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MaxShield);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, CurrentShield);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, DetectDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, ChargeTimer);
@@ -28,6 +30,14 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData5);
 
 protected:
+	virtual void ReceiveDamageEvent(const FGameplayEffectModCallbackData& Data) override;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MaxShield;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData CurrentShield;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData AttackDistance;
 

@@ -103,47 +103,6 @@ void ALLL_MonsterBase::InitAttributeSet()
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_MONSTER, Data, true);
 }
 
-void ALLL_MonsterBase::Dead()
-{
-	Super::Dead();
-
-	CharacterAnimInstance->StopAllMontages(1.0f);
-
-	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
-	GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
-	
-	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
-
-	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = CastChecked<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	MonsterBaseAnimInstance->StopAllMontages(1.0f);
-	
-	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
-	MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
-
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
-
-	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-	if (IsValid(PlayerBase))
-	{
-		FVector ImpulseDirection = PlayerBase->GetActorForwardVector();
-		ImpulseDirection.Normalize();
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-		const float ImpulseStrength = PlayerAttributeSet->GetImpulseStrength();
-		const FVector FinalImpulse = ImpulseDirection * ImpulseStrength * 100.0f;
-		
-		GetMesh()->AddImpulseToAllBodiesBelow(FinalImpulse);
-	}
-
-	MonsterStatusWidgetComponent->SetHiddenInGame(true);
-
-	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();
-	FTimerHandle DestroyTimerHandle;
-	GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
-		Destroy();
-	}), DestroyTimer, false);
-}
-
 void ALLL_MonsterBase::Attack() const
 {
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK)))
@@ -203,6 +162,47 @@ void ALLL_MonsterBase::Damaged()
 #endif
 		}
 	}
+}
+
+void ALLL_MonsterBase::Dead()
+{
+	Super::Dead();
+
+	CharacterAnimInstance->StopAllMontages(1.0f);
+
+	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
+	GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
+	
+	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
+
+	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = CastChecked<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+	MonsterBaseAnimInstance->StopAllMontages(1.0f);
+	
+	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
+	MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
+
+	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	if (IsValid(PlayerBase))
+	{
+		FVector ImpulseDirection = PlayerBase->GetActorForwardVector();
+		ImpulseDirection.Normalize();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		const float ImpulseStrength = PlayerAttributeSet->GetImpulseStrength();
+		const FVector FinalImpulse = ImpulseDirection * ImpulseStrength * 100.0f;
+		
+		GetMesh()->AddImpulseToAllBodiesBelow(FinalImpulse);
+	}
+
+	MonsterStatusWidgetComponent->SetHiddenInGame(true);
+
+	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();
+	FTimerHandle DestroyTimerHandle;
+	GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		Destroy();
+	}), DestroyTimer, false);
 }
 
 void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower)

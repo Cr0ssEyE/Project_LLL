@@ -26,13 +26,11 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void InitAttributeSet() override;
 	
-protected:
-	virtual void Dead() override;
-	
 public:
 	void Attack() const;
 	void Charge() const;
 	virtual void Damaged() override;
+	virtual void Dead() override;
 
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	virtual void ApplyStackedKnockBack() override;
