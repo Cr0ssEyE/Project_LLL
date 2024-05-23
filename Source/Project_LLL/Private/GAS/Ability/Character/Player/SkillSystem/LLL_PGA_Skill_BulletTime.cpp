@@ -8,6 +8,7 @@
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
@@ -159,7 +160,8 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 		}
 	}
 
-	if (BulletTimeEffectedActors.IsEmpty())
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	if (BulletTimeEffectedActors.IsEmpty() || Player->CheckCharacterIsDead())
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;

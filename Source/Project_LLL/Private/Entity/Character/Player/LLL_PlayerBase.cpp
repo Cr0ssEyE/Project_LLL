@@ -497,6 +497,8 @@ void ALLL_PlayerBase::Dead()
 	{
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DeadAnimMontage);
 	}
+	
+	ASC->CancelAbilities();
 }
 
 void ALLL_PlayerBase::DeadMotionEndedHandle()
