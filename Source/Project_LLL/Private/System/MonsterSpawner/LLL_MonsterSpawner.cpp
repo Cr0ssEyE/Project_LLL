@@ -95,14 +95,12 @@ void ALLL_MonsterSpawner::SpawnMonster()
 	{
 		CurrentGroup -= LastGroup;
 	}
-	
-	int32 SpawnPointNum = 0;
 
 	for (const ULLL_MonsterSpawnPointComponent* SpawnPoint : SpawnPoints)
 	{
 		if (IsValid(SpawnPoint))
 		{
-			SpawnPointNum++;
+			int32 SpawnPointNum = SpawnPoint->GetNum();
 
 			for (const FMonsterSpawnDataTable MonsterSpawnData : MonsterSpawnDataArray)
 			{
