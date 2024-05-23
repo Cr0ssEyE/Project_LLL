@@ -40,6 +40,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void InitAttributeSet() override;
 	
 	// 외부 접근용
 public:
@@ -101,6 +102,9 @@ private:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_PlayerCharacterAttributeSet> PlayerCharacterAttributeSet;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_CameraDataAsset> CameraDataAsset;

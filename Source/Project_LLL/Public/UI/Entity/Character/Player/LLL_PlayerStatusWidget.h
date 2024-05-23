@@ -17,7 +17,7 @@ class PROJECT_LLL_API ULLL_PlayerStatusWidget : public ULLL_CharacterStatusWidge
 	GENERATED_BODY()
 
 public:
-	virtual void UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) const override;
+	virtual void UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) override;
 	void UpdateWidgetView(const UAbilitySystemComponent* CharacterASC) const;
 
 protected:

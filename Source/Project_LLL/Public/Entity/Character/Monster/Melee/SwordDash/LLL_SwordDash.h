@@ -8,6 +8,7 @@
 #include "Entity/Character/Monster/Melee/Base/LLL_MeleeMonster.h"
 #include "LLL_SwordDash.generated.h"
 
+class ULLL_SwordDashAttributeSet;
 class UBoxComponent;
 /**
  * 
@@ -36,10 +37,16 @@ protected:
 	TObjectPtr<const ULLL_SwordDashDataAsset> SwordDashDataAsset;
 
 	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<ULLL_SwordDashAttributeSet> SwordDashAttributeSet;
+
+	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UBoxComponent> DashDamageRangeBox;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMeshComponent> SwordMeshComponent;
 
-	uint8 bIsDashing : 1 = false;
+	uint8 bIsDashing : 1;
+	
+	// Todo : 어빌리티 작업이 끝난 후 커브 데이터로 옮기기
+	TSubclassOf<UGameplayEffect> InitEffect;
 };

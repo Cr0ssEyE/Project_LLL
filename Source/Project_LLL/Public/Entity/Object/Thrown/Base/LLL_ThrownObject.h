@@ -50,5 +50,5 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<const AActor> Target;
 
-	uint8 bIsActivated : 1 = false;
+	uint8 bIsActivated : 1;
 };
