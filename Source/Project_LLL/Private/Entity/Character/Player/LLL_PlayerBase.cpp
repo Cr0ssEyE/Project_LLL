@@ -83,19 +83,16 @@ void ALLL_PlayerBase::BeginPlay()
 
 	if (IsValid(CameraDataAsset))
 	{
-		SpringArm->TargetArmLength = CameraDataAsset->SpringArmDistance;
 		Camera->SetProjectionMode(CameraDataAsset->ProjectionType);
 		
 		if (Camera->ProjectionMode == ECameraProjectionMode::Orthographic)
 		{
 			Camera->OrthoWidth = CameraDataAsset->CameraDistance;
-			// Camera->SetAutoCalculateOrthoPlanes(false);
-			// Camera->SetAutoPlaneShift(false);
-			// Camera->SetOrthoNearClipPlane(CameraDataAsset->OrthographicNearClipDistance);
-			// Camera->SetOrthoFarClipPlane(CameraDataAsset->OrthographicFarClipDistance);
+			Camera->SetAutoPlaneShift(CameraDataAsset->AutoPlaneShift);
 		}
 		else
 		{
+			SpringArm->TargetArmLength = CameraDataAsset->SpringArmDistance;
 			Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
 		}
 		
