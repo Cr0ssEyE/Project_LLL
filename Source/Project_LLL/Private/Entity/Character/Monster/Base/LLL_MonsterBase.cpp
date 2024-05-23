@@ -64,7 +64,8 @@ void ALLL_MonsterBase::BeginPlay()
 	MonsterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
 	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
 	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	MonsterStatusWidgetComponent->SetTickWhenOffscreen(true);
+	
 	// DefaultGame.ini에 +GlobalAttributeSetDefaultsTableNames = /Game/DataTable/AttributeInitializer/CT_MonsterData.CT_MonsterData 추가 필요
 	// 플레이어 데이터 테이블은 기획상으로 나온 플레이어 어트리뷰트 셋 테이블과 데이터가 같지만 몬스터 데이터 테이블은 현재 기획상으로 나온 몬스터 어트리븉 셋 테이블과 같지 않다.
 	// 따라서 시은님과 상의하여 테이블을 정리하고 몬스터 초기화 로직을 구현할 예정이다.

@@ -89,10 +89,10 @@ void ALLL_PlayerBase::BeginPlay()
 		if (Camera->ProjectionMode == ECameraProjectionMode::Orthographic)
 		{
 			Camera->OrthoWidth = CameraDataAsset->CameraDistance;
-			Camera->SetAutoCalculateOrthoPlanes(false);
-			Camera->SetAutoPlaneShift(false);
-			Camera->SetOrthoNearClipPlane(CameraDataAsset->OrthographicNearClipDistance);
-			Camera->SetOrthoFarClipPlane(CameraDataAsset->OrthographicFarClipDistance);
+			// Camera->SetAutoCalculateOrthoPlanes(false);
+			// Camera->SetAutoPlaneShift(false);
+			// Camera->SetOrthoNearClipPlane(CameraDataAsset->OrthographicNearClipDistance);
+			// Camera->SetOrthoFarClipPlane(CameraDataAsset->OrthographicFarClipDistance);
 		}
 		else
 		{
@@ -131,6 +131,7 @@ void ALLL_PlayerBase::BeginPlay()
 	ChaseActionGaugeWidgetComponent->SetRelativeLocation(PlayerDataAsset->ChaseActionGaugeLocation);
 	ChaseActionGaugeWidgetComponent->SetDrawSize(PlayerDataAsset->ChaseActionGaugeSize);
 	ChaseActionGaugeWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ChaseActionGaugeWidgetComponent->SetTickWhenOffscreen(true);
 	ChaseActionWidget->SetCircleProgressBarValue(1.0f);
 }
 
