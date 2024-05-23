@@ -192,7 +192,7 @@ void ALLL_MonsterBase::Damaged()
 			{
 				if (ProtoGameInstance->CheckMonsterCollisionDebug())
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 피격"), *GetName()));
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 경직"), *GetName()));
 				}
 			}
 #endif
