@@ -30,6 +30,8 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	
 	FModAudioComponent->SetupAttachment(RootComponent);
 
+	Level = 1;
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	bIsSpawned = false;
 #endif
@@ -127,30 +129,27 @@ void ALLL_BaseCharacter::BeginPlay()
 			}
 		}
 
-		// GE 기반으로 자신의 어트리뷰트 초기화
-		ASC->AddSpawnedAttribute(CharacterAttributeSet);
-		
-		// TODO: 각 캐릭터 별로 테이블로 초기화 하도록 구현하기. 방법은 노션 https://abit.ly/6mlijv 및 LLL_PlayerBase 참고
-		if (IsValid(CharacterDataAsset->InitEffect))
-		{
-			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-			EffectContextHandle.AddSourceObject(this);
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(CharacterDataAsset->InitEffect, 1.0, EffectContextHandle);
-			if(EffectSpecHandle.IsValid())
-			{
-				ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-			}
-		}
-
 		UpdateWidgetDelegate.Broadcast();
 	}
 
 	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
+		InitAttributeSet();
 		const ULLL_CharacterAttributeSetBase* CharacterAttributeSetBase = CastChecked<ULLL_CharacterAttributeSetBase>(ASC->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
 		GetCharacterMovement()->MaxAcceleration = CharacterAttributeSetBase->GetAccelerateSpeed();
 		GetCharacterMovement()->GroundFriction = CharacterAttributeSetBase->GetGroundFriction();
 		GetCharacterMovement()->RotationRate = FRotator(0.f, CharacterAttributeSetBase->GetTurnSpeed() * 360.f, 0.f);
 	}));
+}
+
+void ALLL_BaseCharacter::InitAttributeSet()
+{
+	UE_LOG(LogTemp, Log, TEXT("%s 어트리뷰트 초기화 리스트"), *GetName())
+
+	TArray<UAttributeSet*> SpawnedAttributes = ASC->GetSpawnedAttributes();
+	for (const auto SpawnedAttribute : SpawnedAttributes)
+	{
+		UE_LOG(LogTemp, Log, TEXT("- %s"), *SpawnedAttribute->GetName())
+	}
 }
 
 // Called every frame

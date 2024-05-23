@@ -76,7 +76,6 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 			}
 		}
 		OwnerCharacter->TakeDamageDelegate.Broadcast();
-		//OwnerCharacter->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_DAMAGED));
 
 		//05/11 조강건 코드리뷰 중 주석 추가
 		//어빌리티에게 피해를 입힌 대상을 전달하는 방법. TryActivate가 아닌 SendGameplayEvent라 Ability Triggers에 태그 할당 필요
