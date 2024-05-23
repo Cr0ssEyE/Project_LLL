@@ -3,6 +3,7 @@
 
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 
+#include "Components/WidgetComponent.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
@@ -10,6 +11,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "UI/Entity/Character/Player/LLL_InteractionWidget.h"
 #include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
+#include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
+#include "UI/Entity/Character/Player/LLL_PlayerComboWidget.h"
 #include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
 #include "UI/Entity/Character/Player/LLL_SkillWidget.h"
 #include "UI/System/LLL_GamePauseWidget.h"
@@ -32,8 +35,9 @@ void ULLL_PlayerUIManager::BeginPlay()
 	GamePauseWidgetClass = PlayerBaseDataAsset->GamePauseWidgetClass;
 	InventoryWidgetClass = PlayerBaseDataAsset->InventoryWidgetClass;
 	InteractionWidgetClass = PlayerBaseDataAsset->InteractionWidgetClass;
-	SkillGaugeWidgetClass = PlayerBaseDataAsset->SkillGaugeWidgetClass;
 	SelectRewardWidgetClass = PlayerBaseDataAsset->SelectRewardWidgetClass;
+	ChaseActionWidgetClass = PlayerBaseDataAsset->ChaseActionWidgetClass;
+	ComboWidgetClass = PlayerBaseDataAsset->ComboWidgetClass;
 	
 	if(IsValid(CharacterStatusWidgetClass))
 	{
@@ -62,13 +66,7 @@ void ULLL_PlayerUIManager::BeginPlay()
 		InteractionWidget->AddToViewport();
 		InteractionWidget->SetIsEnabled(false);
 	}
-
-	if(IsValid(SkillGaugeWidgetClass))
-	{
-		SkillGaugeWidget = CastChecked<ULLL_SkillWidget>(CreateWidget(GetWorld(), SkillGaugeWidgetClass));
-		SkillGaugeWidget->AddToViewport();
-	}
-
+	
 	if(IsValid(SelectRewardWidgetClass))
 	{
 		SelectRewardWidget = CastChecked<ULLL_SelectRewardWidget>(CreateWidget(GetWorld(), SelectRewardWidgetClass));
@@ -76,6 +74,29 @@ void ULLL_PlayerUIManager::BeginPlay()
 		SelectRewardWidget->SetVisibility(ESlateVisibility::Hidden);
 		SelectRewardWidget->SetIsEnabled(false);
 	}
+	
+	if(IsValid(ChaseActionWidgetClass))
+	{
+		ChaseActionWidget = CastChecked<ULLL_PlayerChaseActionWidget>(CreateWidget(GetWorld(), ChaseActionWidgetClass));
+	}
+	
+	if(IsValid(ComboWidgetClass))
+	{
+		ComboWidget = CastChecked<ULLL_PlayerComboWidget>(CreateWidget(GetWorld(), ComboWidgetClass));
+		ComboWidget->AddToViewport();
+		ComboWidget->SetComboText(0);
+	}
+}
+
+void ULLL_PlayerUIManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwner());
+	/*if (Player->GetChaseActionGaugeWidgetComponent()->GetWidget())
+	{
+		ChaseActionWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
+	}*/
+	ChaseActionWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
 }
 
 void ULLL_PlayerUIManager::TogglePauseWidget(bool IsDead) const
@@ -144,22 +165,20 @@ void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
 		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
 		InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
 		CharacterStatusWidget->SetVisibility(ESlateVisibility::Hidden);
-		SkillGaugeWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
 		GamePauseWidget->SetVisibility(ESlateVisibility::Visible);
 		InventoryWidget->SetVisibility(ESlateVisibility::Visible);
 		CharacterStatusWidget->SetVisibility(ESlateVisibility::Visible);
-		SkillGaugeWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
 void ULLL_PlayerUIManager::UpdateWidget()
 {
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwner());
-	SkillGaugeWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
-	
+	const ULLL_PlayerStatusWidget* PlayerStatusWidget = CastChecked<ULLL_PlayerStatusWidget>(CharacterStatusWidget);
+	PlayerStatusWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
 	Super::UpdateWidget();
 }
 

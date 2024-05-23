@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -33,7 +34,7 @@ void ULLL_PGA_ChaseToTarget::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	const ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
 	const ULLL_PlayerChaseHandAttributeSet* ChaseHandAttributeSet = Cast<ULLL_PlayerChaseHandAttributeSet>(PlayerChaseHand->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerChaseHandAttributeSet::StaticClass()));
 	
-	PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+	// PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER_EVADE);
 	PlayerCharacter->SetActorRotation((PlayerChaseHand->GetActorLocation() - PlayerCharacter->GetActorLocation()).GetSafeNormal().Rotation());
 	PlayerCharacter->GetCharacterMovement()->Velocity = FVector::Zero();
@@ -51,9 +52,10 @@ void ULLL_PGA_ChaseToTarget::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 
 	PlayMontageTask->ReadyForActivation();
 	
-	UAbilityTask_WaitGameplayTagAdded* WaitTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, TAG_GAS_COLLIDE_WALL);
-	WaitTask->Added.AddDynamic(this, &ULLL_PGA_ChaseToTarget::OnCompleteCallBack);
+	UAbilityTask_WaitGameplayEvent* WaitTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_COLLIDE_WALL, nullptr, true);
+	WaitTask->EventReceived.AddDynamic(this, &ULLL_PGA_ChaseToTarget::OnCollideCallBack);
 	WaitTask->ReadyForActivation();
+	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseToTarget::OwnerLaunchToChaseHand);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -77,9 +79,9 @@ void ULLL_PGA_ChaseToTarget::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 	PlayerCharacter->GetCharacterMovement()->Velocity = PlayerCharacter->GetCharacterMovement()->Velocity.GetSafeNormal() * PlayerCharacter->GetCharacterMovement()->GetMaxSpeed();
 	
-	PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_RELEASE));
+	PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_RELEASE));
 	
-	PlayerCharacter->GetAbilitySystemComponent()->CancelAbilities( new FGameplayTagContainer(TAG_GAS_PLAYER_CHASE_THROW));
+	PlayerCharacter->GetAbilitySystemComponent()->CancelAbilities( new FGameplayTagContainer(TAG_GAS_PLAYER_CHASER_THROW));
 
 	if (!bWasCancelled)
 	{
@@ -103,13 +105,18 @@ void ULLL_PGA_ChaseToTarget::EndAbility(const FGameplayAbilitySpecHandle Handle,
 
 void ULLL_PGA_ChaseToTarget::OwnerLaunchToChaseHand()
 {
+	if (bIsAbilityEnding)
+	{
+		return;
+	}
+	
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	const ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
 	const float Distance2D = FVector::DistXY(TargetLocation, PlayerCharacter->GetActorLocation());
 	
 	if(RushSpeed <= 0.f || Distance2D < AbilityEndDistance)
 	{
-		PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_RELEASE));
+		PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_RELEASE));
 		PlayerCharacter->GetCharacterAnimInstance()->Montage_JumpToSectionsEnd(SECTION_FLY, AbilityActionMontage);
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
@@ -119,5 +126,10 @@ void ULLL_PGA_ChaseToTarget::OwnerLaunchToChaseHand()
 	PlayerCharacter->GetCharacterMovement()->Velocity += Direction * RushSpeed;
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseToTarget::OwnerLaunchToChaseHand);
+}
+
+void ULLL_PGA_ChaseToTarget::OnCollideCallBack(FGameplayEventData EventData)
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }
 

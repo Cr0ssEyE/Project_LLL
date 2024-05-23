@@ -108,6 +108,11 @@ void ALLL_MonsterBase::InitAttributeSet()
 void ALLL_MonsterBase::Dead()
 {
 	Super::Dead();
+
+	CharacterAnimInstance->StopAllMontages(1.0f);
+
+	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
+	GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
 	
 	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
 
@@ -201,6 +206,7 @@ void ALLL_MonsterBase::Damaged()
 
 void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower)
 {
+	KnockBackVelocity.Z = 0.f;
 	if (CustomTimeDilation == 1.f)
 	{
 		StackedKnockBackedPower = KnockBackPower;
@@ -215,7 +221,6 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 	{
 		StackedKnockBackedPower += KnockBackPower;
 		StackedKnockBackVelocity += KnockBackVelocity;
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackedPower));
 	}
 }
 
@@ -228,10 +233,12 @@ void ALLL_MonsterBase::ApplyStackedKnockBack()
 	}
 
 	// TODO: 나중에 몬스터별 최대 넉백값 같은거 나오면 수정하기
-	const FVector ScaledStackedKnockBackVelocity = ClampVector(FVector::Zero(), FVector::One() * 2000.f, StackedKnockBackVelocity);
+	FVector ScaledStackedKnockBackVelocity = ClampVector(FVector::One() * -10000.f, FVector::One() * 10000.f, StackedKnockBackVelocity);
+	ScaledStackedKnockBackVelocity.Z = 0.f;
+	GetCharacterMovement()->Velocity = FVector::Zero();
 	LaunchCharacter(ScaledStackedKnockBackVelocity, true, true);
 
-	// ResetKnockBackStack();
+	ResetKnockBackStack();
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)

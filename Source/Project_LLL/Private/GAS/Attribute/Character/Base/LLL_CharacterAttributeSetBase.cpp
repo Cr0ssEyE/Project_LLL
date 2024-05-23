@@ -87,7 +87,6 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 		}
 		PayloadData.Instigator = Instigator;
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("데미지 입음. 피해 액터: %s, 가해 액터: %s"), *GetOwningActor()->GetName(), *PayloadData.Instigator.GetName()));
 	}
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }
