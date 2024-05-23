@@ -127,6 +127,8 @@ void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 
 void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 {
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	
 	if (GetWorld()->GetTimerManager().IsTimerActive(AbilityDurationTimerHandle))
 	{
 		AbilityDurationTimerHandle.Invalidate();
@@ -153,15 +155,14 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 
 		if (IsValid(BulletTimeDeActivateSequenceActor))
 		{
-			if (IsValid(BulletTimeDeActivateSequenceActor->GetSequencePlayer()))
+			if (IsValid(BulletTimeDeActivateSequenceActor->GetSequencePlayer()) && !Player->CheckCharacterIsDead())
 			{
 				BulletTimeDeActivateSequenceActor->GetSequencePlayer()->Play();
 			}
 		}
 	}
 
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	if (BulletTimeEffectedActors.IsEmpty() || Player->CheckCharacterIsDead())
+	if (BulletTimeEffectedActors.IsEmpty())
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
@@ -183,7 +184,8 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 		if (Actor.IsValid())
 		{
 			Actor.Get()->CustomTimeDilation = 1.0f;
-			if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor.Get()))
+			ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor.Get());
+			if (KnockBackActor && !Player->CheckCharacterIsDead())
 			{
 				KnockBackActor->ApplyStackedKnockBack();
 			}
