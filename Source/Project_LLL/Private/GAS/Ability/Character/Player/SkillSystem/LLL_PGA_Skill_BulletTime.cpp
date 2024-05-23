@@ -152,7 +152,10 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 
 		if (IsValid(BulletTimeDeActivateSequenceActor))
 		{
-			BulletTimeDeActivateSequenceActor->GetSequencePlayer()->Play();
+			if (IsValid(BulletTimeDeActivateSequenceActor->GetSequencePlayer()))
+			{
+				BulletTimeDeActivateSequenceActor->GetSequencePlayer()->Play();
+			}
 		}
 	}
 
@@ -198,7 +201,7 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 void ULLL_PGA_Skill_BulletTime::OnBulletTimeEffectedActorSpawnCheck(AActor* Actor)
 {
 	const ECollisionResponse Response = Actor->GetComponentsCollisionResponseToChannel(ECC_ENTITY_CHECK);
-	if (Response == ECR_Overlap)
+	if (Response != ECR_Ignore)
 	{
 		Actor->CustomTimeDilation = WorldDecelerationRate;
 		BulletTimeEffectedActors.Emplace(Actor);

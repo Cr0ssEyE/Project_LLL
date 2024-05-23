@@ -74,7 +74,7 @@ bool ULLL_PGA_ChaseHandLockTarget::TryGrabAroundEntity(const FGameplayAbilitySpe
 {
 	ALLL_PlayerChaseHand* PlayerChaseHand = CastChecked<ALLL_PlayerChaseHand>(CurrentActorInfo->AvatarActor);
 	float SphereRadius = PlayerChaseHand->GetCollisionComponent()->GetScaledSphereRadius();
-
+	
 	FHitResult Result;
 	FCollisionQueryParams Params;
 

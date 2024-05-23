@@ -37,6 +37,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "모델링 사이즈", meta=(DisplayPriority=1))
 	FVector MeshSize = FVector::OneVector;
 
+	// 캐릭터 기본 애니메이션 관련
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "피격 애님 몽타주")
+	TObjectPtr<UAnimMontage> DamagedAnimMontage;
+
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "발동형 게임플레이 어빌리티")
 	TArray<TSubclassOf<UGameplayAbility>> ActiveGameplayAbility;

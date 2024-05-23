@@ -25,11 +25,5 @@ bool ULLL_PlayerChaseHandAttributeSet::PreGameplayEffectExecute(FGameplayEffectM
 void ULLL_PlayerChaseHandAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
-
-	if(Data.EvaluatedData.Attribute == GetGrabCollisionRadiusAttribute())
-	{
-		const ALLL_PlayerChaseHand* ChaseHand = CastChecked<ALLL_PlayerChaseHand>(GetOwningAbilitySystemComponentChecked()->GetAvatarActor());
-		SetGrabCollisionRadius(Data.EvaluatedData.Magnitude);
-		ChaseHand->GetCollisionComponent()->SetSphereRadius(GetGrabCollisionRadius());
-	}
+	
 }
