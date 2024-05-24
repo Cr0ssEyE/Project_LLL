@@ -3,11 +3,13 @@
 
 #include "GAS/Ability/Character/Player/SkillSystem/LLL_PGA_Skill_BulletTime.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "FMODAudioComponent.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/ASC/LLL_BaseASC.h"
@@ -27,7 +29,7 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	const ULLL_PlayerSkillAttributeSet* PlayerSkillAttributeSet = Cast<ULLL_PlayerSkillAttributeSet>(GetCurrentActorInfo()->AbilitySystemComponent->GetAttributeSet(ULLL_PlayerSkillAttributeSet::StaticClass()));
+	const ULLL_PlayerSkillAttributeSet* PlayerSkillAttributeSet = Cast<ULLL_PlayerSkillAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerSkillAttributeSet::StaticClass()));
 	if (IsValid(PlayerSkillAttributeSet) && IsValid(BulletTimeActivateSequence))
 	{
 		ActorSpawnedDelegateHandle = GetWorld()->AddOnActorSpawnedHandler(WorldActorSpawnedDelegate.CreateUObject(this, &ULLL_PGA_Skill_BulletTime::OnBulletTimeEffectedActorSpawnCheck));
@@ -47,6 +49,7 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 		}
 
 		TraceBulletTimeEffectedActors();
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_BULLET_TIME, FGameplayEventData());
 		BulletTimeActivateSequenceActor->GetSequencePlayer()->Play();
 
 		GetWorld()->GetTimerManager().SetTimer(AbilityDurationTimerHandle, this, &ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack, SkillDuration, false);

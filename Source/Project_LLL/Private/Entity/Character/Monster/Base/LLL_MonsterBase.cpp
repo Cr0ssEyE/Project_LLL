@@ -21,6 +21,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Ability/Character/Monster/Base/LLL_MGA_Charge.h"
 #include "GAS/Attribute/Character/Monster/Base/LLL_MonsterAttributeSet.h"
+#include "GAS/ASC/LLL_MonsterASC.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
@@ -29,6 +30,7 @@
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
+	ASC = CreateDefaultSubobject<ULLL_MonsterASC>(TEXT("MonsterASC"));
 	MonsterAttributeSet = CreateDefaultSubobject<ULLL_MonsterAttributeSet>(TEXT("MonsterAttributeSet"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("MonsterUIManageComponent"));
 	MonsterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("MonsterStatusWidgetComponent"));
@@ -135,33 +137,37 @@ void ALLL_MonsterBase::Charge() const
 	}
 }
 
-void ALLL_MonsterBase::Damaged()
+void ALLL_MonsterBase::Damaged(bool IsDOT)
 {
-	Super::Damaged();
+	Super::Damaged(IsDOT);
 
-	if (!bIsAttacking)
+	if (bIsAttacking)
 	{
-		ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-		if (IsValid(MonsterBaseAnimInstance))
-		{
-			MonsterBaseAnimInstance->StopAllMontages(1.0f);
-			PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+		return;
+	}
 
-			FModAudioComponent->Stop();
-			// 경직 사운드 이벤트 할당
-			// 경직 사운드 플레이
+	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+	if (!IsValid(MonsterBaseAnimInstance) || !IsDOT)
+	{
+		return;
+	}
+
+	MonsterBaseAnimInstance->StopAllMontages(1.0f);
+	PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+
+	FModAudioComponent->Stop();
+	// 경직 사운드 이벤트 할당
+	// 경직 사운드 플레이
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-			{
-				if (ProtoGameInstance->CheckMonsterCollisionDebug())
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 경직"), *GetName()));
-				}
-			}
-#endif
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckMonsterCollisionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 경직"), *GetName()));
 		}
 	}
+#endif
 }
 
 void ALLL_MonsterBase::Dead()

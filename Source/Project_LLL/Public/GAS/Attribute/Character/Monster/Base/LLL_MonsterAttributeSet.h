@@ -13,8 +13,10 @@ UCLASS()
 class PROJECT_LLL_API ULLL_MonsterAttributeSet : public ULLL_CharacterAttributeSetBase
 {
 	GENERATED_BODY()
-
+	
 public:
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MaxShield);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, CurrentShield);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackDistance);
@@ -30,8 +32,10 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData5);
 
 protected:
+	virtual void CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data);
 	virtual void ReceiveDamageEvent(const FGameplayEffectModCallbackData& Data) override;
 	
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxShield;
 

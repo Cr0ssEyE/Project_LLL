@@ -19,7 +19,7 @@ class UAbilitySystemComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*, Character);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOtherActorCollidedDelegate, AActor*, SelfActor, AActor*, OtherActor);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTakeDamageDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTakeDamageDelegate, bool, IsDOT);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
 
 /**
@@ -58,7 +58,7 @@ protected:
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Damaged();
+	virtual void Damaged(bool IsDOT = false);
 	virtual void Dead();
 
 	// 상태 체크용 변수
