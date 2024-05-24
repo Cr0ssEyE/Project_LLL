@@ -59,6 +59,8 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 		}
 		PayloadData.Instigator = Instigator;
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
+
+		SetReceiveDamage(0.f);
 	}
 	Character->UpdateWidgetDelegate.Broadcast();
 }

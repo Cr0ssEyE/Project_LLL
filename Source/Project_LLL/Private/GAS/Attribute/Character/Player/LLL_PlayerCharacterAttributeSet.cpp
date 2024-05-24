@@ -74,8 +74,6 @@ void ULLL_PlayerCharacterAttributeSet::ReceiveDamageEvent(const FGameplayEffectM
 
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
 	SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-	SetReceiveDamage(0.f);
-	SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
 	if (GetCurrentHealth() == 0)
 	{
 		Player->Dead();

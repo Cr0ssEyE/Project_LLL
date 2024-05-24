@@ -11,16 +11,6 @@ void ULLL_MonsterAttributeSet::ReceiveDamageEvent(const FGameplayEffectModCallba
 	Super::ReceiveDamageEvent(Data);
 
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
-	if (GetCurrentShield() > 0.f)
-	{
-		SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
-	}
-	else
-	{
-		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-	}
-	SetReceiveDamage(0.f);
-
 	if (GetCurrentShield() > 0)
 	{
 		SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
