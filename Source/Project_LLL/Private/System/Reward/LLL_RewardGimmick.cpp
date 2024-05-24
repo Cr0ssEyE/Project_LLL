@@ -9,24 +9,30 @@
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Game/ProtoGameInstance.h"
 #include "AbilitySystemComponent.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
+#include "GameplayEffectComponents/AssetTagsGameplayEffectComponent.h"
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 
 // Sets default values
-ALLL_RewardGimmick::ALLL_RewardGimmick()
+ALLL_RewardGimmick::ALLL_RewardGimmick() :
+	ButtonAbilityData1(nullptr),
+	ButtonAbilityData2(nullptr),
+	ButtonAbilityData3(nullptr),
+	CurrentAbilityData(nullptr),
+	bIsButtonEventSetup(false),
+	bMapGimmickIsExist(false),
+	bIsTest(false),
+	TestAbilityDataArrayNum1(0),
+	TestAbilityDataArrayNum2(1),
+	TestAbilityDataArrayNum3(2)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
-	ButtonAbilityData1 = nullptr;
-	ButtonAbilityData2 = nullptr;
-	ButtonAbilityData3 = nullptr;
 	
-	bIsButtonEventSetup = false;
-	bMapGimmickIsExist = false;
 }
 
 // Called when the game starts or when spawned
@@ -73,25 +79,27 @@ void ALLL_RewardGimmick::SetRewardButtons()
 		RewardWidget->GetThirdButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickThirdButton);
 		bIsButtonEventSetup = true;
 	}
-
-	//보상쪽 상세 시스템 기획이 나오면 바뀔 부분
-	if (!bIsTest)
-	{
-		uint8 Index = FMath::RandRange(0, AbilityData.Num() - 1);
-		ButtonAbilityData1 = &AbilityData[Index];
 	
-		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-		ButtonAbilityData2 = &AbilityData[Index];
-
-		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-		ButtonAbilityData3 = &AbilityData[Index];
-	}
-	else
+#if  (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (bIsTest)
 	{
-		ButtonAbilityData1 = &AbilityData[0];
-		ButtonAbilityData2 = &AbilityData[1];
-		ButtonAbilityData3 = &AbilityData[2];
+		ButtonAbilityData1 = &AbilityData[TestAbilityDataArrayNum1];
+		ButtonAbilityData2 = &AbilityData[TestAbilityDataArrayNum2];
+		ButtonAbilityData3 = &AbilityData[TestAbilityDataArrayNum3];
+		return;
 	}
+#endif
+	
+	//보상쪽 상세 시스템 기획이 나오면 바뀔 부분
+	
+	uint8 Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	ButtonAbilityData1 = &AbilityData[Index];
+	
+	Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	ButtonAbilityData2 = &AbilityData[Index];
+
+	Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	ButtonAbilityData3 = &AbilityData[Index];
 }
 
 void ALLL_RewardGimmick::SetDataTable()
@@ -169,22 +177,33 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		}
 		
 		const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
-		TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
-		for (auto EffectHandle : EffectHandles)
+		if (TagContainer.HasTag(TAG_GAS_ABILITY_PART) && !TagContainer.HasTagExact(TAG_GAS_ABILITY_PART_COMMON))
 		{
-			if (EffectHandle.IsValid())
+			TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
+			for (auto EffectHandle : EffectHandles)
 			{
-				ASC->RemoveActiveGameplayEffect(EffectHandle);
-				for (auto GameplayTag : TagContainer.GetGameplayTagArray())
+				const ULLL_ExtendedGameplayEffect* ActiveEffect = Cast<ULLL_ExtendedGameplayEffect>(ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def);
+				if (!IsValid(ActiveEffect))
 				{
-					UE_LOG(LogTemp, Log, TEXT("- %s 태그를 가진 이펙트 삭제"), *GameplayTag.ToString());
+					continue;
+				}
+				
+				if (EffectHandle.IsValid() && CurrentAbilityData->AbilityPart == ActiveEffect->GetAbilityData()->AbilityPart)
+				{
+					ASC->RemoveActiveGameplayEffect(EffectHandle);
+					for (auto GameplayTag : TagContainer.GetGameplayTagArray())
+					{
+						UE_LOG(LogTemp, Log, TEXT("- %s 태그를 가진 이펙트 삭제"), *GameplayTag.ToString());
+					}
 				}
 			}
 		}
 
+		// 단순 수치 변화는 여기에서 적용.
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
-
+		
+		// 어빌리티 부여 계열
 		if (ULLL_GE_GiveAbilityComponent* AbilitiesGameplayEffectComponent = &Effect->FindOrAddComponent<ULLL_GE_GiveAbilityComponent>())
 		{
 			for (const auto& AbilitySpecConfig : AbilitiesGameplayEffectComponent->GetAbilitySpecConfigs())
@@ -198,6 +217,8 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 			}
 		}
 	}
+
+	// TODO: UI 관련 상호작용 구현.
 	
 	CurrentAbilityData = nullptr;
 }

@@ -11,6 +11,7 @@
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ULLL_AbnormalStatusAttributeSet;
 class ULLL_PlayerSkillAttributeSet;
 class ULLL_ObjectPoolingComponent;
 class ALLL_PlayerChaseHand;
@@ -85,6 +86,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerSkillAttributeSet> SkillAttributeSet;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_AbnormalStatusAttributeSet> AbnormalStatusAttributeSet;
 	
 	// 입력 액션 관련
 private:
@@ -129,7 +133,7 @@ private:
 	
 	// 상태 관련 함수
 protected:
-	virtual void Damaged() override;
+	virtual void Damaged(bool IsDOT = false) override;
 	virtual void Dead() override;
 
 	UFUNCTION()

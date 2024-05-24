@@ -27,7 +27,6 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 
 	ASC = CreateDefaultSubobject<ULLL_BaseASC>(TEXT("AbilitySystem"));
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
-	
 	FModAudioComponent->SetupAttachment(RootComponent);
 
 	Level = 1;
@@ -178,7 +177,7 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	}
 }
 
-void ALLL_BaseCharacter::Damaged()
+void ALLL_BaseCharacter::Damaged(bool IsDOT)
 {
 	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DamagedCueTag);
 	

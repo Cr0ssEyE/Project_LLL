@@ -28,12 +28,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "GAS/ASC/LLL_PlayerASC.h"
+#include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 #include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
+	ASC = CreateDefaultSubobject<ULLL_PlayerASC>(TEXT("PlayerASC"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
@@ -42,6 +45,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	
 	PlayerCharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
 	SkillAttributeSet = CreateDefaultSubobject<ULLL_PlayerSkillAttributeSet>(TEXT("SkillAttributeSet"));
+	AbnormalStatusAttributeSet = CreateDefaultSubobject<ULLL_AbnormalStatusAttributeSet>(TEXT("AbnormalStatusAttributeSet"));
+	
 	ChaseActionGaugeWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("ChaseActionGaugeWidgetComponent"));
 
 	ChaseActionGaugeWidgetComponent->SetupAttachment(RootComponent);
@@ -122,6 +127,7 @@ void ALLL_PlayerBase::BeginPlay()
 		}
 
 		ASC->AddSpawnedAttribute(SkillAttributeSet);
+		ASC->AddSpawnedAttribute(AbnormalStatusAttributeSet);
 	}
 
 	ULLL_PlayerChaseActionWidget* ChaseActionWidget = PlayerUIManager->GetChaseActionWidget();
@@ -452,7 +458,7 @@ void ALLL_PlayerBase::TurnToMouseCursor()
 		return;
 	}
 	
-	SetActorRotation(FMath::RInterpTo(GetActorRotation(), MouseDirectionRotator, GetWorld()->GetDeltaSeconds(), CharacterAttributeSet->GetTurnSpeed() * ToCursorRotationMultiplyValue));
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), MouseDirectionRotator, GetWorld()->GetDeltaSeconds(), PlayerCharacterAttributeSet->GetTurnSpeed() * ToCursorRotationMultiplyValue));
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
 }
@@ -477,15 +483,14 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
 }
 
-void ALLL_PlayerBase::Damaged()
+void ALLL_PlayerBase::Damaged(bool IsDOT)
 {
-	Super::Damaged();
-
-	if (IsValid(PlayerDataAsset->DamagedAnimMontage))
+	Super::Damaged(IsDOT);
+	
+	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT)
 	{
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
 	}
-	
 }
 
 void ALLL_PlayerBase::Dead()

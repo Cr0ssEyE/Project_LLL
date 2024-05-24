@@ -29,9 +29,8 @@ void ULLL_AbilityManageSubSystem::Initialize(FSubsystemCollectionBase& Collectio
 
 	// AttributeSetInitter 사용 시 에디터 편의성용. 에디터에서는 최초 실행시 테이블 값만 읽어오고 이후에 값을 변경한 것을 적용하려면 재실행 해야 하는데 그거 보완
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	FSoftObjectPath DummyPath(PATH_DUMMY_TABLE);
 	TArray<FSoftObjectPath> DummyPaths;
-	DummyPaths.Emplace(DummyPath);
+	DummyPaths.Emplace(FSoftObjectPath(PATH_DUMMY_TABLE));
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->AddAttributeDefaultTables(TEXT("Dummy"), DummyPaths);
 #endif
 	

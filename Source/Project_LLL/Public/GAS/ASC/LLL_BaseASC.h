@@ -18,12 +18,10 @@ public:
 	ULLL_BaseASC();
 
 	virtual void BeginPlay() override;
-	
+
+public:
 	FTargetDataDelegate TargetDataDelegate;
 
 	void ReceiveTargetData(const UGameplayAbility* OwnerAbility, const FGameplayAbilityTargetDataHandle& TargetDataHandle) const;
 	
-protected:
-	virtual void OnFallableTagAdded(const FGameplayTag Tag, int32 count);
-
 };

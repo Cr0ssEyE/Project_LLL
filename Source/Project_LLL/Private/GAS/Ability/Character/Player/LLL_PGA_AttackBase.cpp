@@ -74,7 +74,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		CurrentComboAction = 1;
 	}
 	
-	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackAnimMontage, 1.f, *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
+	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackAnimMontage, PlayerAttributeSet->GetAttackSpeed(), *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 	MontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
 	MontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
 	MontageTask->ReadyForActivation();
