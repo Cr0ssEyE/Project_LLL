@@ -14,6 +14,16 @@ USTRUCT(BlueprintType)
 struct FTestShopDataTable : public FTableRowBase
 {
 	GENERATED_BODY()
+
+	FTestShopDataTable()
+	{
+		AppearStage = 0;
+		RewardGroupID = 0;
+		RewardID = 0;
+		ProductCount = 0;
+		ProductPrice = 0;
+		AppearRate = 0;
+	}
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	uint8 AppearStage;

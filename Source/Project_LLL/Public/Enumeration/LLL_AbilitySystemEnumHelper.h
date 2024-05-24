@@ -89,3 +89,11 @@ enum class EAbilityCategory : uint8
 	Marking,
 	Bleeding
 };
+
+UENUM(BlueprintType)
+enum class EAbilityValueType : uint8
+{
+	None UMETA(Hidden),
+	Fixed = 1,
+	Percent = 100
+};

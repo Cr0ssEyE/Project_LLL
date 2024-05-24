@@ -3,8 +3,13 @@
 #include "GAS/Ability/Character/Player/ComboSystem/LLL_PGA_ComboManagement.h"
 
 #include "Constant/LLL_GameplayTags.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "UI/Entity/Character/Player/LLL_PlayerComboWidget.h"
+
+class ALLL_PlayerBase;
 
 ULLL_PGA_ComboManagement::ULLL_PGA_ComboManagement()
 {
@@ -89,6 +94,11 @@ void ULLL_PGA_ComboManagement::ComboTimerTick()
 	}
 	
 	CurrentComboCount = PlayerAttributes->GetCurrentComboCount();
+	
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetCurrentActorInfo()->AvatarActor);
+	ULLL_PlayerComboWidget* ComboWidget = Player->GetPlayerUIManager()->GetComboWidget();
+	ComboWidget->SetComboText(CurrentComboCount);
+	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ComboManagement::ComboTimerTick);
 	// TODO: UI 연결
 }

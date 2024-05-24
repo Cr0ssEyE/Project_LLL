@@ -49,6 +49,7 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
+	virtual void InitAttributeSet();
 	
 protected:
 	virtual void Tick(float DeltaTime) override;
@@ -66,9 +67,7 @@ public:
 	// 델리게이트
 public:
 	FCharacterDeadDelegate CharacterDeadDelegate;
-
 	FTakeDamageDelegate TakeDamageDelegate;
-
 	FOtherActorCollidedDelegate OtherActorCollidedDelegate;
 	
 	// 위젯 업데이트를 위한 델리게이트
@@ -79,14 +78,14 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_CharacterAttributeSetBase> CharacterAttributeSet;
 	
 	// 캐릭터 공용 변수
 protected:
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
+
+	UPROPERTY(EditAnywhere)
+	int32 Level;
 
 	// 이동 관련 변수
 protected:

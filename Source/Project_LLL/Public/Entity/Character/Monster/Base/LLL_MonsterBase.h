@@ -24,6 +24,7 @@ public:
 	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void InitAttributeSet() override;
 	
 protected:
 	virtual void Dead() override;
@@ -44,11 +45,14 @@ protected:
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 
 	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_MonsterAttributeSet> MonsterAttributeSet;
+
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> MonsterStatusWidgetComponent;
 
 	FVector StackedKnockBackVelocity;
-	
 	float StackedKnockBackedPower;
+	int32 Id;
 	
 public:
 	UFUNCTION()

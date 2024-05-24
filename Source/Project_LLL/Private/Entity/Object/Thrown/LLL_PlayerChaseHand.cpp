@@ -86,11 +86,11 @@ void ALLL_PlayerChaseHand::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other,
 		return;
 	}
 	
-	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Other);
-	if (IsValid(Monster))
+	ECollisionResponse Response = OtherComp->GetCollisionResponseToChannel(ECC_ENEMY_HIT);
+	if (Response != ECR_Ignore)
 	{
 		// PGA_WireHandGrab
-		if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASE_GRAB)))
+		if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_GRAB)))
 		{
 			GrabbedActor = Other;
 			bIsGrabbed = true;
@@ -98,10 +98,11 @@ void ALLL_PlayerChaseHand::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other,
 			return;
 		}
 	}
-
+	
 	// 그랩 불가능 대상 충돌시 회수 처리
-	if (Cast<ALLL_PlayerBase>(Other) || Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD) == ECR_Block)
+	if (Cast<ALLL_PlayerBase>(Other) || OtherComp->GetCollisionResponseToChannel(ECC_TRACE_FIELD) == ECR_Block)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("바닥과 충돌 체크 %s"), *Other->GetName()));
 		return;
 	}
 

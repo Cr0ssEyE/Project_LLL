@@ -3,10 +3,10 @@
 
 #include "GAS/Ability/Character/Player/LLL_PGA_AttackBase.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "FMODAudioComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayTagBase.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MonatgeSectionName.h"
 #include "DataTable/LLL_FModParameterDataTable.h"
@@ -22,7 +22,6 @@ ULLL_PGA_AttackBase::ULLL_PGA_AttackBase()
 	CurrentComboAction = 0;
 	MaxAttackAction = 0;
 	bIsCanPlayNextAction = false;
-	bIsInputPressed = false;
 }
 
 void ULLL_PGA_AttackBase::PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
@@ -67,14 +66,21 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	}
 
 	PlayerCharacter->PlayerRotateToMouseCursor();
+
+	FGameplayTagContainer OwnedTagsContainer;
+	GetAbilitySystemComponentFromActorInfo_Checked()->GetOwnedGameplayTags(OwnedTagsContainer);
+	if (OwnedTagsContainer.HasTag(TAG_GAS_PLAYER_STATE_CHASE_THREW))
+	{
+		CurrentComboAction = 1;
+	}
 	
-	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackAnimMontage, PlayerAttributeSet->GetAttackSpeed() / 100.f, *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
+	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackAnimMontage, PlayerAttributeSet->GetAttackSpeed(), *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 	MontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
 	MontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
 	MontageTask->ReadyForActivation();
 
-	WaitTagTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, TAG_GAS_PLAYER_STATE_WAIT_ATTACK_INPUT);
-	WaitTagTask->Added.AddDynamic(this, &ULLL_PGA_AttackBase::WaitInputForNextAction);
+	WaitTagTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_PLAYER_STATE_INPUT_CHECK_ATTACK, nullptr, true);
+	WaitTagTask->EventReceived.AddDynamic(this, &ULLL_PGA_AttackBase::CheckInputPressed);
 	WaitTagTask->ReadyForActivation();
 
 	ExecuteAttackCueWithDelay();
@@ -105,8 +111,6 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 		PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 		CurrentComboAction = 0;
 		bIsCanPlayNextAction = false;
-		GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
-		WaitInputTimerHandle.Invalidate();
 	}
 	GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
 	WaitTagTask->EndTask();
@@ -118,32 +122,37 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 {
 	Super::InputPressed(Handle, ActorInfo, ActivationInfo);
 
-	if(bIsCanPlayNextAction)
+	if (IsValid(WaitTagTask) && WaitTagTask->IsActive())
 	{
-		SetNextAttackAction();
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckPlayerAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("공격 추가 입력 인식")));
-			}
-		}
-#endif
+		ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+		PlayerCharacter->CheckMouseLocation();
+		bIsCanPlayNextAction = true;
 	}
 }
 
-void ULLL_PGA_AttackBase::WaitInputForNextAction()
+void ULLL_PGA_AttackBase::CheckInputPressed(FGameplayEventData EventData)
 {
-	GetAbilitySystemComponentFromActorInfo_Checked()->RemoveLooseGameplayTag(TAG_GAS_PLAYER_STATE_WAIT_ATTACK_INPUT);
-	bIsCanPlayNextAction = true;
+	if (!bIsCanPlayNextAction)
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
+	}
+	
+	SetNextAttackAction();
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckPlayerAttackDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("공격 추가 입력 인식")));
+		}
+	}
+#endif
 }
 
 void ULLL_PGA_AttackBase::SetNextAttackAction()
 {
-	GetWorld()->GetTimerManager().ClearTimer(WaitInputTimerHandle);
-	WaitInputTimerHandle.Invalidate();
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	const UAnimInstance* PlayerAnimInstance = PlayerCharacter->GetCharacterAnimInstance();
 	if(IsValid(PlayerCharacter) && bIsCanPlayNextAction && PlayerAnimInstance->Montage_IsPlaying(AttackAnimMontage))
@@ -152,7 +161,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 		GetAbilitySystemComponentFromActorInfo_Checked()->GetOwnedGameplayTags(OwnedTagsContainer);
 		if (OwnedTagsContainer.HasTag(TAG_GAS_PLAYER_STATE_CHASE_THREW))
 		{
-			CurrentComboAction++;
+			CurrentComboAction = 1;
 		}
 		
 		if(CurrentComboAction == MaxAttackAction)
@@ -160,17 +169,19 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 			CurrentComboAction = 0;
 		}
 		
-		PlayerCharacter->PlayerRotateToMouseCursor();
-		
+		PlayerCharacter->PlayerRotateToMouseCursor(1.f, true);
+
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_ATTACK_HIT_CHECK_COMPLETE, FGameplayEventData());
 		MontageJumpToSection(*FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
-		GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
 		bIsCanPlayNextAction = false;
 
 		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]()
 		{
-			if(IsValid(WaitTagTask) && !bIsAbilityEnding)
+			if(!bIsAbilityEnding)
 			{
-				WaitTagTask->Activate();
+				WaitTagTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_PLAYER_STATE_INPUT_CHECK_ATTACK, nullptr, true);
+				WaitTagTask->EventReceived.AddDynamic(this, &ULLL_PGA_AttackBase::CheckInputPressed);
+				WaitTagTask->ReadyForActivation();
 			}
 		}));
 		
@@ -186,11 +197,6 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 		}
 #endif
 	}
-}
-
-void ULLL_PGA_AttackBase::EndAttackInputWait()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void ULLL_PGA_AttackBase::ExecuteAttackCueWithDelay()

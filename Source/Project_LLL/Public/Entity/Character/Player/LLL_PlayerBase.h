@@ -23,6 +23,7 @@ class ULLL_PlayerUIManager;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
+class UWidgetComponent;
 
 /**
  * 
@@ -40,6 +41,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void InitAttributeSet() override;
 	
 	// 외부 접근용
 public:
@@ -53,9 +55,15 @@ public:
 	FORCEINLINE ALLL_PlayerChaseHand* GetChaseHand() const { return ChaseHandActor; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
+	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
 	
-	FVector GetMouseLocation() const;
-	void PlayerRotateToMouseCursor();
+	FVector CheckMouseLocation();
+	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
+	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
+
+protected:
+	void TurnToMouseCursor();
+	void MoveCameraToMouseCursor();
 	
 	// 카메라
 private:
@@ -99,6 +107,9 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_PlayerCharacterAttributeSet> PlayerCharacterAttributeSet;
+
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_CameraDataAsset> CameraDataAsset;
 	
@@ -113,8 +124,16 @@ private:
 	UPROPERTY()
 	uint32 InteractionRange;
 
+private:
+	FVector LastCheckedMouseLocation;
+	
+	FRotator MouseDirectionRotator;
+	
+	float ToCursorRotationMultiplyValue;
+	
 	// 상태 관련 함수
 protected:
+	virtual void Damaged(bool IsDOT = false) override;
 	virtual void Dead() override;
 
 	UFUNCTION()
@@ -125,11 +144,15 @@ protected:
 	// 상태 관련 변수
 protected:
 	uint8 bIsMoveInputPressed : 1;
-	
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerGoldComponent> GoldComponent;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_ObjectPoolingComponent> ObjectPoolingComponent;
+	//UI 관련
+protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetComponent> ChaseActionGaugeWidgetComponent;
 };
