@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "UI/Entity/Character/Player/LLL_InteractionWidget.h"
 #include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
+#include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
 #include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
 #include "UI/Entity/Character/Player/LLL_PlayerComboWidget.h"
 #include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
@@ -38,6 +39,7 @@ void ULLL_PlayerUIManager::BeginPlay()
 	SelectRewardWidgetClass = PlayerBaseDataAsset->SelectRewardWidgetClass;
 	ChaseActionWidgetClass = PlayerBaseDataAsset->ChaseActionWidgetClass;
 	ComboWidgetClass = PlayerBaseDataAsset->ComboWidgetClass;
+	MainEruriaInfoWidgetClass = PlayerBaseDataAsset->MainEruriaInfoWidgetClass;
 	
 	if(IsValid(CharacterStatusWidgetClass))
 	{
@@ -85,6 +87,12 @@ void ULLL_PlayerUIManager::BeginPlay()
 		ComboWidget = CastChecked<ULLL_PlayerComboWidget>(CreateWidget(GetWorld(), ComboWidgetClass));
 		ComboWidget->AddToViewport();
 		ComboWidget->SetComboText(0);
+	}
+
+	if (IsValid(MainEruriaInfoWidgetClass))
+	{
+		MainEruriaInfoWidget = CastChecked<ULLL_MainEruriaInfoWidget>(CreateWidget(GetWorld(), MainEruriaInfoWidgetClass));
+		MainEruriaInfoWidget->AddToViewport();
 	}
 }
 

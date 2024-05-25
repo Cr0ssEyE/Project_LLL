@@ -16,6 +16,7 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
+#include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
 
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick() :
@@ -219,6 +220,11 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	}
 
 	// TODO: UI 관련 상호작용 구현.
+	ULLL_PlayerUIManager* PlayerUIManager =	Player->GetPlayerUIManager();
+	if (IsValid(PlayerUIManager))
+	{
+		PlayerUIManager->GetMainEruriaWidget()->SetEruriaInfo(CurrentAbilityData);
+	}
 	
 	CurrentAbilityData = nullptr;
 }

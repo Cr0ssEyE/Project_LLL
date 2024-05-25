@@ -480,6 +480,11 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	CameraMoveVector = SpringArm->GetDesiredRotation().UnrotateVector(CameraMoveVector);
 	
 	CameraMoveVector *= 500.f;
+	if (CameraMoveVector.ContainsNaN())
+	{
+		return;
+	}
+	
 	SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
 }
 

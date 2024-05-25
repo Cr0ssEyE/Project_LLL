@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "LLL_EruriaInfoWidget.generated.h"
+#include "LLL_MainEruriaInfoWidget.generated.h"
 
 struct FGameplayTag;
 struct FAbilityDataTable;
@@ -13,8 +13,32 @@ class UImage;
 /**
  * 
  */
+
+USTRUCT(BlueprintType)
+struct FAbilityLevelDisplayHelper
+{
+	GENERATED_BODY()
+
+	FAbilityLevelDisplayHelper()
+	{
+		DisplayText.Emplace("I");
+		DisplayText.Emplace("II");
+		DisplayText.Emplace("III");
+		DisplayText.Emplace("IV");
+		DisplayText.Emplace("V");
+		DisplayText.Emplace("VI");
+		DisplayText.Emplace("VII");
+		DisplayText.Emplace("VIII");
+		DisplayText.Emplace("IX");
+		DisplayText.Emplace("X");
+		DisplayText.Emplace("X+");
+	}
+
+	TArray<FString> DisplayText;
+};
+
 UCLASS()
-class PROJECT_LLL_API ULLL_EruriaInfoWidget : public UUserWidget
+class PROJECT_LLL_API ULLL_MainEruriaInfoWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -32,7 +56,7 @@ protected:
 	TArray<UTexture*> EruriaIConTextures;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 레어도 색상")
-	TArray<FColor> EruriaRarityColor;
+	TArray<FLinearColor> EruriaRarityColor;
 	
 	// UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 이미지 베이스 머티리얼")
 	// TObjectPtr<UMaterial> EruriaImageMaterial;
