@@ -34,6 +34,7 @@ void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 		const FRotator PredictedRotation = FRotationMatrix::MakeFromX(PredictedDirection).Rotator();
 	
 		ThrownObject->SetActorLocationAndRotation(StartLocation, PredictedRotation);
+		ThrownObject->CustomTimeDilation = RangedMonster->CustomTimeDilation;
 		ThrownObject->Throw(RangedMonster, PlayerBase, MonsterAttributeSet->GetMonsterData1());
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
