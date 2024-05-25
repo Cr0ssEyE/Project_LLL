@@ -7,6 +7,7 @@
 #include "Components/Button.h"
 #include "LLL_SelectRewardWidget.generated.h"
 
+struct FAbilityDataTable;
 /**
  * 
  */
@@ -23,6 +24,9 @@ public:
 	FORCEINLINE UButton* GetSecondButton() const { return RewardButton2; }
 	FORCEINLINE UButton* GetThirdButton() const { return RewardButton3; }
 
+public:
+	void SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDataArray);
+	
 	UFUNCTION(BlueprintCallable)
 	void CheckButton();
 	

@@ -19,6 +19,11 @@ void ULLL_SelectRewardWidget::NativeConstruct()
 	RewardButton3->OnClicked.AddDynamic(this, &ULLL_SelectRewardWidget::CheckButton);
 }
 
+void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDataArray)
+{
+	
+}
+
 void ULLL_SelectRewardWidget::CheckButton()
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)

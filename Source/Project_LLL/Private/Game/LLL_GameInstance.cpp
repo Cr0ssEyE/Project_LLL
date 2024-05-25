@@ -13,7 +13,8 @@ ULLL_GameInstance::ULLL_GameInstance()
 	AbilityDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_ABILITY_DATA_TABLE, EAssertionLevel::Check);
 
 	RewardDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_REWARD_DATA_TABLE, EAssertionLevel::Check);
-	
+
+	StringDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_STRING_DATA, EAssertionLevel::Check);
 }
 
 void ULLL_GameInstance::Init()
@@ -25,10 +26,7 @@ void ULLL_GameInstance::Init()
 
 	for (const FFModParameterDataTable* LoadData : LoadDataArray)
 	{
-		FFModParameterDataTable TempData;
-		TempData.Parameter = LoadData->Parameter;
-		TempData.Name = LoadData->Name;
-		FModParameterDataArray.Emplace(TempData);
+		FModParameterData.Add(*LoadData);
 	}
 
 	TArray<FAbilityDataTable*> LoadAbilityDataArray;
@@ -36,18 +34,7 @@ void ULLL_GameInstance::Init()
 
 	for (const FAbilityDataTable* LoadAbilityData : LoadAbilityDataArray)
 	{
-		FAbilityDataTable TempAbilityData;
-		TempAbilityData.ID = LoadAbilityData->ID;
-		TempAbilityData.AbilityType = LoadAbilityData->AbilityType;
-		TempAbilityData.AbilityPart = LoadAbilityData->AbilityPart;
-		TempAbilityData.AbilityRank = LoadAbilityData->AbilityRank;
-		TempAbilityData.AbilityCategory = LoadAbilityData->AbilityCategory;
-		TempAbilityData.AbilityName = LoadAbilityData->AbilityName;
-		TempAbilityData.AbilityValueType = LoadAbilityData->AbilityValueType;
-		TempAbilityData.AbilityValue = LoadAbilityData->AbilityValue;
-		TempAbilityData.ChangeValue = LoadAbilityData->ChangeValue;
-		TempAbilityData.RequireCategory = LoadAbilityData->RequireCategory;
-		AbilityData.Emplace(TempAbilityData);
+		AbilityData.Add(*LoadAbilityData);
 	}
 	
 	TArray<FRewardDataTable*> LoadRewardDataArray;
@@ -55,15 +42,14 @@ void ULLL_GameInstance::Init()
 
 	for (const FRewardDataTable* LoadRewardData : LoadRewardDataArray)
 	{
-		FRewardDataTable TempRewardData;
-		TempRewardData.Value = LoadRewardData->Value;
-		TempRewardData.DropType = LoadRewardData->DropType;
-		TempRewardData.GetType = LoadRewardData->GetType;
-		TempRewardData.GroupID = LoadRewardData->GroupID;
-		TempRewardData.ID = LoadRewardData->ID;
-		TempRewardData.UseType = LoadRewardData->UseType;
-		TempRewardData.bIsHardReward = LoadRewardData->bIsHardReward;
-		RewardData.Emplace(TempRewardData);
+		RewardData.Add(*LoadRewardData);
 	}
-}
+
+	TArray<FStringDataTable*> LoadStringDataArray;
+	StringDataTable->GetAllRows<FStringDataTable>(TEXT("Failed To Load Reward Data Tables"), LoadStringDataArray);
+	for (const FStringDataTable* LoadStringData : LoadStringDataArray)
+	{
+		StringData.Add(*LoadStringData);
+	}
+}	
 
