@@ -34,7 +34,7 @@ public:
 	void SetActorsCustomTimeDilation(TArray<AActor*> Actors, float InCustomTimeDilation);
 
 protected:
-	void SetActorsCustomTimeDilationCallback(TArray<AActor*> Actors, float InCustomTimeDilation);
+	void SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation);
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> PlayerMPC;

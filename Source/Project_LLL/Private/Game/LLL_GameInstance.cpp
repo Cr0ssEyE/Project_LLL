@@ -78,12 +78,12 @@ void ULLL_GameInstance::SetActorsCustomTimeDilation(TArray<AActor*> Actors, floa
 		bCustomTimeDilationIsChanging = true;
 	
 		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&, Actors, InCustomTimeDilation]{
-			SetActorsCustomTimeDilationCallback(Actors, InCustomTimeDilation);
+			SetActorsCustomTimeDilationRecursive(Actors, InCustomTimeDilation);
 		}));
 	}
 }
 
-void ULLL_GameInstance::SetActorsCustomTimeDilationCallback(TArray<AActor*> Actors, float InCustomTimeDilation)
+void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation)
 {
 	for (const auto Actor : Actors)
 	{
@@ -110,7 +110,7 @@ void ULLL_GameInstance::SetActorsCustomTimeDilationCallback(TArray<AActor*> Acto
 	CustomTimeDilation = FMath::FInterpTo(CustomTimeDilation, InCustomTimeDilation, GetWorld()->GetDeltaSeconds(), CustomTimeDilationInterpSpeed);
 
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&, Actors, InCustomTimeDilation]{
-		SetActorsCustomTimeDilationCallback(Actors, InCustomTimeDilation);
+		SetActorsCustomTimeDilationRecursive(Actors, InCustomTimeDilation);
 	}));
 }
 
