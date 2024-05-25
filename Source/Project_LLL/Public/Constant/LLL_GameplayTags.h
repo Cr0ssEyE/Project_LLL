@@ -78,3 +78,7 @@
 // 어빌리티 슬롯 관련 태그
 #define TAG_GAS_ABILITY_PART FGameplayTag::RequestGameplayTag(FName("AbilityPart"))
 #define TAG_GAS_ABILITY_PART_COMMON FGameplayTag::RequestGameplayTag(FName("AbilityPart.Common"))
+#define TAG_GAS_ABILITY_PART_ATTACK FGameplayTag::RequestGameplayTag(FName("AbilityPart.Attack"))
+#define TAG_GAS_ABILITY_PART_CHASE FGameplayTag::RequestGameplayTag(FName("AbilityPart.Chase"))
+#define TAG_GAS_ABILITY_PART_COMBO_SKILL FGameplayTag::RequestGameplayTag(FName("AbilityPart.ComboSkill"))
+#define TAG_GAS_ABILITY_PART_DASH FGameplayTag::RequestGameplayTag(FName("AbilityPart.Dash"))
