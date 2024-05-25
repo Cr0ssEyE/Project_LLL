@@ -5,18 +5,14 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "FMODAudioComponent.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
-#include "Interface/LLL_FModInterface.h"
 #include "Interface/LLL_KnockBackInterface.h"
-#include "System/MapSound/LLL_MapSoundManager.h"
 
 ULLL_PGA_Skill_BulletTime::ULLL_PGA_Skill_BulletTime()
 {
@@ -86,8 +82,8 @@ void ULLL_PGA_Skill_BulletTime::EndAbility(const FGameplayAbilitySpecHandle Hand
 void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 {
 	TArray<FHitResult> HitResults;
-	FCollisionQueryParams Params;
-	FVector SweepLocation = GetCurrentActorInfo()->AvatarActor->GetActorLocation();
+	const FCollisionQueryParams Params;
+	const FVector SweepLocation = GetCurrentActorInfo()->AvatarActor->GetActorLocation();
 
 	// 귀찮아서 매직넘버 처리.
 	GetWorld()->SweepMultiByProfile(
@@ -115,17 +111,14 @@ void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 		return;
 	}
 
+	TArray<AActor*> HitActors;
 	for (auto HitResult : HitResults)
 	{
 		AActor* HitActor = HitResult.GetActor();
 		BulletTimeEffectedActors.Emplace(HitActor);
-		HitActor->CustomTimeDilation = WorldDecelerationRate;
-
-		if (ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(HitActor))
-		{
-			FModInterface->SetPitch(WorldDecelerationRate);
-		}
+		HitActors.Emplace(HitActor);
 	}
+	CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance())->SetActorsCustomTimeDilation(HitActors, WorldDecelerationRate);
 }
 
 void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
@@ -174,28 +167,24 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 	FGameplayAbilityTargetDataHandle TargetDataHandle;
 	TargetDataHandle.Add(ActorArray);
 
-	ULLL_BaseASC* LLLASC = CastChecked<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked());
-	if (LLLASC->TryActivateAbilitiesByTag(FGameplayTagContainer(KnockBackCollideCheckTag)))
+	if (ULLL_BaseASC* BaseAsc = CastChecked<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked()); BaseAsc->TryActivateAbilitiesByTag(FGameplayTagContainer(KnockBackCollideCheckTag)))
 	{
-		LLLASC->ReceiveTargetData(this, TargetDataHandle);
+		BaseAsc->ReceiveTargetData(this, TargetDataHandle);
 	}
-	
+
+	TArray<AActor*> EffectedActors;
 	for (auto Actor : BulletTimeEffectedActors)
 	{
 		if (Actor.IsValid())
 		{
-			Actor.Get()->CustomTimeDilation = 1.0f;
+			EffectedActors.Emplace(Actor.Get());
 			if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor.Get()))
 			{
 				KnockBackActor->ApplyStackedKnockBack();
 			}
-
-			if (ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(Actor.Get()))
-			{
-				FModInterface->SetPitch(1.0f);
-			}
 		}
 	}
+	CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance())->SetActorsCustomTimeDilation(EffectedActors, 1.0f);
 	
 	BulletTimeEffectedActors.Empty();
 	

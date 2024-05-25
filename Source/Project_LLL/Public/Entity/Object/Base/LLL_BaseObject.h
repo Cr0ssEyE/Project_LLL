@@ -23,7 +23,6 @@ public:
 
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
-	FORCEINLINE virtual void SetPitch(float InPitch) override { Pitch = InPitch; }
 	
 protected:
 	// Called when the game starts or when spawned
@@ -32,7 +31,6 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaSeconds) override;
 	virtual void InitAttributeSet();
 
 protected:
@@ -50,10 +48,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<const ULLL_BaseObjectDataAsset> BaseObjectDataAsset;
-
-	UPROPERTY(EditAnywhere)
-	float Pitch;
-	
-	UPROPERTY(VisibleAnywhere)
-	float CurrentPitch;
 };

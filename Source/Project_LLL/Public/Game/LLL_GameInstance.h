@@ -23,13 +23,19 @@ public:
 	virtual void Init() override;
 
 	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterDataArray; }
+	FORCEINLINE bool CheckCustomTimeDilationIsChanging() const { return bCustomTimeDilationIsChanging; }
 
 public:
 	// 데이터 테이블 Getter
 	FORCEINLINE TArray<FAbilityDataTable> GetAbilityDataTable() const { return AbilityData; }
 	FORCEINLINE TArray<FRewardDataTable> GetRewardDataTable() const { return RewardData; }
 
+public:
+	void SetActorsCustomTimeDilation(TArray<AActor*> Actors, float InCustomTimeDilation);
+
 protected:
+	void SetActorsCustomTimeDilationCallback(TArray<AActor*> Actors, float InCustomTimeDilation);
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> PlayerMPC;
 
@@ -61,5 +67,13 @@ protected:
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	TArray<FRewardDataTable> RewardData;
-	
+
+	UPROPERTY(VisibleAnywhere)
+	float CustomTimeDilation;
+
+	UPROPERTY(EditAnywhere)
+	float CustomTimeDilationInterpSpeed;
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 bCustomTimeDilationIsChanging : 1;
 };

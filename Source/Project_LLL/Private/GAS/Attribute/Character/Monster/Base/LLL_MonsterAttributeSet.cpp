@@ -14,6 +14,29 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
+		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
+		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
+		
+		if (GetCurrentShield() > 0)
+		{
+			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
+		
+			Monster->Damaged(DOT);
+		}
+		else
+		{
+			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+
+			if (GetCurrentHealth() == 0)
+			{
+				Monster->Dead();
+			}
+			else
+			{
+				Monster->Damaged(DOT);
+			}
+		}
+		
 		FGameplayTagContainer TagContainer(TAG_GAS_STATUS_MARKED);
 		TagContainer.AddTag(TAG_GAS_STATUS_TARGETED);
 		TagContainer.AddTag(TAG_GAS_STATUS_BLEEDING);
@@ -56,29 +79,4 @@ void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallb
 	}
 	
 	SetReceiveDamage(Damage);
-}
-
-void ULLL_MonsterAttributeSet::ReceiveDamageEvent(const FGameplayEffectModCallbackData& Data)
-{
-	Super::ReceiveDamageEvent(Data);
-
-	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
-	bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
-	if (GetCurrentShield() > 0)
-	{
-		SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
-	}
-	else
-	{
-		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-
-		if (GetCurrentHealth() == 0)
-		{
-			Monster->Dead();
-		}
-		else
-		{
-			Monster->Damaged(DOT);
-		}
-	}
 }

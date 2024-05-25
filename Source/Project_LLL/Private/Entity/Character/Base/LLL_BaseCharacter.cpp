@@ -8,21 +8,16 @@
 #include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
-#include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "DataTable/LLL_FModParameterDataTable.h"
-#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
-#include "Util/LLL_ConstructorHelper.h"
 #include "Util/LLL_ExecuteCueHelper.h"
 
-// Sets default values
 ALLL_BaseCharacter::ALLL_BaseCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
 	bIsDead = false;
 
 	ASC = CreateDefaultSubobject<ULLL_BaseASC>(TEXT("AbilitySystem"));
@@ -30,10 +25,6 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	FModAudioComponent->SetupAttachment(RootComponent);
 
 	Level = 1;
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	bIsSpawned = false;
-#endif
 }
 
 void ALLL_BaseCharacter::PostLoad()
@@ -60,13 +51,6 @@ void ALLL_BaseCharacter::PostInitializeComponents()
 
 void ALLL_BaseCharacter::SetDefaultInformation()
 {
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(bIsSpawned)
-	{
-		return;
-	}
-#endif
-
 	GetMesh()->SetRenderCustomDepth(true);
 	GetMesh()->SetCustomDepthStencilValue(1);
 	
@@ -92,14 +76,9 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationRoll = false;
-		
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		bIsSpawned = true;
-#endif
 	}
 }
 
-// Called when the game starts or when spawned
 void ALLL_BaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -140,18 +119,6 @@ void ALLL_BaseCharacter::BeginPlay()
 	}));
 }
 
-void ALLL_BaseCharacter::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if (CurrentPitch != Pitch)
-	{
-		CurrentPitch = FMath::FInterpTo(CurrentPitch, Pitch, DeltaSeconds, 1.0f);
-		
-		FModAudioComponent->SetPitch(CurrentPitch);
-	}
-}
-
 void ALLL_BaseCharacter::InitAttributeSet()
 {
 	UE_LOG(LogTemp, Log, TEXT("%s 어트리뷰트 초기화 리스트"), *GetName())
@@ -176,7 +143,7 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	
 		if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
 		{
-			FGameplayEventData PayloadData;
+			const FGameplayEventData PayloadData;
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
 		}
 	}

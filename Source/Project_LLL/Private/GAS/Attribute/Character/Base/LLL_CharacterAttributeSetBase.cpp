@@ -43,13 +43,10 @@ bool ULLL_CharacterAttributeSetBase::PreGameplayEffectExecute(FGameplayEffectMod
 
 void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
-	Super::PostGameplayEffectExecute(Data);
-	
 	const ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
-	bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
-		ReceiveDamageEvent(Data);
+		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
 		Character->TakeDamageDelegate.Broadcast(DOT);
 
 		//05/11 조강건 코드리뷰 중 주석 추가
@@ -66,5 +63,7 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 		SetReceiveDamage(0.f);
 	}
 	Character->UpdateWidgetDelegate.Broadcast();
+
+	Super::PostGameplayEffectExecute(Data);
 }
 

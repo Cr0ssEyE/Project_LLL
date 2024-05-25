@@ -33,7 +33,6 @@ public:
 
 protected:
 	virtual void CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data);
-	virtual void ReceiveDamageEvent(const FGameplayEffectModCallbackData& Data) override;
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")

@@ -15,6 +15,12 @@ ALLL_MapSoundManager::ALLL_MapSoundManager()
 	SetRootComponent(CollisionBoxForBulletTime);
 }
 
+void ALLL_MapSoundManager::SetPitch(float InPitch) const
+{
+	UFMODBlueprintStatics::EventInstanceSetPitch(BGMWrapper, InPitch);
+	UFMODBlueprintStatics::EventInstanceSetPitch(AMBWrapper, InPitch);
+}
+
 void ALLL_MapSoundManager::BeginPlay()
 {
 	Super::BeginPlay();
@@ -31,17 +37,6 @@ void ALLL_MapSoundManager::BeginPlay()
 	AMBWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), AMB, true);
 
 	CollisionBoxForBulletTime->SetBoxExtent(FVector::OneVector);
-}
-
-void ALLL_MapSoundManager::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if (CurrentPitch != Pitch)
-	{
-		UFMODBlueprintStatics::EventInstanceSetPitch(BGMWrapper, CurrentPitch);
-		UFMODBlueprintStatics::EventInstanceSetPitch(AMBWrapper, CurrentPitch);
-	}
 }
 
 void ALLL_MapSoundManager::PlayerDeadHandle(ALLL_BaseCharacter* Character)

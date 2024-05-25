@@ -57,7 +57,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 
 	if (!CheckHitCountEffects.IsEmpty())
 	{
-		for (auto HitCountEffect : CheckHitCountEffects)
+		for (const auto HitCountEffect : CheckHitCountEffects)
 		{
 			const FGameplayEffectSpecHandle HitCountEffectSpecHandle = MakeOutgoingGameplayEffectSpec(HitCountEffect, CurrentEventData.EventMagnitude);
 			if (!HitCountEffectSpecHandle.IsValid())
@@ -83,9 +83,8 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	}));
 
 	FGameplayEventData PayloadData;
-	PayloadData.Instigator = TargetDataHandle.Data[0]->GetActors()[0].Get();
-	// 여러 대상 적중시 처리가 이루어지지 않음. 아래와 같이 복수의 데이터 전달 가능
-	// PayloadData.TargetData = TargetDataHandle;
+	// 아래와 같이 복수의 데이터 전달 가능
+	PayloadData.TargetData = TargetDataHandle;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
 }
 

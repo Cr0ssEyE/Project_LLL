@@ -40,8 +40,6 @@ public:
 	
 	// 캐릭터 기본 어트리뷰트 데이터
 protected:
-	virtual void ReceiveDamageEvent(const FGameplayEffectModCallbackData& Data) {}
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxHealth;
 

@@ -16,19 +16,10 @@ class PROJECT_LLL_API ALLL_SystemBase : public AActor, public ILLL_FModInterface
 
 public:
 	ALLL_SystemBase();
-
-	virtual void Tick(float DeltaSeconds) override;
 	
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
-	FORCEINLINE virtual void SetPitch(float InPitch) override { Pitch = InPitch; }
 
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
-
-	UPROPERTY(EditAnywhere)
-	float Pitch;
-	
-	UPROPERTY(VisibleAnywhere)
-	float CurrentPitch;
 };

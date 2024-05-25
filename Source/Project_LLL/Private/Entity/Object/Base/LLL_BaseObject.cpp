@@ -94,18 +94,6 @@ void ALLL_BaseObject::BeginPlay()
 	}
 }
 
-void ALLL_BaseObject::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if (CurrentPitch != Pitch)
-	{
-		CurrentPitch = FMath::FInterpTo(CurrentPitch, Pitch, DeltaSeconds, 1.0f);
-		
-		FModAudioComponent->SetPitch(CurrentPitch);
-	}
-}
-
 void ALLL_BaseObject::InitAttributeSet()
 {
 	UE_LOG(LogTemp, Log, TEXT("%s 어트리뷰트 초기화 리스트"), *GetName())

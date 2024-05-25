@@ -21,10 +21,11 @@ class PROJECT_LLL_API ALLL_MapSoundManager : public ALLL_SystemBase
 
 public:
 	ALLL_MapSoundManager();
+
+	void SetPitch(float InPitch) const;
 	
 protected:
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaSeconds) override;
 	
 	UFUNCTION()
 	void PlayerDeadHandle(ALLL_BaseCharacter* Character);

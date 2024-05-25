@@ -147,7 +147,7 @@ void ALLL_MonsterBase::Damaged(bool IsDOT)
 	}
 
 	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	if (!IsValid(MonsterBaseAnimInstance) || !IsDOT)
+	if (!IsValid(MonsterBaseAnimInstance) || IsDOT)
 	{
 		return;
 	}

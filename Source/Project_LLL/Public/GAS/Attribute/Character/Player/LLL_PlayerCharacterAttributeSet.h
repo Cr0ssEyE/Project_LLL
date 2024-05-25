@@ -53,8 +53,6 @@ protected:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 protected:
-	virtual void ReceiveDamageEvent(const FGameplayEffectModCallbackData& Data) override;
-	
 	void TryStartComboManagement(const FGameplayEffectModCallbackData& Data);
 	
 	// 일반 공격 관련

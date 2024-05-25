@@ -14,9 +14,11 @@ void ULLL_PGA_FeatherBarrage::ActivateAbility(const FGameplayAbilitySpecHandle H
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	ALLL_PlayerThrownFeather* ThrownFeather = CastChecked<ALLL_PlayerThrownFeather>(Player->GetObjectPoolingComponent()->GetActor(ALLL_PlayerThrownFeather::StaticClass()));
 
-	ThrownFeather->SetActorLocationAndRotation(Player->GetActorLocation(), FRotationMatrix::MakeFromX(Player->GetActorLocation() - CurrentEventData.Instigator->GetActorLocation()).Rotator());
+	const AActor* Target = CurrentEventData.TargetData.Data[0]->GetActors()[0].Get();
+	const FRotator Rotator = FRotationMatrix::MakeFromX(Player->GetActorLocation() - Target->GetActorLocation()).Rotator();
+	ThrownFeather->SetActorLocationAndRotation(Player->GetActorLocation(), Rotator);
 	ThrownFeather->AddActorLocalRotation(FRotator(0.0f, FMath::RandBool() ? 1.0f : -1.0f, 0.0f));
-	ThrownFeather->Throw(Player, CurrentEventData.Instigator);
+	ThrownFeather->Throw(Player, Target);
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

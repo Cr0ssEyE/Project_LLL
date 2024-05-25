@@ -39,7 +39,6 @@ public:
 	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
-	FORCEINLINE virtual void SetPitch(float InPitch) override { Pitch = InPitch; }
 	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
 	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
 
@@ -50,7 +49,6 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaSeconds) override;
 	virtual void InitAttributeSet();
 	
 protected:
@@ -91,12 +89,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	int32 Level;
 
-	UPROPERTY(EditAnywhere)
-	float Pitch;
-	
-	UPROPERTY(VisibleAnywhere)
-	float CurrentPitch;
-
 	// 이동 관련 변수
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -115,14 +107,4 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "FMOD")
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	// 디버그용 함수
-public:
-	FORCEINLINE void SetCharacterDead() { bIsDead = true; }
-	
-	// 디버그용 변수
-public:
-	uint8 bIsSpawned : 1;
-#endif
 };
