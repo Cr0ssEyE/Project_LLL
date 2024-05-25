@@ -41,6 +41,7 @@ public:
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
 	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
 	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
+	FORCEINLINE float GetAbilityLevel() const { return Level; }
 
 	// 플레이어
 protected:

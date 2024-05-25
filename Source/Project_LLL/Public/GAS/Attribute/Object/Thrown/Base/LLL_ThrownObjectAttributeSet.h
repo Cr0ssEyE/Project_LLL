@@ -16,14 +16,10 @@ class PROJECT_LLL_API ULLL_ThrownObjectAttributeSet : public ULLL_ObjectAttribut
 	GENERATED_BODY()
 
 public:
-	ATTRIBUTE_ACCESSORS(ULLL_ThrownObjectAttributeSet, OffensePower);
 	ATTRIBUTE_ACCESSORS(ULLL_ThrownObjectAttributeSet, ThrowSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_ThrownObjectAttributeSet, HideTimer);
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData OffensePower;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ThrowSpeed;
 

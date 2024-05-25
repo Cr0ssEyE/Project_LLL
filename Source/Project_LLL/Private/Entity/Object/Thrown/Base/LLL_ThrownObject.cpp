@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
@@ -72,8 +73,12 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
-	//Cast<ULLL_CharacterAttributeSetBase>(Cast<ALLL_BaseCharacter>(GetOwner())->GetAbilitySystemComponent()->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()))->GetOffensePower();
-	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, 1.0, EffectContextHandle);
+	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwner());
+	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, OwnerCharacter->GetAbilityLevel(), EffectContextHandle);
+
+	const ULLL_CharacterAttributeSetBase* OwnerCharacterAttributeSet = CastChecked<ULLL_CharacterAttributeSetBase>(OwnerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
+	const float OffencePower = OwnerCharacterAttributeSet->GetOffensePower();
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, OffencePower);;
 	if(EffectSpecHandle.IsValid())
 	{
 		if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other))
