@@ -56,10 +56,11 @@ void ALLL_ThrownObject::Deactivate()
 	GetWorldTimerManager().ClearTimer(HideTimerHandle);
 }
 
-void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget)
+void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget, float InAbilityLevel)
 {
 	SetOwner(NewOwner);
 	Target = NewTarget;
+	AbilityLevel = InAbilityLevel;
 
 	ProjectileMovementComponent->MaxSpeed = ThrownObjectAttributeSet->GetThrowSpeed();
 	ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
@@ -74,7 +75,7 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
 	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwner());
-	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, OwnerCharacter->GetAbilityLevel(), EffectContextHandle);
+	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
 
 	const ULLL_CharacterAttributeSetBase* OwnerCharacterAttributeSet = CastChecked<ULLL_CharacterAttributeSetBase>(OwnerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
 	const float OffencePower = OwnerCharacterAttributeSet->GetOffensePower();

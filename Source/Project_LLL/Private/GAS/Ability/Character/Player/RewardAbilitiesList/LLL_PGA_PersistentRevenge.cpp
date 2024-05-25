@@ -18,7 +18,7 @@ void ULLL_PGA_PersistentRevenge::ActivateAbility(const FGameplayAbilitySpecHandl
 	const FRotator Rotator = FRotationMatrix::MakeFromX(Player->GetActorLocation() - Target->GetActorLocation()).Rotator();
 	ThrownFeather->SetActorLocationAndRotation(Player->GetActorLocation(), Rotator);
 	ThrownFeather->AddActorLocalRotation(FRotator(0.0f, FMath::RandBool() ? 1.0f : -1.0f, 0.0f));
-	ThrownFeather->Throw(Player, Target);
+	ThrownFeather->Throw(Player, Target, GetAbilityLevel());
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

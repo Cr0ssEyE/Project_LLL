@@ -8,6 +8,7 @@
 #include "Interface/LLL_ObjectPoolingObjectInterface.h"
 #include "LLL_ThrownObject.generated.h"
 
+struct FAbilityDataTable;
 class ULLL_ThrownObjectAttributeSet;
 class UProjectileMovementComponent;
 
@@ -32,7 +33,7 @@ public:
 	virtual void Activate() override;
 	virtual void Deactivate() override;
 	
-	virtual void Throw(AActor* NewOwner, const AActor* NewTarget);
+	virtual void Throw(AActor* NewOwner, const AActor* NewTarget, float InAbilityLevel);
 
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -52,4 +53,5 @@ protected:
 	uint8 bIsActivated : 1;
 	
 	FTimerHandle HideTimerHandle;
+	float AbilityLevel;
 };
