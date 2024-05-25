@@ -33,7 +33,7 @@ public:
 	virtual void Activate() override;
 	virtual void Deactivate() override;
 	
-	virtual void Throw(AActor* NewOwner, const AActor* NewTarget, float InAbilityLevel);
+	virtual void Throw(AActor* NewOwner, const AActor* NewTarget, float InSpeed);
 
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -53,5 +53,4 @@ protected:
 	uint8 bIsActivated : 1;
 	
 	FTimerHandle HideTimerHandle;
-	float AbilityLevel;
 };

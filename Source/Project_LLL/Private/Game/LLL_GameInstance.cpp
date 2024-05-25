@@ -86,7 +86,7 @@ void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Act
 	for (const auto Actor : Actors)
 	{
 		Actor->CustomTimeDilation = CustomTimeDilation;
-		UE_LOG(LogTemp, Warning, TEXT("In : %.5f, Current : %.5f"), InCustomTimeDilation, CustomTimeDilation)
+		UE_LOG(LogTemp, Log, TEXT("CustomTimeDilation : %.5f"), CustomTimeDilation)
 	
 		if (const ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(Actor))
 		{

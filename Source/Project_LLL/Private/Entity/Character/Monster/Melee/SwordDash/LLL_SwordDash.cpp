@@ -13,15 +13,12 @@
 #include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDashAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Character/Monster/Base/LLL_MonsterAttributeSet.h"
-#include "GAS/Attribute/Character/Monster/MeleeMonster/SwordDash/LLL_SwordDashAttributeSet.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_SwordDash::ALLL_SwordDash()
 {
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_SwordDashDataAsset>(PATH_SWORD_DASH_DATA, EAssertionLevel::Check);
-	
-	SwordDashAttributeSet = CreateDefaultSubobject<ULLL_SwordDashAttributeSet>(TEXT("SwordDashAttributeSet"));
 	AIControllerClass = ALLL_SwordDashAIController::StaticClass();
 
 	Id = ID_SWORD_DASH;
@@ -33,9 +30,6 @@ ALLL_SwordDash::ALLL_SwordDash()
 	SwordMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sword"));
 	SwordMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	SwordMeshComponent->SetupAttachment(RootComponent);
-
-	// Todo : 어빌리티 작업이 끝난 후 커브 데이터로 옮기기
-	InitEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/Character/Monster/MeleeMonster/SwordDash/BPGE_SwordDash_Attribute_Initialize.BPGE_SwordDash_Attribute_Initialize_C'"), EAssertionLevel::Check);
 }
 
 void ALLL_SwordDash::BeginPlay()
@@ -43,23 +37,7 @@ void ALLL_SwordDash::BeginPlay()
 	Super::BeginPlay();
 
 	SwordDashDataAsset = Cast<ULLL_SwordDashDataAsset>(MeleeMonsterDataAsset);
-
-	// Todo : 어빌리티 작업이 끝난 후 커브 데이터로 옮기기
-	if (IsValid(InitEffect))
-	{
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
-		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(InitEffect, 1.0, EffectContextHandle);
-		if(EffectSpecHandle.IsValid())
-		{
-			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-		}
-	}
 	
-	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
-		DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), SwordDashAttributeSet->GetDashDamageRange(), SwordDashAttributeSet->GetDashDamageRange()));
-	}));
-
 	SwordMeshComponent->SetStaticMesh(SwordDashDataAsset->SwordMesh);
 	SwordMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->SwordAttachSocketName);
 	SwordMeshComponent->SetRelativeLocation(SwordDashDataAsset->SwordLocation);
@@ -88,6 +66,13 @@ void ALLL_SwordDash::Tick(float DeltaSeconds)
 #endif
 }
 
+void ALLL_SwordDash::InitAttributeSet()
+{
+	Super::InitAttributeSet();
+	
+	DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), MonsterAttributeSet->GetMonsterData4(), MonsterAttributeSet->GetMonsterData4()));
+}
+
 void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
@@ -98,7 +83,7 @@ void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
 		{
 			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(this);
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(SwordDashDataAsset->DashDamageEffect, 1.0, EffectContextHandle);
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(SwordDashDataAsset->DashDamageEffect, Level, EffectContextHandle);
 			if(EffectSpecHandle.IsValid())
 			{
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());

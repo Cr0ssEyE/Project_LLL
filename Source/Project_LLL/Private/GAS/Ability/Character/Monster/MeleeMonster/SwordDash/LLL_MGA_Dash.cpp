@@ -9,7 +9,7 @@
 #include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDash.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Character/Monster/MeleeMonster/SwordDash/LLL_SwordDashAttributeSet.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "Interface/LLL_DashMonsterInterface.h"
 #include "Util/LLL_ExecuteCueHelper.h"
 
@@ -21,12 +21,12 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_DASH);
 	Monster->GetMovementComponent()->Velocity = FVector::Zero();
 	
-	const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 
 	FHitResult StaticResult;
 	FHitResult PlayerResult;
 	const FVector SweepStartLocation = Monster->GetActorLocation();
-	const FVector SweepEndLocation = SweepStartLocation + Monster->GetActorForwardVector() * SwordDashAttributeSet->GetDashDistance();
+	const FVector SweepEndLocation = SweepStartLocation + Monster->GetActorForwardVector() * MonsterAttributeSet->GetMonsterData1();
 	const FQuat SweepQuat = Monster->GetActorQuat();
 	constexpr ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
 	constexpr ECollisionChannel PlayerTraceChannel = ECC_PLAYER_CHECK;
@@ -59,6 +59,8 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			const float PlayerDistance = Monster->GetDistanceTo(PlayerResult.GetActor());
 
 			DashLocation = (StaticDistance <= PlayerDistance) ? StaticResult.Location : PlayerResult.Location;
+
+			// Todo : 최소 돌진 거리 처리 로직 구현 필요
 		}
 		else
 		{
