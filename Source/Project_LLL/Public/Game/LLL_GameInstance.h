@@ -29,7 +29,8 @@ public:
 	FORCEINLINE TArray<FAbilityDataTable> GetAbilityDataTable() const { return AbilityData; }
 	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterData; }
 	FORCEINLINE TArray<FRewardDataTable> GetRewardDataTable() const { return RewardData; }
-	FORCEINLINE TArray<FStringDataTable> GetStringDataTables() const { return StringData; }
+	FORCEINLINE const UDataTable* GetStringDataTable() const { return StringDataTable; }
+	FORCEINLINE TArray<FStringDataTable> GetStringDataTablesData() const { return StringData; }
 	
 	// 마테리얼 파라미터 컬렉션 
 protected:

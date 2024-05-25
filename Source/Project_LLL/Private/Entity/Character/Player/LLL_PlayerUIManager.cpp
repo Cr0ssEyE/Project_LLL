@@ -40,19 +40,19 @@ void ULLL_PlayerUIManager::BeginPlay()
 	ChaseActionWidgetClass = PlayerBaseDataAsset->ChaseActionWidgetClass;
 	ComboWidgetClass = PlayerBaseDataAsset->ComboWidgetClass;
 	MainEruriaInfoWidgetClass = PlayerBaseDataAsset->MainEruriaInfoWidgetClass;
+
+	if(IsValid(SelectRewardWidgetClass))
+	{
+		SelectRewardWidget = CastChecked<ULLL_SelectRewardWidget>(CreateWidget(GetWorld(), SelectRewardWidgetClass));
+		SelectRewardWidget->AddToViewport();
+		SelectRewardWidget->SetVisibility(ESlateVisibility::Hidden);
+		SelectRewardWidget->SetIsEnabled(false);
+	}
 	
 	if(IsValid(CharacterStatusWidgetClass))
 	{
 		CharacterStatusWidget = CastChecked<ULLL_CharacterStatusWidget>(CreateWidget(GetWorld(), CharacterStatusWidgetClass));
 		CharacterStatusWidget->AddToViewport();
-	}
-	
-	if(IsValid(GamePauseWidgetClass))
-	{
-		GamePauseWidget = CastChecked<ULLL_GamePauseWidget>(CreateWidget(GetWorld(), GamePauseWidgetClass));
-		GamePauseWidget->AddToViewport();
-		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
-		GamePauseWidget->SetIsEnabled(false);
 	}
 
 	if(IsValid(InventoryWidgetClass))
@@ -67,14 +67,6 @@ void ULLL_PlayerUIManager::BeginPlay()
 		InteractionWidget = CastChecked<ULLL_InteractionWidget>(CreateWidget(GetWorld(), InteractionWidgetClass));
 		InteractionWidget->AddToViewport();
 		InteractionWidget->SetIsEnabled(false);
-	}
-	
-	if(IsValid(SelectRewardWidgetClass))
-	{
-		SelectRewardWidget = CastChecked<ULLL_SelectRewardWidget>(CreateWidget(GetWorld(), SelectRewardWidgetClass));
-		SelectRewardWidget->AddToViewport();
-		SelectRewardWidget->SetVisibility(ESlateVisibility::Hidden);
-		SelectRewardWidget->SetIsEnabled(false);
 	}
 	
 	if(IsValid(ChaseActionWidgetClass))
@@ -93,6 +85,14 @@ void ULLL_PlayerUIManager::BeginPlay()
 	{
 		MainEruriaInfoWidget = CastChecked<ULLL_MainEruriaInfoWidget>(CreateWidget(GetWorld(), MainEruriaInfoWidgetClass));
 		MainEruriaInfoWidget->AddToViewport();
+	}
+
+	if(IsValid(GamePauseWidgetClass))
+	{
+		GamePauseWidget = CastChecked<ULLL_GamePauseWidget>(CreateWidget(GetWorld(), GamePauseWidgetClass));
+		GamePauseWidget->AddToViewport();
+		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
+		GamePauseWidget->SetIsEnabled(false);
 	}
 }
 

@@ -7,6 +7,7 @@
 #include "Components/Button.h"
 #include "LLL_SelectRewardWidget.generated.h"
 
+class URichTextBlock;
 struct FAbilityDataTable;
 /**
  * 
@@ -29,14 +30,34 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void CheckButton();
-	
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
 	TObjectPtr<UButton> RewardButton1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
-	TObjectPtr<UButton> RewardButton2;
+	TObjectPtr<URichTextBlock> RewardNameText1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
+	TObjectPtr<URichTextBlock> RewardInfoText1;
 	
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
+	TObjectPtr<UButton> RewardButton2;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
+	TObjectPtr<URichTextBlock> RewardNameText2;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
+	TObjectPtr<URichTextBlock> RewardInfoText2;
+	
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
 	TObjectPtr<UButton> RewardButton3;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
+	TObjectPtr<URichTextBlock> RewardNameText3;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
+	TObjectPtr<URichTextBlock> RewardInfoText3;
 };

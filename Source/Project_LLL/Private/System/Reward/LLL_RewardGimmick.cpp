@@ -69,19 +69,20 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	{
 		SetDataTable();
 	}
-	
-	if (!bIsButtonEventSetup && IsValid(GetWorld()->GetFirstPlayerController()->GetPawn()))
+
+	if (bIsButtonEventSetup && !IsValid(GetWorld()->GetFirstPlayerController()->GetPawn()))
 	{
-		const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
-		const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
-		ULLL_SelectRewardWidget* RewardWidget = PlayerUIManager->GetSelectRewardWidget();
-		RewardWidget->GetFirstButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickFirstButton);
-		RewardWidget->GetSecondButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickSecondButton);
-		RewardWidget->GetThirdButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickThirdButton);
-		RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
-		
-		bIsButtonEventSetup = true;
+		ensure(false);
+		return;
 	}
+
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+    const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
+    ULLL_SelectRewardWidget* RewardWidget = PlayerUIManager->GetSelectRewardWidget();
+    RewardWidget->GetFirstButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickFirstButton);
+    RewardWidget->GetSecondButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickSecondButton);
+    RewardWidget->GetThirdButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickThirdButton);
+    bIsButtonEventSetup = true;
 	
 #if  (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (bIsTest)
@@ -92,6 +93,7 @@ void ALLL_RewardGimmick::SetRewardButtons()
 		ButtonAbilityDataArray.Emplace(&AbilityData[TestAbilityDataArrayNum1]);
 		ButtonAbilityDataArray.Emplace(&AbilityData[TestAbilityDataArrayNum2]);
 		ButtonAbilityDataArray.Emplace(&AbilityData[TestAbilityDataArrayNum3]);
+		RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
 		return;
 	}
 #endif
@@ -109,6 +111,8 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	Index = FMath::RandRange(0, AbilityData.Num() - 1);
 	// ButtonAbilityData3 = &AbilityData[Index];
 	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
+
+	RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
 }
 
 void ALLL_RewardGimmick::SetDataTable()

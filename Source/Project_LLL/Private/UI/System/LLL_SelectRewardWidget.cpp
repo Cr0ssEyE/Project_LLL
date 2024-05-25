@@ -3,6 +3,7 @@
 
 #include "UI/System/LLL_SelectRewardWidget.h"
 
+#include "Components/RichTextBlock.h"
 #include "Game/ProtoGameInstance.h"
 
 void ULLL_SelectRewardWidget::NativeConstruct()
@@ -21,7 +22,27 @@ void ULLL_SelectRewardWidget::NativeConstruct()
 
 void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDataArray)
 {
+	const UDataTable* StringDataTable = GetGameInstance<ULLL_GameInstance>()->GetStringDataTable();
+
+	TArray<TTuple<FString, FString>> WidgetInfoTexts;
+	for (auto AbilityData : AbilityDataArray)
+	{
+		FString AbilityName = StringDataTable->FindRow<FStringDataTable>(AbilityData->AbilityName, TEXT("Failed To Load Ability Name"))->Korean;
+		FString AbilityInformation = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityInformation, TEXT("Failed To Load Ability Name"))->Korean;
+		
+		// TODO: 강화 UI는 AbilityData->ChangeValue 고려하도록 개선하기
+		AbilityInformation = AbilityInformation.Replace(TEXT("[AV]"), *FString::SanitizeFloat(AbilityData->AbilityValue));
+		AbilityInformation = AbilityInformation.Replace(TEXT("[UV]"), *FString::SanitizeFloat(AbilityData->UnchangeableValue));
+		WidgetInfoTexts.Emplace(TTuple<FString, FString>(AbilityName, AbilityInformation));
+	}
+	RewardNameText1->SetText(FText::FromString(WidgetInfoTexts[0].Key));
+	RewardInfoText1->SetText(FText::FromString(WidgetInfoTexts[0].Value));
 	
+	RewardNameText2->SetText(FText::FromString(WidgetInfoTexts[1].Key));
+	RewardInfoText2->SetText(FText::FromString(WidgetInfoTexts[1].Value));
+	
+	RewardNameText3->SetText(FText::FromString(WidgetInfoTexts[2].Key));
+	RewardInfoText3->SetText(FText::FromString(WidgetInfoTexts[2].Value));
 }
 
 void ULLL_SelectRewardWidget::CheckButton()

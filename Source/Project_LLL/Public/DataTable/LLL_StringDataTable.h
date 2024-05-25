@@ -13,15 +13,11 @@ struct FStringDataTable : public FTableRowBase
 
 public:
 	FStringDataTable() :
-		ID(""),
 		Korean("")
 	{
 		
 	}
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	FString ID;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	FString Korean;
 	
