@@ -31,7 +31,7 @@ public:
 	FORCEINLINE TArray<FRewardDataTable> GetRewardDataTable() const { return RewardData; }
 
 public:
-	void SetActorsCustomTimeDilation(TArray<AActor*> Actors, float InCustomTimeDilation);
+	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
 
 protected:
 	void SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation);

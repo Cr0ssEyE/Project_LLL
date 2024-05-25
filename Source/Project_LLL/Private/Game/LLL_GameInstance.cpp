@@ -71,15 +71,13 @@ void ULLL_GameInstance::Init()
 	}
 }
 
-void ULLL_GameInstance::SetActorsCustomTimeDilation(TArray<AActor*> Actors, float InCustomTimeDilation)
+void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)
 {
 	if (!bCustomTimeDilationIsChanging)
 	{
 		bCustomTimeDilationIsChanging = true;
 	
-		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&, Actors, InCustomTimeDilation]{
-			SetActorsCustomTimeDilationRecursive(Actors, InCustomTimeDilation);
-		}));
+		SetActorsCustomTimeDilationRecursive(Actors, InCustomTimeDilation);
 	}
 }
 
