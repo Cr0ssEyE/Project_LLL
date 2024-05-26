@@ -32,13 +32,9 @@ ALLL_SwordDash::ALLL_SwordDash()
 	SwordMeshComponent->SetupAttachment(RootComponent);
 
 	// Todo : 어깨 갑옷 붙인다고 붙여봤는데 너무 부자연스러워서 모델링에서 붙이는게 낫지 않을까 여쭤보기
-	LeftShoulderGuardMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftShoulderGuard"));
-	LeftShoulderGuardMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
-	LeftShoulderGuardMeshComponent->SetupAttachment(RootComponent);
-
-	RightShoulderGuardMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightShoulderGuard"));
-	RightShoulderGuardMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
-	RightShoulderGuardMeshComponent->SetupAttachment(RootComponent);
+	ShoulderGuardMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShoulderGuard"));
+	ShoulderGuardMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
+	ShoulderGuardMeshComponent->SetupAttachment(RootComponent);
 }
 
 void ALLL_SwordDash::BeginPlay()
@@ -50,14 +46,10 @@ void ALLL_SwordDash::BeginPlay()
 	SwordMeshComponent->SetStaticMesh(SwordDashDataAsset->SwordMesh);
 	SwordMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->SwordAttachSocketName);
 	SwordMeshComponent->SetRelativeTransform(SwordDashDataAsset->SwordTransform);
-	
-	LeftShoulderGuardMeshComponent->SetStaticMesh(SwordDashDataAsset->ShoulderGuardMesh);
-	LeftShoulderGuardMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->LeftShoulderGuardAttachSocketName);
-	LeftShoulderGuardMeshComponent->SetRelativeTransform(SwordDashDataAsset->LeftShoulderGuardTransform);
 
-	RightShoulderGuardMeshComponent->SetStaticMesh(SwordDashDataAsset->ShoulderGuardMesh);
-	RightShoulderGuardMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->RightShoulderGuardAttachSocketName);
-	RightShoulderGuardMeshComponent->SetRelativeTransform(SwordDashDataAsset->RightShoulderGuardTransform);
+	ShoulderGuardMeshComponent->SetStaticMesh(SwordDashDataAsset->ShoulderGuardMesh);
+	ShoulderGuardMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->ShoulderGuardAttachSocketName);
+	ShoulderGuardMeshComponent->SetRelativeTransform(SwordDashDataAsset->ShoulderGuardTransform);
 }
 
 void ALLL_SwordDash::Tick(float DeltaSeconds)

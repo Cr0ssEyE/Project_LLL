@@ -30,15 +30,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 메시")
 	TObjectPtr<UStaticMesh> ShoulderGuardMesh;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 부착 소켓 이름 (왼쪽)")
-	FName LeftShoulderGuardAttachSocketName;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 부착 소켓 이름 (오른쪽)")
-	FName RightShoulderGuardAttachSocketName;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 트랜스폼 (왼쪽)")
-	FTransform LeftShoulderGuardTransform;
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 부착 소켓 이름")
+	FName ShoulderGuardAttachSocketName;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 트랜스폼 (오른쪽)")
-	FTransform RightShoulderGuardTransform;
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 트랜스폼")
+	FTransform ShoulderGuardTransform;
 };
