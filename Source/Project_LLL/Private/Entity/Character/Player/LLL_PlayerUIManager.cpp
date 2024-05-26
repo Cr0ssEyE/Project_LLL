@@ -111,8 +111,7 @@ void ULLL_PlayerUIManager::TogglePauseWidget(bool IsDead) const
 {
 	if(GamePauseWidget->GetIsEnabled())
 	{
-		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
-		GamePauseWidget->SetIsEnabled(false);
+		GamePauseWidget->RestorePauseState();
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 	}
 	else
@@ -121,8 +120,7 @@ void ULLL_PlayerUIManager::TogglePauseWidget(bool IsDead) const
 		{
 			GamePauseWidget->SetupDeadStateLayout();
 		}
-		GamePauseWidget->SetVisibility(ESlateVisibility::Visible);
-		GamePauseWidget->SetIsEnabled(true);
+		GamePauseWidget->SetupPauseState();
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), SMALL_NUMBER);
 	}
 }

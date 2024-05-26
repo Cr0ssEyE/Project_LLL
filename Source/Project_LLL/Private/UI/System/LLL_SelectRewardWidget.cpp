@@ -3,7 +3,9 @@
 
 #include "UI/System/LLL_SelectRewardWidget.h"
 
+#include "Components/Image.h"
 #include "Components/RichTextBlock.h"
+#include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Game/ProtoGameInstance.h"
 
 void ULLL_SelectRewardWidget::NativeConstruct()
@@ -31,7 +33,7 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDa
 	for (auto AbilityData : AbilityDataArray)
 	{
 		FString AbilityName = StringDataTable->FindRow<FStringDataTable>(AbilityData->AbilityName, TEXT("Failed To Load Ability Name"))->Korean;
-		FString AbilityInformation = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityInformation, TEXT("Failed To Load Ability Name"))->Korean;
+		FString AbilityInformation = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityInformation, TEXT("Failed To Load Ability Information"))->Korean;
 		
 		// TODO: 강화 UI는 AbilityData->ChangeValue 고려하도록 개선하기
 		AbilityInformation = AbilityInformation.Replace(TEXT("[AV]"), *FString::SanitizeFloat(AbilityData->AbilityValue));
@@ -40,14 +42,24 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDa
 	}
 	RewardNameText1->SetText(FText::FromString(WidgetInfoTexts[0].Key));
 	RewardInfoText1->SetText(FText::FromString(WidgetInfoTexts[0].Value));
+	RewardNameText1->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[0]->AbilityRank)]);
+	RewardIconImage1->SetBrushFromTexture(EruriaIConTextures[static_cast<uint32>(AbilityDataArray[0]->AbilityType)]);
 	
 	RewardNameText2->SetText(FText::FromString(WidgetInfoTexts[1].Key));
 	RewardInfoText2->SetText(FText::FromString(WidgetInfoTexts[1].Value));
+	RewardNameText2->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[1]->AbilityRank)]);
+	RewardIconImage2->SetBrushFromTexture(EruriaIConTextures[static_cast<uint32>(AbilityDataArray[1]->AbilityType)]);
 	
 	RewardNameText3->SetText(FText::FromString(WidgetInfoTexts[2].Key));
 	RewardInfoText3->SetText(FText::FromString(WidgetInfoTexts[2].Value));
+	RewardNameText3->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[2]->AbilityRank)]);
+	RewardIconImage3->SetBrushFromTexture(EruriaIConTextures[static_cast<uint32>(AbilityDataArray[2]->AbilityType)]);
+}
 
-	SetFocus();
+void ULLL_SelectRewardWidget::FocusToUI()
+{
+	SetKeyboardFocus();
+	Cast<ALLL_PlayerController>(GetOwningPlayer())->SetUIInputMode(GetCachedWidget());
 }
 
 void ULLL_SelectRewardWidget::OnAnimationFinished_Implementation(const UWidgetAnimation* Animation)
@@ -58,5 +70,7 @@ void ULLL_SelectRewardWidget::OnAnimationFinished_Implementation(const UWidgetAn
 	{
 		SetIsEnabled(false);
 		SetVisibility(ESlateVisibility::Hidden);
+		Cast<ALLL_PlayerController>(GetOwningPlayer())->SetGameInputMode();
+		PlayAnimationForward(ResetState);
 	}
 }

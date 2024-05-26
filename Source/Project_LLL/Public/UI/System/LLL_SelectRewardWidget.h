@@ -28,7 +28,7 @@ public:
 
 public:
 	void SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDataArray);
-	
+	void FocusToUI();
 	virtual void OnAnimationFinished_Implementation(const UWidgetAnimation* Animation) override;
 	
 protected:
@@ -59,6 +59,14 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void PlayRewardThreeSelectAnimation() { PlayAnimationForward(RewardThreeSelect, 1.f, true); }
+
+protected:
+	// 임시 데이터이므로 추후 테이블 연결 필요
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 아이콘(임시)")
+	TArray<UTexture2D*> EruriaIConTextures;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 레어도 색상")
+	TArray<FLinearColor> EruriaRarityColor;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidgetAnim))
@@ -78,6 +86,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> RewardThreeSelect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ResetState;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
@@ -89,6 +100,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
 	TObjectPtr<URichTextBlock> RewardInfoText1;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
+	TObjectPtr<UImage> RewardIconImage1;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
 	TObjectPtr<UImage> RewardBackgroundImage1;
 	
@@ -103,10 +117,11 @@ protected:
 	TObjectPtr<URichTextBlock> RewardInfoText2;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
+	TObjectPtr<UImage> RewardIconImage2;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
 	TObjectPtr<UImage> RewardBackgroundImage2;
 
-protected:
-	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
 	TObjectPtr<UButton> RewardButton3;
@@ -118,7 +133,9 @@ protected:
 	TObjectPtr<URichTextBlock> RewardInfoText3;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
+	TObjectPtr<UImage> RewardIconImage3;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
 	TObjectPtr<UImage> RewardBackgroundImage3;
 
-protected:
 };

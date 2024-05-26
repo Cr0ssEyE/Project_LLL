@@ -83,7 +83,6 @@ void ULLL_MainEruriaInfoWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBl
 	FAbilityLevelDisplayHelper AbilityLevelDisplayHelper;
 	
 	TextBlock->SetText(FText::FromString(AbilityLevelDisplayHelper.DisplayText[static_cast<uint32>(AbilityLevel) - 1]));
-	TextBlock->SetColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityData->AbilityRank)]);
 	MaterialInstanceDynamic->SetVectorParameterValue(UI_RARITY_COLOR, EruriaRarityColor[static_cast<uint32>(AbilityData->AbilityRank)]);
 	MaterialInstanceDynamic->SetTextureParameterValue(UI_ERURIA_ICON, EruriaIConTextures[static_cast<uint32>(AbilityData->AbilityType)]);
 }

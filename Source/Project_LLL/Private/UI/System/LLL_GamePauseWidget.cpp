@@ -4,8 +4,11 @@
 #include "UI/System/LLL_GamePauseWidget.h"
 
 #include "Components/Button.h"
+#include "Components/Overlay.h"
+#include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/System/Setting/LLL_SettingWidget.h"
 
 void ULLL_GamePauseWidget::NativeConstruct()
 {
@@ -13,6 +16,26 @@ void ULLL_GamePauseWidget::NativeConstruct()
 	ResumeButton->OnClicked.AddDynamic(this, &ULLL_GamePauseWidget::ResumeButtonEvent);
 	SettingButton->OnClicked.AddDynamic(this, &ULLL_GamePauseWidget::SettingButtonEvent);
 	ExitButton->OnClicked.AddDynamic(this, &ULLL_GamePauseWidget::ExitButtonEvent);
+
+	SettingWidget->SetRenderScale(FVector2d::Zero());
+	SettingWidget->SetIsEnabled(false);
+}
+
+void ULLL_GamePauseWidget::SetupPauseState()
+{
+	SetVisibility(ESlateVisibility::Visible);
+	SetIsEnabled(true);
+	SetKeyboardFocus();
+	GetOwningPlayer()->DisableInput(GetOwningPlayer());
+	Cast<ALLL_PlayerController>(GetOwningPlayer())->SetUIInputMode(GetCachedWidget());
+}
+
+void ULLL_GamePauseWidget::RestorePauseState()
+{
+	SetVisibility(ESlateVisibility::Hidden);
+	SetIsEnabled(false);
+	GetOwningPlayer()->EnableInput(GetOwningPlayer());
+	Cast<ALLL_PlayerController>(GetOwningPlayer())->SetGameInputMode();
 }
 
 void ULLL_GamePauseWidget::SetupDeadStateLayout() const
@@ -23,14 +46,15 @@ void ULLL_GamePauseWidget::SetupDeadStateLayout() const
 
 void ULLL_GamePauseWidget::ResumeButtonEvent()
 {
-	SetVisibility(ESlateVisibility::Hidden);
-	SetIsEnabled(false);
+	RestorePauseState();
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
 void ULLL_GamePauseWidget::SettingButtonEvent()
 {
 	//TODO: 세팅 UI 만든 뒤에 붙이기
+	SettingWidget->SetRenderScale(FVector2d::One());
+	SettingWidget->SetIsEnabled(true);
 }
 
 void ULLL_GamePauseWidget::ExitButtonEvent()
