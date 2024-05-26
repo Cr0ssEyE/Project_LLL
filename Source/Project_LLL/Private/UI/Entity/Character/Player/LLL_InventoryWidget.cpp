@@ -3,25 +3,120 @@
 
 #include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
 
+#include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
+#include "Components/CanvasPanel.h"
+#include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_MaterialParameterName.h"
+#include "DataTable/LLL_AbilityDataTable.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
+#include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
 
 void ULLL_InventoryWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
-	// for (auto Widget : FirstVerticalBox->GetAllChildren())
-	// {
-	// 	
-	// }
+
+	RegisterInventoryLayout(FirstVerticalBox);
+	RegisterInventoryLayout(SecondVerticalBox);
+	RegisterInventoryLayout(ThirdVerticalBox);
+
+	CurrentEmptyEruriaSlotIndex = 0;
 }
 
 void ULLL_InventoryWidget::SetEruriaInfo(const FAbilityDataTable* AbilityData)
 {
-	
+	if(SetEruriaImage(CommonEruriaImages[CurrentEmptyEruriaSlotIndex], CommonEruriaLevelTexts[CurrentEmptyEruriaSlotIndex], AbilityData))
+	{
+		CurrentEmptyEruriaSlotIndex++;
+	}
 }
 
-void ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, FGameplayTag AbilityPartTag, const FAbilityDataTable* AbilityData)
+void ULLL_InventoryWidget::RegisterInventoryLayout(const UVerticalBox* VerticalBox)
 {
+	if (!VerticalBox->HasAnyChildren())
+	{
+		return;
+	}
+
+	TArray<UCanvasPanel*> CanvasPanelWidgets;
+	for (const auto Widget : VerticalBox->GetAllChildren())
+	{
+		if (UCanvasPanel* CanvasPanelWidget = Cast<UCanvasPanel>(Widget))
+		{
+			CanvasPanelWidgets.Emplace(CanvasPanelWidget);
+		}
+	}
+
+	if (CanvasPanelWidgets.IsEmpty())
+	{
+		ensure(false);
+		return;
+	}
 	
+	for (const auto Widget : CanvasPanelWidgets)
+	{
+		if (UImage* EruriaImage = Cast<UImage>(Widget->GetChildAt(0)))
+		{
+			CommonEruriaImages.Emplace(EruriaImage);
+		}
+
+		if (UTextBlock* EruriaLevelText = Cast<UTextBlock>(Widget->GetChildAt(1)))
+		{
+			CommonEruriaLevelTexts.Emplace(EruriaLevelText);
+		}
+	}
+}
+
+bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, const FAbilityDataTable* AbilityData)
+{
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningPlayer()->GetCharacter());
+	TArray<FGameplayAbilitySpecHandle> SpecHandles;
+	Player->GetAbilitySystemComponent()->FindAllAbilitiesWithTags(SpecHandles, FGameplayTagContainer(TAG_GAS_ABILITY_PART_COMMON));
+	
+	if (SpecHandles.IsEmpty())
+	{
+		ensure(false);
+		return false;
+	}
+	
+	float AbilityLevel = 0.f;
+	for (auto AbilitySpec : SpecHandles)
+	{
+		ULLL_PGA_RewardAbilityBase* RewardAbility = Cast<ULLL_PGA_RewardAbilityBase>(Player->GetAbilitySystemComponent()->FindAbilitySpecFromHandle(AbilitySpec)->GetPrimaryInstance());
+		if (!RewardAbility)
+		{
+			continue;
+		}
+
+		if (RewardAbility->GetAbilityData()->ID == AbilityData->ID)
+		{
+			AbilityLevel = RewardAbility->GetAbilityLevel();
+			break;
+		}
+	}
+
+	// AbilityLevel == 0.f -> RewardAbility == nullptr
+	if (!AbilityLevel)
+	{
+		ensure(false);
+		return false;
+	}
+
+	UMaterialInstanceDynamic* MaterialInstanceDynamic = Image->GetDynamicMaterial();
+	if (!IsValid(MaterialInstanceDynamic))
+	{
+		ensure(false);
+		return false;
+	}
+	
+	FAbilityLevelDisplayHelper AbilityLevelDisplayHelper;
+	
+	TextBlock->SetText(FText::FromString(AbilityLevelDisplayHelper.DisplayText[static_cast<uint32>(AbilityLevel)]));
+	MaterialInstanceDynamic->SetVectorParameterValue(UI_RARITY_COLOR, EruriaRarityColor[static_cast<uint32>(AbilityData->AbilityRank)]);
+	MaterialInstanceDynamic->SetTextureParameterValue(UI_ERURIA_ICON, EruriaIConTextures[static_cast<uint32>(AbilityData->AbilityType)]);
+	return true;
 }

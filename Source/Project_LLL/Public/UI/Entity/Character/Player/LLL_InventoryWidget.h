@@ -29,7 +29,9 @@ public:
 	FORCEINLINE void PlayCloseAnimation() { PlayAnimation(CloseInventory); }
 
 protected:
-	void SetEruriaImage(UImage* Image, UTextBlock* TextBlock, FGameplayTag AbilityPartTag, const FAbilityDataTable* AbilityData);
+	void RegisterInventoryLayout(const UVerticalBox* VerticalBox);
+	
+	bool SetEruriaImage(UImage* Image, UTextBlock* TextBlock, const FAbilityDataTable* AbilityData);
 
 protected:
 	// 임시 데이터이므로 추후 테이블 연결 필요
@@ -64,10 +66,8 @@ protected:
 	TArray<UTextBlock*> CommonEruriaLevelTexts;
 
 	UPROPERTY()
-	TArray<UMaterialInstanceDynamic*> EruriaImageDynamicMaterials;
-
-	UPROPERTY()
 	TArray<FAbilityDataTable> CommonEruriaDataTables;
 	
-	uint32 CurrentEruriaSlot;
+	uint32 CurrentEmptyEruriaSlotIndex;
 };
+

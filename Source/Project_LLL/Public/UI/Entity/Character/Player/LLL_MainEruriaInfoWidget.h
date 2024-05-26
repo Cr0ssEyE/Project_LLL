@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LLL_MainEruriaInfoWidget.generated.h"
 
+enum class EAbilityPart : uint8;
 struct FGameplayTag;
 struct FAbilityDataTable;
 class UTextBlock;
@@ -21,6 +22,7 @@ struct FAbilityLevelDisplayHelper
 
 	FAbilityLevelDisplayHelper()
 	{
+		DisplayText.Emplace("-");
 		DisplayText.Emplace("I");
 		DisplayText.Emplace("II");
 		DisplayText.Emplace("III");
@@ -46,6 +48,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	void SetEruriaInfo(const FAbilityDataTable* AbilityData);
+	void RemoveEruriaInfo(const EAbilityPart AbilityPart);
 	
 protected:
 	void SetEruriaImage(UImage* Image, UTextBlock* TextBlock, FGameplayTag AbilityPartTag, const FAbilityDataTable* AbilityData);
@@ -68,9 +71,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UTextBlock> AttackEruriaLevelText;
 
-	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> AttackEruriaImageDynamicMaterial;
-	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UImage> DashEruriaImage;
@@ -78,18 +78,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UTextBlock> DashEruriaLevelText;
 
-	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> DashEruriaImageDynamicMaterial;
-	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UImage> ChaseEruriaImage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UTextBlock> ChaseEruriaLevelText;
-
-	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> ChaseEruriaImageDynamicMaterial;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
@@ -97,11 +91,4 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UTextBlock> ComboSkillEruriaLevelText;
-
-	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> ComboSkillEruriaImageDynamicMaterial;
-
-protected:
-	uint8 bIsNotGenerateDynamicMaterial : 1;
-	
 };

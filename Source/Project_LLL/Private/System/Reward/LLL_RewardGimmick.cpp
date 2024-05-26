@@ -16,6 +16,7 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
+#include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
 #include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
 
 // Sets default values
@@ -173,8 +174,17 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData)
 void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects)
 {
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ULLL_PlayerUIManager* PlayerUIManager =	Player->GetPlayerUIManager();
 	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
 
+	if (!IsValid(PlayerUIManager) || !IsValid(ASC))
+	{
+		ensure(false);
+		return;
+	}
+	
+	bool IsCommonEffect = true;
+	
 	UE_LOG(LogTemp, Log, TEXT("부여 된 플레이어 이펙트"));
 	for (auto& LoadedEffect : LoadedEffects)
 	{
@@ -192,6 +202,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
 		if (TagContainer.HasTag(TAG_GAS_ABILITY_PART) && !TagContainer.HasTagExact(TAG_GAS_ABILITY_PART_COMMON))
 		{
+			IsCommonEffect = false;
 			TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
 			for (auto EffectHandle : EffectHandles)
 			{
@@ -232,8 +243,11 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	}
 
 	// TODO: UI 관련 상호작용 구현.
-	ULLL_PlayerUIManager* PlayerUIManager =	Player->GetPlayerUIManager();
-	if (IsValid(PlayerUIManager))
+	if (IsCommonEffect)
+	{
+		PlayerUIManager->GetInventoryWidget()->SetEruriaInfo(CurrentAbilityData);
+	}
+	else
 	{
 		PlayerUIManager->GetMainEruriaWidget()->SetEruriaInfo(CurrentAbilityData);
 	}
