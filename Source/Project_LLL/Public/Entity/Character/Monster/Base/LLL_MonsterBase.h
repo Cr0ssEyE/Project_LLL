@@ -44,11 +44,14 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_MonsterAttributeSet> MonsterAttributeSet;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UWidgetComponent> MonsterStatusWidgetComponent;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> MaskMeshComponent;
 
 	FVector StackedKnockBackVelocity;
 	float StackedKnockBackedPower;

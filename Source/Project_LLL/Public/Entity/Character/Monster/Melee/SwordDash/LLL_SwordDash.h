@@ -41,8 +41,14 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UBoxComponent> DashDamageRangeBox;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> SwordMeshComponent;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> LeftShoulderGuardMeshComponent;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> RightShoulderGuardMeshComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDashing : 1;

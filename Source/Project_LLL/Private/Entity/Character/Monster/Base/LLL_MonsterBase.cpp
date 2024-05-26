@@ -47,6 +47,10 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 
 	StackedKnockBackedPower = 0.f;
 	StackedKnockBackVelocity = FVector::Zero();
+
+	MaskMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mask"));
+	MaskMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
+	MaskMeshComponent->SetupAttachment(RootComponent);
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -68,6 +72,10 @@ void ALLL_MonsterBase::BeginPlay()
 	MonsterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
 	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
 	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	MaskMeshComponent->SetStaticMesh(MonsterBaseDataAsset->MaskMesh);
+	MaskMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, MonsterBaseDataAsset->MaskAttachSocketName);
+	MaskMeshComponent->SetRelativeTransform(MonsterBaseDataAsset->MaskTransform);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

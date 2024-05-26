@@ -18,18 +18,27 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "대시 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> DashDamageEffect;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Sword", DisplayName = "메시")
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "소드 메시")
 	TObjectPtr<UStaticMesh> SwordMesh;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Sword", DisplayName = "부착 소켓 이름")
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "소드 부착 소켓 이름")
 	FName SwordAttachSocketName;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Sword", DisplayName = "위치")
-	FVector SwordLocation;
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "소드 트랜스폼")
+	FTransform SwordTransform;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Sword", DisplayName = "회전")
-	FRotator SwordRotation;
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 메시")
+	TObjectPtr<UStaticMesh> ShoulderGuardMesh;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Sword", DisplayName = "크기")
-	FVector SwordScale;
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 부착 소켓 이름 (왼쪽)")
+	FName LeftShoulderGuardAttachSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 부착 소켓 이름 (오른쪽)")
+	FName RightShoulderGuardAttachSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 트랜스폼 (왼쪽)")
+	FTransform LeftShoulderGuardTransform;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 트랜스폼 (오른쪽)")
+	FTransform RightShoulderGuardTransform;
 };
