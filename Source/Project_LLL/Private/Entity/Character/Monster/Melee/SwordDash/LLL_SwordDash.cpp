@@ -31,7 +31,6 @@ ALLL_SwordDash::ALLL_SwordDash()
 	SwordMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	SwordMeshComponent->SetupAttachment(RootComponent);
 
-	// Todo : 어깨 갑옷 붙인다고 붙여봤는데 너무 부자연스러워서 모델링에서 붙이는게 낫지 않을까 여쭤보기
 	ShoulderGuardMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShoulderGuard"));
 	ShoulderGuardMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	ShoulderGuardMeshComponent->SetupAttachment(RootComponent);

@@ -8,7 +8,7 @@
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ULLL_TurnToPlayer_BTTaskNode::ULLL_TurnToPlayer_BTTaskNode()
 {
@@ -25,8 +25,7 @@ EBTNodeResult::Type ULLL_TurnToPlayer_BTTaskNode::ExecuteTask(UBehaviorTreeCompo
 	{
 		const FVector Direction = PlayerBase->GetActorLocation() - MonsterBase->GetActorLocation();
 		const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-		const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(MonsterBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-		const float TurnSpeed = MonsterAttributeSet->GetTurnSpeed();
+		const float TurnSpeed = MonsterBase->GetCharacterMovement()->RotationRate.Yaw;
 		MonsterBase->SetActorRotation(FMath::RInterpTo(MonsterBase->GetActorRotation(), Rotation, GetWorld()->GetDeltaSeconds(), TurnSpeed));
 
 		return EBTNodeResult::Succeeded;
