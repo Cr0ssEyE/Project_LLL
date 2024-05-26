@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
-#include "LLL_PGA_PhysicalProof.generated.h"
+#include "LLL_PGA_ThreateningDeath.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PGA_PhysicalProof : public ULLL_PGA_RewardAbilityBase
+class PROJECT_LLL_API ULLL_PGA_ThreateningDeath : public ULLL_PGA_RewardAbilityBase
 {
 	GENERATED_BODY()
 

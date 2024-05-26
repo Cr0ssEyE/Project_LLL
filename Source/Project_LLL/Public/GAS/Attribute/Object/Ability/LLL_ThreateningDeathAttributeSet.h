@@ -3,19 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Attribute/Object/Skill/Base/LLL_SkillObjectAttributeSet.h"
-#include "LLL_PhysicalProofAttributeSet.generated.h"
+#include "Base/LLL_AbilityObjectAttributeSet.h"
+#include "LLL_ThreateningDeathAttributeSet.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PhysicalProofAttributeSet : public ULLL_SkillObjectAttributeSet
+class PROJECT_LLL_API ULLL_ThreateningDeathAttributeSet : public ULLL_AbilityObjectAttributeSet
 {
 	GENERATED_BODY()
 
 public:
-	ATTRIBUTE_ACCESSORS(ULLL_PhysicalProofAttributeSet, PushPower);
+	ATTRIBUTE_ACCESSORS(ULLL_ThreateningDeathAttributeSet, PushPower);
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
