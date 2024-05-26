@@ -115,7 +115,6 @@ void ALLL_MonsterSpawner::SpawnMonster()
 						{
 							MonsterBase->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::MonsterDeadHandle);
 							Monsters.Emplace(MonsterBase);
-							UE_LOG(LogTemp, Log, TEXT("%f"), MonsterBase->CustomTimeDilation)
 						
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 							if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
