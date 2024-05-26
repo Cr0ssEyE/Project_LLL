@@ -7,7 +7,6 @@
 #include "Entity/Character/Monster/Ranged/Base/LLL_RangedMonster.h"
 #include "LLL_StaffBasic.generated.h"
 
-class ULLL_StaffBasicAttributeSet;
 /**
  * 
  */
@@ -24,10 +23,4 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_StaffBasicDataAsset> StaffBasicDataAsset;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_StaffBasicAttributeSet> StaffBasicAttributeSet;
-
-	// Todo : 어빌리티 작업이 끝난 후 커브 데이터로 옮기기
-	TSubclassOf<UGameplayEffect> InitEffect;
 };

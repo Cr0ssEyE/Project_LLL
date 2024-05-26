@@ -28,12 +28,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "GAS/ASC/LLL_PlayerASC.h"
+#include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 #include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
+	ASC = CreateDefaultSubobject<ULLL_PlayerASC>(TEXT("PlayerASC"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
@@ -42,6 +45,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	
 	PlayerCharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
 	SkillAttributeSet = CreateDefaultSubobject<ULLL_PlayerSkillAttributeSet>(TEXT("SkillAttributeSet"));
+	AbnormalStatusAttributeSet = CreateDefaultSubobject<ULLL_AbnormalStatusAttributeSet>(TEXT("AbnormalStatusAttributeSet"));
+	
 	ChaseActionGaugeWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("ChaseActionGaugeWidgetComponent"));
 
 	ChaseActionGaugeWidgetComponent->SetupAttachment(RootComponent);
@@ -74,8 +79,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ASC->AddSpawnedAttribute(PlayerCharacterAttributeSet);
 
 	if (IsValid(CharacterAnimInstance))
 	{
@@ -117,8 +120,6 @@ void ALLL_PlayerBase::BeginPlay()
 				ASC->GiveAbility(SkillSpec);
 			}
 		}
-
-		ASC->AddSpawnedAttribute(SkillAttributeSet);
 	}
 
 	ULLL_PlayerChaseActionWidget* ChaseActionWidget = PlayerUIManager->GetChaseActionWidget();
@@ -373,6 +374,11 @@ void ALLL_PlayerBase::ChaseAction(const FInputActionValue& Value, EAbilityInputN
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
+	if (CastChecked<ULLL_GameInstance>(GetGameInstance())->CheckCustomTimeDilationIsChanging())
+	{
+		return;
+	}
+	
 	const int32 InputID = static_cast<int32>(InputName);
 	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
@@ -475,15 +481,14 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
 }
 
-void ALLL_PlayerBase::Damaged()
+void ALLL_PlayerBase::Damaged(bool IsDOT)
 {
-	Super::Damaged();
-
-	if (IsValid(PlayerDataAsset->DamagedAnimMontage))
+	Super::Damaged(IsDOT);
+	
+	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT)
 	{
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
 	}
-	
 }
 
 void ALLL_PlayerBase::Dead()

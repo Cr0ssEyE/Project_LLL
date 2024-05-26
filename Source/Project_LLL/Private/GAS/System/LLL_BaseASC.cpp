@@ -18,11 +18,6 @@ ULLL_BaseASC::ULLL_BaseASC()
 void ULLL_BaseASC::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (Cast<ILLL_KnockBackInterface>(GetAvatarActor()))
-	{
-		RegisterGameplayTagEvent(TAG_GAS_MONSTER_FALLABLE).AddUObject(this, &ULLL_BaseASC::OnFallableTagAdded);
-	}
 }
 
 void ULLL_BaseASC::ReceiveTargetData(const UGameplayAbility* OwnerAbility, const FGameplayAbilityTargetDataHandle& TargetDataHandle) const
@@ -40,17 +35,6 @@ void ULLL_BaseASC::ReduceCoolDownEffectDuration(const FActiveGameplayEffectHandl
 	if (ActiveGameplayEffectHandle.IsValid())
 	{
 		ActiveGameplayEffects.ModifyActiveEffectStartTime(ActiveGameplayEffectHandle, -ReduceAmount);
-	}
-}
-
-void ULLL_BaseASC::OnFallableTagAdded(const FGameplayTag Tag, int32 count)
-{
-	if (Tag == TAG_GAS_MONSTER_FALLABLE && count > 0 && Cast<ILLL_KnockBackInterface>(GetAvatarActor()))
-	{
-		if (TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_FALLABLE)))
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("낙하 상태로 전환 %s"), *Tag.GetTagName().ToString()));
-		}
 	}
 }
 

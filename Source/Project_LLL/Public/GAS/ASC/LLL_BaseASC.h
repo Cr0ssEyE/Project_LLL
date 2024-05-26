@@ -31,7 +31,4 @@ public:
 	
 	void ReduceCoolDownEffectDuration(const FActiveGameplayEffectHandle& ActiveGameplayEffectHandle, float ReduceAmount);
 	
-protected:
-	virtual void OnFallableTagAdded(const FGameplayTag Tag, int32 count);
-
 };

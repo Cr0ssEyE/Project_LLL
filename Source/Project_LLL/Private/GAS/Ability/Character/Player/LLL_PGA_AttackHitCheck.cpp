@@ -38,6 +38,15 @@ void ULLL_PGA_AttackHitCheck::EndAbility(const FGameplayAbilitySpecHandle Handle
 
 void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
+	// 디버그 찍어보니 이상해서 살펴보니 이거 실수로 빠졌나봐요
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]()
+	{
+		if(IsValid(TraceTask) && !bIsAbilityEnding)
+		{
+			TraceTask->Activate();
+		}
+	}));
+	
 	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{
 		return;
@@ -48,7 +57,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 
 	if (!CheckHitCountEffects.IsEmpty())
 	{
-		for (auto HitCountEffect : CheckHitCountEffects)
+		for (const auto HitCountEffect : CheckHitCountEffects)
 		{
 			const FGameplayEffectSpecHandle HitCountEffectSpecHandle = MakeOutgoingGameplayEffectSpec(HitCountEffect, CurrentEventData.EventMagnitude);
 			if (!HitCountEffectSpecHandle.IsValid())
@@ -72,6 +81,11 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 		
 		Cast<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked())->ReceiveTargetData(this, TargetDataHandle);
 	}));
+
+	FGameplayEventData PayloadData;
+	// 아래와 같이 복수의 데이터 전달 가능
+	PayloadData.TargetData = TargetDataHandle;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
 }
 
 void ULLL_PGA_AttackHitCheck::OnTraceEndCallBack(FGameplayEventData EventData)

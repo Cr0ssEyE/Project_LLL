@@ -96,7 +96,13 @@ public:
 		}
 		
 		float FallableCheckPower = 500.f;
-		if (const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(World->GetFirstPlayerController()->GetCharacter()))
+		ACharacter* Character = World->GetFirstPlayerController()->GetCharacter();
+		if (!IsValid(Character))
+		{
+			return false;
+		}
+		
+		if (const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(Character))
 		{
 			const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
