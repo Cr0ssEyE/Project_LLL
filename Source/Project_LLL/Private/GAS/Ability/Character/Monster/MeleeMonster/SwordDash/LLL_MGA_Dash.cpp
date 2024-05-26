@@ -9,7 +9,7 @@
 #include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDash.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Character/Monster/MeleeMonster/SwordDash/LLL_SwordDashAttributeSet.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "Interface/LLL_DashMonsterInterface.h"
 #include "Util/LLL_ExecuteCueHelper.h"
 
@@ -21,12 +21,12 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_DASH);
 	Monster->GetMovementComponent()->Velocity = FVector::Zero();
 	
-	const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 
 	FHitResult StaticResult;
 	FHitResult PlayerResult;
 	const FVector SweepStartLocation = Monster->GetActorLocation();
-	const FVector SweepEndLocation = SweepStartLocation + Monster->GetActorForwardVector() * SwordDashAttributeSet->GetDashDistance();
+	const FVector SweepEndLocation = SweepStartLocation + Monster->GetActorForwardVector() * MonsterAttributeSet->GetMonsterData1();
 	const FQuat SweepQuat = Monster->GetActorQuat();
 	constexpr ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
 	constexpr ECollisionChannel PlayerTraceChannel = ECC_PLAYER_CHECK;
@@ -59,6 +59,8 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			const float PlayerDistance = Monster->GetDistanceTo(PlayerResult.GetActor());
 
 			DashLocation = (StaticDistance <= PlayerDistance) ? StaticResult.Location : PlayerResult.Location;
+
+			// Todo : 최소 돌진 거리 처리 로직 구현 필요
 		}
 		else
 		{
@@ -71,9 +73,9 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	}
 
 	ILLL_DashMonsterInterface* DashMonster = CastChecked<ILLL_DashMonsterInterface>(Monster);
-	DashMonster->SetDash(true);
+	DashMonster->SetDashing(true);
 
-	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, 0.1f, nullptr, nullptr);
+	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, 0.1f / Monster->CustomTimeDilation, nullptr, nullptr);
 	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &ULLL_MGA_Dash::OnCompleteCallBack);
 	MoveToLocationTask->ReadyForActivation();
 
@@ -86,7 +88,7 @@ void ULLL_MGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 
 	ILLL_DashMonsterInterface* DashMonster = CastChecked<ILLL_DashMonsterInterface>(Monster);
-	DashMonster->SetDash(false);
+	DashMonster->SetDashing(false);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

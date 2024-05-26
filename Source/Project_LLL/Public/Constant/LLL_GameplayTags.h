@@ -22,6 +22,7 @@
 #define TAG_GAS_ATTACK_HIT_COUNT FGameplayTag::RequestGameplayTag(FName("Character.Player.Event.ReceiveHitCount"))
 #define TAG_GAS_ATTACK_HIT_CHECK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck"))
 #define TAG_GAS_ATTACK_HIT_CHECK_COMPLETE FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.CheckComplete"))
+#define TAG_GAS_ATTACK_HIT_CHECK_SUCCESS FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.Success"))
 
 // 플레이어 행동 관련 게임플레이 태그
 #define TAG_GAS_PLAYER_DASH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash"))
@@ -33,6 +34,7 @@
 #define TAG_GAS_PLAYER_THROW_TRIGGERED FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.ChaserThrow.Trigger"))
 
 // 플레이어 상태 관련 게임플레이 태그
+#define TAG_GAS_PLAYER_STATE_CHASE_COOLDOWN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserCoolDown"))
 #define TAG_GAS_PLAYER_STATE_CHASE_THREW FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserThrew"))
 #define TAG_GAS_PLAYER_STATE_CHASE_RETURN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserReturned"))
 #define TAG_GAS_PLAYER_STATE_INPUT_CHECK_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.State.InputCheck.BaseAttack"))

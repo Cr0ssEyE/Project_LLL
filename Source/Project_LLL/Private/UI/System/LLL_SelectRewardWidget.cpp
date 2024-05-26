@@ -27,6 +27,12 @@ void ULLL_SelectRewardWidget::NativeConstruct()
 
 void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDataArray)
 {
+	if (AbilityDataArray.IsEmpty())
+	{
+		ensure(false);
+		return;
+	}
+	
 	const UDataTable* StringDataTable = GetGameInstance<ULLL_GameInstance>()->GetStringDataTable();
 
 	TArray<TTuple<FString, FString>> WidgetInfoTexts;

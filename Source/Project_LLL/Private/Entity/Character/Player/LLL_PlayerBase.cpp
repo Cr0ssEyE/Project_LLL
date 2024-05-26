@@ -80,8 +80,6 @@ void ALLL_PlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ASC->AddSpawnedAttribute(PlayerCharacterAttributeSet);
-
 	if (IsValid(CharacterAnimInstance))
 	{
 		PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(CharacterAnimInstance);
@@ -90,19 +88,16 @@ void ALLL_PlayerBase::BeginPlay()
 
 	if (IsValid(CameraDataAsset))
 	{
-		SpringArm->TargetArmLength = CameraDataAsset->SpringArmDistance;
 		Camera->SetProjectionMode(CameraDataAsset->ProjectionType);
 		
 		if (Camera->ProjectionMode == ECameraProjectionMode::Orthographic)
 		{
 			Camera->OrthoWidth = CameraDataAsset->CameraDistance;
-			Camera->SetAutoCalculateOrthoPlanes(false);
-			Camera->SetAutoPlaneShift(false);
-			Camera->SetOrthoNearClipPlane(CameraDataAsset->OrthographicNearClipDistance);
-			Camera->SetOrthoFarClipPlane(CameraDataAsset->OrthographicFarClipDistance);
+			Camera->SetAutoPlaneShift(CameraDataAsset->AutoPlaneShift);
 		}
 		else
 		{
+			SpringArm->TargetArmLength = CameraDataAsset->SpringArmDistance;
 			Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
 		}
 		
@@ -125,9 +120,6 @@ void ALLL_PlayerBase::BeginPlay()
 				ASC->GiveAbility(SkillSpec);
 			}
 		}
-
-		ASC->AddSpawnedAttribute(SkillAttributeSet);
-		ASC->AddSpawnedAttribute(AbnormalStatusAttributeSet);
 	}
 
 	ULLL_PlayerChaseActionWidget* ChaseActionWidget = PlayerUIManager->GetChaseActionWidget();
@@ -136,6 +128,7 @@ void ALLL_PlayerBase::BeginPlay()
 	ChaseActionGaugeWidgetComponent->SetRelativeLocation(PlayerDataAsset->ChaseActionGaugeLocation);
 	ChaseActionGaugeWidgetComponent->SetDrawSize(PlayerDataAsset->ChaseActionGaugeSize);
 	ChaseActionGaugeWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ChaseActionGaugeWidgetComponent->SetTickWhenOffscreen(true);
 	ChaseActionWidget->SetCircleProgressBarValue(1.0f);
 }
 
@@ -381,6 +374,11 @@ void ALLL_PlayerBase::ChaseAction(const FInputActionValue& Value, EAbilityInputN
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
+	if (CastChecked<ULLL_GameInstance>(GetGameInstance())->CheckCustomTimeDilationIsChanging())
+	{
+		return;
+	}
+	
 	const int32 InputID = static_cast<int32>(InputName);
 	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{

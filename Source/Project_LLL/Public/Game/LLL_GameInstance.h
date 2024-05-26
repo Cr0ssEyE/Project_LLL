@@ -31,9 +31,13 @@ public:
 	FORCEINLINE TArray<FRewardDataTable> GetRewardDataTable() const { return RewardData; }
 	FORCEINLINE const UDataTable* GetStringDataTable() const { return StringDataTable; }
 	FORCEINLINE TArray<FStringDataTable> GetStringDataTablesData() const { return StringData; }
+
+	FORCEINLINE bool CheckCustomTimeDilationIsChanging() const { return bCustomTimeDilationIsChanging; }
+	void SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation);
 	
-	// 마테리얼 파라미터 컬렉션 
+	// 머티리얼 파라미터 컬렉션 
 protected:
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> PlayerMPC;
 
@@ -72,4 +76,13 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TArray<FStringDataTable> StringData;
 	
+protected:
+	UPROPERTY(VisibleAnywhere)
+	float CustomTimeDilation;
+
+	UPROPERTY(EditAnywhere)
+	float CustomTimeDilationInterpSpeed;
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 bCustomTimeDilationIsChanging : 1;
 };

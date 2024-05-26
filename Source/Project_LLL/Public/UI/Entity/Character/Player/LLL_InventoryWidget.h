@@ -58,13 +58,13 @@ protected:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TArray<UImage> CommonEruriaImages;
+	TArray<UImage*> CommonEruriaImages;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TArray<UTextBlock> CommonEruriaLevelTexts;
+	TArray<UTextBlock*> CommonEruriaLevelTexts;
 
 	UPROPERTY()
-	TArray<UMaterialInstanceDynamic> EruriaImageDynamicMaterials;
+	TArray<UMaterialInstanceDynamic*> EruriaImageDynamicMaterials;
 
 	UPROPERTY()
 	TArray<FAbilityDataTable> CommonEruriaDataTables;

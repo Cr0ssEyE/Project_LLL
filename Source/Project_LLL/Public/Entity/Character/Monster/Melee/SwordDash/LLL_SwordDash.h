@@ -8,7 +8,6 @@
 #include "Entity/Character/Monster/Melee/Base/LLL_MeleeMonster.h"
 #include "LLL_SwordDash.generated.h"
 
-class ULLL_SwordDashAttributeSet;
 class UBoxComponent;
 /**
  * 
@@ -24,10 +23,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void InitAttributeSet() override;
+
+protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 public:
-	FORCEINLINE virtual void SetDash(bool IsDashing) override { bIsDashing = IsDashing; }
+	FORCEINLINE virtual void SetDashing(bool IsDashing) override { bIsDashing = IsDashing; }
 	FORCEINLINE virtual bool IsDashing() const override { return bIsDashing; }
 	
 	virtual void Dash() const override;
@@ -37,16 +39,17 @@ protected:
 	TObjectPtr<const ULLL_SwordDashDataAsset> SwordDashDataAsset;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<ULLL_SwordDashAttributeSet> SwordDashAttributeSet;
-
-	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UBoxComponent> DashDamageRangeBox;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> SwordMeshComponent;
-
-	uint8 bIsDashing : 1;
 	
-	// Todo : 어빌리티 작업이 끝난 후 커브 데이터로 옮기기
-	TSubclassOf<UGameplayEffect> InitEffect;
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> LeftShoulderGuardMeshComponent;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> ShoulderGuardMeshComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsDashing : 1;
 };

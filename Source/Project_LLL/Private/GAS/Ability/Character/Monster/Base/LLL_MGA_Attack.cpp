@@ -17,8 +17,19 @@ void ULLL_MGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 		return;
 	}
 
-	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackMontage, 1.0f, SECTION_ATTACK);
+	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackMontage, 1.0f);
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_MGA_Attack::OnCompleteCallBack);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_MGA_Attack::OnInterruptedCallBack);
 	PlayMontageTask->ReadyForActivation();
+
+	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+	Monster->SetAttacking(true);
+}
+
+void ULLL_MGA_Attack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+	Monster->SetAttacking(false);
+	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

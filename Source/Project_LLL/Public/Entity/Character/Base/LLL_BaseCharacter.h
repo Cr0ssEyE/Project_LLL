@@ -14,7 +14,6 @@
 class UFMODAudioComponent;
 class UWidgetComponent;
 class ULLL_BaseCharacterUIManager;
-class ULLL_CharacterAttributeSetBase;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
@@ -32,7 +31,6 @@ class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySys
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	ALLL_BaseCharacter();
 
 	// 외부 접근용 함수
@@ -41,6 +39,9 @@ public:
 	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
+	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
+	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
+	FORCEINLINE float GetCharacterLevel() const { return Level; }
 
 	// 플레이어
 protected:
@@ -52,7 +53,6 @@ protected:
 	virtual void InitAttributeSet();
 	
 protected:
-	virtual void Tick(float DeltaTime) override;
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	
 	// 캐릭터 상태 설정
@@ -84,6 +84,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
 
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsAttacking : 1;
+
 	UPROPERTY(EditAnywhere)
 	int32 Level;
 
@@ -105,14 +108,4 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "FMOD")
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	// 디버그용 함수
-public:
-	FORCEINLINE void SetCharacterDead() { bIsDead = true; }
-	
-	// 디버그용 변수
-public:
-	uint8 bIsSpawned : 1;
-#endif
 };

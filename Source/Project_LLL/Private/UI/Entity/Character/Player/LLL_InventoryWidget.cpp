@@ -10,10 +10,10 @@ void ULLL_InventoryWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
-	for (auto Widget : FirstVerticalBox->GetAllChildren())
-	{
-		
-	}
+	// for (auto Widget : FirstVerticalBox->GetAllChildren())
+	// {
+	// 	
+	// }
 }
 
 void ULLL_InventoryWidget::SetEruriaInfo(const FAbilityDataTable* AbilityData)

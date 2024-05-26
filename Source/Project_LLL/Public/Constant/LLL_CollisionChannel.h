@@ -38,3 +38,4 @@
 
 // 감지용 콜리전 프로필
 #define CP_BULLET_TIME_INFLUENCED TEXT("BulletTimeInfluencedActor")
+#define CP_MAP_SOUND_MANAGER TEXT("MapSoundManager")

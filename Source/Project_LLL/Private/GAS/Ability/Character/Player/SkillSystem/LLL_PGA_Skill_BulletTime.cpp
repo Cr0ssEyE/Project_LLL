@@ -11,7 +11,6 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/ASC/LLL_BaseASC.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 #include "Interface/LLL_KnockBackInterface.h"
 
@@ -83,8 +82,8 @@ void ULLL_PGA_Skill_BulletTime::EndAbility(const FGameplayAbilitySpecHandle Hand
 void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 {
 	TArray<FHitResult> HitResults;
-	FCollisionQueryParams Params;
-	FVector SweepLocation = GetCurrentActorInfo()->AvatarActor->GetActorLocation();
+	const FCollisionQueryParams Params;
+	const FVector SweepLocation = GetCurrentActorInfo()->AvatarActor->GetActorLocation();
 
 	// 귀찮아서 매직넘버 처리.
 	GetWorld()->SweepMultiByProfile(
@@ -112,11 +111,14 @@ void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 		return;
 	}
 
+	TArray<AActor*> HitActors;
 	for (auto HitResult : HitResults)
 	{
-		BulletTimeEffectedActors.Emplace(HitResult.GetActor());
-		HitResult.GetActor()->CustomTimeDilation = WorldDecelerationRate;
+		AActor* HitActor = HitResult.GetActor();
+		BulletTimeEffectedActors.Emplace(HitActor);
+		HitActors.Emplace(HitActor);
 	}
+	CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance())->SetActorsCustomTimeDilationRecursive(HitActors, WorldDecelerationRate);
 }
 
 void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
@@ -165,23 +167,24 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 	FGameplayAbilityTargetDataHandle TargetDataHandle;
 	TargetDataHandle.Add(ActorArray);
 
-	ULLL_BaseASC* LLLASC = CastChecked<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked());
-	if (LLLASC->TryActivateAbilitiesByTag(FGameplayTagContainer(KnockBackCollideCheckTag)))
+	if (ULLL_BaseASC* BaseAsc = CastChecked<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked()); BaseAsc->TryActivateAbilitiesByTag(FGameplayTagContainer(KnockBackCollideCheckTag)))
 	{
-		LLLASC->ReceiveTargetData(this, TargetDataHandle);
+		BaseAsc->ReceiveTargetData(this, TargetDataHandle);
 	}
-	
+
+	TArray<AActor*> EffectedActors;
 	for (auto Actor : BulletTimeEffectedActors)
 	{
 		if (Actor.IsValid())
 		{
-			Actor.Get()->CustomTimeDilation = 1.0f;
+			EffectedActors.Emplace(Actor.Get());
 			if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor.Get()))
 			{
 				KnockBackActor->ApplyStackedKnockBack();
 			}
 		}
 	}
+	CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance())->SetActorsCustomTimeDilationRecursive(EffectedActors, 1.0f);
 	
 	BulletTimeEffectedActors.Empty();
 	
