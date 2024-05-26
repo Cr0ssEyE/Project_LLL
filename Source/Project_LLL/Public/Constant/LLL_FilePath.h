@@ -8,7 +8,7 @@
 #define PATH_DUMMY_TABLE TEXT("/Game/DataTable/AttributeInitializer/CT_TableUpdateOnlyData.CT_TableUpdateOnlyData")
 
 // 어빌리티 관련
-#define PATH_ABILITY_DATA_TABLE TEXT("/Script/Engine.DataTable'/Game/DataTable/AbilityDataTable.AbilityDataTable'")
+#define PATH_ABILITY_DATA_TABLE TEXT("/Script/Engine.DataTable'/Game/DataTable/DT_AbilityData.DT_AbilityData'")
 #define PATH_PLAYER_EFFECTS TEXT("PlayerEffects")
 #define PATH_MONSTER_EFFECTS TEXT("MonsterEffects")
 #define PATH_OBJECT_EFFECTS TEXT("ObjectEffects")

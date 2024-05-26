@@ -47,13 +47,13 @@ protected:
 	TObjectPtr<UWidgetAnimation> CloseInventory;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidgetAnim))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
 	TObjectPtr<UVerticalBox> FirstVerticalBox;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidgetAnim))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
 	TObjectPtr<UVerticalBox> SecondVerticalBox;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidgetAnim))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidget))
 	TObjectPtr<UVerticalBox> ThirdVerticalBox;
 
 protected:
