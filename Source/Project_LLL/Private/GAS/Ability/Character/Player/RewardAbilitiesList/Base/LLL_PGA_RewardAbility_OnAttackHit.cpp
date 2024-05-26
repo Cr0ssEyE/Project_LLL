@@ -34,10 +34,10 @@ void ULLL_PGA_RewardAbility_OnAttackHit::OnTraceResultCallBack(const FGameplayAb
 		return;
 	}
 
-	ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
-	FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
-	
-	float MagnitudeValue = (AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel()) / static_cast<uint32>(AbilityData->AbilityValueType);
+	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
+	const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
+
+	const float MagnitudeValue = (AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel()) / static_cast<uint32>(AbilityData->AbilityValueType);
 	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, MagnitudeValue);
 	
 	if (AbilityTags.HasTag(TAG_GAS_ABNORMAL_STATUS))
@@ -57,6 +57,5 @@ void ULLL_PGA_RewardAbility_OnAttackHit::OnTraceResultCallBack(const FGameplayAb
 
 void ULLL_PGA_RewardAbility_OnAttackHit::OnTraceEndCallBack(FGameplayEventData EventData)
 {
-	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

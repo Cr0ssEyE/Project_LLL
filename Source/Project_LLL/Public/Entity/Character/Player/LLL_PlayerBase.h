@@ -42,6 +42,9 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitAttributeSet() override;
+
+	virtual void Damaged(bool IsDOT = false) override;
+	virtual void Dead() override;
 	
 	// 외부 접근용
 public:
@@ -130,12 +133,9 @@ private:
 	FRotator MouseDirectionRotator;
 	
 	float ToCursorRotationMultiplyValue;
-	
+
 	// 상태 관련 함수
 protected:
-	virtual void Damaged(bool IsDOT = false) override;
-	virtual void Dead() override;
-
 	UFUNCTION()
 	void DeadMotionEndedHandle();
 

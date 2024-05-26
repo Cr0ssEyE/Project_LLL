@@ -43,42 +43,13 @@ bool ULLL_CharacterAttributeSetBase::PreGameplayEffectExecute(FGameplayEffectMod
 
 void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
-	Super::PostGameplayEffectExecute(Data);
-
-	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
-	bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
-	if(Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
+	const ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
+	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
-		if(GetCurrentShield() > 0.f)
-		{
-			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
-		}
-		else
-		{
-			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-		}
-		SetReceiveDamage(0.f);
+		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
+		Character->TakeDamageDelegate.Broadcast(DOT);
 
-		ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
-		if(GetCurrentShield() > 0)
-		{
-			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
-		}
-		else
-		{
-			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-
-			if(GetCurrentHealth() == 0)
-			{
-				Character->Dead();
-			}
-			else
-			{
-				Character->Damaged(DOT);
-			}
-		}
-		OwnerCharacter->TakeDamageDelegate.Broadcast(DOT);
-		
+		//05/11 조강건 코드리뷰 중 주석 추가
 		//어빌리티에게 피해를 입힌 대상을 전달하는 방법. TryActivate가 아닌 SendGameplayEvent라 Ability Triggers에 태그 할당 필요
 		FGameplayEventData PayloadData;
 		AActor* Instigator = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
@@ -88,7 +59,11 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 		}
 		PayloadData.Instigator = Instigator;
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
+
+		SetReceiveDamage(0.f);
 	}
-	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
+	Character->UpdateWidgetDelegate.Broadcast();
+
+	Super::PostGameplayEffectExecute(Data);
 }
 

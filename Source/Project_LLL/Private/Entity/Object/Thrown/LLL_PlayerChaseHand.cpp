@@ -61,6 +61,8 @@ void ALLL_PlayerChaseHand::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ThrownObjectAttributeSet = PlayerChaseHandAttributeSet;
+	
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, 1.f, true);
 }
 

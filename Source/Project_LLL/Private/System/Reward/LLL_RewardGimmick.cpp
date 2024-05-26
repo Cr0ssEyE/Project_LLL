@@ -144,7 +144,7 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData)
 		if(ProtoGameInstance->CheckObjectActivateDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange,
-				FString(TEXT("버튼1 : ")).
+				FString(TEXT("버튼 : ")).
 				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityType))).
 				Append(TEXT(" / ")).
 				Append(StaticEnum<EAbilityPart>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityPart))).
