@@ -30,5 +30,13 @@ void ULLL_BaseASC::ReceiveTargetData(const UGameplayAbility* OwnerAbility, const
 	}
 }
 
+void ULLL_BaseASC::ReduceCoolDownEffectDuration(const FActiveGameplayEffectHandle& ActiveGameplayEffectHandle, float ReduceAmount)
+{
+	if (ActiveGameplayEffectHandle.IsValid())
+	{
+		ActiveGameplayEffects.ModifyActiveEffectStartTime(ActiveGameplayEffectHandle, -ReduceAmount);
+	}
+}
+
 
 

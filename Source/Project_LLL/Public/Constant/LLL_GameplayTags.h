@@ -34,6 +34,7 @@
 #define TAG_GAS_PLAYER_THROW_TRIGGERED FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.ChaserThrow.Trigger"))
 
 // 플레이어 상태 관련 게임플레이 태그
+#define TAG_GAS_PLAYER_STATE_CHASE_COOLDOWN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserCoolDown"))
 #define TAG_GAS_PLAYER_STATE_CHASE_THREW FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserThrew"))
 #define TAG_GAS_PLAYER_STATE_CHASE_RETURN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserReturned"))
 #define TAG_GAS_PLAYER_STATE_INPUT_CHECK_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.State.InputCheck.BaseAttack"))

@@ -72,6 +72,8 @@ void ALLL_MonsterBase::BeginPlay()
 	MonsterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
 	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
 	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MonsterStatusWidgetComponent->SetTickWhenOffscreen(true);
+	
 
 	MaskMeshComponent->SetStaticMesh(MonsterBaseDataAsset->MaskMesh);
 	MaskMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, MonsterBaseDataAsset->MaskAttachSocketName);
