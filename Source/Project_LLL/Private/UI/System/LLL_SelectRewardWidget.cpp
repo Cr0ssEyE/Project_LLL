@@ -10,14 +10,17 @@ void ULLL_SelectRewardWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	ensure(RewardButton1);
-	RewardButton1->OnClicked.AddDynamic(this, &ULLL_SelectRewardWidget::CheckButton);
+	RewardButton1->OnClicked.AddDynamic(this, &ULLL_SelectRewardWidget::PlayRewardOneSelectAnimation);
+	RewardButton1->OnHovered.AddDynamic(this, &ULLL_SelectRewardWidget::PlayRewardOneHoverAnimation);
+	RewardButton1->OnUnhovered.AddDynamic(this, &ULLL_SelectRewardWidget::PlayRewardOneUnHoverAnimation);
 	
-	ensure(RewardButton2);
-	RewardButton2->OnClicked.AddDynamic(this, &ULLL_SelectRewardWidget::CheckButton);
+	RewardButton2->OnClicked.AddDynamic(this, &ULLL_SelectRewardWidget::PlayRewardTwoSelectAnimation);
+	RewardButton2->OnHovered.AddDynamic(this, &ULLL_SelectRewardWidget::PlayRewardTwoHoverAnimation);
+	RewardButton2->OnUnhovered.AddDynamic(this, &ULLL_SelectRewardWidget::PlayRewardTwoUnHoverAnimation);
 	
-	ensure(RewardButton3);
-	RewardButton3->OnClicked.AddDynamic(this, &ULLL_SelectRewardWidget::CheckButton);
+	RewardButton3->OnClicked.AddDynamic(this, &ULLL_SelectRewardWidget::PlayRewardThreeSelectAnimation);
+	RewardButton3->OnHovered.AddDynamic(this, &ULLL_SelectRewardWidget::PlayRewardThreeHoverAnimation);
+	RewardButton3->OnUnhovered.AddDynamic(this, &ULLL_SelectRewardWidget::PlayRewardThreeUnHoverAnimation);
 }
 
 void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDataArray)
@@ -43,21 +46,17 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDa
 	
 	RewardNameText3->SetText(FText::FromString(WidgetInfoTexts[2].Key));
 	RewardInfoText3->SetText(FText::FromString(WidgetInfoTexts[2].Value));
+
+	SetFocus();
 }
 
-void ULLL_SelectRewardWidget::CheckButton()
+void ULLL_SelectRewardWidget::OnAnimationFinished_Implementation(const UWidgetAnimation* Animation)
 {
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-	{
-		if(ProtoGameInstance->CheckObjectActivateDebug())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString::Printf(TEXT("보상 버튼 입력")));
-		}
-	}
-#endif
-	SetIsEnabled(false);
-	SetVisibility(ESlateVisibility::Hidden);
+	Super::OnAnimationFinished_Implementation(Animation);
 
-	//버튼 클릭 시 이펙트 및 애니 재생
+	if (Animation == RewardOneSelect || Animation == RewardTwoSelect || Animation == RewardThreeSelect)
+	{
+		SetIsEnabled(false);
+		SetVisibility(ESlateVisibility::Hidden);
+	}
 }
