@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "Interface/LLL_EntityInterface.h"
+#include "Interface/LLL_FModInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
 class UFMODAudioComponent;
@@ -19,14 +20,14 @@ class UAbilitySystemComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*, Character);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOtherActorCollidedDelegate, AActor*, SelfActor, AActor*, OtherActor);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTakeDamageDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTakeDamageDelegate, bool, IsDOT);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface, public ILLL_EntityInterface
+class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface, public ILLL_EntityInterface, public ILLL_FModInterface
 {
 	GENERATED_BODY()
 
@@ -39,7 +40,7 @@ public:
 	FORCEINLINE TObjectPtr<const ULLL_BaseCharacterDataAsset> GetCharacterDataAsset() const { return CharacterDataAsset; }
 	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
-	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
+	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
 
 	// 플레이어
 protected:
@@ -48,6 +49,7 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
+	virtual void InitAttributeSet();
 	
 protected:
 	virtual void Tick(float DeltaTime) override;
@@ -55,7 +57,7 @@ protected:
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Damaged();
+	virtual void Damaged(bool IsDOT = false);
 	virtual void Dead();
 
 	// 상태 체크용 변수
@@ -65,9 +67,7 @@ public:
 	// 델리게이트
 public:
 	FCharacterDeadDelegate CharacterDeadDelegate;
-
 	FTakeDamageDelegate TakeDamageDelegate;
-
 	FOtherActorCollidedDelegate OtherActorCollidedDelegate;
 	
 	// 위젯 업데이트를 위한 델리게이트
@@ -78,14 +78,14 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_CharacterAttributeSetBase> CharacterAttributeSet;
 	
 	// 캐릭터 공용 변수
 protected:
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
+
+	UPROPERTY(EditAnywhere)
+	int32 Level;
 
 	// 이동 관련 변수
 protected:

@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayCueInterface.h"
 #include "GameplayTagContainer.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "LLL_AnimNotify_GameplayTag.generated.h"
 
+enum class EFModParameter : uint8;
 /**
  * 
  */
@@ -20,14 +22,56 @@ public:
 	
 protected:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
+	virtual FString GetNotifyName_Implementation() const override;
+	
+	virtual void Notify_TagEventTriggered(AActor* OwnerActor);
+	virtual void Notify_TagAddOrRemove(AActor* OwnerActor);
+	virtual void Notify_CueTriggered(AActor* OwnerActor);
+
+protected:
+	UPROPERTY(EditAnywhere, DisplayName = "노티파이 이름", meta=(DisplayPriority=1))
+	FString NotifyName;
 	
 protected:
-	UPROPERTY(EditAnywhere, Meta=(Categories=Event))
-	FGameplayTag TriggerGameplayTag;
+	UPROPERTY(EditAnywhere, DisplayName = "이벤트 트리거 사용")
+	uint8 bIsUsingTagTrigger : 1;
 	
-	UPROPERTY(EditAnywhere)
-	float NotifyLevel = 0.0f;
+	UPROPERTY(EditAnywhere, DisplayName = "이벤트 트리거", meta=(EditCondition = "bIsUsingTagTrigger == true", EditConditionHides))
+	FGameplayTagContainer TriggerGameplayTag;
+	
+	UPROPERTY(EditAnywhere , DisplayName = "이벤트 레벨", meta=(EditCondition = "bIsUsingTagTrigger == true", EditConditionHides))
+	float NotifyLevel;
 
-	UPROPERTY(EditAnywhere)
-	FGameplayTag OwnerGiveTag;
+protected:
+	UPROPERTY(EditAnywhere, DisplayName = "태그 부착 사용")
+	uint8 bIsUsingGiveTag : 1;
+	
+	UPROPERTY(EditAnywhere, DisplayName = "태그 부착", meta=(EditCondition = "bIsUsingGiveTag == true", EditConditionHides))
+	FGameplayTagContainer OwnerGiveTag;
+
+	UPROPERTY(EditAnywhere , DisplayName = "태그 부착 갯수", meta=(EditCondition = "bIsUsingGiveTag == true", EditConditionHides))
+	float GiveTagCount;
+
+protected:
+	UPROPERTY(EditAnywhere, DisplayName = "태그 제거 사용")
+	uint8 bIsUsingRemoveTag : 1;
+	
+	UPROPERTY(EditAnywhere, DisplayName = "태그 제거", meta=(EditCondition = "bIsUsingRemoveTag == true", EditConditionHides))
+	FGameplayTagContainer OwnerRemoveTag;
+
+	UPROPERTY(EditAnywhere , DisplayName = "태그 제거 갯수", meta=(EditCondition = "bIsUsingRemoveTag == true", EditConditionHides))
+	float RemoveTagCount;
+
+protected:
+	UPROPERTY(EditAnywhere, DisplayName = "게임플레이 큐 사용")
+	uint8 bIsUsingGameplayCue : 1;
+	
+	UPROPERTY(EditAnywhere, DisplayName = "게임플레이 큐 태그", meta=(Categories = "GameplayCue", EditCondition = "bIsUsingGameplayCue == true", EditConditionHides))
+	FGameplayTag GameplayCueTag;
+
+	UPROPERTY(EditAnywhere, DisplayName = "FMOD 파라미터", meta=(EditCondition = "bIsUsingGameplayCue == true", EditConditionHides))
+	EFModParameter FModParameter;
+
+	UPROPERTY(EditAnywhere, DisplayName = "FMOD 파라미터 값", meta=(EditCondition = "bIsUsingGameplayCue == true", EditConditionHides))
+	float FModParameterValue;
 };

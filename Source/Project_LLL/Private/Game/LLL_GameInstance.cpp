@@ -43,21 +43,25 @@ void ULLL_GameInstance::Init()
 		TempAbilityData.AbilityRank = LoadAbilityData->AbilityRank;
 		TempAbilityData.AbilityCategory = LoadAbilityData->AbilityCategory;
 		TempAbilityData.AbilityName = LoadAbilityData->AbilityName;
+		TempAbilityData.AbilityValueType = LoadAbilityData->AbilityValueType;
 		TempAbilityData.AbilityValue = LoadAbilityData->AbilityValue;
 		TempAbilityData.ChangeValue = LoadAbilityData->ChangeValue;
 		TempAbilityData.RequireCategory = LoadAbilityData->RequireCategory;
-		
 		AbilityData.Emplace(TempAbilityData);
 	}
-
+	
 	TArray<FRewardDataTable*> LoadRewardDataArray;
 	RewardDataTable->GetAllRows<FRewardDataTable>(TEXT("Failed To Load Reward Data Tables"), LoadRewardDataArray);
 
 	for (const FRewardDataTable* LoadRewardData : LoadRewardDataArray)
 	{
 		FRewardDataTable TempRewardData;
-		TempRewardData.RewardType = LoadRewardData->RewardType;
-		TempRewardData.RewardValue = LoadRewardData->RewardValue;
+		TempRewardData.Value = LoadRewardData->Value;
+		TempRewardData.DropType = LoadRewardData->DropType;
+		TempRewardData.GetType = LoadRewardData->GetType;
+		TempRewardData.GroupID = LoadRewardData->GroupID;
+		TempRewardData.ID = LoadRewardData->ID;
+		TempRewardData.UseType = LoadRewardData->UseType;
 		TempRewardData.bIsHardReward = LoadRewardData->bIsHardReward;
 		RewardData.Emplace(TempRewardData);
 	}

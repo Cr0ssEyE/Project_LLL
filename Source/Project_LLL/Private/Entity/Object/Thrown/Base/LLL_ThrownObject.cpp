@@ -4,6 +4,7 @@
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 
 #include "AbilitySystemComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
@@ -35,11 +36,30 @@ void ALLL_ThrownObject::BeginPlay()
 	ASC->AddSpawnedAttribute(ThrownObjectAttributeSet);
 }
 
-void ALLL_ThrownObject::Throw(AActor* NewOwner)
+void ALLL_ThrownObject::Activate()
+{
+	bIsActivated = true;
+	
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ProjectileMovementComponent->Activate();
+	SetActorHiddenInGame(false);
+	UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+}
+
+void ALLL_ThrownObject::Deactivate()
+{
+	bIsActivated = false;
+	
+	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ProjectileMovementComponent->Deactivate();
+	SetActorHiddenInGame(true);
+}
+
+void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget)
 {
 	SetOwner(NewOwner);
+	Target = NewTarget;
 
-	Activate();
 	ProjectileMovementComponent->MaxSpeed = ThrownObjectAttributeSet->GetThrowSpeed();
 	ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
 	
@@ -56,25 +76,11 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, 1.0, EffectContextHandle);
 	if(EffectSpecHandle.IsValid())
 	{
-		const ALLL_BaseCharacter* Character = Cast<ALLL_BaseCharacter>(Other);
-		if (IsValid(Character))
+		if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other))
 		{
-			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Character->GetAbilitySystemComponent());
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 		}
 	}
 	
 	Deactivate();
-}
-
-void ALLL_ThrownObject::Activate()
-{
-	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	ProjectileMovementComponent->Activate();
-}
-
-void ALLL_ThrownObject::Deactivate()
-{
-	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	ProjectileMovementComponent->Deactivate();
-	SetActorHiddenInGame(true);
 }

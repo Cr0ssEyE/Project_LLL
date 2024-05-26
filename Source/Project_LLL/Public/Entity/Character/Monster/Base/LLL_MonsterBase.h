@@ -24,6 +24,7 @@ public:
 	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void InitAttributeSet() override;
 	
 protected:
 	virtual void Dead() override;
@@ -31,16 +32,28 @@ protected:
 public:
 	void Attack() const;
 	void Charge() const;
-	virtual void Damaged() override;
-	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity) override;
+	virtual void Damaged(bool IsDOT) override;
 
+	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
+	virtual void ApplyStackedKnockBack() override;
+	
+	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
+	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
+	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 
 	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_MonsterAttributeSet> MonsterAttributeSet;
+
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> MonsterStatusWidgetComponent;
 
+	FVector StackedKnockBackVelocity;
+	float StackedKnockBackedPower;
+	int32 Id;
+	
 public:
 	UFUNCTION()
 	void ToggleAIHandle(bool value);

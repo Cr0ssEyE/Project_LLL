@@ -40,6 +40,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "불릿타임 효과 종료 시퀀스")
 	TObjectPtr<ULevelSequence> BulletTimeDeActivateSequence;
 
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "불릿타임 효과 종료 넉백 충돌체크 어빌리티 태그")
+	FGameplayTag KnockBackCollideCheckTag;
+	
+protected:
 	UPROPERTY()
 	TObjectPtr<ALevelSequenceActor> BulletTimeActivateSequenceActor;
 

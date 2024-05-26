@@ -34,7 +34,7 @@ void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 		const FRotator PredictedRotation = FRotationMatrix::MakeFromX(PredictedDirection).Rotator();
 	
 		ThrownObject->SetActorLocationAndRotation(StartLocation, PredictedRotation);
-		ThrownObject->Throw(RangedMonster);
+		ThrownObject->Throw(RangedMonster, PlayerBase);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

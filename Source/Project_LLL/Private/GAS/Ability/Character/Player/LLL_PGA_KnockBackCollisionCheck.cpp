@@ -13,7 +13,7 @@
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
 #include "Util/LLL_MathHelper.h"
 
-ULLL_PGA_KnockBackCollisionCheck::ULLL_PGA_KnockBackCollisionCheck()
+ULLL_PGA_KnockBackCollisionCheck:: ULLL_PGA_KnockBackCollisionCheck()
 {
 	
 }
@@ -21,7 +21,7 @@ ULLL_PGA_KnockBackCollisionCheck::ULLL_PGA_KnockBackCollisionCheck()
 void ULLL_PGA_KnockBackCollisionCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
+
 	ULLL_AT_WaitTargetData* TargetDataTask = ULLL_AT_WaitTargetData::CreateTask(this, ALLL_MonsterBase::StaticClass(), false, false);
 	TargetDataTask->TargetDataReceivedDelegate.AddDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnTraceResultCallBack);
 	TargetDataTask->ReadyForActivation();
@@ -29,7 +29,6 @@ void ULLL_PGA_KnockBackCollisionCheck::ActivateAbility(const FGameplayAbilitySpe
 
 void ULLL_PGA_KnockBackCollisionCheck::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	
 	if (!KnockBackedCharacters.IsEmpty())
 	{
 		for (auto Character : KnockBackedCharacters)
@@ -39,7 +38,6 @@ void ULLL_PGA_KnockBackCollisionCheck::EndAbility(const FGameplayAbilitySpecHand
 				Character->OtherActorCollidedDelegate.RemoveDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack);
 			}
 		}
-		
 		KnockBackedCharacters.Empty();
 	}
 	
@@ -87,20 +85,21 @@ void ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack(AActor* HitA
 	
 	// 넉백당한 대상에 대한 처리
 	ALLL_BaseCharacter* HitCharacter = Cast<ALLL_BaseCharacter>(HitActor);
-	if (IsValid(HitCharacter))
+	if (!IsValid(HitCharacter))
 	{
-		HitCharacter->GetCharacterMovement()->Velocity = FVector::Zero();
-		HitCharacter->OtherActorCollidedDelegate.RemoveDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack);
-		const FGameplayAbilityTargetDataHandle HitActorHandle = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(HitCharacter);
-		BP_ApplyGameplayEffectToTarget(HitActorHandle, CollideCauserApplyEffect);
+		return;
 	}
 	
+	HitCharacter->GetCharacterMovement()->Velocity = FVector::Zero();
+	HitCharacter->OtherActorCollidedDelegate.RemoveDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack);
+	const FGameplayAbilityTargetDataHandle HitActorHandle = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(HitCharacter);
+	BP_ApplyGameplayEffectToTarget(HitActorHandle, CollideCauserApplyEffect, CurrentEventData.EventMagnitude);
+	
 	// 넉백당한 대상에 충돌한 대상에 대한 처리
-	const IAbilitySystemInterface* OtherActorHasGAS = Cast<IAbilitySystemInterface>(OtherActor);
-	if (OtherActorHasGAS)
+	if (Cast<IAbilitySystemInterface>(OtherActor))
 	{
 		const FGameplayAbilityTargetDataHandle OtherActorHandle = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(OtherActor);
-		BP_ApplyGameplayEffectToTarget(OtherActorHandle, CollideTargetApplyEffect);
+		BP_ApplyGameplayEffectToTarget(OtherActorHandle, CollideTargetApplyEffect, CurrentEventData.EventMagnitude);
 	}
 
 	if (KnockBackedCharacters.Contains(HitCharacter))

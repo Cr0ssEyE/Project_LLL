@@ -3,13 +3,25 @@
 #include "GAS/Ability/Character/Player/ComboSystem/LLL_PGA_ComboManagement.h"
 
 #include "Constant/LLL_GameplayTags.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "UI/Entity/Character/Player/LLL_PlayerComboWidget.h"
+
+class ALLL_PlayerBase;
 
 ULLL_PGA_ComboManagement::ULLL_PGA_ComboManagement()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	CurrentComboStackDuration = MaxComboStackDuration = CurrentComboCount = 0.f;
+}
+
+bool ULLL_PGA_ComboManagement::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	bool Result = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+
+	return !IsActive();
 }
 
 void ULLL_PGA_ComboManagement::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -30,7 +42,7 @@ void ULLL_PGA_ComboManagement::ActivateAbility(const FGameplayAbilitySpecHandle 
 	if(IsValid(PlayerAttributes))
 	{
 		CurrentComboCount = 0;
-		MaxComboStackDuration = PlayerAttributes->GetMaxComboStackDuration();
+		MaxComboStackDuration = PlayerAttributes->GetMaxComboKeepingDuration();
 		CurrentComboStackDuration = MaxComboStackDuration;
 	}
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ComboManagement::ComboTimerTick);
@@ -82,6 +94,11 @@ void ULLL_PGA_ComboManagement::ComboTimerTick()
 	}
 	
 	CurrentComboCount = PlayerAttributes->GetCurrentComboCount();
+	
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetCurrentActorInfo()->AvatarActor);
+	ULLL_PlayerComboWidget* ComboWidget = Player->GetPlayerUIManager()->GetComboWidget();
+	ComboWidget->SetComboText(CurrentComboCount);
+	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ComboManagement::ComboTimerTick);
 	// TODO: UI 연결
 }

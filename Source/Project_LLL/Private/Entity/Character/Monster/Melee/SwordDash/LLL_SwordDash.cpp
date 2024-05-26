@@ -8,19 +8,23 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_Monster_Id.h"
 #include "DataAsset/LLL_SwordDashDataAsset.h"
 #include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDashAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "GAS/Attribute/Character/Monster/Base/LLL_MonsterAttributeSet.h"
 #include "GAS/Attribute/Character/Monster/MeleeMonster/SwordDash/LLL_SwordDashAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_SwordDash::ALLL_SwordDash()
 {
-	CharacterAttributeSet = CreateDefaultSubobject<ULLL_SwordDashAttributeSet>(TEXT("SwordDashAttributeSet"));
+	SwordDashAttributeSet = CreateDefaultSubobject<ULLL_SwordDashAttributeSet>(TEXT("SwordDashAttributeSet"));
 	
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_SwordDashDataAsset>(PATH_SWORD_DASH_DATA, EAssertionLevel::Check);
 	AIControllerClass = ALLL_SwordDashAIController::StaticClass();
+
+	Id = ID_SWORD_DASH;
 
 	DashDamageRangeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	DashDamageRangeBox->SetCollisionProfileName(CP_INTERACTION);
@@ -29,6 +33,9 @@ ALLL_SwordDash::ALLL_SwordDash()
 	SwordMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sword"));
 	SwordMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	SwordMeshComponent->SetupAttachment(RootComponent);
+
+	// Todo : 어빌리티 작업이 끝난 후 커브 데이터로 옮기기
+	InitEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/Character/Monster/MeleeMonster/SwordDash/BPGE_SwordDash_Attribute_Initialize.BPGE_SwordDash_Attribute_Initialize_C'"), EAssertionLevel::Check);
 }
 
 void ALLL_SwordDash::BeginPlay()
@@ -36,9 +43,20 @@ void ALLL_SwordDash::BeginPlay()
 	Super::BeginPlay();
 
 	SwordDashDataAsset = Cast<ULLL_SwordDashDataAsset>(MeleeMonsterDataAsset);
+
+	// Todo : 어빌리티 작업이 끝난 후 커브 데이터로 옮기기
+	if (IsValid(InitEffect))
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(InitEffect, 1.0, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
 	
 	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
-		const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(ASC->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
 		DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), SwordDashAttributeSet->GetDashDamageRange(), SwordDashAttributeSet->GetDashDamageRange()));
 	}));
 
@@ -56,7 +74,7 @@ void ALLL_SwordDash::Tick(float DeltaSeconds)
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckMonsterHitCheckDebug())
+		if (ProtoGameInstance->CheckMonsterAttackDebug())
 		{
 			if (bIsDashing)
 			{

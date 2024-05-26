@@ -2,6 +2,8 @@
 
 
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -9,6 +11,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "DataTable/LLL_FModParameterDataTable.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
@@ -24,8 +27,9 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 
 	ASC = CreateDefaultSubobject<ULLL_BaseASC>(TEXT("AbilitySystem"));
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
-	
 	FModAudioComponent->SetupAttachment(RootComponent);
+
+	Level = 1;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	bIsSpawned = false;
@@ -62,6 +66,9 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		return;
 	}
 #endif
+
+	GetMesh()->SetRenderCustomDepth(true);
+	GetMesh()->SetCustomDepthStencilValue(1);
 	
 	if (IsValid(CharacterDataAsset))
 	{
@@ -121,25 +128,27 @@ void ALLL_BaseCharacter::BeginPlay()
 			}
 		}
 
-		// GE 기반으로 자신의 어트리뷰트 초기화
-		ASC->AddSpawnedAttribute(CharacterAttributeSet);
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
-		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(CharacterDataAsset->InitEffect, 1.0, EffectContextHandle);
-		if(EffectSpecHandle.IsValid())
-		{
-			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-		}
-
 		UpdateWidgetDelegate.Broadcast();
 	}
 
 	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
+		InitAttributeSet();
 		const ULLL_CharacterAttributeSetBase* CharacterAttributeSetBase = CastChecked<ULLL_CharacterAttributeSetBase>(ASC->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
 		GetCharacterMovement()->MaxAcceleration = CharacterAttributeSetBase->GetAccelerateSpeed();
 		GetCharacterMovement()->GroundFriction = CharacterAttributeSetBase->GetGroundFriction();
 		GetCharacterMovement()->RotationRate = FRotator(0.f, CharacterAttributeSetBase->GetTurnSpeed() * 360.f, 0.f);
 	}));
+}
+
+void ALLL_BaseCharacter::InitAttributeSet()
+{
+	UE_LOG(LogTemp, Log, TEXT("%s 어트리뷰트 초기화 리스트"), *GetName())
+
+	TArray<UAttributeSet*> SpawnedAttributes = ASC->GetSpawnedAttributes();
+	for (const auto SpawnedAttribute : SpawnedAttributes)
+	{
+		UE_LOG(LogTemp, Log, TEXT("- %s"), *SpawnedAttribute->GetName())
+	}
 }
 
 // Called every frame
@@ -156,29 +165,22 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	if (HitLocation.Z >= GetActorLocation().Z)
 	{
 		OtherActorCollidedDelegate.Broadcast(this, Other);
-	}
 
-	const ECollisionResponse Response = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
-	// Static Actor 중에서 벽과 바닥을 구분하는 좋은 방법이 뭐가 있을지 고민. 지금은 머릿속에서 생각나는게 이게 최선
-	if (Response == ECR_Block && FMath::Abs(HitNormal.Z) < 0.2f)
-	{
-		ASC->AddLooseGameplayTag(TAG_GAS_COLLIDE_WALL);
-
-		// 게임플레이 이펙트 없이 인스턴스 태그를 부착하기 위해 타이머 델리게이트로 다음 틱에서 제거
-		// 이번엔 빌드에서 람다식 안터졌으니 괜?찮?을?거?에?요???
-		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]()
+		const ECollisionResponse WallResponse = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
+		const ECollisionResponse FieldResponse = Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD);
+	
+		if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
 		{
-			if(IsValid(ASC))
-			{
-				ASC->RemoveLooseGameplayTag(TAG_GAS_COLLIDE_WALL);
-			}
-		}));
+			FGameplayEventData PayloadData;
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
+		}
 	}
 }
 
-void ALLL_BaseCharacter::Damaged()
+void ALLL_BaseCharacter::Damaged(bool IsDOT)
 {
 	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DamagedCueTag);
+	
 }
 
 void ALLL_BaseCharacter::Dead()
@@ -187,13 +189,10 @@ void ALLL_BaseCharacter::Dead()
 	{
 		return;
 	}
-
-	CharacterAnimInstance->StopAllMontages(1.0f);
-
-	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
-	GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
 	
 	bIsDead = true;
 
 	CharacterDeadDelegate.Broadcast(this);
+
+	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DeadCueTag);
 }

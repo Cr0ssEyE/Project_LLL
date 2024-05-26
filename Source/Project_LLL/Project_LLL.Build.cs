@@ -26,6 +26,7 @@ public class Project_LLL : ModuleRules
 			"GameplayTags",
 			"FMODStudio",
 			"PhysicsCore",
+			"SlateCore",
 			"LevelSequence",
 			"MovieScene"
 		});

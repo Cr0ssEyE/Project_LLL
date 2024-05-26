@@ -28,9 +28,11 @@ protected:
 	virtual void CheckReached();
 
 protected:
-	UPROPERTY(EditDefaultsOnly, DisplayName = "체이서의 투척 애니메이션")
+	UPROPERTY(EditDefaultsOnly, DisplayName = "체이서의 발사 상태 애니메이션")
 	TObjectPtr<UAnimSequence> ThrowAnim;
 
+	FVector StartLocation;
+	
 	FVector TargetLocation;
 
 protected:

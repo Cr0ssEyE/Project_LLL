@@ -7,6 +7,7 @@
 #include "GAS/Ability/Character/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_AttackBase.generated.h"
 
+class UAbilityTask_WaitGameplayEvent;
 class UAbilityTask_WaitGameplayTagAdded;
 
 /**
@@ -28,40 +29,31 @@ protected:
 
 protected:
 	UFUNCTION()
-	void WaitInputForNextAction();
+	void CheckInputPressed(FGameplayEventData EventData);
 	
 	void SetNextAttackAction();
-	void EndAttackInputWait();
 	void ExecuteAttackCueWithDelay();
 
 protected:
 	UPROPERTY()
-	TObjectPtr<UAbilityTask_WaitGameplayTagAdded> WaitTagTask;
+	TObjectPtr<UAbilityTask_WaitGameplayEvent> WaitTagTask;
 	
 protected:
 	UPROPERTY(EditAnywhere, DisplayName = "공격 애님 몽타주")
 	TObjectPtr<UAnimMontage> AttackAnimMontage;
 
-	FTimerHandle WaitInputTimerHandle;
-
-	float AttackActionIntervalTime;
-
-	float AttackActionInputDelayTime;
-	
 	uint32 CurrentComboAction;
 
 	uint32 MaxAttackAction;
 	
 	uint8 bIsCanPlayNextAction : 1;
 	
-	uint8 bIsInputPressed : 1;
-
 protected:
-	UPROPERTY(EditAnywhere, DisplayName = "공격 이벤트 태그", meta=(Categories = "GameplayCue"))
+	UPROPERTY(EditAnywhere, DisplayName = "공격 이벤트 큐 태그", meta=(Categories = "GameplayCue"))
 	FGameplayTag AttackCueTag;
 
-	UPROPERTY(EditAnywhere, DisplayName = "콤보 공격 이벤트 딜레이")
-	TArray<float> AttackEventDelayArray;
+	UPROPERTY(EditAnywhere, DisplayName = "공격 모션 별 이벤트 큐 딜레이")
+	TArray<float> AttackCueDelayArray;
 
 	FName PlayerAttackCountParameterName;
 };
