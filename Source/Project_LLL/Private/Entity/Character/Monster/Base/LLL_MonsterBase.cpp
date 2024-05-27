@@ -4,11 +4,13 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "BrainComponent.h"
 #include "FMODAudioComponent.h"
-#include "GameplayAbilitySpec.h"
+#include "GameplayAbilitiesModule.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
@@ -17,8 +19,9 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GAS/Ability/Character/Monster/Base/LLL_MGA_Attack.h"
 #include "GAS/Ability/Character/Monster/Base/LLL_MGA_Charge.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
+#include "GAS/ASC/LLL_MonsterASC.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
@@ -27,6 +30,8 @@
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
+	ASC = CreateDefaultSubobject<ULLL_MonsterASC>(TEXT("MonsterASC"));
+	MonsterAttributeSet = CreateDefaultSubobject<ULLL_MonsterAttributeSet>(TEXT("MonsterAttributeSet"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("MonsterUIManageComponent"));
 	MonsterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("MonsterStatusWidgetComponent"));
 	
@@ -42,13 +47,18 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 
 	StackedKnockBackedPower = 0.f;
 	StackedKnockBackVelocity = FVector::Zero();
+
+	MaskMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mask"));
+	MaskMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
+	MaskMeshComponent->SetupAttachment(RootComponent);
 }
 
 void ALLL_MonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	ASC->AddSpawnedAttribute(DropGoldAttributeSet);
+	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
+
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(DropGoldEffect, 1.0, EffectContextHandle);
@@ -56,14 +66,18 @@ void ALLL_MonsterBase::BeginPlay()
 	{
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}
-	
-	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
 
 	MonsterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
 	MonsterStatusWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	MonsterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
 	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
 	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MonsterStatusWidgetComponent->SetTickWhenOffscreen(true);
+	
+
+	MaskMeshComponent->SetStaticMesh(MonsterBaseDataAsset->MaskMesh);
+	MaskMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, MonsterBaseDataAsset->MaskAttachSocketName);
+	MaskMeshComponent->SetRelativeTransform(MonsterBaseDataAsset->MaskTransform);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -93,39 +107,12 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 #endif
 }
 
-void ALLL_MonsterBase::Dead()
+void ALLL_MonsterBase::InitAttributeSet()
 {
-	Super::Dead();
-	
-	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
+	Super::InitAttributeSet();
 
-	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = CastChecked<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	MonsterBaseAnimInstance->StopAllMontages(1.0f);
-	
-	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
-	MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
-
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
-
-	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-	if (IsValid(PlayerBase))
-	{
-		FVector ImpulseDirection = PlayerBase->GetActorForwardVector();
-		ImpulseDirection.Normalize();
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-		const float ImpulseStrength = PlayerAttributeSet->GetImpulseStrength();
-		const FVector FinalImpulse = ImpulseDirection * ImpulseStrength * 100.0f;
-		
-		GetMesh()->AddImpulseToAllBodiesBelow(FinalImpulse);
-	}
-
-	MonsterStatusWidgetComponent->SetHiddenInGame(true);
-	
-	FTimerHandle DestroyTimerHandle;
-	GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
-		Destroy();
-	}), 3.0f, false);
+	const int32 Data = Id * 100 + Level;
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_MONSTER, Data, true);
 }
 
 void ALLL_MonsterBase::Attack() const
@@ -160,35 +147,90 @@ void ALLL_MonsterBase::Charge() const
 	}
 }
 
-void ALLL_MonsterBase::Damaged()
+void ALLL_MonsterBase::Damaged(bool IsDOT)
 {
-	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(MonsterBaseAnimInstance))
-	{
-		MonsterBaseAnimInstance->StopAllMontages(1.0f);
-		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+	Super::Damaged(IsDOT);
 
-		FModAudioComponent->Stop();
-		// 경직 사운드 이벤트 할당
-		// 경직 사운드 플레이
+	if (bIsAttacking)
+	{
+		return;
+	}
+
+	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+	if (!IsValid(MonsterBaseAnimInstance) || IsDOT)
+	{
+		return;
+	}
+
+	MonsterBaseAnimInstance->StopAllMontages(1.0f);
+	PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+
+	FModAudioComponent->Stop();
+	// 경직 사운드 이벤트 할당
+	// 경직 사운드 플레이
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckMonsterCollisionDebug())
 		{
-			if (ProtoGameInstance->CheckMonsterCollisionDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 피격"), *GetName()));
-			}
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 경직"), *GetName()));
 		}
-#endif
 	}
+#endif
+}
+
+void ALLL_MonsterBase::Dead()
+{
+	Super::Dead();
+
+	CharacterAnimInstance->StopAllMontages(1.0f);
+
+	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
+	GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
+	
+	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
+
+	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = CastChecked<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+	MonsterBaseAnimInstance->StopAllMontages(1.0f);
+	
+	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
+	MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
+
+	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	if (IsValid(PlayerBase))
+	{
+		FVector ImpulseDirection = PlayerBase->GetActorForwardVector();
+		ImpulseDirection.Normalize();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		const float ImpulseStrength = PlayerAttributeSet->GetImpulseStrength();
+		const FVector FinalImpulse = ImpulseDirection * ImpulseStrength * 100.0f;
+		
+		GetMesh()->AddImpulseToAllBodiesBelow(FinalImpulse);
+	}
+
+	MonsterStatusWidgetComponent->SetHiddenInGame(true);
+
+	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();
+	FTimerHandle DestroyTimerHandle;
+	GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		Destroy();
+	}), DestroyTimer, false);
 }
 
 void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower)
 {
+	KnockBackVelocity.Z = 0.f;
 	if (CustomTimeDilation == 1.f)
 	{
 		StackedKnockBackedPower = KnockBackPower;
+		if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower))
+		{
+			GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
+		}
 		GetCharacterMovement()->Velocity = FVector::Zero();
 		LaunchCharacter(KnockBackVelocity, true, true);
 	}
@@ -196,23 +238,24 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 	{
 		StackedKnockBackedPower += KnockBackPower;
 		StackedKnockBackVelocity += KnockBackVelocity;
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackedPower));
 	}
 }
 
 void ALLL_MonsterBase::ApplyStackedKnockBack()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackVelocity.Length()));
-	if (FLLL_MathHelper::CheckFallableKnockBackPower(StackedKnockBackedPower))
+	if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower))
 	{
 		GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
 	}
 
 	// TODO: 나중에 몬스터별 최대 넉백값 같은거 나오면 수정하기
-	const FVector ScaledStackedKnockBackVelocity = ClampVector(FVector::Zero(), FVector::One() * 2000.f, StackedKnockBackVelocity);
+	FVector ScaledStackedKnockBackVelocity = ClampVector(FVector::One() * -10000.f, FVector::One() * 10000.f, StackedKnockBackVelocity);
+	ScaledStackedKnockBackVelocity.Z = 0.f;
+	GetCharacterMovement()->Velocity = FVector::Zero();
 	LaunchCharacter(ScaledStackedKnockBackVelocity, true, true);
 
-	// ResetKnockBackStack();
+	ResetKnockBackStack();
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)

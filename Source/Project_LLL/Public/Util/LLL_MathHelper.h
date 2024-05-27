@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/Character.h"
 #include "Game/ProtoGameInstance.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 
 class PROJECT_LLL_API FLLL_MathHelper
 {
@@ -14,6 +16,11 @@ class PROJECT_LLL_API FLLL_MathHelper
 public:
 	static FVector CalculateComponentFrontPoint(const USceneComponent* Component, const float Multiply)
 	{
+		if (!IsValid(Component))
+		{
+			return FVector::Zero();
+		}
+		
 		const FVector CalculateResult = Component->GetComponentLocation() + Multiply * Component->GetForwardVector();
 		return CalculateResult;
 	}
@@ -26,6 +33,11 @@ public:
 
 	static FVector GetPredictedLocation(const AActor* Owner, const AActor* Target, float TargetSpeed, float PredictionRate)
 	{
+		if (!IsValid(Owner) || !IsValid(Target))
+		{
+			return FVector::Zero();
+		}
+		
 		const float Distance = Owner->GetDistanceTo(Target);
 		const FVector PredictedMove = Target->GetVelocity() * (Distance / TargetSpeed);
 		const FVector PredictedLocation = Target->GetActorLocation() + PredictedMove * PredictionRate;
@@ -55,6 +67,11 @@ public:
 	
 	static bool CheckLaunchablePosition(const UWorld* World, const ACharacter* Owner, const float LaunchDistance, const FVector& LaunchDirection, const FName CollisionProfile)
 	{
+		if (!IsValid(World) || !IsValid(Owner))
+		{
+			return false;
+		}
+		
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(Owner);
@@ -71,15 +88,39 @@ public:
 		return !HitResult.GetActor();
 	}
 
-	static bool CheckFallableKnockBackPower(float KnockBackPower)
+	static bool CheckFallableKnockBackPower(const UWorld* World, float KnockBackPower)
 	{
-		if (KnockBackPower > 500.f)
+		if (!IsValid(World))
+		{
+			return false;
+		}
+		
+		float FallableCheckPower = 500.f;
+		ACharacter* Character = World->GetFirstPlayerController()->GetCharacter();
+		if (!IsValid(Character))
+		{
+			return false;
+		}
+		
+		if (const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(Character))
+		{
+			const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+
+			FallableCheckPower = PlayerCharacterAttributeSet->GetFalloutablePower();
+		}
+		else
+		{
+			ensure(false);
+		}
+		
+		if (KnockBackPower > FallableCheckPower)
 		{
 			return true;
 		}
 		
 		return false;
 	}
+	
 	// 플레이어
 public:
 	static float CalculatePlayerSkillGaugeIncrement(const float BaseValue, const float ComboAmplify, const float ItemAmplify)
@@ -88,13 +129,29 @@ public:
 		return CalculateResult;
 	}
 
+	static float CalculateKnockBackPower(const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet, const float ActionAmplify = 1.f)
+	{
+		if (!IsValid(PlayerCharacterAttributeSet))
+		{
+			return 0.f;
+		}
+		
+		const float CalculateResult = (PlayerCharacterAttributeSet->GetKnockBackPower() + PlayerCharacterAttributeSet->GetOffensePower() * PlayerCharacterAttributeSet->GetKnockBackOffensePowerRate()) * ActionAmplify;
+		return CalculateResult;
+	}
+	
 	static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)
 	{
+		if (!IsValid(World) || !IsValid(Owner))
+        {
+        	return FVector::Zero();
+        }
+        		
 		FHitResult CapsuleHitResult;
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(Owner);
-		FVector LaunchLocation = Owner->GetActorLocation() + LaunchDirection.GetSafeNormal2D() * LaunchDistance;
-		FVector2d CapsuleExtent = FVector2d(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.2f, Owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f);
+		const FVector LaunchLocation = Owner->GetActorLocation() + LaunchDirection.GetSafeNormal2D() * LaunchDistance;
+		const FVector2d CapsuleExtent = FVector2d(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.2f, Owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f);
 		
 		// 끼임 방지용 캐릭터 충돌 캡슐보다 1.2배 큰 반지름 체크
 		World->SweepSingleByChannel(
@@ -137,15 +194,14 @@ public:
 		}
 
 		// 대쉬 보정 범위 체크
-		FVector CorrectionLaunchLocation = LaunchLocation + LaunchDirection.GetSafeNormal2D() * CorrectionDistance;
 		for (float MultiplyValue = 10.f; MultiplyValue < CorrectionDistance; MultiplyValue += 10.f)
 		{
 			FHitResult CorrectionLocationHitResult;
-			FVector NewLocation = CorrectionLaunchLocation + LaunchDirection.GetSafeNormal2D() * MultiplyValue;
+			FVector CorrectionLaunchLocation = LaunchLocation + LaunchDirection.GetSafeNormal2D() * MultiplyValue;
 			World->SweepSingleByChannel(
 				CorrectionLocationHitResult,
-				NewLocation,
-				NewLocation,
+				CorrectionLaunchLocation,
+				CorrectionLaunchLocation,
 				FQuat::Identity,
 				ECC_WALL_ONLY,
 				FCollisionShape::MakeCapsule(CapsuleExtent.X, CapsuleExtent.Y),
@@ -156,7 +212,7 @@ public:
 			{
 				if(ProtoGameInstance->CheckPlayerDashDebug())
 				{
-					DrawDebugCapsule(World, NewLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Magenta, false, 2.f);
+					DrawDebugCapsule(World, CorrectionLaunchLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Magenta, false, 2.f);
 				}
 			}
 #endif
@@ -166,8 +222,8 @@ public:
 				// 바닥 체크
 				World->SweepSingleByChannel(
 				CorrectionLocationHitResult,
-				NewLocation,
-				NewLocation,
+				CorrectionLaunchLocation,
+				CorrectionLaunchLocation,
 				FQuat::Identity,
 				ECC_WALL_ONLY,
 				FCollisionShape::MakeCapsule(CapsuleExtent.X, CapsuleExtent.Y * 10),
@@ -176,7 +232,7 @@ public:
 				
 				if (Cast<UStaticMeshComponent>(CorrectionLocationHitResult.GetComponent()))
 				{
-					return NewLocation;
+					return CorrectionLaunchLocation;
 				}
 			}
 		}

@@ -3,11 +3,16 @@
 
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 
-ULLL_CharacterAttributeSetBase::ULLL_CharacterAttributeSetBase()
+ULLL_CharacterAttributeSetBase::ULLL_CharacterAttributeSetBase() :
+	AttackSpeed(100.f)
 {
 	
 }
@@ -38,41 +43,27 @@ bool ULLL_CharacterAttributeSetBase::PreGameplayEffectExecute(FGameplayEffectMod
 
 void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
-	Super::PostGameplayEffectExecute(Data);
-
-	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
-	
-	if(Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
+	const ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
+	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
-		if(GetCurrentShield() > 0.f)
+		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
+		Character->TakeDamageDelegate.Broadcast(DOT);
+
+		//05/11 조강건 코드리뷰 중 주석 추가
+		//어빌리티에게 피해를 입힌 대상을 전달하는 방법. TryActivate가 아닌 SendGameplayEvent라 Ability Triggers에 태그 할당 필요
+		FGameplayEventData PayloadData;
+		AActor* Instigator = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
+		if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Instigator))
 		{
-			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
+			Instigator = ThrownObject->GetOwner();
 		}
-		else
-		{
-			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-		}
+		PayloadData.Instigator = Instigator;
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
+
 		SetReceiveDamage(0.f);
-
-		ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
-		if(GetCurrentShield() > 0)
-		{
-			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
-		}
-		else
-		{
-			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-
-			if(GetCurrentHealth() == 0)
-			{
-				Character->Dead();
-			}
-			else
-			{
-				Character->Damaged();
-			}
-		}
-		OwnerCharacter->TakeDamageDelegate.Broadcast();
 	}
-	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
+	Character->UpdateWidgetDelegate.Broadcast();
+
+	Super::PostGameplayEffectExecute(Data);
 }
+

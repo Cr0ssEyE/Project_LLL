@@ -4,84 +4,68 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "Enumeration/LLL_AbilitySystemEnumHelper.h"
 #include "LLL_AbilityDataTable.generated.h"
 
 /**
  * 
  */
 
-UENUM(BlueprintType)
-enum class EAbilityType : uint8
-{
-	None UMETA(Hidden),
-	Crow,
-	Deer,
-	Wolf
-};
-
-UENUM(BlueprintType)
-enum class EAbilityPart : uint8
-{
-	Common,
-	Attack,
-	Chase,
-	Dash,
-	ComboSkill
-};
-
-UENUM(BlueprintType)
-enum class EAbilityRank : uint8
-{
-	Normal,
-	Rare,
-	Epic,
-	Legend
-};
-
-UENUM(BlueprintType)
-enum class EAbilityCategory : uint8
-{
-	Null,
-	Feather,
-	Critical,
-	Marking,
-	Bleeding
-};
-
 USTRUCT(BlueprintType)
 struct FAbilityDataTable : public FTableRowBase
 {
 	GENERATED_BODY()
 
+	FAbilityDataTable() :
+	ID(10000),
+	AbilityType(EAbilityType::None),
+	AbilityPart(EAbilityPart::Common),
+	AbilityRank(EAbilityRank::Normal),
+	AbilityCategory(EAbilityCategory::Null), AbilityValueType(),
+	AbilityValue(0.f),
+	ChangeValue(0.f), UnchangeableValue(0),
+	RequireCategory(EAbilityCategory::Null)
+	{
+	}
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	int32 ID = 10000;
+	int32 ID;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 유형")
-	EAbilityType AbilityType = EAbilityType::None;
+	EAbilityType AbilityType;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 부위")
-	EAbilityPart AbilityPart = EAbilityPart::Common;
+	EAbilityPart AbilityPart;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 등급")
-	EAbilityRank AbilityRank = EAbilityRank::Normal;
+	EAbilityRank AbilityRank;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 분류")
-	EAbilityCategory AbilityCategory = EAbilityCategory::Null;
+	EAbilityCategory AbilityCategory;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 이름")
-	FName AbilityName = FName("");
+	FName AbilityName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 정보")
-	FString AbilityInformation = TEXT("");
+	FString AbilityInformation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "수치 적용 유형")
+	EAbilityValueType AbilityValueType;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 수치")
-	float AbilityValue = 0;
+	float AbilityValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "수치 변화량")
-	float ChangeValue = 0;
+	float ChangeValue;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "미변동 요소 수치")
+	float UnchangeableValue;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "획득 조건")
-	EAbilityCategory RequireCategory = EAbilityCategory::Null;
+	EAbilityCategory RequireCategory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "획득 가중치")
+	int32 GetAbilityRate;
 };
 
 UCLASS()

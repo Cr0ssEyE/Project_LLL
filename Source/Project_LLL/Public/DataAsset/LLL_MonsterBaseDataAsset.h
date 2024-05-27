@@ -18,9 +18,6 @@ class PROJECT_LLL_API ULLL_MonsterBaseDataAsset : public ULLL_BaseCharacterDataA
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "피격 애님 몽타주")
-	TObjectPtr<UAnimMontage> DamagedAnimMontage;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "AI", DisplayName = "블랙보드")
 	TObjectPtr<UBlackboardData> BlackBoard;
 
@@ -32,4 +29,13 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스테이터스 게이지 크기")
 	FVector2D StatusGaugeSize;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "가면 메시")
+	TObjectPtr<UStaticMesh> MaskMesh;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "가면 부착 소켓 이름")
+	FName MaskAttachSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "가면 트랜스폼")
+	FTransform MaskTransform;
 };

@@ -19,11 +19,16 @@ public:
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
-	virtual void ThrowHand(const FGameplayAbilityActorInfo* ActorInfo);
+	UFUNCTION()
+	virtual void ThrowHand(const FGameplayEventData EventData);
 
 protected:
+	UPROPERTY(EditAnywhere, DisplayName = "체이서 투척 애님 몽타주")
+	TObjectPtr<UAnimMontage> ThrowAnimMontage;
+	
 	uint8 bIsAlreadyThrown : 1;
 };

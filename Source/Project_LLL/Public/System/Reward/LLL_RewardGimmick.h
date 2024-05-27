@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DataTable/LLL_AbilityDataTable.h"
-#include "GameFramework/Actor.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_RewardGimmick.generated.h"
 
@@ -15,6 +14,7 @@ struct FRewardDataTable;
 struct FAbilityDataTable;
 class ULLL_RewardDataTable;
 class ULLL_TestAbilityDataTable;
+class ALLL_AbilityRewardObject;
 
 UCLASS()
 class PROJECT_LLL_API ALLL_RewardGimmick : public ALLL_SystemBase
@@ -43,6 +43,22 @@ public:
 	void SetRewardButtons();
 
 	void SetDataTable();
+
+	
+protected:
+	UFUNCTION()
+	void ClickFirstButton();
+
+	UFUNCTION()
+	void ClickSecondButton();
+
+	UFUNCTION()
+	void ClickThirdButton();
+	
+	void ClickButtonEvent(FAbilityDataTable* ButtonAbilityData);
+
+	UFUNCTION()
+	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects);
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -59,21 +75,23 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsButtonEventSetup : 1;
-
+	
 	UPROPERTY(VisibleDefaultsOnly)
 	uint8 bMapGimmickIsExist : 1;
 
-	UFUNCTION()
-	void ClickFirstButton();
+protected:
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere)
+	uint8 bIsTest : 1;
 
-	UFUNCTION()
-	void ClickSecondButton();
+	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
+	uint8 TestAbilityDataArrayNum1;
 
-	UFUNCTION()
-	void ClickThirdButton();
+	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
+	uint8 TestAbilityDataArrayNum2;
 	
-	void ClickButtonEvent(FAbilityDataTable* ButtonAbilityData);
-
-	UFUNCTION()
-	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects);
+	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
+	uint8 TestAbilityDataArrayNum3;
+#endif
+	
 };

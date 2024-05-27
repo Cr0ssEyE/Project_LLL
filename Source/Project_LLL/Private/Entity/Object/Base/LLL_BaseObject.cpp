@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "FMODAudioComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 ALLL_BaseObject::ALLL_BaseObject()
 {
@@ -57,12 +58,12 @@ void ALLL_BaseObject::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(!IsValid(BaseObjectDataAsset))
+	if (!IsValid(BaseObjectDataAsset))
 	{
 		return;
 	}
 	
-	if(IsValid(ASC))
+	if (IsValid(ASC))
 	{
 		ASC->InitAbilityActorInfo(this, this);
 
@@ -76,7 +77,7 @@ void ALLL_BaseObject::BeginPlay()
 		}
 	}
 	
-	if(IsValid(BaseObjectDataAsset->InitEffect))
+	if (IsValid(BaseObjectDataAsset->InitEffect))
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
@@ -85,5 +86,21 @@ void ALLL_BaseObject::BeginPlay()
 		{
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
+	}
+
+	if (IsValid(BaseObjectDataAsset->Particle))
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+	}
+}
+
+void ALLL_BaseObject::InitAttributeSet()
+{
+	UE_LOG(LogTemp, Log, TEXT("%s 어트리뷰트 초기화 리스트"), *GetName())
+
+	TArray<UAttributeSet*> SpawnedAttributes = ASC->GetSpawnedAttributes();
+	for (const auto SpawnedAttribute : SpawnedAttributes)
+	{
+		UE_LOG(LogTemp, Log, TEXT("- %s"), *SpawnedAttribute->GetName())
 	}
 }

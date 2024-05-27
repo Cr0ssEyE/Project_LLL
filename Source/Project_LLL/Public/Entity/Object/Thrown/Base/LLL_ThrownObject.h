@@ -8,6 +8,7 @@
 #include "Interface/LLL_ObjectPoolingObjectInterface.h"
 #include "LLL_ThrownObject.generated.h"
 
+struct FAbilityDataTable;
 class ULLL_ThrownObjectAttributeSet;
 class UProjectileMovementComponent;
 
@@ -27,15 +28,16 @@ protected:
 
 public:
 	FORCEINLINE UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovementComponent; }
+	FORCEINLINE virtual bool IsActivated() const override { return bIsActivated; }
 	
-	virtual void Throw(AActor* NewOwner);
+	virtual void Activate() override;
+	virtual void Deactivate() override;
+	
+	virtual void Throw(AActor* NewOwner, const AActor* NewTarget, float InSpeed);
 
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
-	virtual void Activate() override;
-	virtual void Deactivate() override;
-
-protected:
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
 	
@@ -44,4 +46,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<const ULLL_ThrownObjectDataAsset> ThrownObjectDataAsset;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<const AActor> Target;
+
+	uint8 bIsActivated : 1;
+	
+	FTimerHandle HideTimerHandle;
 };
