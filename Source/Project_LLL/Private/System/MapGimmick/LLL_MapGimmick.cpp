@@ -180,7 +180,7 @@ void ALLL_MapGimmick::EnableAllGates()
 {
 	for (const auto Gate:Gates)
 	{
-		Gate->GateEnable();
+		Gate->SetActivate();
 	}
 }
 
