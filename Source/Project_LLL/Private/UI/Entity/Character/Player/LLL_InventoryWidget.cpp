@@ -79,6 +79,7 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 	
 	if (SpecHandles.IsEmpty())
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("스펙 찾기 실패")));
 		ensure(false);
 		return false;
 	}
@@ -102,6 +103,7 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 	// AbilityLevel == 0.f -> RewardAbility == nullptr
 	if (AbilityLevel == 0.f)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("스펙은 찾았는데 리워드 어빌리티 아님")));
 		ensure(false);
 		return false;
 	}
