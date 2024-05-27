@@ -70,7 +70,8 @@ protected:
 	FAbilityDataTable* ButtonAbilityData1;
 	FAbilityDataTable* ButtonAbilityData2;
 	FAbilityDataTable* ButtonAbilityData3;
-
+	TArray<FAbilityDataTable*> ButtonAbilityDataArray;
+	
 	FAbilityDataTable* CurrentAbilityData;
 	
 	UPROPERTY(EditDefaultsOnly)

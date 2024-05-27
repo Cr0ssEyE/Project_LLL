@@ -118,7 +118,7 @@ void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 		BulletTimeEffectedActors.Emplace(HitActor);
 		HitActors.Emplace(HitActor);
 	}
-	CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance())->SetActorsCustomTimeDilation(HitActors, WorldDecelerationRate);
+	CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance())->SetActorsCustomTimeDilationRecursive(HitActors, WorldDecelerationRate);
 }
 
 void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
@@ -184,7 +184,7 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 			}
 		}
 	}
-	CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance())->SetActorsCustomTimeDilation(EffectedActors, 1.0f);
+	CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance())->SetActorsCustomTimeDilationRecursive(EffectedActors, 1.0f);
 	
 	BulletTimeEffectedActors.Empty();
 	
