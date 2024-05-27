@@ -18,8 +18,6 @@ ULLL_MoveToPlayer_BTTask::ULLL_MoveToPlayer_BTTask()
 
 EBTNodeResult::Type ULLL_MoveToPlayer_BTTask::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	bRotatingByCompulsion = true;
-
 	const EBTNodeResult::Type NodeResult = Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	const ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
