@@ -31,12 +31,6 @@ void ULLL_PlayerAnimInstance::AnimNotify_RightStep()
 	SetStepEventParameter(SOCKET_RIGHT_FOOT);
 }
 
-void ULLL_PlayerAnimInstance::PlayDeadAnimation()
-{
-	StopAllMontages(0.0f);
-	Montage_Play(PlayerDataAsset->DeadAnimMontage);
-}
-
 void ULLL_PlayerAnimInstance::SetStepEventParameter(FName FootSocketName) const
 {
 	if (!Character->GetMesh()->DoesSocketExist(FootSocketName))
