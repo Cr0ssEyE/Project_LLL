@@ -85,7 +85,6 @@ void ALLL_RewardGimmick::SetRewardButtons()
     RewardWidget->GetThirdButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickThirdButton);
     bIsButtonEventSetup = true;
 	
-#if  (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (bIsTest)
 	{
 		// ButtonAbilityData1 = &AbilityData[TestAbilityDataArrayNum1];
@@ -97,7 +96,6 @@ void ALLL_RewardGimmick::SetRewardButtons()
 		RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
 		return;
 	}
-#endif
 	
 	//보상쪽 상세 시스템 기획이 나오면 바뀔 부분
 	
