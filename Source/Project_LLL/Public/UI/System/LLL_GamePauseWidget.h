@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "LLL_GamePauseWidget.generated.h"
 
+class ULLL_SettingWidget;
+class UOverlay;
 class UButton;
 
 /**
@@ -20,6 +22,8 @@ public:
 	virtual void NativeConstruct() override;
 
 public:
+	void SetupPauseState();
+	void RestorePauseState();
 	void SetupDeadStateLayout() const;
 	
 protected:
@@ -41,4 +45,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> ExitButton;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<ULLL_SettingWidget> SettingWidget;
 };
