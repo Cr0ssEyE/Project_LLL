@@ -121,8 +121,6 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	HandProjectile->MaxSpeed = ChaseHandAttributeSet->GetThrowSpeed();
 	HandProjectile->Velocity = ThrowDirection * ChaseHandAttributeSet->GetThrowSpeed();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandThrow::CheckReached);
-
-	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, WireHandThrowCueTag);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

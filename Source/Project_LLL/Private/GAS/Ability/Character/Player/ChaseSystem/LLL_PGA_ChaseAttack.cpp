@@ -50,8 +50,6 @@ void ULLL_PGA_ChaseAttack::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_ChaseAttack::OnInterruptedCallBack);
 
 	PlayMontageTask->ReadyForActivation();
-	
-	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, ChaseAttackCueTag);
 }
 
 void ULLL_PGA_ChaseAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

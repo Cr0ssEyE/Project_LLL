@@ -103,8 +103,8 @@ void ULLL_AnimNotify_GameplayTag::Notify_CueTriggered(AActor* OwnerActor)
 		ensure(false);
 		return;
 	}
-	
-	FName ParameterName = FModParameterRowHandle.GetRow<FFModParameterDataTable>(TEXT("Not Found FModParameter Row"))->Name;
+
+	const FName ParameterName = FModParameterRowHandle.GetRow<FFModParameterDataTable>(TEXT("Not Found FModParameter Row"))->Name;
 	FLLL_ExecuteCueHelper::ExecuteCue(OwnerActor, GameplayCueTag);
 	FModActor->GetFModAudioComponent()->SetParameter(ParameterName, FModParameterValue);
 }
