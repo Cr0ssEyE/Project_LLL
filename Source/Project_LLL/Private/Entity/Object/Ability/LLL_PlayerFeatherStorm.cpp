@@ -12,23 +12,20 @@
 ALLL_PlayerFeatherStorm::ALLL_PlayerFeatherStorm()
 {
 	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerFeatherStormDataAsset>(PATH_PLAYER_FEATHER_STORM_DATA, EAssertionLevel::Check);
-
-	PlayerFeatherStormAttributeSet = CreateDefaultSubobject<ULLL_PlayerFeatherStormAttributeSet>(TEXT("PlayerFeatherStormAttributeSet"));
 }
 
 void ALLL_PlayerFeatherStorm::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FeatherStormDataAsset = Cast<ULLL_PlayerFeatherStormDataAsset>(AbilityObjectDataAsset);
-	AbilityObjectAttributeSet = PlayerFeatherStormAttributeSet;
+	PlayerFeatherStormDataAsset = Cast<ULLL_PlayerFeatherStormDataAsset>(AbilityObjectDataAsset);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if (ProtoGameInstance->CheckPlayerDashDebug())
 		{
-			DrawDebugBox(GetWorld(), GetActorLocation(), OverlapCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, AbilityObjectAttributeSet->GetDestroyTimer());
+			DrawDebugBox(GetWorld(), GetActorLocation(), OverlapCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, AbilityObjectDataAsset->DestroyTimer);
 		}
 	}
 #endif
@@ -50,7 +47,7 @@ void ALLL_PlayerFeatherStorm::NotifyActorBeginOverlap(AActor* OtherActor)
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 			}
 		}
-	}), PlayerFeatherStormAttributeSet->GetDamageTimer(), true);
+	}), PlayerFeatherStormDataAsset->DamageTimer, true);
 }
 
 void ALLL_PlayerFeatherStorm::NotifyActorEndOverlap(AActor* OtherActor)

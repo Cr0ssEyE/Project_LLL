@@ -7,7 +7,6 @@
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
 #include "LLL_PlayerFeatherStorm.generated.h"
 
-class ULLL_PlayerFeatherStormAttributeSet;
 /**
  * 
  */
@@ -25,10 +24,7 @@ protected:
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_PlayerFeatherStormDataAsset> FeatherStormDataAsset;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<ULLL_PlayerFeatherStormAttributeSet> PlayerFeatherStormAttributeSet;
-
+	TObjectPtr<const ULLL_PlayerFeatherStormDataAsset> PlayerFeatherStormDataAsset;
+	
 	FTimerHandle KeepDamageHandle;
 };

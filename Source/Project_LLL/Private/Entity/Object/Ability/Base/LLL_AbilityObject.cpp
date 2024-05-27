@@ -35,7 +35,7 @@ void ALLL_AbilityObject::BeginPlay()
 		FTimerHandle DestroyTimerHandle;
 		GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 			Destroy();
-		}), AbilityObjectAttributeSet->GetDestroyTimer(), false);
+		}), AbilityObjectDataAsset->DestroyTimer, false);
 	}));
 }
 
