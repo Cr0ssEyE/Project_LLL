@@ -159,7 +159,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 		PlayerAnimInstance->SetDash(true);
 
 		const FGameplayEventData PayloadData;
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_DASH, PayloadData);
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_DASH_START, PayloadData);
 		
 		FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, DashCueTag);
 		
