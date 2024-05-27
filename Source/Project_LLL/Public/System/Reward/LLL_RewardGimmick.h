@@ -81,7 +81,6 @@ protected:
 	uint8 bMapGimmickIsExist : 1;
 
 protected:
-#if WITH_EDITORONLY_DATA
 	UPROPERTY(EditAnywhere)
 	uint8 bIsTest : 1;
 
@@ -93,6 +92,4 @@ protected:
 	
 	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
 	uint8 TestAbilityDataArrayNum3;
-#endif
-	
 };

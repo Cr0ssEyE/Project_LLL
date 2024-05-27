@@ -100,7 +100,7 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 	}
 
 	// AbilityLevel == 0.f -> RewardAbility == nullptr
-	if (!AbilityLevel)
+	if (AbilityLevel == 0.f)
 	{
 		ensure(false);
 		return false;

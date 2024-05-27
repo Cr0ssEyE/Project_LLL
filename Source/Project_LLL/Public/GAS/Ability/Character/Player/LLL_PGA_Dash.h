@@ -30,6 +30,9 @@ protected:
 	void DashActionEvent();
 	
 	UFUNCTION()
+	void LocationReachedEvent();
+	
+	UFUNCTION()
 	void CheckInputPressed(FGameplayEventData EventData);
 
 protected:
