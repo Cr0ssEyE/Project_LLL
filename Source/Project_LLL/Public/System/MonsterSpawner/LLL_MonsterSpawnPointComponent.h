@@ -15,9 +15,14 @@ class PROJECT_LLL_API ULLL_MonsterSpawnPointComponent : public UBillboardCompone
 
 public:
 	ULLL_MonsterSpawnPointComponent();
+	
+	FORCEINLINE int32 GetNum() const { return Num; }
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere)
+	int32 Num;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterSpawnerDataAsset> MonsterSpawnerDataAsset;
