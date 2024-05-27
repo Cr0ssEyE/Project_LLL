@@ -59,6 +59,9 @@ void ALLL_MonsterBase::BeginPlay()
 	
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
 
+	//GetCharacterMovement()->bOrientRotationToMovement = true;
+	//bUseControllerRotationYaw = true;
+
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(DropGoldEffect, 1.0, EffectContextHandle);
@@ -73,7 +76,6 @@ void ALLL_MonsterBase::BeginPlay()
 	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
 	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	MonsterStatusWidgetComponent->SetTickWhenOffscreen(true);
-	
 
 	MaskMeshComponent->SetStaticMesh(MonsterBaseDataAsset->MaskMesh);
 	MaskMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, MonsterBaseDataAsset->MaskAttachSocketName);
