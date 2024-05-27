@@ -70,7 +70,7 @@ protected:
 	FGameplayTag GameplayCueTag;
 
 	UPROPERTY(EditAnywhere, DisplayName = "FMOD 파라미터", meta=(EditCondition = "bIsUsingGameplayCue == true", EditConditionHides))
-	EFModParameter FModParameter;
+	FDataTableRowHandle FModParameterRowHandle;
 
 	UPROPERTY(EditAnywhere, DisplayName = "FMOD 파라미터 값", meta=(EditCondition = "bIsUsingGameplayCue == true", EditConditionHides))
 	float FModParameterValue;
