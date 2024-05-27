@@ -97,8 +97,14 @@ void ULLL_AnimNotify_GameplayTag::Notify_CueTriggered(AActor* OwnerActor)
 	{
 		return;
 	}
+	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(OwnerActor->GetWorld()->GetGameInstance());
+
+	if (!GameInstance)
+	{
+		ensure(false);
+		return;
+	}
 	
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
 	FName ParameterName;
 	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
 	{
@@ -108,7 +114,7 @@ void ULLL_AnimNotify_GameplayTag::Notify_CueTriggered(AActor* OwnerActor)
 			break;
 		}
 	}
-
-	FModActor->GetFModAudioComponent()->SetParameter(ParameterName, FModParameterValue);
+	
 	FLLL_ExecuteCueHelper::ExecuteCue(OwnerActor, GameplayCueTag);
+	FModActor->GetFModAudioComponent()->SetParameter(ParameterName, FModParameterValue);
 }
