@@ -30,7 +30,7 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_AbilityObjectDataAsset> AbilityObjectDataAsset;
-
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_AbilityObjectAttributeSet> AbilityObjectAttributeSet;
 };

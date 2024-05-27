@@ -21,7 +21,6 @@ ULLL_AnimNotify_GameplayTag::ULLL_AnimNotify_GameplayTag() :
 	bIsUsingRemoveTag(false),
 	RemoveTagCount(1.f),
 	bIsUsingGameplayCue(false),
-	FModParameter(EFModParameter::None),
 	FModParameterValue(0.f)
 {
 	
@@ -97,18 +96,15 @@ void ULLL_AnimNotify_GameplayTag::Notify_CueTriggered(AActor* OwnerActor)
 	{
 		return;
 	}
-	
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	FName ParameterName;
-	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
-	{
-		if (FModParameterData.Parameter == EFModParameter::PlayerAttackCountParameter)
-		{
-			ParameterName = FModParameterData.Name;
-			break;
-		}
-	}
+	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(OwnerActor->GetWorld()->GetGameInstance());
 
-	FModActor->GetFModAudioComponent()->SetParameter(ParameterName, FModParameterValue);
+	if (!GameInstance || FModParameterRowHandle.IsNull())
+	{
+		ensure(false);
+		return;
+	}
+	
+	FName ParameterName = FModParameterRowHandle.GetRow<FFModParameterDataTable>(TEXT("Not Found FModParameter Row"))->Name;
 	FLLL_ExecuteCueHelper::ExecuteCue(OwnerActor, GameplayCueTag);
+	FModActor->GetFModAudioComponent()->SetParameter(ParameterName, FModParameterValue);
 }

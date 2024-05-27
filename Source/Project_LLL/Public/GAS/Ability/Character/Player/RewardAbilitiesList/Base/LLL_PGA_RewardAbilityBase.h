@@ -19,7 +19,7 @@ class PROJECT_LLL_API ULLL_PGA_RewardAbilityBase : public ULLL_PlayerGameplayAbi
 	GENERATED_BODY()
 
 public:
-	void SetAbilityInfo(const FAbilityDataTable* InAbilityData);
+	FORCEINLINE void SetAbilityInfo(const FAbilityDataTable* InAbilityData) { AbilityData = InAbilityData; }
 
 	FORCEINLINE const FAbilityDataTable* GetAbilityData() const { return AbilityData; }
 	
