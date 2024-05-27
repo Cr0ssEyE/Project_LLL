@@ -43,6 +43,22 @@ public:
 	void SetRewardButtons();
 
 	void SetDataTable();
+
+	
+protected:
+	UFUNCTION()
+	void ClickFirstButton();
+
+	UFUNCTION()
+	void ClickSecondButton();
+
+	UFUNCTION()
+	void ClickThirdButton();
+	
+	void ClickButtonEvent(FAbilityDataTable* ButtonAbilityData);
+
+	UFUNCTION()
+	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects);
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -59,24 +75,23 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsButtonEventSetup : 1;
-
-	UPROPERTY(EditAnywhere)
-	uint8 bIsTest : 1;
-
+	
 	UPROPERTY(VisibleDefaultsOnly)
 	uint8 bMapGimmickIsExist : 1;
 
-	UFUNCTION()
-	void ClickFirstButton();
+protected:
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere)
+	uint8 bIsTest : 1;
 
-	UFUNCTION()
-	void ClickSecondButton();
+	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
+	uint8 TestAbilityDataArrayNum1;
 
-	UFUNCTION()
-	void ClickThirdButton();
+	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
+	uint8 TestAbilityDataArrayNum2;
 	
-	void ClickButtonEvent(FAbilityDataTable* ButtonAbilityData);
-
-	UFUNCTION()
-	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects);
+	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
+	uint8 TestAbilityDataArrayNum3;
+#endif
+	
 };

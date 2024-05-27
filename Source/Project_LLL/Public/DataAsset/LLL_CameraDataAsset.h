@@ -24,17 +24,21 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 FOV", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Perspective", EditConditionHides))
 	float CameraFOV;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 암 거리")
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 암 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Perspective", EditConditionHides))
 	float SpringArmDistance;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
 	float CameraDistance;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "근평면 클리핑 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
-	float OrthographicNearClipDistance;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "근|원평면 거리 조정", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	float AutoPlaneShift;
+	
+	// 
+	// UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "근평면 클리핑 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	// float OrthographicNearClipDistance;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "원평면 클리핑 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
-	float OrthographicFarClipDistance;
+	// UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "원평면 클리핑 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	// float OrthographicFarClipDistance;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 회전값")
 	FRotator SpringArmAngle;

@@ -7,6 +7,7 @@
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "LLL_StaffBasicMagic.generated.h"
 
+class ULLL_StaffBasicMagicAttributeSet;
 class UBoxComponent;
 /**
  * 
@@ -30,4 +31,7 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_StaffBasicMagicDataAsset> StaffBasicMagicDataAsset;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<ULLL_StaffBasicMagicAttributeSet> StaffBasicMagicAttributeSet;
 };

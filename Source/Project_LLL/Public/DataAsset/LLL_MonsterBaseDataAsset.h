@@ -29,4 +29,13 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "스테이터스 게이지 크기")
 	FVector2D StatusGaugeSize;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "가면 메시")
+	TObjectPtr<UStaticMesh> MaskMesh;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "가면 부착 소켓 이름")
+	FName MaskAttachSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "가면 트랜스폼")
+	FTransform MaskTransform;
 };
