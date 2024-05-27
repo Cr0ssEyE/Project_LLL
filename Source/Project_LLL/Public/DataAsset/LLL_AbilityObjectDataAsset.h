@@ -20,7 +20,4 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "데미지 이펙트")
 	TSubclassOf<UGameplayEffect> DamageEffect;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Stat", DisplayName = "파괴 시간")
-	float DestroyTimer;
 };

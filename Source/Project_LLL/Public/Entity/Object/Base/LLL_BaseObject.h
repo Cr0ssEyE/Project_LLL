@@ -21,7 +21,6 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_BaseObject();
 
-	FORCEINLINE TObjectPtr<const ULLL_BaseObjectDataAsset> GetObjectDataAsset() const { return BaseObjectDataAsset; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
 	

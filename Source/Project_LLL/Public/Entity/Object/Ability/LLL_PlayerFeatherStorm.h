@@ -7,6 +7,7 @@
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
 #include "LLL_PlayerFeatherStorm.generated.h"
 
+class ULLL_PlayerFeatherStormAttributeSet;
 /**
  * 
  */
@@ -25,6 +26,9 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_PlayerFeatherStormDataAsset> PlayerFeatherStormDataAsset;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<ULLL_PlayerFeatherStormAttributeSet> PlayerFeatherStormAttributeSet;
 	
 	FTimerHandle KeepDamageHandle;
 };

@@ -7,26 +7,29 @@
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_FilePath.h"
 #include "Game/ProtoGameInstance.h"
+#include "GAS/Attribute/Object/Ability/LLL_PlayerFeatherStormAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_PlayerFeatherStorm::ALLL_PlayerFeatherStorm()
 {
 	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerFeatherStormDataAsset>(PATH_PLAYER_FEATHER_STORM_DATA, EAssertionLevel::Check);
+
+	PlayerFeatherStormAttributeSet = CreateDefaultSubobject<ULLL_PlayerFeatherStormAttributeSet>(TEXT("PlayerFeatherStormAttributeSet"));
 }
 
 void ALLL_PlayerFeatherStorm::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 갑자기 캐스트를 못함 왜??????
 	PlayerFeatherStormDataAsset = Cast<ULLL_PlayerFeatherStormDataAsset>(AbilityObjectDataAsset);
+	AbilityObjectAttributeSet = PlayerFeatherStormAttributeSet;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if (ProtoGameInstance->CheckPlayerDashDebug())
 		{
-			DrawDebugBox(GetWorld(), GetActorLocation(), OverlapCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, AbilityObjectDataAsset->DestroyTimer);
+			DrawDebugBox(GetWorld(), GetActorLocation(), OverlapCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, AbilityObjectAttributeSet->GetDestroyTimer());
 		}
 	}
 #endif
@@ -48,9 +51,7 @@ void ALLL_PlayerFeatherStorm::NotifyActorBeginOverlap(AActor* OtherActor)
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 			}
 		}
-	}), 0.5f, true);
-	// 캐스트 문제 해결될때까지 임시 처리
-	//}), PlayerFeatherStormDataAsset->DamageTimer, true);
+	}), PlayerFeatherStormAttributeSet->GetDamageTimer(), true);
 }
 
 void ALLL_PlayerFeatherStorm::NotifyActorEndOverlap(AActor* OtherActor)

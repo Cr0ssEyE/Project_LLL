@@ -14,7 +14,4 @@ class PROJECT_LLL_API ULLL_PlayerFeatherStormDataAsset : public ULLL_AbilityObje
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "Stat", DisplayName = "데미지 적용 시간 간격")
-	float DamageTimer;
 };
