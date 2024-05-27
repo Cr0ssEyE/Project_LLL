@@ -3,10 +3,10 @@
 
 #include "Entity/Object/Ability/LLL_PlayerFeatherStorm.h"
 
+#include "AbilitySystemComponent.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_FilePath.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Object/Ability/LLL_PlayerFeatherStormAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_PlayerFeatherStorm::ALLL_PlayerFeatherStorm()
@@ -18,6 +18,7 @@ void ALLL_PlayerFeatherStorm::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 갑자기 캐스트를 못함 왜??????
 	PlayerFeatherStormDataAsset = Cast<ULLL_PlayerFeatherStormDataAsset>(AbilityObjectDataAsset);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -47,7 +48,9 @@ void ALLL_PlayerFeatherStorm::NotifyActorBeginOverlap(AActor* OtherActor)
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 			}
 		}
-	}), PlayerFeatherStormDataAsset->DamageTimer, true);
+	}), 0.5f, true);
+	// 캐스트 문제 해결될때까지 임시 처리
+	//}), PlayerFeatherStormDataAsset->DamageTimer, true);
 }
 
 void ALLL_PlayerFeatherStorm::NotifyActorEndOverlap(AActor* OtherActor)
