@@ -7,7 +7,8 @@
 
 ALLL_SystemBase::ALLL_SystemBase()
 {
-	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
+	PrimaryActorTick.bCanEverTick = true;
 	
+	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	FModAudioComponent->SetupAttachment(RootComponent);
 }

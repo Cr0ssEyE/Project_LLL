@@ -4,8 +4,8 @@
 #include "GAS/Ability/Character/Monster/Base/LLL_MGA_Charge.h"
 
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "Constant/LLL_MonatgeSectionName.h"
 #include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDash.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "Util/LLL_ExecuteCueHelper.h"
 
 void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -17,12 +17,25 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 		UE_LOG(LogTemp, Warning, TEXT("%s 어빌리티에 몽타주가 없음"), *GetName());
 		return;
 	}
-	
-	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ChargeMontage"), ChargeMontage, 1.0f, SECTION_CHARGE);
-	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_MGA_Charge::OnCompleteCallBack);
-	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_MGA_Charge::OnInterruptedCallBack);
-	PlayMontageTask->ReadyForActivation();
 
-	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+
+	Monster->GetCharacterAnimInstance()->Montage_Play(ChargeMontage);
+
+	FTimerHandle ChargeTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(ChargeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	}), MonsterAttributeSet->GetChargeTimer(), false);
+
+	Monster->SetCharging(true);
 	FLLL_ExecuteCueHelper::ExecuteCue(Monster, ChargeCueTag);
+}
+
+void ULLL_MGA_Charge::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+	Monster->SetCharging(false);
+	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

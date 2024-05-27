@@ -29,15 +29,14 @@ public:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, MaxHealth);
-	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, CurrentHealth);
-	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, MaxShield);
-	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, CurrentShield);
+	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, CurrentHealth)
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, OffensePower);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, MoveSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, ReceiveDamage);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, AccelerateSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, TurnSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, GroundFriction);
+	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, AttackSpeed);
 	
 	// 캐릭터 기본 어트리뷰트 데이터
 protected:
@@ -46,19 +45,13 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData CurrentHealth;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MaxShield;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData CurrentShield;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData OffensePower;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MoveSpeed;
-
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData AccelerateSpeed;
 
@@ -67,6 +60,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData GroundFriction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData AttackSpeed;
 	
 	// 간접 접근을 위한 메타 어트리뷰트 데이터
 protected:

@@ -8,31 +8,23 @@
 #include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
-#include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "DataTable/LLL_FModParameterDataTable.h"
-#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
-#include "Util/LLL_ConstructorHelper.h"
 #include "Util/LLL_ExecuteCueHelper.h"
 
-// Sets default values
 ALLL_BaseCharacter::ALLL_BaseCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
 	bIsDead = false;
 
 	ASC = CreateDefaultSubobject<ULLL_BaseASC>(TEXT("AbilitySystem"));
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
-	
 	FModAudioComponent->SetupAttachment(RootComponent);
 
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	bIsSpawned = false;
-#endif
+	Level = 1;
 }
 
 void ALLL_BaseCharacter::PostLoad()
@@ -59,13 +51,6 @@ void ALLL_BaseCharacter::PostInitializeComponents()
 
 void ALLL_BaseCharacter::SetDefaultInformation()
 {
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(bIsSpawned)
-	{
-		return;
-	}
-#endif
-
 	GetMesh()->SetRenderCustomDepth(true);
 	GetMesh()->SetCustomDepthStencilValue(1);
 	
@@ -91,14 +76,9 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationRoll = false;
-		
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		bIsSpawned = true;
-#endif
 	}
 }
 
-// Called when the game starts or when spawned
 void ALLL_BaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -127,25 +107,11 @@ void ALLL_BaseCharacter::BeginPlay()
 			}
 		}
 
-		// GE 기반으로 자신의 어트리뷰트 초기화
-		ASC->AddSpawnedAttribute(CharacterAttributeSet);
-		
-		// TODO: 각 캐릭터 별로 테이블로 초기화 하도록 구현하기. 방법은 노션 https://abit.ly/6mlijv 및 LLL_PlayerBase 참고
-		if (IsValid(CharacterDataAsset->InitEffect))
-		{
-			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-			EffectContextHandle.AddSourceObject(this);
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(CharacterDataAsset->InitEffect, 1.0, EffectContextHandle);
-			if(EffectSpecHandle.IsValid())
-			{
-				ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-			}
-		}
-
 		UpdateWidgetDelegate.Broadcast();
 	}
 
 	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
+		InitAttributeSet();
 		const ULLL_CharacterAttributeSetBase* CharacterAttributeSetBase = CastChecked<ULLL_CharacterAttributeSetBase>(ASC->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
 		GetCharacterMovement()->MaxAcceleration = CharacterAttributeSetBase->GetAccelerateSpeed();
 		GetCharacterMovement()->GroundFriction = CharacterAttributeSetBase->GetGroundFriction();
@@ -153,11 +119,15 @@ void ALLL_BaseCharacter::BeginPlay()
 	}));
 }
 
-// Called every frame
-void ALLL_BaseCharacter::Tick(float DeltaTime)
+void ALLL_BaseCharacter::InitAttributeSet()
 {
-	Super::Tick(DeltaTime);
+	UE_LOG(LogTemp, Log, TEXT("%s 어트리뷰트 초기화 리스트"), *GetName())
 
+	TArray<UAttributeSet*> SpawnedAttributes = ASC->GetSpawnedAttributes();
+	for (const auto SpawnedAttribute : SpawnedAttributes)
+	{
+		UE_LOG(LogTemp, Log, TEXT("- %s"), *SpawnedAttribute->GetName())
+	}
 }
 
 void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
@@ -173,13 +143,13 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	
 		if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
 		{
-			FGameplayEventData PayloadData;
+			const FGameplayEventData PayloadData;
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
 		}
 	}
 }
 
-void ALLL_BaseCharacter::Damaged()
+void ALLL_BaseCharacter::Damaged(bool IsDOT)
 {
 	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DamagedCueTag);
 	

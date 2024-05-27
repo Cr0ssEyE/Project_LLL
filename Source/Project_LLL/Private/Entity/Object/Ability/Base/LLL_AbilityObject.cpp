@@ -15,7 +15,7 @@ ALLL_AbilityObject::ALLL_AbilityObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
-	OverlapCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Skill Collision"));
+	OverlapCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Overlap Collision"));
 	OverlapCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	OverlapCollisionBox->SetCollisionProfileName(CP_PLAYER_SKILL);
 	OverlapCollisionBox->SetupAttachment(RootComponent);
@@ -26,15 +26,17 @@ void ALLL_AbilityObject::BeginPlay()
 	Super::BeginPlay();
 
 	AbilityObjectDataAsset = Cast<ULLL_AbilityObjectDataAsset>(BaseObjectDataAsset);
-	ASC->AddSpawnedAttribute(AbilityObjectAttributeSet);
 
 	SetOwner(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	OverlapCollisionBox->SetBoxExtent(AbilityObjectDataAsset->OverlapCollisionSize);
-	
-	FTimerHandle DestroyTimerHandle;
-	GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
-		Destroy();
-	}), AbilityObjectAttributeSet->GetDestroyTimer(), false);
+
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]
+	{
+		FTimerHandle DestroyTimerHandle;
+		GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+			Destroy();
+		}), AbilityObjectAttributeSet->GetDestroyTimer(), false);
+	}));
 }
 
 void ALLL_AbilityObject::NotifyActorBeginOverlap(AActor* OtherActor)

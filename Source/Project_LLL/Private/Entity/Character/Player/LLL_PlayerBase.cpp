@@ -12,8 +12,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_AnimMontageSlotName.h"
-#include "Components/WidgetComponent.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
+#include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
@@ -28,20 +28,25 @@
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "GAS/ASC/LLL_PlayerASC.h"
+#include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 #include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
+	ASC = CreateDefaultSubobject<ULLL_PlayerASC>(TEXT("PlayerASC"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
 	ObjectPoolingComponent = CreateDefaultSubobject<ULLL_ObjectPoolingComponent>(TEXT("ObjectPoolingComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	
-	CharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
+	PlayerCharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
 	SkillAttributeSet = CreateDefaultSubobject<ULLL_PlayerSkillAttributeSet>(TEXT("SkillAttributeSet"));
+	AbnormalStatusAttributeSet = CreateDefaultSubobject<ULLL_AbnormalStatusAttributeSet>(TEXT("AbnormalStatusAttributeSet"));
+	
 	ChaseActionGaugeWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("ChaseActionGaugeWidgetComponent"));
 
 	ChaseActionGaugeWidgetComponent->SetupAttachment(RootComponent);
@@ -83,19 +88,16 @@ void ALLL_PlayerBase::BeginPlay()
 
 	if (IsValid(CameraDataAsset))
 	{
-		SpringArm->TargetArmLength = CameraDataAsset->SpringArmDistance;
 		Camera->SetProjectionMode(CameraDataAsset->ProjectionType);
 		
 		if (Camera->ProjectionMode == ECameraProjectionMode::Orthographic)
 		{
 			Camera->OrthoWidth = CameraDataAsset->CameraDistance;
-			Camera->SetAutoCalculateOrthoPlanes(false);
-			Camera->SetAutoPlaneShift(false);
-			Camera->SetOrthoNearClipPlane(CameraDataAsset->OrthographicNearClipDistance);
-			Camera->SetOrthoFarClipPlane(CameraDataAsset->OrthographicFarClipDistance);
+			Camera->SetAutoPlaneShift(CameraDataAsset->AutoPlaneShift);
 		}
 		else
 		{
+			SpringArm->TargetArmLength = CameraDataAsset->SpringArmDistance;
 			Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
 		}
 		
@@ -118,12 +120,6 @@ void ALLL_PlayerBase::BeginPlay()
 				ASC->GiveAbility(SkillSpec);
 			}
 		}
-
-		ASC->AddSpawnedAttribute(SkillAttributeSet);
-
-		// DefaultGame.ini의 [/Script/GameplayAbilities.AbilitySystemGlobals] 항목에 테이블 미리 추가해놔야 정상 작동함.
-		IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, 1.f, true);
-		
 	}
 
 	ULLL_PlayerChaseActionWidget* ChaseActionWidget = PlayerUIManager->GetChaseActionWidget();
@@ -132,6 +128,7 @@ void ALLL_PlayerBase::BeginPlay()
 	ChaseActionGaugeWidgetComponent->SetRelativeLocation(PlayerDataAsset->ChaseActionGaugeLocation);
 	ChaseActionGaugeWidgetComponent->SetDrawSize(PlayerDataAsset->ChaseActionGaugeSize);
 	ChaseActionGaugeWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ChaseActionGaugeWidgetComponent->SetTickWhenOffscreen(true);
 	ChaseActionWidget->SetCircleProgressBarValue(1.0f);
 }
 
@@ -187,6 +184,14 @@ void ALLL_PlayerBase::PossessedBy(AController* NewController)
 	{
 		PlayerController->SetAudioListenerOverride(SpringArm, FVector::ZeroVector, FRotator::ZeroRotator);
 	}
+}
+
+void ALLL_PlayerBase::InitAttributeSet()
+{
+	Super::InitAttributeSet();
+
+	// DefaultGame.ini의 [/Script/GameplayAbilities.AbilitySystemGlobals] 항목에 테이블 미리 추가해놔야 정상 작동함.
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, Level, true);
 }
 
 void ALLL_PlayerBase::AddInteractiveObject(ALLL_InteractiveObject* Object)
@@ -257,7 +262,7 @@ FVector ALLL_PlayerBase::CheckMouseLocation()
 	LastCheckedMouseLocation = HitResult.ImpactPoint;
 	
 	HitResult.Init();
-	float CorrectionCheckRadius = Cast<ULLL_PlayerCharacterAttributeSet>(CharacterAttributeSet)->GetTargetingCorrectionRadius();
+	const float CorrectionCheckRadius = PlayerCharacterAttributeSet->GetTargetingCorrectionRadius();
 	bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
 		LastCheckedMouseLocation,
@@ -269,7 +274,7 @@ FVector ALLL_PlayerBase::CheckMouseLocation()
 		);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug() || ProtoGameInstance->CheckPlayerChaseActionDebug())
 		{
@@ -288,7 +293,7 @@ FVector ALLL_PlayerBase::CheckMouseLocation()
 	}
 #endif
 	
-	if(bResult)
+	if (bResult)
 	{
 		LastCheckedMouseLocation = HitResult.GetActor()->GetActorLocation();
 	}
@@ -369,6 +374,11 @@ void ALLL_PlayerBase::ChaseAction(const FInputActionValue& Value, EAbilityInputN
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
+	if (CastChecked<ULLL_GameInstance>(GetGameInstance())->CheckCustomTimeDilationIsChanging())
+	{
+		return;
+	}
+	
 	const int32 InputID = static_cast<int32>(InputName);
 	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
@@ -446,7 +456,7 @@ void ALLL_PlayerBase::TurnToMouseCursor()
 		return;
 	}
 	
-	SetActorRotation(FMath::RInterpTo(GetActorRotation(), MouseDirectionRotator, GetWorld()->GetDeltaSeconds(), CharacterAttributeSet->GetTurnSpeed() * ToCursorRotationMultiplyValue));
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), MouseDirectionRotator, GetWorld()->GetDeltaSeconds(), PlayerCharacterAttributeSet->GetTurnSpeed() * ToCursorRotationMultiplyValue));
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
 }
@@ -471,15 +481,14 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
 }
 
-void ALLL_PlayerBase::Damaged()
+void ALLL_PlayerBase::Damaged(bool IsDOT)
 {
-	Super::Damaged();
-
-	if (IsValid(PlayerDataAsset->DamagedAnimMontage))
+	Super::Damaged(IsDOT);
+	
+	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT)
 	{
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
 	}
-	
 }
 
 void ALLL_PlayerBase::Dead()

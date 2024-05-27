@@ -74,7 +74,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		CurrentComboAction = 1;
 	}
 	
-	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackAnimMontage, 1.f, *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
+	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackAnimMontage, PlayerAttributeSet->GetAttackSpeed(), *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 	MontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
 	MontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
 	MontageTask->ReadyForActivation();
@@ -83,6 +83,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	WaitTagTask->EventReceived.AddDynamic(this, &ULLL_PGA_AttackBase::CheckInputPressed);
 	WaitTagTask->ReadyForActivation();
 
+	PlayerCharacter->SetAttacking(true);
 	ExecuteAttackCueWithDelay();
 }
 
@@ -105,12 +106,13 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 	}
 #endif
 
-	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	if(IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 		CurrentComboAction = 0;
 		bIsCanPlayNextAction = false;
+		PlayerCharacter->SetAttacking(false);
 	}
 	GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
 	WaitTagTask->EndTask();
@@ -185,6 +187,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 			}
 		}));
 		
+		PlayerCharacter->SetAttacking(true);
 		ExecuteAttackCueWithDelay();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -218,8 +221,7 @@ void ULLL_PGA_AttackBase::ExecuteAttackCueWithDelay()
 			int32 CapturedCurrentComboAction = CurrentComboAction;
 			FTimerHandle AttackEventDelayTimerHandle;
 
-			GetWorld()->GetTimerManager().SetTimer(AttackEventDelayTimerHandle, FTimerDelegate::CreateWeakLambda(this, [this, CapturedCurrentComboAction]{
-				const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+			GetWorld()->GetTimerManager().SetTimer(AttackEventDelayTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, CapturedCurrentComboAction]{
 				FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, AttackCueTag);
 				PlayerCharacter->GetFModAudioComponent()->SetParameter(PlayerAttackCountParameterName, CapturedCurrentComboAction - 1);
 			}), AttackCueDelayArray[AttackEventDelayIndex] * MontagePlayRate, false);

@@ -4,11 +4,13 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "BrainComponent.h"
 #include "FMODAudioComponent.h"
-#include "GameplayAbilitySpec.h"
+#include "GameplayAbilitiesModule.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
@@ -17,8 +19,9 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GAS/Ability/Character/Monster/Base/LLL_MGA_Attack.h"
 #include "GAS/Ability/Character/Monster/Base/LLL_MGA_Charge.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
+#include "GAS/ASC/LLL_MonsterASC.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
@@ -27,6 +30,8 @@
 
 ALLL_MonsterBase::ALLL_MonsterBase()
 {
+	ASC = CreateDefaultSubobject<ULLL_MonsterASC>(TEXT("MonsterASC"));
+	MonsterAttributeSet = CreateDefaultSubobject<ULLL_MonsterAttributeSet>(TEXT("MonsterAttributeSet"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_MonsterBaseUIManager>(TEXT("MonsterUIManageComponent"));
 	MonsterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("MonsterStatusWidgetComponent"));
 	
@@ -42,13 +47,18 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 
 	StackedKnockBackedPower = 0.f;
 	StackedKnockBackVelocity = FVector::Zero();
+
+	MaskMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mask"));
+	MaskMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
+	MaskMeshComponent->SetupAttachment(RootComponent);
 }
 
 void ALLL_MonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	ASC->AddSpawnedAttribute(DropGoldAttributeSet);
+	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
+
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(DropGoldEffect, 1.0, EffectContextHandle);
@@ -56,22 +66,18 @@ void ALLL_MonsterBase::BeginPlay()
 	{
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}
-	
-	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
 
 	MonsterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
 	MonsterStatusWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	MonsterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
 	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
 	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	// DefaultGame.ini에 +GlobalAttributeSetDefaultsTableNames = /Game/DataTable/AttributeInitializer/CT_MonsterData.CT_MonsterData 추가 필요
-	// 플레이어 데이터 테이블은 기획상으로 나온 플레이어 어트리뷰트 셋 테이블과 데이터가 같지만 몬스터 데이터 테이블은 현재 기획상으로 나온 몬스터 어트리븉 셋 테이블과 같지 않다.
-	// 따라서 시은님과 상의하여 테이블을 정리하고 몬스터 초기화 로직을 구현할 예정이다.
-	// 강건님의 코드를 분석해봤을때 IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, 1.f, true);로 초기화를 진행하는 것 같다.
-	// 그룹은 LLL_AttributeInitalizeGroupName.h에 정의하여 사용하면 될 것 같다.
-
+	MonsterStatusWidgetComponent->SetTickWhenOffscreen(true);
 	
+
+	MaskMeshComponent->SetStaticMesh(MonsterBaseDataAsset->MaskMesh);
+	MaskMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, MonsterBaseDataAsset->MaskAttachSocketName);
+	MaskMeshComponent->SetRelativeTransform(MonsterBaseDataAsset->MaskTransform);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -96,6 +102,79 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 		else
 		{
 			GetCapsuleComponent()->SetHiddenInGame(true);
+		}
+	}
+#endif
+}
+
+void ALLL_MonsterBase::InitAttributeSet()
+{
+	Super::InitAttributeSet();
+
+	const int32 Data = Id * 100 + Level;
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_MONSTER, Data, true);
+}
+
+void ALLL_MonsterBase::Attack() const
+{
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK)))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
+			}
+		}
+#endif
+	}
+}
+
+void ALLL_MonsterBase::Charge() const
+{
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE)))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
+			}
+		}
+#endif
+	}
+}
+
+void ALLL_MonsterBase::Damaged(bool IsDOT)
+{
+	Super::Damaged(IsDOT);
+
+	if (bIsAttacking)
+	{
+		return;
+	}
+
+	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
+	if (!IsValid(MonsterBaseAnimInstance) || IsDOT)
+	{
+		return;
+	}
+
+	MonsterBaseAnimInstance->StopAllMontages(1.0f);
+	PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+
+	FModAudioComponent->Stop();
+	// 경직 사운드 이벤트 할당
+	// 경직 사운드 플레이
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ProtoGameInstance->CheckMonsterCollisionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 경직"), *GetName()));
 		}
 	}
 #endif
@@ -134,69 +213,12 @@ void ALLL_MonsterBase::Dead()
 	}
 
 	MonsterStatusWidgetComponent->SetHiddenInGame(true);
-	
+
+	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();
 	FTimerHandle DestroyTimerHandle;
 	GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		Destroy();
-	}), 3.0f, false);
-}
-
-void ALLL_MonsterBase::Attack() const
-{
-	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK)))
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
-			}
-		}
-#endif
-	}
-}
-
-void ALLL_MonsterBase::Charge() const
-{
-	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE)))
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
-			}
-		}
-#endif
-	}
-}
-
-void ALLL_MonsterBase::Damaged()
-{
-	Super::Damaged();
-	
-	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(MonsterBaseAnimInstance))
-	{
-		MonsterBaseAnimInstance->StopAllMontages(1.0f);
-		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
-
-		FModAudioComponent->Stop();
-		// 경직 사운드 이벤트 할당
-		// 경직 사운드 플레이
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckMonsterCollisionDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 피격"), *GetName()));
-			}
-		}
-#endif
-	}
+	}), DestroyTimer, false);
 }
 
 void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower)
