@@ -21,6 +21,12 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
+		AActor* Attacker = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
+		if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Attacker))
+		{
+			Attacker = ThrownObject->GetOwner();
+		}
+		
 		ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
 		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
 		
@@ -31,7 +37,7 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		}
 		else
 		{
-			Player->Damaged(DOT);
+			Player->Damaged(Attacker, DOT);
 		}
 		
 		const uint32 DeclinedComboCount = FMath::FloorToInt(GetCurrentComboCount() * GetMultiplyComboCountWhenHit());
@@ -45,12 +51,7 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 				Player->TakeDamageDelegate.Broadcast(DOT);
 
 				FGameplayEventData PayloadData;
-				AActor* Instigator = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
-				if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Instigator))
-				{
-					Instigator = ThrownObject->GetOwner();
-				}
-				PayloadData.Instigator = Instigator;
+				PayloadData.Instigator = Attacker;
 				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
 				return;
 			}

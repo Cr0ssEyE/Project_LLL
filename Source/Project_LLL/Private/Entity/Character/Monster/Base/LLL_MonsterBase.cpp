@@ -59,9 +59,6 @@ void ALLL_MonsterBase::BeginPlay()
 	
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
 
-	//GetCharacterMovement()->bOrientRotationToMovement = true;
-	//bUseControllerRotationYaw = true;
-
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(DropGoldEffect, 1.0, EffectContextHandle);
@@ -149,9 +146,9 @@ void ALLL_MonsterBase::Charge() const
 	}
 }
 
-void ALLL_MonsterBase::Damaged(bool IsDOT)
+void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 {
-	Super::Damaged(IsDOT);
+	Super::Damaged(Attacker, IsDOT);
 
 	if (bIsAttacking)
 	{
