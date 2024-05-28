@@ -108,6 +108,12 @@ void ULLL_TitleScreenWidget::DisableWidgetActivation()
 
 void ULLL_TitleScreenWidget::OpenIntroLevel()
 {
+	if (bIsLoadTestLevel)
+	{
+		UGameplayStatics::OpenLevel(this, LEVEL_TEST);
+		return;
+	}
+	
 	UGameplayStatics::OpenLevel(this, LEVEL_INTRO);
 }
 
