@@ -94,8 +94,7 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	}
 	else if (Cast<ALLL_PlayerBase>(OwnerCharacter))
 	{
-		// Todo : 주인이 플레이어일 경우 처리 구현 필요
-		OffencePower = 30.0f;
+		OffencePower = (AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel) / static_cast<uint32>(AbilityData->AbilityValueType);
 	}
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, OffencePower);
 	
@@ -103,6 +102,7 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	{
 		if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other))
 		{
+			UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *Other->GetName())
 			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 		}
 	}

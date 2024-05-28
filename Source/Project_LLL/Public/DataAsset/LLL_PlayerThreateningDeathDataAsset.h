@@ -6,7 +6,6 @@
 #include "LLL_AbilityObjectDataAsset.h"
 #include "LLL_PlayerThreateningDeathDataAsset.generated.h"
 
-class UNiagaraSystem;
 /**
  * 
  */
@@ -15,7 +14,4 @@ class PROJECT_LLL_API ULLL_PlayerThreateningDeathDataAsset : public ULLL_Ability
 {
 	GENERATED_BODY()
 	
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "KnockBack", DisplayName = "넉백 파워")
-	float KnockBackPower;
 };
