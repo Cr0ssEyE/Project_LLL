@@ -20,7 +20,7 @@
 #define ECC_TRACE_FIELD ECC_GameTraceChannel16 // TraceField
 
 // 콜리전 프로필
-#define CP_PLAYER_SKILL TEXT("PlayerSkill")
+#define CP_PLAYER_ABILITY_OBJECT TEXT("PlayerAbilityObject")
 #define CP_PLAYER_THROWN_OBJECT TEXT("PlayerThrownObject")
 #define CP_NO_COLLISION TEXT("NoCollision")
 #define CP_OVERLAP_ALL TEXT("OverlapAll")

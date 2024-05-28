@@ -12,7 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
-#include "Util/LLL_ExecuteCueHelper.h"
+#include "Util/LLL_FModPlayHelper.h"
 
 ALLL_BaseCharacter::ALLL_BaseCharacter()
 {
@@ -149,10 +149,9 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	}
 }
 
-void ALLL_BaseCharacter::Damaged(bool IsDOT)
+void ALLL_BaseCharacter::Damaged(AActor* Attacker, bool IsDOT)
 {
-	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DamagedCueTag);
-	
+	FLLL_FModPlayHelper::PlayFModEvent(this, CharacterDataAsset->DamagedFModEvent);
 }
 
 void ALLL_BaseCharacter::Dead()
@@ -168,5 +167,4 @@ void ALLL_BaseCharacter::Dead()
 
 	ASC->CancelAbilities();
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("캐릭터 사망")));
-	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DeadCueTag);
 }

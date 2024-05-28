@@ -34,8 +34,4 @@ protected:
 	FVector StartLocation;
 	
 	FVector TargetLocation;
-
-protected:
-	UPROPERTY(EditAnywhere, DisplayName = "체이서 투척 이벤트 태그", meta=(Categories = "GameplayCue"))
-	FGameplayTag WireHandThrowCueTag;
 };

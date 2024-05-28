@@ -6,6 +6,7 @@
 #include "GAS/Ability/Character/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_AttackHitCheck.generated.h"
 
+class UFMODEvent;
 class ULLL_AT_Trace;
 class ULLL_PGA_KnockBack;
 class ALLL_TA_TraceBase;
@@ -41,10 +42,16 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<UGameplayEffect> GiveTagEffect;
 
+	UPROPERTY(EditAnywhere, DisplayName = "공격 충돌 FMod 이벤트")
+	TObjectPtr<UFMODEvent> HitFModEvent;
+
+	UPROPERTY(EditAnywhere, DisplayName = "공격 충돌 FMod 이벤트 파라미터 값")
+	float PlayerAttackHitCountParameterValue;
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<ALLL_TA_TraceBase> TargetActorClass;
-
+	
 	UPROPERTY()
 	TObjectPtr<ULLL_AT_Trace> TraceTask;
 };
