@@ -179,7 +179,7 @@ void ULLL_PGA_Dash::LocationReachedEvent()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("대쉬 이동 완료")));
 	const FGameplayEventData PayloadData;
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_DASH_LOCATIONREACHED, PayloadData);
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_DASH_END, PayloadData);
 }
 
 void ULLL_PGA_Dash::CheckInputPressed(FGameplayEventData EventData)
