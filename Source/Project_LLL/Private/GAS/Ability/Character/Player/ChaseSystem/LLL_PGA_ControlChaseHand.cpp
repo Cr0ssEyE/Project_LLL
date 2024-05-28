@@ -4,6 +4,7 @@
 #include "GAS/Ability/Character/Player/ChaseSystem/LLL_PGA_ControlChaseHand.h"
 
 #include "AbilitySystemComponent.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -28,10 +29,15 @@ void ULLL_PGA_ControlChaseHand::ActivateAbility(const FGameplayAbilitySpecHandle
 	
 	PlayerChaseHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_ControlChaseHand::OnCompleteCallBack);
 
-	if (IsValid(ThrowAnimMontage))
+	if (!IsValid(ThrowAnimMontage))
 	{
-		PlayerCharacter->GetCharacterAnimInstance()->Montage_Play(ThrowAnimMontage);
+		EndAbility(CurrentSpecHandle,  CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
 	}
+
+	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ThrowMontage"), ThrowAnimMontage, 1.0f);
+	MontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_ControlChaseHand::OnInterruptedCallBack);
+	MontageTask->ReadyForActivation();
 	
 	UAbilityTask_WaitGameplayEvent* ThrowTriggerTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_PLAYER_THROW_TRIGGERED, nullptr, true);
 	ThrowTriggerTask->EventReceived.AddDynamic(this, &ULLL_PGA_ControlChaseHand::ThrowHand);
