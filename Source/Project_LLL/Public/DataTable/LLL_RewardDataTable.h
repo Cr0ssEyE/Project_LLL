@@ -11,15 +11,15 @@ struct FRewardDataTable : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	FRewardDataTable()
+	FRewardDataTable() :
+	GroupID(0),
+	ID(0),
+	Value(0),
+	bIsHardReward(false)
 	{
-		GroupID = 0;
-		ID = 0;
-		Value = 0;
-		bIsHardReward = false;
+		
 	}
 	
-	// 해당 FName과 일치하는 열의 값 읽어옴
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	uint8 GroupID;
 
