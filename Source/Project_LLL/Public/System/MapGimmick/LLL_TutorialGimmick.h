@@ -50,5 +50,8 @@ protected:
 
 	UFUNCTION()
 	void RewardDestroyed(AActor* DestroyedActor);
+
+	UFUNCTION()
+	void LoadLevel();
 };
 

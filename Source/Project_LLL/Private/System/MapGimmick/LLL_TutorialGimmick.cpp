@@ -10,6 +10,8 @@
 #include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
 #include "System/MapGimmick/LLL_PlayerSpawnPointComponent.h"
 #include "Util/LLL_ConstructorHelper.h"
+#include <Kismet/GameplayStatics.h>
+#include <Constant/LLL_LevelNames.h>
 
 ALLL_TutorialGimmick::ALLL_TutorialGimmick()
 {
@@ -42,11 +44,16 @@ void ALLL_TutorialGimmick::BeginPlay()
 
 void ALLL_TutorialGimmick::OnInteractionGate(FRewardDataTable* Data)
 {
-	
+	LoadLevel();
 }
 
 void ALLL_TutorialGimmick::RewardDestroyed(AActor* DestroyedActor)
 {
 	Gate->SetActivate();
+}
+
+void ALLL_TutorialGimmick::LoadLevel()
+{
+	UGameplayStatics::OpenLevel(this, LEVEL_TEST);
 }
 
