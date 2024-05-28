@@ -7,6 +7,7 @@
 #include "Entity/Character/Base/LLL_BaseCharacterUIManager.h"
 #include "LLL_PlayerUIManager.generated.h"
 
+class ULLL_MainEruriaInfoWidget;
 class ULLL_SkillWidget;
 class ALLL_InteractiveObject;
 class ULLL_InteractionWidget;
@@ -44,7 +45,8 @@ public:
 	FORCEINLINE ULLL_SelectRewardWidget* GetSelectRewardWidget() const { return SelectRewardWidget; }
 	FORCEINLINE ULLL_PlayerChaseActionWidget* GetChaseActionWidget() const { return ChaseActionWidget; }
 	FORCEINLINE ULLL_PlayerComboWidget* GetComboWidget() const { return ComboWidget; }
-
+	FORCEINLINE ULLL_MainEruriaInfoWidget* GetMainEruriaWidget() const { return MainEruriaInfoWidget; }
+	
 protected:
 	virtual void UpdateWidget() override;
 
@@ -84,4 +86,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_PlayerChaseActionWidget> ChaseActionWidget;
+
+	UPROPERTY(VisibleAnywhere)
+	TSubclassOf<ULLL_MainEruriaInfoWidget> MainEruriaInfoWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_MainEruriaInfoWidget> MainEruriaInfoWidget;
 };

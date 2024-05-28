@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameplayEffect.h"
+#include "Constant/LLL_FilePath.h"
+#include "Enumeration/LLL_AbilitySystemEnumHelper.h"
 #include "LLL_ExtendedGameplayEffect.generated.h"
 
 enum class EEffectApplyTarget : uint8;
@@ -31,6 +33,33 @@ public:
 	FORCEINLINE int32 GetID() const { return Id; }
 	FORCEINLINE FAbilityDataTable* GetAbilityData() const { return AbilityData; }
 	FORCEINLINE void SetAbilityInfo(FAbilityDataTable* InAbilityData) { AbilityData = InAbilityData; }
+
+	FPrimaryAssetId GetPrimaryAssetId() const override
+	{
+		FName AssetName = GetClass()->GetFName();
+		AssetName = *AssetName.ToString().Replace(TEXT("_C"), TEXT(""));
+
+		FName PrimaryAssetType;
+		switch (EffectOwnership)
+		{
+		case EEffectOwnerType::Monster:
+			PrimaryAssetType = PATH_MONSTER_EFFECTS;
+			break;
+		case EEffectOwnerType::Object:
+			PrimaryAssetType = PATH_OBJECT_EFFECTS;
+			break;
+		case EEffectOwnerType::Player:
+			PrimaryAssetType = PATH_PLAYER_EFFECTS;
+			break;
+		case EEffectOwnerType::Share:
+			PrimaryAssetType = PATH_SHARE_EFFECTS;
+			break;
+		default:
+			checkNoEntry();
+		}
+		
+		return FPrimaryAssetId(PrimaryAssetType, AssetName);
+	}
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS", DisplayName = "이펙트 소유자 종류", meta=(DisplayPriority = 1))

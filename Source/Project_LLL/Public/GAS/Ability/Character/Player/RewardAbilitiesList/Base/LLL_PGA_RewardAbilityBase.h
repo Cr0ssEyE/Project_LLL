@@ -21,6 +21,8 @@ class PROJECT_LLL_API ULLL_PGA_RewardAbilityBase : public ULLL_PlayerGameplayAbi
 public:
 	void SetAbilityInfo(const FAbilityDataTable* InAbilityData);
 
+	FORCEINLINE const FAbilityDataTable* GetAbilityData() const { return AbilityData; }
+	
 protected:
 	virtual void PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData) override;
 	
