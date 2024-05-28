@@ -138,6 +138,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 			DashTask->EndTask();
 		}
 		DashTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, DashDistance / DashSpeed, nullptr, nullptr);
+		DashTask->OnTargetLocationReached.AddDynamic(this, &ULLL_PGA_Dash::LocationReachedEvent);
 		DashTask->ReadyForActivation();
 
 		if (IsValid(WaitTagTask) && WaitTagTask->IsActive())
@@ -156,7 +157,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 		PlayerAnimInstance->SetDash(true);
 
 		const FGameplayEventData PayloadData;
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_DASH, PayloadData);
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_DASH_START, PayloadData);
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -168,6 +169,13 @@ void ULLL_PGA_Dash::DashActionEvent()
 		}
 #endif
 	}
+}
+
+void ULLL_PGA_Dash::LocationReachedEvent()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("대쉬 이동 완료")));
+	const FGameplayEventData PayloadData;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_DASH_END, PayloadData);
 }
 
 void ULLL_PGA_Dash::CheckInputPressed(FGameplayEventData EventData)
