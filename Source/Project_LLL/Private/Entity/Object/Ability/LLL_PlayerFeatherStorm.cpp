@@ -3,6 +3,7 @@
 
 #include "Entity/Object/Ability/LLL_PlayerFeatherStorm.h"
 
+#include "AbilitySystemComponent.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_FilePath.h"
 #include "Game/ProtoGameInstance.h"
@@ -20,7 +21,7 @@ void ALLL_PlayerFeatherStorm::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FeatherStormDataAsset = Cast<ULLL_PlayerFeatherStormDataAsset>(AbilityObjectDataAsset);
+	PlayerFeatherStormDataAsset = Cast<ULLL_PlayerFeatherStormDataAsset>(AbilityObjectDataAsset);
 	AbilityObjectAttributeSet = PlayerFeatherStormAttributeSet;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
