@@ -7,6 +7,7 @@
 #include "AbilitySystemGlobals.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "FMODAudioComponent.h"
 #include "GameplayAbilitiesModule.h"
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
@@ -486,13 +487,34 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
 }
 
-void ALLL_PlayerBase::Damaged(bool IsDOT)
+void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 {
-	Super::Damaged(IsDOT);
+	Super::Damaged(Attacker, IsDOT);
 	
 	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT)
 	{
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
+	}
+
+	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Attacker);
+	if (!IsValid(Monster))
+	{
+		return;
+	}
+		
+	for (auto DamagedEventParameterProperty : PlayerDataAsset->DamagedEventParameterProperties)
+	{
+		if (Monster->GetId() == DamagedEventParameterProperty.Key)
+		{
+			const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+			for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+			{
+				if (FModParameterData.Parameter == EFModParameter::PlayerDamagedTypeParameter)
+				{
+					FModAudioComponent->SetParameter(FModParameterData.Name, static_cast<float>(DamagedEventParameterProperty.Value));
+				}
+			}
+		}
 	}
 }
 

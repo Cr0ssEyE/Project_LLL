@@ -6,6 +6,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_Monster_Id.h"
 #include "Entity/Character/Monster/Ranged/StaffBasic/LLL_StaffBasicAIController.h"
+#include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_StaffBasic::ALLL_StaffBasic()

@@ -120,6 +120,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckObjectCollisionDebug() const { return bObjectCollisionDebug; }
 
+	// 기타 디버그 변수 Getter / Setter
+public:
+	FORCEINLINE void ToggleSoundMessageDebug() { bSoundMessageDebug = !bSoundMessageDebug; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool CheckSoundMessageDebug() const { return bSoundMessageDebug; }
+
 	// 플레이어 디버그 변수
 protected:
 	uint8 bPlayerMovementDebug : 1;
@@ -163,4 +170,8 @@ protected:
 	uint8 bObjectHitCheckDebug : 1;
 
 	uint8 bObjectCollisionDebug : 1;
+
+	// 기타 디버그 변수
+protected:
+	uint8 bSoundMessageDebug : 1;
 };

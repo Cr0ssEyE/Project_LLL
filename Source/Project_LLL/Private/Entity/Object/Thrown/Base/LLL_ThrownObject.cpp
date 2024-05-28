@@ -4,6 +4,7 @@
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 
 #include "AbilitySystemComponent.h"
+#include "FMODAudioComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
@@ -36,6 +37,8 @@ void ALLL_ThrownObject::BeginPlay()
 	Super::BeginPlay();
 
 	ThrownObjectDataAsset = Cast<ULLL_ThrownObjectDataAsset>(BaseObjectDataAsset);
+
+	FModAudioComponent->SetEvent(ThrownObjectDataAsset->FModEvent);
 }
 
 void ALLL_ThrownObject::Activate()
@@ -51,7 +54,9 @@ void ALLL_ThrownObject::Activate()
 void ALLL_ThrownObject::Deactivate()
 {
 	bIsActivated = false;
-	
+
+	FModAudioComponent->Stop();
+	FModAudioComponent->Release();
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProjectileMovementComponent->Deactivate();
 	SetActorHiddenInGame(true);
@@ -65,6 +70,9 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget, float I
 
 	ProjectileMovementComponent->MaxSpeed = InSpeed;
 	ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
+
+	FModAudioComponent->SetPitch(Owner->CustomTimeDilation);
+	FModAudioComponent->Play();
 	
 	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_ThrownObject::Deactivate, ThrownObjectAttributeSet->GetHideTimer(), false);
 }

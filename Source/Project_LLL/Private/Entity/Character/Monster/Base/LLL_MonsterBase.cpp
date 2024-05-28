@@ -73,7 +73,6 @@ void ALLL_MonsterBase::BeginPlay()
 	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
 	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	MonsterStatusWidgetComponent->SetTickWhenOffscreen(true);
-	
 
 	MaskMeshComponent->SetStaticMesh(MonsterBaseDataAsset->MaskMesh);
 	MaskMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, MonsterBaseDataAsset->MaskAttachSocketName);
@@ -147,9 +146,9 @@ void ALLL_MonsterBase::Charge() const
 	}
 }
 
-void ALLL_MonsterBase::Damaged(bool IsDOT)
+void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 {
-	Super::Damaged(IsDOT);
+	Super::Damaged(Attacker, IsDOT);
 
 	if (bIsAttacking)
 	{
@@ -164,10 +163,6 @@ void ALLL_MonsterBase::Damaged(bool IsDOT)
 
 	MonsterBaseAnimInstance->StopAllMontages(1.0f);
 	PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
-
-	FModAudioComponent->Stop();
-	// 경직 사운드 이벤트 할당
-	// 경직 사운드 플레이
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
