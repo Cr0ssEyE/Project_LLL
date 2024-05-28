@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Attribute/Object/Ability/LLL_ThreateningDeathAttributeSet.h"
+#include "GAS/Attribute/Object/Ability/LLL_PlayerThreateningDeathAttributeSet.h"
 
