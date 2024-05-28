@@ -7,6 +7,7 @@
 #include "Engine/DataAsset.h"
 #include "LLL_BaseCharacterDataAsset.generated.h"
 
+class UFMODEvent;
 class ULLL_CharacterStatusWidget;
 class UGameplayEffect;
 class UGameplayAbility;
@@ -51,11 +52,11 @@ public:
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "발걸음 이벤트 태그", meta=(Categories = "GameplayCue"))
-	FGameplayTag StepCueTag;
+	TObjectPtr<UFMODEvent> StepFModEvent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "피격 이벤트 태그", meta=(Categories = "GameplayCue"))
-	FGameplayTag DamagedCueTag;
+	TObjectPtr<UFMODEvent> DamagedFModEvent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "사망 이벤트 태그", meta=(Categories = "GameplayCue"))
-	FGameplayTag DeadCueTag;
+	TObjectPtr<UFMODEvent> DeadFModEvent;
 };
