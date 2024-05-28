@@ -21,7 +21,7 @@
 
 // 플레이어 스킬 관련
 #define PATH_PLAYER_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_PlayerFeatherStormDataAsset'/Game/DataAsset/DA_PlayerFeatherStorm.DA_PlayerFeatherStorm'")
-#define PATH_PLAYER_THREATENING_DEATH_DATA TEXT("/Script/Project_LLL.LLL_PlayerPhysicalProofDataAsset'/Game/DataAsset/DA_PlayerThreateningDeath.DA_PlayerThreateningDeath'")
+#define PATH_PLAYER_THREATENING_DEATH_DATA TEXT("/Script/Project_LLL.LLL_PlayerThreateningDeathDataAsset'/Game/DataAsset/DA_PlayerThreateningDeath.DA_PlayerThreateningDeath'")
 
 // 플레이어 투사체 관련
 #define PATH_PLAYER_CHASE_HAND_DATA TEXT("/Script/Project_LLL.LLL_PlayerChaseHandDataAsset'/Game/DataAsset/DA_PlayerChaseHand.DA_PlayerChaseHand'")
