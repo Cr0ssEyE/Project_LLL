@@ -18,4 +18,7 @@ public:
 	ALLL_PlayerController();
 
 	virtual void BeginPlay() override;
+
+	void SetGameInputMode();
+	void SetUIInputMode(const TSharedPtr<SWidget>& FocusWidget = nullptr);
 };
