@@ -19,6 +19,6 @@ protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
-	UPROPERTY(EditAnywhere, DisplayName = "대시 이벤트 태그", meta=(Categories = "GameplayCue"))
+	UPROPERTY(EditAnywhere, DisplayName = "대시 FMod 이벤트")
 	TObjectPtr<UFMODEvent> DashFModEvent;
 };

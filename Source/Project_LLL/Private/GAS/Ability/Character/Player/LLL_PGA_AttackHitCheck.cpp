@@ -7,8 +7,11 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/LLL_GameInstance.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Task/LLL_AT_Trace.h"
+#include "Util/LLL_FModPlayHelper.h"
 
 ULLL_PGA_AttackHitCheck::ULLL_PGA_AttackHitCheck()
 {
@@ -82,10 +85,24 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 		Cast<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked())->ReceiveTargetData(this, TargetDataHandle);
 	}));
 
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	
 	FGameplayEventData PayloadData;
 	// 아래와 같이 복수의 데이터 전달 가능
 	PayloadData.TargetData = TargetDataHandle;
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
+
+	FLLL_FModPlayHelper::PlayFModEvent(Player, HitFModEvent);
+
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	{
+		if (FModParameterData.Parameter == EFModParameter::PlayerAttackHitCountParameter)
+		{
+			const ILLL_FModInterface* FModInterface = CastChecked<ILLL_FModInterface>(Player);
+			FModInterface->GetFModAudioComponent()->SetParameter(FModParameterData.Name, PlayerAttackHitCountParameterValue);
+		}
+	}
 }
 
 void ULLL_PGA_AttackHitCheck::OnTraceEndCallBack(FGameplayEventData EventData)

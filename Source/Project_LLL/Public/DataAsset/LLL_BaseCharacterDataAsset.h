@@ -51,12 +51,12 @@ public:
 	TArray<TSubclassOf<UGameplayAbility>> PassiveGameplayAbility;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "발걸음 이벤트 태그", meta=(Categories = "GameplayCue"))
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "발걸음 FMod 이벤트", meta=(Categories = "GameplayCue"))
 	TObjectPtr<UFMODEvent> StepFModEvent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "피격 이벤트 태그", meta=(Categories = "GameplayCue"))
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "피격 FMod 이벤트", meta=(Categories = "GameplayCue"))
 	TObjectPtr<UFMODEvent> DamagedFModEvent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "사망 이벤트 태그", meta=(Categories = "GameplayCue"))
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "사망 FMod 이벤트", meta=(Categories = "GameplayCue"))
 	TObjectPtr<UFMODEvent> DeadFModEvent;
 };

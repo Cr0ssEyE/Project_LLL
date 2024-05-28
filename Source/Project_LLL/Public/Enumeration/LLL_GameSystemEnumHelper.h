@@ -38,6 +38,7 @@ enum class EFModParameter : uint8
 	None UMETA(Hidden),
 	PlayerWalkMaterialParameter,
 	PlayerAttackCountParameter,
+	PlayerAttackHitCountParameter,
 	PlayerDamagedTypeParameter
 };
 
