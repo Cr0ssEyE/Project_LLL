@@ -29,16 +29,18 @@ public:
 public:
 	void Attack() const;
 	void Charge() const;
-	virtual void Damaged(bool IsDOT) override;
+	virtual void Damaged(AActor* Attacker, bool IsDOT) override;
 	virtual void Dead() override;
 
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	virtual void ApplyStackedKnockBack() override;
 	
-	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
 	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
 	FORCEINLINE void SetCharging(bool IsCharging) { bIsCharging = IsCharging; }
+	
+	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
+	FORCEINLINE int32 GetId() const { return Id; }
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)

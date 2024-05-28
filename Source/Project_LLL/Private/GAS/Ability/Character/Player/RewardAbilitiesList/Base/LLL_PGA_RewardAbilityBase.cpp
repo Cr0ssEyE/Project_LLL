@@ -13,11 +13,11 @@ void ULLL_PGA_RewardAbilityBase::PreActivate(const FGameplayAbilitySpecHandle Ha
 	
 	for (auto ActivateEffect : OnActivateEffects)
 	{
-		ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(ActivateEffect.Key.GetDefaultObject());
+		const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(ActivateEffect.Key.GetDefaultObject());
 		if (IsValid(Effect) && ActivateEffect.Value == EEffectApplyTarget::Self)
 		{
-			FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(Effect->GetClass(), GetAbilityLevel());
-			float MagnitudeValue = AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel();
+			const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(Effect->GetClass(), GetAbilityLevel());
+			const float MagnitudeValue = AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel();
 			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, MagnitudeValue);
 
  			K2_ApplyGameplayEffectSpecToOwner(EffectHandle);

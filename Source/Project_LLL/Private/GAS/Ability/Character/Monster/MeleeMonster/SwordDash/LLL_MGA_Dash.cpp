@@ -3,6 +3,7 @@
 
 #include "GAS/Ability/Character/Monster/MeleeMonster/SwordDash/LLL_MGA_Dash.h"
 
+#include "FMODAudioComponent.h"
 #include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -11,7 +12,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "Interface/LLL_DashMonsterInterface.h"
-#include "Util/LLL_ExecuteCueHelper.h"
+#include "Util/LLL_FModPlayHelper.h"
 
 void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -79,7 +80,7 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &ULLL_MGA_Dash::OnCompleteCallBack);
 	MoveToLocationTask->ReadyForActivation();
 
-	FLLL_ExecuteCueHelper::ExecuteCue(Monster, DashCueTag);
+	FLLL_FModPlayHelper::PlayFModEvent(Monster, DashFModEvent);
 }
 
 void ULLL_MGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

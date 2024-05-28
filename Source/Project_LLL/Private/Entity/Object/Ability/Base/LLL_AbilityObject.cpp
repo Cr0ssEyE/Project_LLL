@@ -17,7 +17,7 @@ ALLL_AbilityObject::ALLL_AbilityObject()
 	
 	OverlapCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Overlap Collision"));
 	OverlapCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	OverlapCollisionBox->SetCollisionProfileName(CP_PLAYER_SKILL);
+	OverlapCollisionBox->SetCollisionProfileName(CP_PLAYER_ABILITY_OBJECT);
 	OverlapCollisionBox->SetupAttachment(RootComponent);
 }
 
@@ -50,6 +50,7 @@ void ALLL_AbilityObject::NotifyActorBeginOverlap(AActor* OtherActor)
 	{
 		if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor))
 		{
+			UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *OtherActor->GetName())
 			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 		}
 	}

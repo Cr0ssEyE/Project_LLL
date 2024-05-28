@@ -43,7 +43,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitAttributeSet() override;
 
-	virtual void Damaged(bool IsDOT = false) override;
+	virtual void Damaged(AActor* Attacker, bool IsDOT = false) override;
 	virtual void Dead() override;
 	
 	// 외부 접근용
