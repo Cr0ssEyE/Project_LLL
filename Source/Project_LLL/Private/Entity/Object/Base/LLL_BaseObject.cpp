@@ -93,14 +93,3 @@ void ALLL_BaseObject::BeginPlay()
 		UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
 	}
 }
-
-void ALLL_BaseObject::InitAttributeSet()
-{
-	UE_LOG(LogTemp, Log, TEXT("%s 어트리뷰트 초기화 리스트"), *GetName())
-
-	TArray<UAttributeSet*> SpawnedAttributes = ASC->GetSpawnedAttributes();
-	for (const auto SpawnedAttribute : SpawnedAttributes)
-	{
-		UE_LOG(LogTemp, Log, TEXT("- %s"), *SpawnedAttribute->GetName())
-	}
-}
