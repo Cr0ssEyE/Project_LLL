@@ -18,6 +18,7 @@ void ULLL_PGA_PersistentRevenge::ActivateAbility(const FGameplayAbilitySpecHandl
 	const FRotator Rotator = FRotationMatrix::MakeFromX(Player->GetActorLocation() - Target->GetActorLocation()).Rotator();
 	ThrownFeather->SetActorLocationAndRotation(Player->GetActorLocation(), Rotator);
 	ThrownFeather->AddActorLocalRotation(FRotator(0.0f, FMath::RandBool() ? 1.0f : -1.0f, 0.0f));
+	ThrownFeather->SetAbilityInfo(AbilityData, GetAbilityLevel());
 	// Todo : 속도 정보 데이터화 필요
 	ThrownFeather->Throw(Player, Target, 2000);
 	

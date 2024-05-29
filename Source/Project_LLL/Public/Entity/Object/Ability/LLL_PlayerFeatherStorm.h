@@ -25,10 +25,10 @@ protected:
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_PlayerFeatherStormDataAsset> FeatherStormDataAsset;
+	TObjectPtr<const ULLL_PlayerFeatherStormDataAsset> PlayerFeatherStormDataAsset;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_PlayerFeatherStormAttributeSet> PlayerFeatherStormAttributeSet;
-
+	
 	FTimerHandle KeepDamageHandle;
 };

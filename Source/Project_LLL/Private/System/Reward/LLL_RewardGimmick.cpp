@@ -200,6 +200,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
 		if (TagContainer.HasTag(TAG_GAS_ABILITY_PART) && !TagContainer.HasTagExact(TAG_GAS_ABILITY_PART_COMMON))
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("커먼 이펙트 아님")));
 			IsCommonEffect = false;
 			TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
 			for (auto EffectHandle : EffectHandles)
@@ -224,7 +225,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		// 단순 수치 변화는 여기에서 적용.
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
-		
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("%s 부여"), *LoadedEffect.Get()->GetName()));
 		// 어빌리티 부여 계열
 		if (ULLL_GE_GiveAbilityComponent* AbilitiesGameplayEffectComponent = &Effect->FindOrAddComponent<ULLL_GE_GiveAbilityComponent>())
 		{
@@ -235,6 +236,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 					// EGameplayAbilityInstancingPolicy::InstancedPerActor로 설정된 어빌리티 한정 정상작동
 					Cast<ULLL_PGA_RewardAbilityBase>(Spec->GetPrimaryInstance())->SetAbilityInfo(CurrentAbilityData);
 					UE_LOG(LogTemp, Log, TEXT("스펙에 접근해서 값 바꾸기 시도"));
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("스펙에 접근해서 값 바꾸기 시도")));
 				}
 			}
 		}
@@ -243,6 +245,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	// TODO: UI 관련 상호작용 구현.
 	if (IsCommonEffect)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("커먼 이펙트 획득")));
 		PlayerUIManager->GetInventoryWidget()->SetEruriaInfo(CurrentAbilityData);
 	}
 	else

@@ -28,12 +28,10 @@ void ULLL_AbilityManageSubSystem::Initialize(FSubsystemCollectionBase& Collectio
 	LoadEffectsFromPath(ShareableGameplayEffects, PATH_SHARE_EFFECTS);
 
 	// AttributeSetInitter 사용 시 에디터 편의성용. 에디터에서는 최초 실행시 테이블 값만 읽어오고 이후에 값을 변경한 것을 적용하려면 재실행 해야 하는데 그거 보완
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+
 	TArray<FSoftObjectPath> DummyPaths;
 	DummyPaths.Emplace(FSoftObjectPath(PATH_DUMMY_TABLE));
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->AddAttributeDefaultTables(TEXT("Dummy"), DummyPaths);
-#endif
-	
 }
 
 void ULLL_AbilityManageSubSystem::Deinitialize()
@@ -124,11 +122,15 @@ void ULLL_AbilityManageSubSystem::LoadEffectsFromPath(TArray<TSoftClassPtr<ULLL_
 	const UAssetManager& Manager = UAssetManager::Get();
 	TArray<FPrimaryAssetId> Assets;
 	Manager.GetPrimaryAssetIdList(PrimaryTypes, Assets);
-
 	for (auto AssetData : Assets)
 	{
 		TSoftClassPtr<ULLL_ExtendedGameplayEffect> SoftPtr(Manager.GetPrimaryAssetPath(AssetData));
-		Container.Emplace(SoftPtr);
+		if (SoftPtr.IsValid() || SoftPtr.IsPending())
+		{
+			SoftPtr.LoadSynchronous();
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Cyan, FString::Printf(TEXT("추가 이펙트 %s"), *AssetData.PrimaryAssetName.ToString()));
+		Container.Emplace(SoftPtr.Get());
 	}
 }
 

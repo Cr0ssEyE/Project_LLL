@@ -22,7 +22,6 @@ public:
 	ULLL_PGA_AttackBase();
 	
 protected:
-	virtual void PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData) override;
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
@@ -32,7 +31,6 @@ protected:
 	void CheckInputPressed(FGameplayEventData EventData);
 	
 	void SetNextAttackAction();
-	void ExecuteAttackCueWithDelay();
 
 protected:
 	UPROPERTY()
@@ -47,13 +45,4 @@ protected:
 	uint32 MaxAttackAction;
 	
 	uint8 bIsCanPlayNextAction : 1;
-	
-protected:
-	UPROPERTY(EditAnywhere, DisplayName = "공격 이벤트 큐 태그", meta=(Categories = "GameplayCue"))
-	FGameplayTag AttackCueTag;
-
-	UPROPERTY(EditAnywhere, DisplayName = "공격 모션 별 이벤트 큐 딜레이")
-	TArray<float> AttackCueDelayArray;
-
-	FName PlayerAttackCountParameterName;
 };

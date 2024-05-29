@@ -3,12 +3,9 @@
 
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 
-#include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_MeshSocketName.h"
-#include "DataTable/LLL_FModParameterDataTable.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
-#include "Game/LLL_GameInstance.h"
 
 void ULLL_PlayerAnimInstance::NativeInitializeAnimation()
 {
@@ -31,7 +28,7 @@ void ULLL_PlayerAnimInstance::AnimNotify_RightStep()
 	SetStepEventParameter(SOCKET_RIGHT_FOOT);
 }
 
-void ULLL_PlayerAnimInstance::SetStepEventParameter(FName FootSocketName) const
+void ULLL_PlayerAnimInstance::SetStepEventParameter(FName FootSocketName)
 {
 	if (!Character->GetMesh()->DoesSocketExist(FootSocketName))
 	{
@@ -39,9 +36,9 @@ void ULLL_PlayerAnimInstance::SetStepEventParameter(FName FootSocketName) const
 		
 		return;
 	}
-	
-	FVector StartLocation = Character->GetMesh()->GetSocketLocation(FootSocketName);
-	FVector EndLocation = StartLocation + FVector(0.0f, 0.0f, Character->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * -1.0f);
+
+	const FVector StartLocation = Character->GetMesh()->GetSocketLocation(FootSocketName);
+	const FVector EndLocation = StartLocation + FVector(0.0f, 0.0f, Character->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * -1.0f);
 	
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
@@ -57,19 +54,6 @@ void ULLL_PlayerAnimInstance::SetStepEventParameter(FName FootSocketName) const
 	{
 		return;
 	}
-	
-	for (auto StepEventParameterProperty : PlayerDataAsset->StepEventParameterProperties)
-	{
-		if (HitResult.PhysMaterial->SurfaceType == StepEventParameterProperty.Key)
-		{
-			const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-			for (auto FModParameterData : GameInstance->GetFModParameterDataArray())
-			{
-				if (FModParameterData.Parameter == EFModParameter::PlayerWalkMaterialParameter)
-				{
-					Character->GetFModAudioComponent()->SetParameter(FModParameterData.Name, static_cast<float>(StepEventParameterProperty.Value));
-				}
-			}
-		}
-	}
+
+	SurfaceType = HitResult.PhysMaterial->SurfaceType;
 }

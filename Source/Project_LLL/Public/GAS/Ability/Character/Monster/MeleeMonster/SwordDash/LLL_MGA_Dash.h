@@ -6,6 +6,7 @@
 #include "GAS/Ability/Character/Monster/Base/LLL_MonsterGameplayAbilityBase.h"
 #include "LLL_MGA_Dash.generated.h"
 
+class UFMODEvent;
 /**
  * 
  */
@@ -16,8 +17,8 @@ class PROJECT_LLL_API ULLL_MGA_Dash : public ULLL_MonsterGameplayAbilityBase
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;;
 
-	UPROPERTY(EditAnywhere, DisplayName = "대시 이벤트 태그", meta=(Categories = "GameplayCue"))
-	FGameplayTag DashCueTag;
+	UPROPERTY(EditAnywhere, Category = "GAS")
+	TSubclassOf<UGameplayEffect> DashEffect;
 };
