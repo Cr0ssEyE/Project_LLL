@@ -56,7 +56,7 @@ protected:
 	
 	UFUNCTION()
 	void CloseGame();
-	
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> LobbyUIPanel;

@@ -111,8 +111,7 @@ void ULLL_TitleScreenWidget::OpenIntroLevel()
 		UGameplayStatics::OpenLevel(this, LEVEL_TUTORIAL);
 		return;
 	}
-	
-	UGameplayStatics::OpenLevel(this, LEVEL_INTRO);
+	UGameplayStatics::OpenLevel(this, LEVEL_TUTORIAL);
 }
 
 void ULLL_TitleScreenWidget::OpenSavedLevel()

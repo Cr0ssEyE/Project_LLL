@@ -136,7 +136,7 @@ void ULLL_AbilityManageSubSystem::LoadEffectsFromPath(TArray<TSoftClassPtr<ULLL_
 		{
 			SoftPtr.LoadSynchronous();
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Cyan, FString::Printf(TEXT("추가 이펙트 %s"), *AssetData.PrimaryAssetName.ToString()));
+		// GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Cyan, FString::Printf(TEXT("추가 이펙트 %s"), *AssetData.PrimaryAssetName.ToString()));
 		Container.Emplace(SoftPtr.Get());
 	}
 }
