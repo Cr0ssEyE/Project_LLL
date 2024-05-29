@@ -51,7 +51,7 @@ void ALLL_TutorialGimmick::OnInteractionGate(FRewardDataTable* Data)
 
 void ALLL_TutorialGimmick::RewardDestroyed(AActor* DestroyedActor)
 {
-	ALLL_SwordDash* Monster = GetWorld()->SpawnActor<ALLL_SwordDash>(ALLL_SwordDash::StaticClass(), FVector(200.0f, 200.0f, 0), -GetActorRotation());
+	ALLL_SwordDash* Monster = GetWorld()->SpawnActor<ALLL_SwordDash>(ALLL_SwordDash::StaticClass(), FVector(200.0f, 200.0f, 200.0f), GetActorRotation());
 	Monster->OnDestroyed.AddDynamic(this, &ALLL_TutorialGimmick::MonsterDestroyed);
 }
 
