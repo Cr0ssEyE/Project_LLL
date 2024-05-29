@@ -151,7 +151,7 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 
 void ALLL_BaseCharacter::Damaged(AActor* Attacker, bool IsDOT)
 {
-	FLLL_FModPlayHelper::PlayFModEvent(this, CharacterDataAsset->DamagedFModEvent);
+	
 }
 
 void ALLL_BaseCharacter::Dead()

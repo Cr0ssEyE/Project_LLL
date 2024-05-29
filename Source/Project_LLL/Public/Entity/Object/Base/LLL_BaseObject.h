@@ -33,6 +33,9 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
+	virtual void SetFModParameter(EFModParameter FModParameter) override {}
+
+protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;
 	

@@ -35,7 +35,7 @@ enum class ERewardCategory : uint8
 UENUM(BlueprintType)
 enum class EFModParameter : uint8
 {
-	None UMETA(Hidden),
+	None,
 	PlayerWalkMaterialParameter,
 	PlayerAttackCountParameter,
 	PlayerAttackHitCountParameter,

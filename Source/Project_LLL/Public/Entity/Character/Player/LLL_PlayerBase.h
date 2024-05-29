@@ -11,6 +11,7 @@
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ULLL_GameInstance;
 class ULLL_AbnormalStatusAttributeSet;
 class ULLL_PlayerSkillAttributeSet;
 class ULLL_ObjectPoolingComponent;
@@ -42,6 +43,7 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitAttributeSet() override;
+	virtual void SetFModParameter(EFModParameter FModParameter) override;
 
 	virtual void Damaged(AActor* Attacker, bool IsDOT = false) override;
 	virtual void Dead() override;
@@ -59,6 +61,8 @@ public:
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
+
+	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	
 	FVector CheckMouseLocation();
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
@@ -67,6 +71,7 @@ public:
 protected:
 	void TurnToMouseCursor();
 	void MoveCameraToMouseCursor();
+	void SetParameter(EFModParameter FModParameter, float value) const;
 	
 	// 카메라
 private:
@@ -129,10 +134,10 @@ private:
 
 private:
 	FVector LastCheckedMouseLocation;
-	
 	FRotator MouseDirectionRotator;
-	
 	float ToCursorRotationMultiplyValue;
+	int32 LastAttackerMonsterId;
+	int32 CurrentCombo;
 
 	// 상태 관련 함수
 protected:
