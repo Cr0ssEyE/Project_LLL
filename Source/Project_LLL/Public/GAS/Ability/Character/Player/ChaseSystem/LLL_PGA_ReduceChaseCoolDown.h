@@ -18,7 +18,6 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
 protected:
-	UFUNCTION()
-	void OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
-	
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그")
+	FGameplayTag TriggerRequiredTag;
 };

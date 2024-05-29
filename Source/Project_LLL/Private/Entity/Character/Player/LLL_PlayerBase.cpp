@@ -94,8 +94,25 @@ void ALLL_PlayerBase::BeginPlay()
 		
 		if (Camera->ProjectionMode == ECameraProjectionMode::Orthographic)
 		{
-			Camera->OrthoWidth = CameraDataAsset->CameraDistance;
-			Camera->SetAutoPlaneShift(CameraDataAsset->AutoPlaneShift);
+			Camera->SetOrthoWidth(CameraDataAsset->CameraDistance);
+			Camera->SetUpdateOrthoPlanes(CameraDataAsset->bUseUpdateOrthoPlanes);
+			if (CameraDataAsset->bUseConstraintAspectRatio)
+			{
+				Camera->SetConstraintAspectRatio(CameraDataAsset->bUseConstraintAspectRatio);
+				Camera->SetAspectRatio(CameraDataAsset->AspectRatio);
+			}
+			
+			if (CameraDataAsset->bUseAutoCalculate)
+			{
+				Camera->SetAutoCalculateOrthoPlanes(true);
+				Camera->SetAutoPlaneShift(CameraDataAsset->AutoPlaneShift);
+			}
+			else
+			{
+				Camera->SetAutoCalculateOrthoPlanes(false);
+				Camera->SetOrthoNearClipPlane(CameraDataAsset->OrthographicNearClipDistance);
+				Camera->SetOrthoFarClipPlane(CameraDataAsset->OrthographicFarClipDistance);
+			}
 		}
 		else
 		{
@@ -184,7 +201,7 @@ void ALLL_PlayerBase::PossessedBy(AController* NewController)
 	APlayerController* PlayerController = Cast<APlayerController>(NewController);
 	if (IsValid(PlayerController))
 	{
-		PlayerController->SetAudioListenerOverride(SpringArm, FVector::ZeroVector, FRotator::ZeroRotator);
+		// PlayerController->SetAudioListenerOverride(SpringArm, FVector::ZeroVector, FRotator::ZeroRotator);
 	}
 }
 

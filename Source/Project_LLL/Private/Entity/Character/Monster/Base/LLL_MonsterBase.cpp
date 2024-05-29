@@ -239,6 +239,13 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 void ALLL_MonsterBase::ApplyStackedKnockBack()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackVelocity.Length()));
+
+	if (StackedKnockBackVelocity.Length() < 100.f)
+	{
+		ResetKnockBackStack();
+		return;
+	}
+	
 	if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower))
 	{
 		GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
