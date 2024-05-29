@@ -61,7 +61,6 @@ void ALLL_RewardObject::SetInformation(FRewardDataTable* Data)
 void ALLL_RewardObject::InteractiveEvent()
 {
 	Super::InteractiveEvent();
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString::Printf(TEXT("보상 아이디 : %f"), RewardData->ID));
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	ULLL_PlayerGoldComponent* PlayerGoldComponent = Player->GetGoldComponent();
 	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
