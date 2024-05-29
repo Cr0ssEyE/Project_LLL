@@ -24,7 +24,8 @@ struct FAbilityDataTable : public FTableRowBase
 	AbilityCategory(EAbilityCategory::Null), AbilityValueType(),
 	AbilityValue(0.f),
 	ChangeValue(0.f), UnchangeableValue(0),
-	RequireCategory(EAbilityCategory::Null)
+	RequireCategory(EAbilityCategory::Null),
+	GetAbilityRate(0.f)
 	{
 	}
 

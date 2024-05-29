@@ -80,7 +80,7 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &ULLL_MGA_Dash::OnCompleteCallBack);
 	MoveToLocationTask->ReadyForActivation();
 
-	FLLL_FModPlayHelper::PlayFModEvent(Monster, DashFModEvent);
+	BP_ApplyGameplayEffectToOwner(DashEffect);
 }
 
 void ULLL_MGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

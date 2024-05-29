@@ -70,6 +70,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	WaitTagTask->ReadyForActivation();
 
 	PlayerCharacter->SetAttacking(true);
+	PlayerCharacter->SetCurrentCombo(CurrentComboAction);
 }
 
 void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -98,6 +99,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 		CurrentComboAction = 0;
 		bIsCanPlayNextAction = false;
 		PlayerCharacter->SetAttacking(false);
+		PlayerCharacter->SetCurrentCombo(CurrentComboAction);
 	}
 	GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
 	WaitTagTask->EndTask();
@@ -173,6 +175,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 		}));
 		
 		PlayerCharacter->SetAttacking(true);
+		PlayerCharacter->SetCurrentCombo(CurrentComboAction);
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

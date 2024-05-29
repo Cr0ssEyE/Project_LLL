@@ -21,6 +21,7 @@
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
+#include "Kismet/GameplayStatics.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
@@ -134,7 +135,7 @@ void ALLL_MapGimmick::CreateMap()
 	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
 
 	// TODO: Player loaction change 
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 	SetState(EStageState::READY);
 }
@@ -237,12 +238,12 @@ void ALLL_MapGimmick::RewardDestroyed(AActor* DestroyedActor)
 
 void ALLL_MapGimmick::RewardSpawn()
 {
-	if (!GetWorld()->GetFirstPlayerController())
+	if (!UGameplayStatics::GetPlayerController(GetWorld(), 0))
 	{
 		return;
 	}
 	RewardGimmick->SetRewardButtons();
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActor<ALLL_RewardObject>(RewardObjectClass, Player->GetActorLocation(), Player->GetActorRotation());
 	if (IsValid(RewardObject))
 	{

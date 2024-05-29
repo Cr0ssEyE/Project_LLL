@@ -6,6 +6,7 @@
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "LLL_AnimNotify_FMod.generated.h"
 
+enum class EFModParameter : uint8;
 class UFMODEvent;
 /**
  * 
@@ -22,8 +23,5 @@ protected:
 	TObjectPtr<UFMODEvent> FModEvent;
 	
 	UPROPERTY(EditAnywhere, DisplayName = "FMOD 파라미터")
-	FDataTableRowHandle FModParameterRowHandle;
-
-	UPROPERTY(EditAnywhere, DisplayName = "FMOD 파라미터 값")
-	float FModParameterValue;
+	EFModParameter FModParameter;
 };

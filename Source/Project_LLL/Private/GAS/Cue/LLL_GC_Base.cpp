@@ -3,29 +3,24 @@
 
 #include "GAS/Cue/LLL_GC_Base.h"
 
-#include "FMODAudioComponent.h"
-#include "Entity/Object/Base/LLL_BaseObject.h"
+#include "FMODEvent.h"
+#include "Game/ProtoGameInstance.h"
+#include "Util/LLL_FModPlayHelper.h"
 
 bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCueParameters& Parameters) const
 {
-	const UObject* SourceObject = Parameters.EffectContext.GetSourceObject();
-	if (IsValid(SourceObject))
-	{
-		const ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(MyTarget);
+	FLLL_FModPlayHelper::PlayFModEvent(MyTarget, FModEvent, FModParameter);
 
-		UFMODAudioComponent* FModAudioComponent = FModInterface->GetFModAudioComponent();
-		if (IsValid(FModAudioComponent))
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	UGameInstance* GameInstance = MyTarget->GetGameInstance();
+	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GameInstance))
+	{
+		if (ProtoGameInstance->CheckSoundMessageDebug())
 		{
-			FModAudioComponent->Release();
-			FModAudioComponent->SetEvent(FModEvent);
-			FModAudioComponent->SetPitch(MyTarget->CustomTimeDilation);
-			FModAudioComponent->Play();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s : FMod 컴포넌트가 없습니다"), *MyTarget->GetName())
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 액터가 %s 재생"), *MyTarget->GetName(), *FModEvent->GetName()));
 		}
 	}
+#endif
 	
 	return Super::OnExecute_Implementation(MyTarget, Parameters);
 }

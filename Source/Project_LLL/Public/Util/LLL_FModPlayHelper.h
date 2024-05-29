@@ -9,15 +9,16 @@
 class PROJECT_LLL_API FLLL_FModPlayHelper
 {
 public:
-	static void PlayFModEvent(const AActor* SourceActor, UFMODEvent* FModEvent)
+	static void PlayFModEvent(AActor* SourceActor, UFMODEvent* FModEvent, EFModParameter FModParameter)
 	{
-		if (const ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(SourceActor))
+		if (ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(SourceActor))
 		{
 			UFMODAudioComponent* FModAudioComponent = FModInterface->GetFModAudioComponent();
 			FModAudioComponent->Release();
 			FModAudioComponent->SetEvent(FModEvent);
 			FModAudioComponent->SetPitch(SourceActor->CustomTimeDilation);
 			FModAudioComponent->Play();
+			FModInterface->SetFModParameter(FModParameter);
 		}
 		else
 		{

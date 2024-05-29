@@ -16,6 +16,7 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
 #include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
 
@@ -71,13 +72,13 @@ void ALLL_RewardGimmick::SetRewardButtons()
 		SetDataTable();
 	}
 
-	if (bIsButtonEventSetup && !IsValid(GetWorld()->GetFirstPlayerController()->GetPawn()))
+	if (bIsButtonEventSetup && !IsValid(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
 		ensure(false);
 		return;
 	}
 
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
     const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
     ULLL_SelectRewardWidget* RewardWidget = PlayerUIManager->GetSelectRewardWidget();
     RewardWidget->GetFirstButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickFirstButton);
@@ -192,7 +193,7 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData)
 
 void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects)
 {
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	ULLL_PlayerUIManager* PlayerUIManager =	Player->GetPlayerUIManager();
 	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
 
