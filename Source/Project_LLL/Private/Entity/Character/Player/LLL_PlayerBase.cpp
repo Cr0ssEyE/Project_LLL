@@ -93,7 +93,14 @@ void ALLL_PlayerBase::BeginPlay()
 		
 		if (Camera->ProjectionMode == ECameraProjectionMode::Orthographic)
 		{
-			Camera->OrthoWidth = CameraDataAsset->CameraDistance;
+			Camera->SetOrthoWidth(CameraDataAsset->CameraDistance);
+			Camera->SetUpdateOrthoPlanes(CameraDataAsset->bUseUpdateOrthoPlanes);
+			if (CameraDataAsset->bUseConstraintAspectRatio)
+			{
+				Camera->SetConstraintAspectRatio(CameraDataAsset->bUseConstraintAspectRatio);
+				Camera->SetAspectRatio(CameraDataAsset->AspectRatio);
+			}
+			
 			if (CameraDataAsset->bUseAutoCalculate)
 			{
 				Camera->SetAutoCalculateOrthoPlanes(true);
@@ -101,6 +108,7 @@ void ALLL_PlayerBase::BeginPlay()
 			}
 			else
 			{
+				Camera->SetAutoCalculateOrthoPlanes(false);
 				Camera->SetOrthoNearClipPlane(CameraDataAsset->OrthographicNearClipDistance);
 				Camera->SetOrthoFarClipPlane(CameraDataAsset->OrthographicFarClipDistance);
 			}

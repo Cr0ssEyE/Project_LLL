@@ -26,22 +26,32 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 암 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Perspective", EditConditionHides))
 	float SpringArmDistance;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "평면 거리 자동 조절 사용", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
-	uint8 bUseAutoCalculate : 1;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "고정 종횡비 사용", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	uint8 bUseConstraintAspectRatio : 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "종횡비 비율", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic && bUseConstraintAspectRatio == false", EditConditionHides))
+	float AspectRatio;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
 	float CameraDistance;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "근|원평면 거리 조정", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
-	float AutoPlaneShift;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "근평면 클리핑 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
-	float OrthographicNearClipDistance;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "원평면 클리핑 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
-	float OrthographicFarClipDistance;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 회전값")
 	FRotator SpringArmAngle;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Plane", DisplayName = "평면 거리 자동 조절 사용", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	uint8 bUseAutoCalculate : 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Plane", DisplayName = "근|원평면 자동 거리 조정", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic && bUseAutoCalculate == true", EditConditionHides))
+	float AutoPlaneShift;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Plane", DisplayName = "평면 거리 업데이트 사용", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	uint8 bUseUpdateOrthoPlanes : 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Plane", DisplayName = "근평면 클리핑 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	float OrthographicNearClipDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Plane", DisplayName = "원평면 클리핑 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	float OrthographicFarClipDistance;
+	
 };
