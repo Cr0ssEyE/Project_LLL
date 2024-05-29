@@ -4,7 +4,6 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 
 #include "Constant/LLL_GameplayTags.h"
-#include "DataTable/LLL_AbilityDataTable.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 
 void ULLL_PGA_RewardAbilityBase::PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
