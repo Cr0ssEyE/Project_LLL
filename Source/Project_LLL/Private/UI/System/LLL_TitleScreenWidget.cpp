@@ -31,14 +31,12 @@ void ULLL_TitleScreenWidget::NativeConstruct()
 
 	bool TestEnabled = false;
 	
-#if WITH_EDITOR
 	if (bTestNoneSaveFileUI)
 	{
 		LoadGameButton->SetVisibility(ESlateVisibility::Hidden);
 		LobbyButtonVerticalBox->RemoveChild(LoadGameButton);
 		TestEnabled = true;
 	}
-#endif
 	
 	if (!TestEnabled && !IsValid(UGameplayStatics::LoadGameFromSlot(DEFAULT_FILE_NAME, DEFAULT_FILE_INDEX)))
 	{
