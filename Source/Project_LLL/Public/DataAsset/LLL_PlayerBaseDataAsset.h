@@ -6,6 +6,8 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+enum class EPlayerDamagedTypeParameter : uint8;
+enum class EMonsterId : uint8;
 class ULLL_MainEruriaInfoWidget;
 enum class EPlayerWalkMaterialParameter : uint8;
 enum class EPlayerFootstepsSurface : uint8;
@@ -105,4 +107,7 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
 	TMap<TEnumAsByte<EPhysicalSurface>, EPlayerWalkMaterialParameter> StepEventParameterProperties;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "피격 이벤트 파라미터 속성")
+	TMap<int32, EPlayerDamagedTypeParameter> DamagedEventParameterProperties;
 };

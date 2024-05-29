@@ -10,6 +10,7 @@
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 
 void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 {
@@ -32,6 +33,18 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	}));
 }
 
+void ALLL_MonsterBaseAIController::StartCoolDown()
+{
+	BlackboardComponent->SetValueAsBool(BBKEY_IS_COOL_DOWN, true);
+
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+
+	FTimerHandle CoolDownTimerHandle;
+	GetWorldTimerManager().SetTimer(CoolDownTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		BlackboardComponent->SetValueAsBool(BBKEY_IS_COOL_DOWN, false);
+	}), MonsterAttributeSet->GetAttackCoolDown(), false);
+}
+
 void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
@@ -47,17 +60,19 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
 	{
-		if (!Monster->CheckCharacterIsDead())
+		if (Monster->CheckCharacterIsDead())
 		{
-			BrainComponent->StartLogic();
+			return;
+		}
 
-			if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
+		BrainComponent->StartLogic();
+
+		if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
+		{
+			ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+			if (IsValid(Player))
 			{
-				ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-				if (IsValid(Player))
-				{
-					BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
-				}
+				BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
 			}
 		}
 	}

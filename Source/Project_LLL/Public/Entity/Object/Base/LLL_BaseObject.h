@@ -31,7 +31,6 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
-	virtual void InitAttributeSet();
 
 protected:
 	UPROPERTY(VisibleAnywhere)

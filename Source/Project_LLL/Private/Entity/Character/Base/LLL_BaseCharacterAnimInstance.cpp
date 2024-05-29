@@ -7,7 +7,7 @@
 #include "GameplayEffectTypes.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Util/LLL_ExecuteCueHelper.h"
+#include "Util/LLL_FModPlayHelper.h"
 
 ULLL_BaseCharacterAnimInstance::ULLL_BaseCharacterAnimInstance()
 {
@@ -49,10 +49,10 @@ void ULLL_BaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void ULLL_BaseCharacterAnimInstance::AnimNotify_LeftStep()
 {
-	FLLL_ExecuteCueHelper::ExecuteCue(Character, CharacterDataAsset->StepCueTag);
+	FLLL_FModPlayHelper::PlayFModEvent(Character, CharacterDataAsset->StepFModEvent);
 }
 
 void ULLL_BaseCharacterAnimInstance::AnimNotify_RightStep()
 {
-	FLLL_ExecuteCueHelper::ExecuteCue(Character, CharacterDataAsset->StepCueTag);
+	FLLL_FModPlayHelper::PlayFModEvent(Character, CharacterDataAsset->StepFModEvent);
 }

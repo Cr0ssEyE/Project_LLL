@@ -5,6 +5,7 @@
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Enumeration/LLL_UserInterfaceEnumHelper.h"
+#include "Game/ProtoGameInstance.h"
 
 void UProtoDebugWidget::NativeConstruct()
 {
@@ -12,6 +13,7 @@ void UProtoDebugWidget::NativeConstruct()
 	PlayerDebugButton->OnClicked.AddDynamic(this, &UProtoDebugWidget::EnablePlayerDebugWidget);
 	MonsterDebugButton->OnClicked.AddDynamic(this, &UProtoDebugWidget::EnableMonsterDebugWidget);
 	ObjectDebugButton->OnClicked.AddDynamic(this, &UProtoDebugWidget::EnableObjectDebugWidget);
+	SoundDebugButton->OnClicked.AddDynamic(this, &UProtoDebugWidget::ToggleSoundMessage);
 	SetIsEnabled(false);
 	SetVisibility(ESlateVisibility::Hidden);
 }
@@ -35,4 +37,9 @@ void UProtoDebugWidget::ToggleWidget()
 {
 	SetIsEnabled(!GetIsEnabled());
 	GetIsEnabled() == 0 ? SetVisibility(ESlateVisibility::Hidden) : SetVisibility(ESlateVisibility::Visible);
+}
+
+void UProtoDebugWidget::ToggleSoundMessage()
+{
+	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->ToggleSoundMessageDebug();
 }
