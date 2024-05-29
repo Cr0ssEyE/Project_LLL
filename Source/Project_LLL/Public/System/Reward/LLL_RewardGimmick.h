@@ -67,6 +67,11 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TArray<FAbilityDataTable> AbilityData;
 
+	uint32 FirstButtonIndex;
+	uint32 SecondButtonIndex;
+	uint32 ThirdButtonIndex;
+	TArray<uint32> GettenIndexArray; 
+	
 	FAbilityDataTable* ButtonAbilityData1;
 	FAbilityDataTable* ButtonAbilityData2;
 	FAbilityDataTable* ButtonAbilityData3;

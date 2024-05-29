@@ -31,14 +31,12 @@ void ULLL_TitleScreenWidget::NativeConstruct()
 
 	bool TestEnabled = false;
 	
-#if WITH_EDITOR
 	if (bTestNoneSaveFileUI)
 	{
 		LoadGameButton->SetVisibility(ESlateVisibility::Hidden);
 		LobbyButtonVerticalBox->RemoveChild(LoadGameButton);
 		TestEnabled = true;
 	}
-#endif
 	
 	if (!TestEnabled && !IsValid(UGameplayStatics::LoadGameFromSlot(DEFAULT_FILE_NAME, DEFAULT_FILE_INDEX)))
 	{
@@ -110,7 +108,7 @@ void ULLL_TitleScreenWidget::OpenIntroLevel()
 {
 	if (bIsLoadTestLevel)
 	{
-		UGameplayStatics::OpenLevel(this, LEVEL_TEST);
+		UGameplayStatics::OpenLevel(this, LEVEL_TUTORIAL);
 		return;
 	}
 	

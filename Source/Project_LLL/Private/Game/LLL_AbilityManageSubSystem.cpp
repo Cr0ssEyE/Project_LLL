@@ -96,6 +96,13 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 	{
 		Paths.Emplace(Effect.ToSoftObjectPath());
 	}
+
+	if (Paths.IsEmpty())
+	{
+		Delegate.Broadcast(DataSet);
+		return;	
+	}
+	
 	StreamableManager.RequestAsyncLoad(Paths, FStreamableDelegate::CreateWeakLambda(this, [=]()
 	{
 		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FilteredDataSet;
