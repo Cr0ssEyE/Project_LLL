@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-	#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 
@@ -8,7 +8,7 @@
 #define PATH_DUMMY_TABLE TEXT("/Game/DataTable/AttributeInitializer/CT_TableUpdateOnlyData.CT_TableUpdateOnlyData")
 
 // 어빌리티 관련
-#define PATH_ABILITY_DATA_TABLE TEXT("/Script/Engine.DataTable'/Game/DataTable/AbilityDataTable.AbilityDataTable'")
+#define PATH_ABILITY_DATA_TABLE TEXT("/Script/Engine.DataTable'/Game/DataTable/DT_AbilityData.DT_AbilityData'")
 #define PATH_PLAYER_EFFECTS TEXT("PlayerEffects")
 #define PATH_MONSTER_EFFECTS TEXT("MonsterEffects")
 #define PATH_OBJECT_EFFECTS TEXT("ObjectEffects")
@@ -21,6 +21,7 @@
 
 // 플레이어 스킬 관련
 #define PATH_PLAYER_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_PlayerFeatherStormDataAsset'/Game/DataAsset/DA_PlayerFeatherStorm.DA_PlayerFeatherStorm'")
+#define PATH_PLAYER_THREATENING_DEATH_DATA TEXT("/Script/Project_LLL.LLL_PlayerThreateningDeathDataAsset'/Game/DataAsset/DA_PlayerThreateningDeath.DA_PlayerThreateningDeath'")
 
 // 플레이어 투사체 관련
 #define PATH_PLAYER_CHASE_HAND_DATA TEXT("/Script/Project_LLL.LLL_PlayerChaseHandDataAsset'/Game/DataAsset/DA_PlayerChaseHand.DA_PlayerChaseHand'")
@@ -44,6 +45,7 @@
 #define PATH_MONSTER_SPAWNER_DATA TEXT("/Script/Project_LLL.LLL_MonsterSpawnerDataAsset'/Game/DataAsset/DA_MonsterSpawner.DA_MonsterSpawner'")
 #define PATH_MONSTER_SPAWN_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/MonsterSpawnData.MonsterSpawnData'")
 #define PATH_FMOD_PARAMETER_NAME_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/FModParameterNameData.FModParameterNameData'")
+#define PATH_STRING_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/MiscellaneousDatas/DT_StringData.DT_StringData'")
 
 // 맵 및 보상 시스템 관련
 #define PATH_MAP_DATA TEXT("/Script/Project_LLL.LLL_MapDataAsset'/Game/DataAsset/DA_Map.DA_Map'")

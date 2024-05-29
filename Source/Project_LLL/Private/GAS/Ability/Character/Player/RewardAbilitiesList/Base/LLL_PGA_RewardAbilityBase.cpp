@@ -3,13 +3,25 @@
 
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 
-#include "DataTable/LLL_AbilityDataTable.h"
+#include "Constant/LLL_GameplayTags.h"
+#include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 
-void ULLL_PGA_RewardAbilityBase::SetAbilityInfo(const FAbilityDataTable* InAbilityData)
+void ULLL_PGA_RewardAbilityBase::PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
 {
-	AbilityData = InAbilityData;
+	Super::PreActivate(Handle, ActorInfo, ActivationInfo, OnGameplayAbilityEndedDelegate, TriggerEventData);
 	
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString::Printf(TEXT("%f, %f, %f"), static_cast<float>(AbilityData->AbilityRank), AbilityData->AbilityValue, AbilityData->ChangeValue));
+	for (auto ActivateEffect : OnActivateEffects)
+	{
+		const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(ActivateEffect.Key.GetDefaultObject());
+		if (IsValid(Effect) && ActivateEffect.Value == EEffectApplyTarget::Self)
+		{
+			const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(Effect->GetClass(), GetAbilityLevel());
+			const float MagnitudeValue = AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel();
+			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, MagnitudeValue);
+
+ 			K2_ApplyGameplayEffectSpecToOwner(EffectHandle);
+		}
+	}
 }
 
 void ULLL_PGA_RewardAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

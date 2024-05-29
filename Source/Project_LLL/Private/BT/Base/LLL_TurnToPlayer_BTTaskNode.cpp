@@ -8,7 +8,7 @@
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "GAS/Attribute/Character/Monster/Base/LLL_MonsterAttributeSet.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ULLL_TurnToPlayer_BTTaskNode::ULLL_TurnToPlayer_BTTaskNode()
 {
@@ -20,18 +20,17 @@ EBTNodeResult::Type ULLL_TurnToPlayer_BTTaskNode::ExecuteTask(UBehaviorTreeCompo
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
+	
 	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
-	if (IsValid(PlayerBase))
+	if (!IsValid(PlayerBase))
 	{
-		FVector Direction = PlayerBase->GetActorLocation() - MonsterBase->GetActorLocation();
-		Direction.Z = 0.0f;
-		const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-		const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(MonsterBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-		const float TurnSpeed = MonsterAttributeSet->GetTurnSpeed();
-		MonsterBase->SetActorRotation(FMath::RInterpTo(MonsterBase->GetActorRotation(), Rotation, GetWorld()->GetDeltaSeconds(), TurnSpeed));
-
-		return EBTNodeResult::Succeeded;
+		return EBTNodeResult::Failed;
 	}
 
-	return EBTNodeResult::Failed;
+	const FVector Direction = PlayerBase->GetActorLocation() - MonsterBase->GetActorLocation();
+	const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
+	const float TurnSpeed = MonsterBase->GetCharacterMovement()->RotationRate.Yaw;
+	MonsterBase->SetActorRotation(FMath::RInterpTo(MonsterBase->GetActorRotation(), Rotation, GetWorld()->GetDeltaSeconds(), TurnSpeed));
+
+	return EBTNodeResult::Succeeded;
 }

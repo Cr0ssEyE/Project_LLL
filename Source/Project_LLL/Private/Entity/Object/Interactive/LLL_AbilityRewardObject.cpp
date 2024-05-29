@@ -25,6 +25,7 @@ void ALLL_AbilityRewardObject::InteractiveEvent()
 	
 	SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 	SelectRewardWidget->SetIsEnabled(true);
+	SelectRewardWidget->FocusToUI();
 }
 
 void ALLL_AbilityRewardObject::SetAbilityCategory(EAbilityCategory Category)

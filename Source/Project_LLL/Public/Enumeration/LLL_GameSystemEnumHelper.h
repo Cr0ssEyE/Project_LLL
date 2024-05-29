@@ -4,7 +4,6 @@
 #include "CoreMinimal.h"
 
 // 보상 및 맵 시스템 관련
-
 UENUM(BlueprintType)
 enum class EStageState : uint8
 {
@@ -16,7 +15,7 @@ enum class EStageState : uint8
 };
 
 UENUM()
-enum class EProductType
+enum class EProductType : uint8
 {
 	Gold = 1,
 	MaxHP,
@@ -38,7 +37,9 @@ enum class EFModParameter : uint8
 {
 	None UMETA(Hidden),
 	PlayerWalkMaterialParameter,
-	PlayerAttackCountParameter
+	PlayerAttackCountParameter,
+	PlayerAttackHitCountParameter,
+	PlayerDamagedTypeParameter
 };
 
 UENUM(BlueprintType)
@@ -48,4 +49,12 @@ enum class EPlayerWalkMaterialParameter : uint8
 	Grass,
 	Wood,
 	Steel
+};
+
+UENUM(BlueprintType)
+enum class EPlayerDamagedTypeParameter : uint8
+{
+	Sword,
+	Claw,
+	Staff
 };

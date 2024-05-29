@@ -39,7 +39,8 @@ public:
 	FORCEINLINE void SetPlayerAttackDebug(bool value) { bPlayerAttackDebug = value; }
 	FORCEINLINE void SetPlayerCollisionDebug(bool value) { bPlayerCollisionDebug = value; }
 	FORCEINLINE void SetPlayerInteractionDebug(bool value) { bPlayerInteractionDebug = value; }
-
+	FORCEINLINE void SetPlayerInvincibleMode(bool value) { bPlayerInvincibleMode = value; }
+	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerMovementDebug() const { return bPlayerMovementDebug; }
 	
@@ -63,6 +64,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckPlayerInteractionDebug() const { return bPlayerInteractionDebug; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool CheckPlayerIsInvincible() const { return bPlayerInvincibleMode; }
 	
 	// 몬스터 디버그 변수 Getter / Setter
 public:
@@ -116,6 +120,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CheckObjectCollisionDebug() const { return bObjectCollisionDebug; }
 
+	// 기타 디버그 변수 Getter / Setter
+public:
+	FORCEINLINE void ToggleSoundMessageDebug() { bSoundMessageDebug = !bSoundMessageDebug; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool CheckSoundMessageDebug() const { return bSoundMessageDebug; }
+
 	// 플레이어 디버그 변수
 protected:
 	uint8 bPlayerMovementDebug : 1;
@@ -133,6 +144,8 @@ protected:
 	uint8 bPlayerCollisionDebug : 1;
 
 	uint8 bPlayerInteractionDebug : 1;
+
+	uint8 bPlayerInvincibleMode : 1;
 	
 	// 몬스터 디버그 변수
 protected:
@@ -157,4 +170,8 @@ protected:
 	uint8 bObjectHitCheckDebug : 1;
 
 	uint8 bObjectCollisionDebug : 1;
+
+	// 기타 디버그 변수
+protected:
+	uint8 bSoundMessageDebug : 1;
 };

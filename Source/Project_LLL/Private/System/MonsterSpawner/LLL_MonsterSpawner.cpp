@@ -95,21 +95,19 @@ void ALLL_MonsterSpawner::SpawnMonster()
 	{
 		CurrentGroup -= LastGroup;
 	}
-	
-	int32 SpawnPointNum = 0;
 
 	for (const ULLL_MonsterSpawnPointComponent* SpawnPoint : SpawnPoints)
 	{
 		if (IsValid(SpawnPoint))
 		{
-			SpawnPointNum++;
+			int32 SpawnPointNum = SpawnPoint->GetNum();
 
 			for (const FMonsterSpawnDataTable MonsterSpawnData : MonsterSpawnDataArray)
 			{
 				if (MonsterSpawnData.Group == CurrentGroup && MonsterSpawnData.SpawnPoint == SpawnPointNum && IsValid(MonsterSpawnData.MonsterClass))
 				{
 					FTimerHandle MonsterSpawnTimerHandle;
-					GetWorldTimerManager().SetTimer(MonsterSpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [this, MonsterSpawnData, SpawnPoint, SpawnPointNum]{
+					GetWorldTimerManager().SetTimer(MonsterSpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, MonsterSpawnData, SpawnPoint, SpawnPointNum]{
 						ALLL_MonsterBase* MonsterBase = GetWorld()->SpawnActor<ALLL_MonsterBase>(MonsterSpawnData.MonsterClass, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 						if (IsValid(MonsterBase))
 						{
@@ -129,7 +127,7 @@ void ALLL_MonsterSpawner::SpawnMonster()
 					}), MonsterSpawnerDataAsset->SpawnTimer, false);
 
 					FTimerHandle SpawnParticleTimerHandle;
-					GetWorldTimerManager().SetTimer(SpawnParticleTimerHandle, FTimerDelegate::CreateWeakLambda(this, [this, SpawnPoint]{
+					GetWorldTimerManager().SetTimer(SpawnParticleTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, SpawnPoint]{
 						UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MonsterSpawnerDataAsset->SpawnParticle, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 					}), MonsterSpawnerDataAsset->SpawnParticleTimer, false);
 				}

@@ -3,9 +3,11 @@
 
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/ProtoGameInstance.h"
 #include "Util/LLL_MathHelper.h"
 
@@ -17,19 +19,43 @@ TargetingCorrectionRadius(100.f)
 
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
-	if (!IsValid(Player))
-	{
-		return;
-	}
-	
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
+		AActor* Attacker = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
+		if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Attacker))
+		{
+			Attacker = ThrownObject->GetOwner();
+		}
+		
+		ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
+		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
+		
+		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+		if (GetCurrentHealth() == 0)
+		{
+			Player->Dead();
+		}
+		else
+		{
+			Player->Damaged(Attacker, DOT);
+		}
+		
 		const uint32 DeclinedComboCount = FMath::FloorToInt(GetCurrentComboCount() * GetMultiplyComboCountWhenHit());
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
+			if (ProtoGameInstance->CheckPlayerIsInvincible())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 무적 상태")));
+				Player->TakeDamageDelegate.Broadcast(DOT);
+
+				FGameplayEventData PayloadData;
+				PayloadData.Instigator = Attacker;
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
+				return;
+			}
+			
 			if (ProtoGameInstance->CheckPlayerHitDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 데미지 입음. : %f"), Data.EvaluatedData.Magnitude));

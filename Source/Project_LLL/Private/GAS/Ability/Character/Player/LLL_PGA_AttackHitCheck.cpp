@@ -7,8 +7,11 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/LLL_GameInstance.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Task/LLL_AT_Trace.h"
+#include "Util/LLL_FModPlayHelper.h"
 
 ULLL_PGA_AttackHitCheck::ULLL_PGA_AttackHitCheck()
 {
@@ -38,6 +41,15 @@ void ULLL_PGA_AttackHitCheck::EndAbility(const FGameplayAbilitySpecHandle Handle
 
 void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
+	// 디버그 찍어보니 이상해서 살펴보니 이거 실수로 빠졌나봐요
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]()
+	{
+		if(IsValid(TraceTask) && !bIsAbilityEnding)
+		{
+			TraceTask->Activate();
+		}
+	}));
+	
 	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{
 		return;
@@ -48,7 +60,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 
 	if (!CheckHitCountEffects.IsEmpty())
 	{
-		for (auto HitCountEffect : CheckHitCountEffects)
+		for (const auto HitCountEffect : CheckHitCountEffects)
 		{
 			const FGameplayEffectSpecHandle HitCountEffectSpecHandle = MakeOutgoingGameplayEffectSpec(HitCountEffect, CurrentEventData.EventMagnitude);
 			if (!HitCountEffectSpecHandle.IsValid())
@@ -72,6 +84,25 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 		
 		Cast<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked())->ReceiveTargetData(this, TargetDataHandle);
 	}));
+
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	
+	FGameplayEventData PayloadData;
+	// 아래와 같이 복수의 데이터 전달 가능
+	PayloadData.TargetData = TargetDataHandle;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
+
+	FLLL_FModPlayHelper::PlayFModEvent(Player, HitFModEvent);
+
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	{
+		if (FModParameterData.Parameter == EFModParameter::PlayerAttackHitCountParameter)
+		{
+			const ILLL_FModInterface* FModInterface = CastChecked<ILLL_FModInterface>(Player);
+			FModInterface->GetFModAudioComponent()->SetParameter(FModParameterData.Name, PlayerAttackHitCountParameterValue);
+		}
+	}
 }
 
 void ULLL_PGA_AttackHitCheck::OnTraceEndCallBack(FGameplayEventData EventData)

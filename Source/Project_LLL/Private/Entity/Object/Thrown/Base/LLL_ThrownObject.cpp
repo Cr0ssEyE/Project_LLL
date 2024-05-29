@@ -4,9 +4,14 @@
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 
 #include "AbilitySystemComponent.h"
+#include "FMODAudioComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
 
 ALLL_ThrownObject::ALLL_ThrownObject()
@@ -32,8 +37,8 @@ void ALLL_ThrownObject::BeginPlay()
 	Super::BeginPlay();
 
 	ThrownObjectDataAsset = Cast<ULLL_ThrownObjectDataAsset>(BaseObjectDataAsset);
-	
-	ASC->AddSpawnedAttribute(ThrownObjectAttributeSet);
+
+	FModAudioComponent->SetEvent(ThrownObjectDataAsset->FModEvent);
 }
 
 void ALLL_ThrownObject::Activate()
@@ -49,21 +54,26 @@ void ALLL_ThrownObject::Activate()
 void ALLL_ThrownObject::Deactivate()
 {
 	bIsActivated = false;
-	
+
+	FModAudioComponent->Stop();
+	FModAudioComponent->Release();
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProjectileMovementComponent->Deactivate();
 	SetActorHiddenInGame(true);
+	GetWorldTimerManager().ClearTimer(HideTimerHandle);
 }
 
-void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget)
+void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget, float InSpeed)
 {
 	SetOwner(NewOwner);
 	Target = NewTarget;
 
-	ProjectileMovementComponent->MaxSpeed = ThrownObjectAttributeSet->GetThrowSpeed();
+	ProjectileMovementComponent->MaxSpeed = InSpeed;
 	ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
+
+	FModAudioComponent->SetPitch(Owner->CustomTimeDilation);
+	FModAudioComponent->Play();
 	
-	FTimerHandle HideTimerHandle;
 	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_ThrownObject::Deactivate, ThrownObjectAttributeSet->GetHideTimer(), false);
 }
 
@@ -73,11 +83,26 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, 1.0, EffectContextHandle);
+	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwner());
+	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, OwnerCharacter->GetCharacterLevel(), EffectContextHandle);
+
+	float OffencePower = 0.0f;
+	if (Cast<ALLL_MonsterBase>(OwnerCharacter))
+	{
+		const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(OwnerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+		OffencePower = MonsterAttributeSet->GetOffensePower();
+	}
+	else if (Cast<ALLL_PlayerBase>(OwnerCharacter))
+	{
+		OffencePower = (AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel) / static_cast<uint32>(AbilityData->AbilityValueType);
+	}
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, OffencePower);
+	
 	if(EffectSpecHandle.IsValid())
 	{
 		if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other))
 		{
+			UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *Other->GetName())
 			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 		}
 	}

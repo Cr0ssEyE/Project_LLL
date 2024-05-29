@@ -7,6 +7,7 @@
 #include "Engine/DataAsset.h"
 #include "LLL_BaseCharacterDataAsset.generated.h"
 
+class UFMODEvent;
 class ULLL_CharacterStatusWidget;
 class UGameplayEffect;
 class UGameplayAbility;
@@ -43,9 +44,6 @@ public:
 	TObjectPtr<UAnimMontage> DamagedAnimMontage;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
-	TSubclassOf<UGameplayEffect> InitEffect;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "발동형 게임플레이 어빌리티")
 	TArray<TSubclassOf<UGameplayAbility>> ActiveGameplayAbility;
 	
@@ -53,12 +51,12 @@ public:
 	TArray<TSubclassOf<UGameplayAbility>> PassiveGameplayAbility;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "발걸음 이벤트 태그", meta=(Categories = "GameplayCue"))
-	FGameplayTag StepCueTag;
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "발걸음 FMod 이벤트", meta=(Categories = "GameplayCue"))
+	TObjectPtr<UFMODEvent> StepFModEvent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "피격 이벤트 태그", meta=(Categories = "GameplayCue"))
-	FGameplayTag DamagedCueTag;
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "피격 FMod 이벤트", meta=(Categories = "GameplayCue"))
+	TObjectPtr<UFMODEvent> DamagedFModEvent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "사망 이벤트 태그", meta=(Categories = "GameplayCue"))
-	FGameplayTag DeadCueTag;
+	UPROPERTY(EditDefaultsOnly, Category = "Tag", DisplayName = "사망 FMod 이벤트", meta=(Categories = "GameplayCue"))
+	TObjectPtr<UFMODEvent> DeadFModEvent;
 };

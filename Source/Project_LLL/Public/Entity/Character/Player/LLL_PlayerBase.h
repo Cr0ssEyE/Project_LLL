@@ -11,6 +11,7 @@
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ULLL_AbnormalStatusAttributeSet;
 class ULLL_PlayerSkillAttributeSet;
 class ULLL_ObjectPoolingComponent;
 class ALLL_PlayerChaseHand;
@@ -40,6 +41,10 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void InitAttributeSet() override;
+
+	virtual void Damaged(AActor* Attacker, bool IsDOT = false) override;
+	virtual void Dead() override;
 	
 	// 외부 접근용
 public:
@@ -84,6 +89,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerSkillAttributeSet> SkillAttributeSet;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULLL_AbnormalStatusAttributeSet> AbnormalStatusAttributeSet;
 	
 	// 입력 액션 관련
 private:
@@ -101,6 +109,9 @@ private:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_PlayerCharacterAttributeSet> PlayerCharacterAttributeSet;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_CameraDataAsset> CameraDataAsset;
@@ -122,12 +133,9 @@ private:
 	FRotator MouseDirectionRotator;
 	
 	float ToCursorRotationMultiplyValue;
-	
+
 	// 상태 관련 함수
 protected:
-	virtual void Damaged() override;
-	virtual void Dead() override;
-
 	UFUNCTION()
 	void DeadMotionEndedHandle();
 

@@ -4,14 +4,15 @@
 #include "UI/Entity/Character/Monster/LLL_MonsterStatusWidget.h"
 
 #include "Components/ProgressBar.h"
-#include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 
 void ULLL_MonsterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet)
 {
 	Super::UpdateWidgetView(CharacterAttributeSet);
 
-	const float MaxShield = CharacterAttributeSet->GetMaxShield();
-	const float CurrentShield = CharacterAttributeSet->GetCurrentShield();
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(CharacterAttributeSet);
+	const float MaxShield = MonsterAttributeSet->GetMaxShield();
+	const float CurrentShield = MonsterAttributeSet->GetCurrentShield();
 
 	if(MaxShield)
 	{

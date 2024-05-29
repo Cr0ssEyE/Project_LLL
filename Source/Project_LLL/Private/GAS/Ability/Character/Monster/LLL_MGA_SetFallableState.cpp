@@ -75,5 +75,6 @@ void ULLL_MGA_SetFallableState::EndAbility(const FGameplayAbilitySpecHandle Hand
 	}
 	
 	GetAbilitySystemComponentFromActorInfo_Checked()->RemoveLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
+	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

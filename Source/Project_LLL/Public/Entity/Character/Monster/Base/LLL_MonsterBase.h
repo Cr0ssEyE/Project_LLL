@@ -24,31 +24,41 @@ public:
 	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	
-protected:
-	virtual void Dead() override;
+	virtual void InitAttributeSet() override;
 	
 public:
 	void Attack() const;
 	void Charge() const;
-	virtual void Damaged() override;
+	virtual void Damaged(AActor* Attacker, bool IsDOT) override;
+	virtual void Dead() override;
 
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	virtual void ApplyStackedKnockBack() override;
 	
-	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
 	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
+	FORCEINLINE void SetCharging(bool IsCharging) { bIsCharging = IsCharging; }
+	
+	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
+	FORCEINLINE bool IsCharging() const { return bIsCharging; }
+	FORCEINLINE int32 GetId() const { return Id; }
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<ULLL_MonsterAttributeSet> MonsterAttributeSet;
+
+	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UWidgetComponent> MonsterStatusWidgetComponent;
 
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> MaskMeshComponent;
+
 	FVector StackedKnockBackVelocity;
-	
 	float StackedKnockBackedPower;
+	int32 Id;
+	uint8 bIsCharging : 1;
 	
 public:
 	UFUNCTION()

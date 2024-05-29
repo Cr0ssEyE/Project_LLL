@@ -39,9 +39,9 @@ void ULLL_PlayerAnimInstance::SetStepEventParameter(FName FootSocketName) const
 		
 		return;
 	}
-	
-	FVector StartLocation = Character->GetMesh()->GetSocketLocation(FootSocketName);
-	FVector EndLocation = StartLocation + FVector(0.0f, 0.0f, Character->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * -1.0f);
+
+	const FVector StartLocation = Character->GetMesh()->GetSocketLocation(FootSocketName);
+	const FVector EndLocation = StartLocation + FVector(0.0f, 0.0f, Character->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * -1.0f);
 	
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
@@ -63,7 +63,7 @@ void ULLL_PlayerAnimInstance::SetStepEventParameter(FName FootSocketName) const
 		if (HitResult.PhysMaterial->SurfaceType == StepEventParameterProperty.Key)
 		{
 			const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-			for (auto FModParameterData : GameInstance->GetFModParameterDataArray())
+			for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
 			{
 				if (FModParameterData.Parameter == EFModParameter::PlayerWalkMaterialParameter)
 				{

@@ -22,7 +22,7 @@ class PROJECT_LLL_API ILLL_DashMonsterInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void SetDash(bool IsDashing) = 0;
+	virtual void SetDashing(bool IsDashing) = 0;
 	virtual bool IsDashing() const = 0;
 	virtual void Dash() const = 0;
 };

@@ -14,13 +14,12 @@
 class UFMODAudioComponent;
 class UWidgetComponent;
 class ULLL_BaseCharacterUIManager;
-class ULLL_CharacterAttributeSetBase;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDeadDelegate, ALLL_BaseCharacter*, Character);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOtherActorCollidedDelegate, AActor*, SelfActor, AActor*, OtherActor);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTakeDamageDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTakeDamageDelegate, bool, IsDOT);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
 
 /**
@@ -32,7 +31,6 @@ class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySys
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	ALLL_BaseCharacter();
 
 	// 외부 접근용 함수
@@ -41,6 +39,9 @@ public:
 	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
+	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
+	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
+	FORCEINLINE float GetCharacterLevel() const { return Level; }
 
 	// 플레이어
 protected:
@@ -49,14 +50,14 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
+	virtual void InitAttributeSet();
 	
 protected:
-	virtual void Tick(float DeltaTime) override;
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Damaged();
+	virtual void Damaged(AActor* Attacker, bool IsDOT = false);
 	virtual void Dead();
 
 	// 상태 체크용 변수
@@ -66,9 +67,7 @@ public:
 	// 델리게이트
 public:
 	FCharacterDeadDelegate CharacterDeadDelegate;
-
 	FTakeDamageDelegate TakeDamageDelegate;
-
 	FOtherActorCollidedDelegate OtherActorCollidedDelegate;
 	
 	// 위젯 업데이트를 위한 델리게이트
@@ -79,14 +78,17 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_CharacterAttributeSetBase> CharacterAttributeSet;
 	
 	// 캐릭터 공용 변수
 protected:
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsAttacking : 1;
+
+	UPROPERTY(EditAnywhere)
+	int32 Level;
 
 	// 이동 관련 변수
 protected:
@@ -106,14 +108,4 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "FMOD")
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	// 디버그용 함수
-public:
-	FORCEINLINE void SetCharacterDead() { bIsDead = true; }
-	
-	// 디버그용 변수
-public:
-	uint8 bIsSpawned : 1;
-#endif
 };

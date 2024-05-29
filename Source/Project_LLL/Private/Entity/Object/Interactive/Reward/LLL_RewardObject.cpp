@@ -79,5 +79,7 @@ void ALLL_RewardObject::InteractiveEvent()
 		const uint8 Index = FMath::RandRange(0, RewardDataArray.Num() - 1);
 		RewardData = &RewardDataArray[Index];
 	}
+
+	
 	Destroy();
 }

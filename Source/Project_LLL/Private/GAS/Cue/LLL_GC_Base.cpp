@@ -18,6 +18,7 @@ bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCue
 		{
 			FModAudioComponent->Release();
 			FModAudioComponent->SetEvent(FModEvent);
+			FModAudioComponent->SetPitch(MyTarget->CustomTimeDilation);
 			FModAudioComponent->Play();
 		}
 		else

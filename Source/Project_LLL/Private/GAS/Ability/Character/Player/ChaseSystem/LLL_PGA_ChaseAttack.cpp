@@ -8,7 +8,8 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Util/LLL_ExecuteCueHelper.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "Util/LLL_FModPlayHelper.h"
 
 ULLL_PGA_ChaseAttack::ULLL_PGA_ChaseAttack()
 {
@@ -41,14 +42,14 @@ void ULLL_PGA_ChaseAttack::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	}
 
 	PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+
+	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	
-	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("SkillMontage"), AbilityActionMontage, 1.0f, SECTION_ATTACK);
+	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ChaseMontage"), AbilityActionMontage, PlayerCharacterAttributeSet->GetAttackSpeed(), SECTION_ATTACK);
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_ChaseAttack::OnCompleteCallBack);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_ChaseAttack::OnInterruptedCallBack);
 
 	PlayMontageTask->ReadyForActivation();
-	
-	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, ChaseAttackCueTag);
 }
 
 void ULLL_PGA_ChaseAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

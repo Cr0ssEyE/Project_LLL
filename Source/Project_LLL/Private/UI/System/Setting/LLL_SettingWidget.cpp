@@ -20,6 +20,8 @@ void ULLL_SettingWidget::NativeConstruct()
 
 void ULLL_SettingWidget::CloseSettingWidget()
 {
+	SwitchDisplaySettingWidget();
 	SetRenderScale(FVector2d::Zero());
+	SetIsEnabled(false);
 	GEngine->GetGameUserSettings()->ApplySettings(true);
 }
