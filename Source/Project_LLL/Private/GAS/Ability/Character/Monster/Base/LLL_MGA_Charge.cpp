@@ -6,7 +6,6 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDash.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
-#include "Util/LLL_ExecuteCueHelper.h"
 
 void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -29,7 +28,6 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	}), MonsterAttributeSet->GetChargeTimer(), false);
 
 	Monster->SetCharging(true);
-	FLLL_ExecuteCueHelper::ExecuteCue(Monster, ChargeCueTag);
 }
 
 void ULLL_MGA_Charge::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

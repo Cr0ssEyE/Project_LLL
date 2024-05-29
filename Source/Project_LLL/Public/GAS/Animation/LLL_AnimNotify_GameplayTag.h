@@ -26,7 +26,6 @@ protected:
 	
 	virtual void Notify_TagEventTriggered(AActor* OwnerActor);
 	virtual void Notify_TagAddOrRemove(AActor* OwnerActor);
-	virtual void Notify_CueTriggered(AActor* OwnerActor);
 
 protected:
 	UPROPERTY(EditAnywhere, DisplayName = "노티파이 이름", meta=(DisplayPriority=1))
@@ -61,17 +60,4 @@ protected:
 
 	UPROPERTY(EditAnywhere , DisplayName = "태그 제거 갯수", meta=(EditCondition = "bIsUsingRemoveTag == true", EditConditionHides))
 	float RemoveTagCount;
-
-protected:
-	UPROPERTY(EditAnywhere, DisplayName = "게임플레이 큐 사용")
-	uint8 bIsUsingGameplayCue : 1;
-	
-	UPROPERTY(EditAnywhere, DisplayName = "게임플레이 큐 태그", meta=(Categories = "GameplayCue", EditCondition = "bIsUsingGameplayCue == true", EditConditionHides))
-	FGameplayTag GameplayCueTag;
-
-	UPROPERTY(EditAnywhere, DisplayName = "FMOD 파라미터", meta=(EditCondition = "bIsUsingGameplayCue == true", EditConditionHides))
-	EFModParameter FModParameter;
-
-	UPROPERTY(EditAnywhere, DisplayName = "FMOD 파라미터 값", meta=(EditCondition = "bIsUsingGameplayCue == true", EditConditionHides))
-	float FModParameterValue;
 };

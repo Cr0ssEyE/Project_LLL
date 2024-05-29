@@ -51,13 +51,16 @@ protected:
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
 	virtual void InitAttributeSet();
+
+protected:
+	virtual void SetFModParameter(EFModParameter FModParameter) override {}
 	
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Damaged(bool IsDOT = false);
+	virtual void Damaged(AActor* Attacker, bool IsDOT = false);
 	virtual void Dead();
 
 	// 상태 체크용 변수

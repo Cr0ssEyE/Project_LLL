@@ -20,6 +20,9 @@ public:
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
 
 protected:
+	virtual void SetFModParameter(EFModParameter FModParameter) override {}
+
+protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 };

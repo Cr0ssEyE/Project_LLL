@@ -20,7 +20,4 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	TObjectPtr<UAnimMontage> ChargeMontage;
-
-	UPROPERTY(EditAnywhere, DisplayName = "차지 이벤트 태그", meta=(Categories = "GameplayCue"))
-	FGameplayTag ChargeCueTag;
 };

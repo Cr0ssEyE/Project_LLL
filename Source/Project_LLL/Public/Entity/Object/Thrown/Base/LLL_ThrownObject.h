@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_ThrownObjectDataAsset.h"
+#include "DataTable/LLL_AbilityDataTable.h"
 #include "Entity/Object/Base/LLL_BaseObject.h"
 #include "Interface/LLL_ObjectPoolingObjectInterface.h"
 #include "LLL_ThrownObject.generated.h"
 
-struct FAbilityDataTable;
 class ULLL_ThrownObjectAttributeSet;
 class UProjectileMovementComponent;
 
@@ -27,6 +27,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	FORCEINLINE void SetAbilityInfo(const FAbilityDataTable* InAbilityData, float InAbilityLevel) { AbilityData = InAbilityData; AbilityLevel = InAbilityLevel; }
+	
 	FORCEINLINE UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovementComponent; }
 	FORCEINLINE virtual bool IsActivated() const override { return bIsActivated; }
 	
@@ -53,4 +55,6 @@ protected:
 	uint8 bIsActivated : 1;
 	
 	FTimerHandle HideTimerHandle;
+	const FAbilityDataTable* AbilityData;
+	float AbilityLevel;
 };

@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 
 ULLL_Attack_BTTaskNode::ULLL_Attack_BTTaskNode()
 {
@@ -33,6 +34,7 @@ void ULLL_Attack_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!Monster->IsAttacking())
 	{
+		CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController())->StartCoolDown();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 }
