@@ -13,6 +13,8 @@
 #include <Kismet/GameplayStatics.h>
 #include <Constant/LLL_LevelNames.h>
 
+#include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDash.h"
+
 ALLL_TutorialGimmick::ALLL_TutorialGimmick()
 {
 	StageBP = FLLL_ConstructorHelper::FindAndGetClass<AActor>(PATH_TUTORIAL_MAP_BP, EAssertionLevel::Check);
@@ -48,6 +50,12 @@ void ALLL_TutorialGimmick::OnInteractionGate(FRewardDataTable* Data)
 }
 
 void ALLL_TutorialGimmick::RewardDestroyed(AActor* DestroyedActor)
+{
+	ALLL_SwordDash* Monster = GetWorld()->SpawnActor<ALLL_SwordDash>(ALLL_SwordDash::StaticClass(), FVector(200.0f, 200.0f, 0), -GetActorRotation());
+	Monster->OnDestroyed.AddDynamic(this, &ALLL_TutorialGimmick::MonsterDestroyed);
+}
+
+void ALLL_TutorialGimmick::MonsterDestroyed(AActor* DestroyedActor)
 {
 	Gate->SetActivate();
 }
