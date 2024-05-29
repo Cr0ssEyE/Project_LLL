@@ -99,19 +99,37 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	}
 	
 	//보상쪽 상세 시스템 기획이 나오면 바뀔 부분
-	
-	uint8 Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	// ButtonAbilityData1 = &AbilityData[Index];
-	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
-	
-	Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	// ButtonAbilityData2 = &AbilityData[Index];
-	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
-	
-	Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	// ButtonAbilityData3 = &AbilityData[Index];
-	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
 
+	TArray<uint8> InstanceRewardIndexArray;
+	uint8 Index;
+	do
+	{
+		Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	}while (!GettenIndexArray.IsEmpty() && !GettenIndexArray.Contains(Index) && !InstanceRewardIndexArray.Contains(Index));
+	
+	// ButtonAbilityData1 = &AbilityData[Index];
+	FirstButtonIndex = Index;
+	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
+	InstanceRewardIndexArray.Emplace(FirstButtonIndex);
+	
+	do
+	{
+		Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	}while (!GettenIndexArray.IsEmpty() && !GettenIndexArray.Contains(Index) && !InstanceRewardIndexArray.Contains(Index));
+	// ButtonAbilityData2 = &AbilityData[Index];
+	SecondButtonIndex = Index;
+	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
+	InstanceRewardIndexArray.Emplace(SecondButtonIndex);
+	
+	do
+	{
+		Index = FMath::RandRange(0, AbilityData.Num() - 1);
+	}while (!GettenIndexArray.IsEmpty() && !GettenIndexArray.Contains(Index) && !InstanceRewardIndexArray.Contains(Index));
+	// ButtonAbilityData3 = &AbilityData[Index];
+	ThirdButtonIndex = Index;
+	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
+	InstanceRewardIndexArray.Emplace(ThirdButtonIndex);
+	
 	RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
 }
 
@@ -126,16 +144,19 @@ void ALLL_RewardGimmick::SetDataTable()
 void ALLL_RewardGimmick::ClickFirstButton()
 {
 	ClickButtonEvent(ButtonAbilityDataArray[0]);
+	GettenIndexArray.Emplace(FirstButtonIndex);
 }
 
 void ALLL_RewardGimmick::ClickSecondButton()
 {
 	ClickButtonEvent(ButtonAbilityDataArray[1]);
+	GettenIndexArray.Emplace(SecondButtonIndex);
 }
 
 void ALLL_RewardGimmick::ClickThirdButton()
 {
 	ClickButtonEvent(ButtonAbilityDataArray[2]);
+	GettenIndexArray.Emplace(ThirdButtonIndex);
 }
 
 void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData)
@@ -179,6 +200,12 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	if (!IsValid(PlayerUIManager) || !IsValid(ASC))
 	{
 		ensure(false);
+		return;
+	}
+
+	if (LoadedEffects.IsEmpty())
+	{
+		Player->GetGoldComponent()->IncreaseMoney(123);
 		return;
 	}
 	

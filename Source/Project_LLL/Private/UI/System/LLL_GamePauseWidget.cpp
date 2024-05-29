@@ -3,6 +3,7 @@
 
 #include "UI/System/LLL_GamePauseWidget.h"
 
+#include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
 #include "Components/Overlay.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
@@ -14,9 +15,21 @@ void ULLL_GamePauseWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	ResumeButton->OnClicked.AddDynamic(this, &ULLL_GamePauseWidget::ResumeButtonEvent);
+	ResumeButton->OnHovered.AddDynamic(this, &ULLL_GamePauseWidget::PlayResumeButtonHoverAnimation);
+	ResumeButton->OnUnhovered.AddDynamic(this, &ULLL_GamePauseWidget::PlayResumeButtonUnHoverAnimation);
+	
 	SettingButton->OnClicked.AddDynamic(this, &ULLL_GamePauseWidget::SettingButtonEvent);
+	SettingButton->OnHovered.AddDynamic(this, &ULLL_GamePauseWidget::PlaySettingButtonHoverAnimation);
+	SettingButton->OnUnhovered.AddDynamic(this, &ULLL_GamePauseWidget::PlaySettingButtonUnHoverAnimation);
+	
+	TitleButton->OnClicked.AddDynamic(this, &ULLL_GamePauseWidget::TitleButtonEvent);
+	TitleButton->OnHovered.AddDynamic(this, &ULLL_GamePauseWidget::PlayTitleButtonHoverAnimation);
+	TitleButton->OnUnhovered.AddDynamic(this, &ULLL_GamePauseWidget::PlayTitleButtonUnHoverAnimation);
+	
 	ExitButton->OnClicked.AddDynamic(this, &ULLL_GamePauseWidget::ExitButtonEvent);
-
+	ExitButton->OnHovered.AddDynamic(this, &ULLL_GamePauseWidget::PlayExitButtonHoverAnimation);
+	ExitButton->OnUnhovered.AddDynamic(this, &ULLL_GamePauseWidget::PlayExitButtonUnHoverAnimation);
+	
 	SettingWidget->SetRenderScale(FVector2d::Zero());
 	SettingWidget->SetIsEnabled(false);
 }
@@ -32,6 +45,7 @@ void ULLL_GamePauseWidget::SetupPauseState()
 
 void ULLL_GamePauseWidget::RestorePauseState()
 {
+	PlayAnimationForward(ResetAnim);
 	SetVisibility(ESlateVisibility::Hidden);
 	SetIsEnabled(false);
 	GetOwningPlayer()->EnableInput(GetOwningPlayer());
@@ -57,15 +71,44 @@ void ULLL_GamePauseWidget::SettingButtonEvent()
 	SettingWidget->SetIsEnabled(true);
 }
 
+void ULLL_GamePauseWidget::TitleButtonEvent()
+{
+	SetVisibility(ESlateVisibility::HitTestInvisible);
+	LastClickButton = TitleButton;
+	PlayAnimationForward(FadeAnim);
+}
+
 void ULLL_GamePauseWidget::ExitButtonEvent()
 {
-	//TODO: 정산창 Or 준비 공간으로 보내기
-	ULLL_GameProgressManageSubSystem* SubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-	ULLL_SaveGameData* CurrentSaveGameData = SubSystem->GetCurrentSaveGameData();
-	if (IsValid(CurrentSaveGameData))
-	{
-		CurrentSaveGameData->LastPlayLevelName = *GetWorld()->GetCurrentLevel()->GetName();
-	}
+	SetVisibility(ESlateVisibility::HitTestInvisible);
+	LastClickButton = ExitButton;
+	PlayAnimationForward(FadeAnim);
+}
+
+void ULLL_GamePauseWidget::OnAnimationFinished_Implementation(const UWidgetAnimation* Animation)
+{
+	Super::OnAnimationFinished_Implementation(Animation);
 	
-	UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
+	if (Animation != FadeAnim)
+	{
+		return;
+	}
+
+	if (LastClickButton == TitleButton && Animation == FadeAnim)
+	{
+		UGameplayStatics::OpenLevel(this, LEVEL_TITLE);
+		return;
+	}
+
+	if (LastClickButton == ExitButton && Animation == FadeAnim)
+	{
+		ULLL_GameProgressManageSubSystem* SubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+		ULLL_SaveGameData* CurrentSaveGameData = SubSystem->GetCurrentSaveGameData();
+		if (IsValid(CurrentSaveGameData))
+		{
+			CurrentSaveGameData->LastPlayLevelName = *GetWorld()->GetCurrentLevel()->GetName();
+		}
+	
+		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+	}
 }

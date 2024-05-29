@@ -140,7 +140,8 @@ void ALLL_PlayerBase::BeginPlay()
 			}
 		}
 	}
-
+	GetMesh()->SetCustomDepthStencilValue(1);
+	
 	ULLL_PlayerChaseActionWidget* ChaseActionWidget = PlayerUIManager->GetChaseActionWidget();
 	ChaseActionGaugeWidgetComponent->SetWidget(ChaseActionWidget);
 	ChaseActionGaugeWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);

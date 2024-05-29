@@ -72,6 +72,11 @@ void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Act
 {
 	for (const auto Actor : Actors)
 	{
+		if (!IsValid(Actor))
+		{
+			continue;
+		}
+		
 		Actor->CustomTimeDilation = CustomTimeDilation;
 	
 		if (const ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(Actor))

@@ -49,10 +49,11 @@
 
 // 맵 및 보상 시스템 관련
 #define PATH_MAP_DATA TEXT("/Script/Project_LLL.LLL_MapDataAsset'/Game/DataAsset/DA_Map.DA_Map'")
-#define PATH_GATE_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/Meshes/Prototyping/SM_GateTest.SM_GateTest'")
+#define PATH_GATE_DATA TEXT("/Script/Project_LLL.LLL_GateDataAsset'/Game/DataAsset/DA_Gate.DA_Gate'")
 #define PATH_REWARD_DATA_TABLE TEXT("/Script/Engine.DataTable'/Game/DataTable/RewardDataTable.RewardDataTable'")
 #define PATH_REWARD_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_CornerFrame.SM_CornerFrame'")
 #define PATH_REWARD_OBJECT_TEST_DATA TEXT("/Script/Project_LLL.LLL_RewardObjectDataAsset'/Game/DataAsset/DA_RewardObject.DA_RewardObject'")
+#define PATH_TUTORIAL_MAP_BP TEXT("/Script/Engine.Blueprint'/Game/Blueprints/System/BP_TutorialMap.BP_TutorialMap_C'")
 
 // UI 관련
 #define PATH_REWARD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Reward/WBP_SelectRewordWidget.WBP_SelectRewordWidget_C'")
