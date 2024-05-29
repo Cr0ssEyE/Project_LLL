@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Kismet/GameplayStatics.h"
 
 ALLL_MapSoundManager::ALLL_MapSoundManager()
 {
@@ -25,12 +26,12 @@ void ALLL_MapSoundManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!IsValid(GetWorld()->GetFirstPlayerController()->GetPawn()))
+	if (!IsValid(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
 		return;
 	}
 	
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->CharacterDeadDelegate.AddDynamic(this, &ALLL_MapSoundManager::PlayerDeadHandle);
 
 	BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), BGM, true);

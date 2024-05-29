@@ -117,6 +117,6 @@ void ULLL_TitleScreenWidget::OpenSavedLevel()
 
 void ULLL_TitleScreenWidget::CloseGame()
 {
-	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+	UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
 }
 

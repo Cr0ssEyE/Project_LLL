@@ -8,15 +8,12 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Game/LLL_GameInstance.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Task/LLL_AT_Trace.h"
-#include "Util/LLL_FModPlayHelper.h"
 
 ULLL_PGA_AttackHitCheck::ULLL_PGA_AttackHitCheck()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-	
 }
 
 void ULLL_PGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -99,18 +96,6 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	PayloadData.TargetData = TargetDataHandle;
 	PayloadData.EventMagnitude = CurrentEventData.EventMagnitude;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
-
-	FLLL_FModPlayHelper::PlayFModEvent(Player, HitFModEvent);
-
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
-	{
-		if (FModParameterData.Parameter == EFModParameter::PlayerAttackHitCountParameter)
-		{
-			const ILLL_FModInterface* FModInterface = CastChecked<ILLL_FModInterface>(Player);
-			FModInterface->GetFModAudioComponent()->SetParameter(FModParameterData.Name, PlayerAttackHitCountParameterValue);
-		}
-	}
 }
 
 void ULLL_PGA_AttackHitCheck::OnTraceEndCallBack(FGameplayEventData EventData)

@@ -56,7 +56,17 @@ void ULLL_GameInstance::Init()
 	{
 		StringData.Add(*LoadStringData);
 	}
-}	
+}
+
+void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)
+{
+	if (!bCustomTimeDilationIsChanging)
+	{
+		bCustomTimeDilationIsChanging = true;
+
+		SetActorsCustomTimeDilationRecursive(Actors, InCustomTimeDilation);
+	}
+}
 
 void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation)
 {

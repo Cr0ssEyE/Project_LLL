@@ -3,10 +3,8 @@
 
 #include "GAS/Animation/LLL_AnimNotify_FMod.h"
 
-#include "FMODAudioComponent.h"
 #include "FMODBlueprintStatics.h"
 #include "FMODEvent.h"
-#include "DataTable/LLL_FModParameterDataTable.h"
 #include "Game/ProtoGameInstance.h"
 #include "Interface/LLL_FModInterface.h"
 #include "Util/LLL_FModPlayHelper.h"
@@ -15,31 +13,15 @@ void ULLL_AnimNotify_FMod::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 {
 	Super::Notify(MeshComp, Animation, EventReference);
 
-	FName ParameterName;
-	if (!FModParameterRowHandle.IsNull())
-	{
-		ParameterName = FModParameterRowHandle.GetRow<FFModParameterDataTable>(TEXT("Not Found FModParameter Row"))->Name;
-	}
-
 	AActor* OwnerActor = MeshComp->GetOwner();
 	const ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(OwnerActor);
 	if (!FModInterface)
 	{
-		const FFMODEventInstance DebugWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), FModEvent, true);
-		if (!FModParameterRowHandle.IsNull())
-		{
-			UFMODBlueprintStatics::EventInstanceSetParameter(DebugWrapper, ParameterName, FModParameterValue);
-		}
+		UFMODBlueprintStatics::PlayEvent2D(GetWorld(), FModEvent, true);
 		return;
 	}
 	
-	FLLL_FModPlayHelper::PlayFModEvent(OwnerActor, FModEvent);
-
-	UFMODAudioComponent* FModAudioComponent = FModInterface->GetFModAudioComponent();
-	if (!FModParameterRowHandle.IsNull())
-	{
-		FModAudioComponent->SetParameter(ParameterName, FModParameterValue);
-	}
+	FLLL_FModPlayHelper::PlayFModEvent(OwnerActor, FModEvent, FModParameter);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	UGameInstance* GameInstance = OwnerActor->GetGameInstance();

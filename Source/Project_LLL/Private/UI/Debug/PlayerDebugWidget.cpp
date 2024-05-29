@@ -8,6 +8,7 @@
 #include "Components/CheckBox.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 void UPlayerDebugWidget::NativeConstruct()
 {
@@ -60,7 +61,7 @@ void UPlayerDebugWidget::CharacterCollisionCheckBoxEvent(bool value)
 void UPlayerDebugWidget::PlayerFillHealthButtonEvent()
 {
 	// TODO: 플레이어 클래스 만들고 처리
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if(!IsValid(Player))
 	{
 		return;

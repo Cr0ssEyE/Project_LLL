@@ -22,8 +22,7 @@ public:
 	ULLL_GameInstance();
 
 	virtual void Init() override;
-
-
+	
 public:
 	// 데이터 테이블 Getter
 	FORCEINLINE TArray<FAbilityDataTable> GetAbilityDataTable() const { return AbilityData; }
@@ -31,8 +30,12 @@ public:
 	FORCEINLINE TArray<FRewardDataTable> GetRewardDataTable() const { return RewardData; }
 	FORCEINLINE const UDataTable* GetStringDataTable() const { return StringDataTable; }
 	FORCEINLINE TArray<FStringDataTable> GetStringDataTablesData() const { return StringData; }
-
 	FORCEINLINE bool CheckCustomTimeDilationIsChanging() const { return bCustomTimeDilationIsChanging; }
+
+public:
+	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
+
+protected:
 	void SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation);
 	
 	// 머티리얼 파라미터 컬렉션 

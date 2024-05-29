@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "FMODAudioComponent.h"
+#include "FMODEvent.h"
 #include "GameplayAbilitiesModule.h"
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraComponent.h"
@@ -210,6 +211,41 @@ void ALLL_PlayerBase::InitAttributeSet()
 
 	// DefaultGame.ini의 [/Script/GameplayAbilities.AbilitySystemGlobals] 항목에 테이블 미리 추가해놔야 정상 작동함.
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, Level, true);
+}
+
+void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)
+{
+	Super::SetFModParameter(FModParameter);
+
+	if (FModParameter == EFModParameter::PlayerDamagedTypeParameter)
+	{
+		for (auto DamagedEventParameterProperty : PlayerDataAsset->DamagedEventParameterProperties)
+		{
+			if (LastAttackerMonsterId != DamagedEventParameterProperty.Key)
+			{
+				continue;
+			}
+
+			SetParameter(FModParameter, static_cast<float>(DamagedEventParameterProperty.Value));
+		}
+	}
+	else if (FModParameter == EFModParameter::PlayerWalkMaterialParameter)
+	{
+		const TEnumAsByte<EPhysicalSurface> SurfaceType = PlayerAnimInstance->GetSurfaceType();
+		for (auto StepEventParameterProperty : PlayerDataAsset->StepEventParameterProperties)
+		{
+			if (SurfaceType != StepEventParameterProperty.Key)
+			{
+				continue;
+			}
+
+			SetParameter(FModParameter, static_cast<float>(StepEventParameterProperty.Value));
+		}
+	}
+	else if (FModParameter == EFModParameter::PlayerAttackCountParameter || FModParameter == EFModParameter::PlayerAttackHitCountParameter)
+	{
+		SetParameter(FModParameter, CurrentCombo - 1);
+	}
 }
 
 void ALLL_PlayerBase::AddInteractiveObject(ALLL_InteractiveObject* Object)
@@ -504,6 +540,20 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
 }
 
+void ALLL_PlayerBase::SetParameter(EFModParameter FModParameter, float value) const
+{
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	{
+		if (FModParameterData.Parameter != FModParameter)
+		{
+			continue;
+		}
+
+		FModAudioComponent->SetParameter(FModParameterData.Name, value);
+	}
+}
+
 void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 {
 	Super::Damaged(Attacker, IsDOT);
@@ -518,21 +568,8 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 	{
 		return;
 	}
-		
-	for (auto DamagedEventParameterProperty : PlayerDataAsset->DamagedEventParameterProperties)
-	{
-		if (Monster->GetId() == DamagedEventParameterProperty.Key)
-		{
-			const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-			for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
-			{
-				if (FModParameterData.Parameter == EFModParameter::PlayerDamagedTypeParameter)
-				{
-					FModAudioComponent->SetParameter(FModParameterData.Name, static_cast<float>(DamagedEventParameterProperty.Value));
-				}
-			}
-		}
-	}
+
+	LastAttackerMonsterId = Monster->GetId();
 }
 
 void ALLL_PlayerBase::Dead()
