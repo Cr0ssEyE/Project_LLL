@@ -204,7 +204,7 @@ void ALLL_MonsterBase::Dead()
 	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	if (IsValid(PlayerBase))
 	{
-		FVector ImpulseDirection = PlayerBase->GetActorForwardVector();
+		FVector ImpulseDirection = GetActorLocation() - PlayerBase->GetActorLocation();
 		ImpulseDirection.Normalize();
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 		const float ImpulseStrength = PlayerAttributeSet->GetImpulseStrength();
@@ -214,6 +214,11 @@ void ALLL_MonsterBase::Dead()
 	}
 
 	MonsterStatusWidgetComponent->SetHiddenInGame(true);
+
+	if (IsValid(NiagaraComponent))
+	{
+		NiagaraComponent->DestroyComponent();
+	}
 
 	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();
 	FTimerHandle DestroyTimerHandle;
