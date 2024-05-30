@@ -18,7 +18,12 @@ void ULLL_AnimNotify_FMod::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 		return;
 	}
 
-	FLLL_FModPlayHelper::PlayFModEvent(OwnerActor, Event, Parameter, *AttachName);
+	FFModInfo FModInfo;
+	FModInfo.FModEvent = Event;
+	FModInfo.FModParameter = Parameter;
+	FModInfo.SocketName = *AttachName;
+
+	FLLL_FModPlayHelper::PlayFModEvent(OwnerActor, FModInfo);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	UGameInstance* GameInstance = OwnerActor->GetGameInstance();

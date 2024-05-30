@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "FMODAnimNotifyPlay.h"
-#include "Animation/AnimNotifies/AnimNotify.h"
 #include "LLL_AnimNotify_FMod.generated.h"
 
 enum class EFModParameter : uint8;

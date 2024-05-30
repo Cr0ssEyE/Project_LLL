@@ -9,18 +9,21 @@
 
 bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCueParameters& Parameters) const
 {
-	FLLL_FModPlayHelper::PlayFModEvent(MyTarget, FModEvent, FModParameter, SocketName);
+	for (const auto FModInfo : FModInfos)
+	{
+		FLLL_FModPlayHelper::PlayFModEvent(MyTarget, FModInfo);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	UGameInstance* GameInstance = MyTarget->GetGameInstance();
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GameInstance))
-	{
-		if (ProtoGameInstance->CheckSoundMessageDebug())
+		UGameInstance* GameInstance = MyTarget->GetGameInstance();
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GameInstance))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 액터가 %s 재생"), *MyTarget->GetName(), *FModEvent->GetName()));
+			if (ProtoGameInstance->CheckSoundMessageDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 액터가 %s 재생"), *MyTarget->GetName(), *FModInfo.FModEvent->GetName()));
+			}
 		}
-	}
 #endif
+	}
 	
 	return Super::OnExecute_Implementation(MyTarget, Parameters);
 }
