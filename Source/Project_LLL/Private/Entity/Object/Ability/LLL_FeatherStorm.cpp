@@ -1,29 +1,29 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Entity/Object/Ability/LLL_PlayerFeatherStorm.h"
+#include "Entity/Object/Ability/LLL_FeatherStorm.h"
 
 #include "AbilitySystemComponent.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Object/Ability/LLL_PlayerFeatherStormAttributeSet.h"
+#include "GAS/Attribute/Object/Ability/LLL_FeatherStormAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
-ALLL_PlayerFeatherStorm::ALLL_PlayerFeatherStorm()
+ALLL_FeatherStorm::ALLL_FeatherStorm()
 {
-	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerFeatherStormDataAsset>(PATH_PLAYER_FEATHER_STORM_DATA, EAssertionLevel::Check);
+	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_FeatherStormDataAsset>(PATH_FEATHER_STORM_DATA, EAssertionLevel::Check);
 
-	PlayerFeatherStormAttributeSet = CreateDefaultSubobject<ULLL_PlayerFeatherStormAttributeSet>(TEXT("PlayerFeatherStormAttributeSet"));
+	FeatherStormAttributeSet = CreateDefaultSubobject<ULLL_FeatherStormAttributeSet>(TEXT("PlayerFeatherStormAttributeSet"));
 }
 
-void ALLL_PlayerFeatherStorm::BeginPlay()
+void ALLL_FeatherStorm::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerFeatherStormDataAsset = Cast<ULLL_PlayerFeatherStormDataAsset>(AbilityObjectDataAsset);
-	AbilityObjectAttributeSet = PlayerFeatherStormAttributeSet;
+	FeatherStormDataAsset = Cast<ULLL_FeatherStormDataAsset>(AbilityObjectDataAsset);
+	AbilityObjectAttributeSet = FeatherStormAttributeSet;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -36,7 +36,7 @@ void ALLL_PlayerFeatherStorm::BeginPlay()
 #endif
 }
 
-void ALLL_PlayerFeatherStorm::NotifyActorBeginOverlap(AActor* OtherActor)
+void ALLL_FeatherStorm::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginCursorOver();
 	
@@ -55,10 +55,10 @@ void ALLL_PlayerFeatherStorm::NotifyActorBeginOverlap(AActor* OtherActor)
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 			}
 		}
-	}), PlayerFeatherStormAttributeSet->GetDamageTimer(), true);
+	}), FeatherStormAttributeSet->GetDamageTimer(), true);
 }
 
-void ALLL_PlayerFeatherStorm::NotifyActorEndOverlap(AActor* OtherActor)
+void ALLL_FeatherStorm::NotifyActorEndOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorEndOverlap(OtherActor);
 

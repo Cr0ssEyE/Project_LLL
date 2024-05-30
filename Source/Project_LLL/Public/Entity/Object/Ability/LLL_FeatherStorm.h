@@ -3,21 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DataAsset/LLL_PlayerFeatherStormDataAsset.h"
+#include "DataAsset/LLL_FeatherStormDataAsset.h"
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
-#include "LLL_PlayerFeatherStorm.generated.h"
+#include "LLL_FeatherStorm.generated.h"
 
-class ULLL_PlayerFeatherStormAttributeSet;
+class ULLL_FeatherStormAttributeSet;
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_PlayerFeatherStorm : public ALLL_AbilityObject
+class PROJECT_LLL_API ALLL_FeatherStorm : public ALLL_AbilityObject
 {
 	GENERATED_BODY()
 
 public:
-	ALLL_PlayerFeatherStorm();
+	ALLL_FeatherStorm();
 
 protected:
 	virtual void BeginPlay() override;
@@ -25,10 +25,10 @@ protected:
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_PlayerFeatherStormDataAsset> PlayerFeatherStormDataAsset;
+	TObjectPtr<const ULLL_FeatherStormDataAsset> FeatherStormDataAsset;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<ULLL_PlayerFeatherStormAttributeSet> PlayerFeatherStormAttributeSet;
+	TObjectPtr<ULLL_FeatherStormAttributeSet> FeatherStormAttributeSet;
 	
 	FTimerHandle KeepDamageHandle;
 };

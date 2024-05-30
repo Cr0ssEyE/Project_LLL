@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
-#include "LLL_StaffBasicMagicAttributeSet.generated.h"
+#include "LLL_MagicAttributeSet.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_StaffBasicMagicAttributeSet : public ULLL_ThrownObjectAttributeSet
+class PROJECT_LLL_API ULLL_MagicAttributeSet : public ULLL_ThrownObjectAttributeSet
 {
 	GENERATED_BODY()
 	

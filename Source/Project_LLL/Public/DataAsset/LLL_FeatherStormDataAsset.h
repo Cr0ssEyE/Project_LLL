@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "LLL_AbilityObjectDataAsset.h"
-#include "LLL_PlayerFeatherStormDataAsset.generated.h"
+#include "LLL_FeatherStormDataAsset.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PlayerFeatherStormDataAsset : public ULLL_AbilityObjectDataAsset
+class PROJECT_LLL_API ULLL_FeatherStormDataAsset : public ULLL_AbilityObjectDataAsset
 {
 	GENERATED_BODY()
 

@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GAS/Attribute/Object/Ability/Base/LLL_AbilityObjectAttributeSet.h"
-#include "LLL_PlayerFeatherStormAttributeSet.generated.h"
+#include "LLL_FeatherStormAttributeSet.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PlayerFeatherStormAttributeSet : public ULLL_AbilityObjectAttributeSet
+class PROJECT_LLL_API ULLL_FeatherStormAttributeSet : public ULLL_AbilityObjectAttributeSet
 {
 	GENERATED_BODY()
 
 public:
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerFeatherStormAttributeSet, DamageTimer);
+	ATTRIBUTE_ACCESSORS(ULLL_FeatherStormAttributeSet, DamageTimer);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")

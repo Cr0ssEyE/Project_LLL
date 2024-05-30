@@ -19,13 +19,13 @@
 #define PATH_CAMERA_DATA TEXT("/Script/Project_LLL.LLL_CameraDataAsset'/Game/DataAsset/DA_Camera.DA_Camera'")
 #define PATH_PLAYER_GOLD_COMPONENT_DATA TEXT("/Script/Project_LLL.LLL_GoldComponentDataAsset'/Game/DataAsset/DA_PlayerGoldComponent.DA_PlayerGoldComponent'")
 
-// 플레이어 스킬 관련
-#define PATH_PLAYER_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_PlayerFeatherStormDataAsset'/Game/DataAsset/DA_PlayerFeatherStorm.DA_PlayerFeatherStorm'")
-#define PATH_PLAYER_THREATENING_DEATH_DATA TEXT("/Script/Project_LLL.LLL_PlayerThreateningDeathDataAsset'/Game/DataAsset/DA_PlayerThreateningDeath.DA_PlayerThreateningDeath'")
+// 플레이어 어빌리티 오브젝트 관련
+#define PATH_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_FeatherStormDataAsset'/Game/DataAsset/DA_FeatherStorm.DA_FeatherStorm'")
+#define PATH_THREATENING_DEATH_DATA TEXT("/Script/Project_LLL.LLL_ThreateningDeathDataAsset'/Game/DataAsset/DA_ThreateningDeath.DA_ThreateningDeath'")
 
 // 플레이어 투사체 관련
 #define PATH_PLAYER_CHASE_HAND_DATA TEXT("/Script/Project_LLL.LLL_PlayerChaseHandDataAsset'/Game/DataAsset/DA_PlayerChaseHand.DA_PlayerChaseHand'")
-#define PATH_PLAYER_THROWN_FEATHER_DATA TEXT("/Script/Project_LLL.LLL_PlayerThrownFeatherDataAsset'/Game/DataAsset/DA_PlayerThrownFeather.DA_PlayerThrownFeather'")
+#define PATH_THROWN_FEATHER_DATA TEXT("/Script/Project_LLL.LLL_ThrownFeatherDataAsset'/Game/DataAsset/DA_ThrownFeather.DA_ThrownFeather'")
 
 // 몬스터 캐릭터 관련
 #define PATH_SWORD_DASH_DATA TEXT("/Script/Project_LLL.LLL_SwordDashDataAsset'/Game/DataAsset/DA_SwordDash.DA_SwordDash'")
@@ -33,8 +33,7 @@
 #define PATH_CLAW_BASIC_DATA TEXT("/Script/Project_LLL.LLL_ClawBasicDataAsset'/Game/DataAsset/DA_ClawBasic.DA_ClawBasic'")
 
 // 몬스터 투사체 관련
-#define PATH_ENERGY_BLASTER_ENERGY_DATA TEXT("/Script/Project_LLL.LLL_EnergyBlasterEnergyDataAsset'/Game/DataAsset/DA_EnergyBlasterEnergy.DA_EnergyBlasterEnergy'")
-#define PATH_STAFF_BASIC_MAGIC_DATA TEXT("/Script/Project_LLL.LLL_StaffBasicMagicDataAsset'/Game/DataAsset/DA_StaffBasicMagic.DA_StaffBasicMagic'")
+#define PATH_MAGIC_DATA TEXT("/Script/Project_LLL.LLL_MagicDataAsset'/Game/DataAsset/DA_Magic.DA_Magic'")
 
 // 오브젝트 관련
 #define PATH_INTERACTIVE_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_InteractiveObjectData'/Game/DataAsset/DA_InteractiveObject.DA_InteractiveObject'")

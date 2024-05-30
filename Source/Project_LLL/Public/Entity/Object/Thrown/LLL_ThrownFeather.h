@@ -3,22 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DataAsset/LLL_PlayerThrownFeatherDataAsset.h"
+#include "DataAsset/LLL_ThrownFeatherDataAsset.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
-#include "LLL_PlayerThrownFeather.generated.h"
+#include "LLL_ThrownFeather.generated.h"
 
 class UBoxComponent;
-class ULLL_PlayerThrownFeatherAttributeSet;
+class ULLL_ThrownFeatherAttributeSet;
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_PlayerThrownFeather : public ALLL_ThrownObject
+class PROJECT_LLL_API ALLL_ThrownFeather : public ALLL_ThrownObject
 {
 	GENERATED_BODY()
 
 public:
-	ALLL_PlayerThrownFeather();
+	ALLL_ThrownFeather();
 
 protected:
 	virtual void BeginPlay() override;
@@ -36,8 +36,8 @@ protected:
 	TObjectPtr<UBoxComponent> HitCollisionBox;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<const ULLL_PlayerThrownFeatherDataAsset> PlayerThrownFeatherDataAsset;
+	TObjectPtr<const ULLL_ThrownFeatherDataAsset> ThrownFeatherDataAsset;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_PlayerThrownFeatherAttributeSet> PlayerThrownFeatherAttributeSet;
+	TObjectPtr<ULLL_ThrownFeatherAttributeSet> ThrownFeatherAttributeSet;
 };

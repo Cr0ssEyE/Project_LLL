@@ -1,38 +1,38 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Entity/Object/Thrown/LLL_StaffBasicMagic.h"
+#include "Entity/Object/Thrown/LLL_Magic.h"
 
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
-#include "DataAsset/LLL_StaffBasicMagicDataAsset.h"
+#include "DataAsset/LLL_MagicDataAsset.h"
 #include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Object/Thrown/LLL_StaffBasicMagicAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/LLL_MagicAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
-ALLL_StaffBasicMagic::ALLL_StaffBasicMagic()
+ALLL_Magic::ALLL_Magic()
 {
-	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_StaffBasicMagicDataAsset>(PATH_STAFF_BASIC_MAGIC_DATA, EAssertionLevel::Check);
+	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_MagicDataAsset>(PATH_MAGIC_DATA, EAssertionLevel::Check);
 
-	StaffBasicMagicAttributeSet = CreateDefaultSubobject<ULLL_StaffBasicMagicAttributeSet>(TEXT("StaffBasicMagicAttributeSet"));
+	MagicAttributeSet = CreateDefaultSubobject<ULLL_MagicAttributeSet>(TEXT("StaffBasicMagicAttributeSet"));
 	
 	HitCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit Collision"));
 	HitCollisionBox->SetCollisionProfileName(CP_MONSTER_ATTACK);
 	SetRootComponent(HitCollisionBox);
 }
 
-void ALLL_StaffBasicMagic::BeginPlay()
+void ALLL_Magic::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StaffBasicMagicDataAsset = Cast<ULLL_StaffBasicMagicDataAsset>(ThrownObjectDataAsset);
-	ThrownObjectAttributeSet = StaffBasicMagicAttributeSet;
+	MagicDataAsset = Cast<ULLL_MagicDataAsset>(ThrownObjectDataAsset);
+	ThrownObjectAttributeSet = MagicAttributeSet;
 
-	HitCollisionBox->SetBoxExtent(StaffBasicMagicDataAsset->HitCollisionSize);
+	HitCollisionBox->SetBoxExtent(MagicDataAsset->HitCollisionSize);
 }
 
-void ALLL_StaffBasicMagic::Tick(float DeltaSeconds)
+void ALLL_Magic::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
@@ -51,14 +51,14 @@ void ALLL_StaffBasicMagic::Tick(float DeltaSeconds)
 #endif
 }
 
-void ALLL_StaffBasicMagic::Activate()
+void ALLL_Magic::Activate()
 {
 	Super::Activate();
 
 	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
-void ALLL_StaffBasicMagic::Deactivate()
+void ALLL_Magic::Deactivate()
 {
 	Super::Deactivate();
 

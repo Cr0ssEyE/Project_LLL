@@ -1,4 +1,4 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Attribute/Object/Thrown/LLL_PlayerThrownFeatherAttributeSet.h"
+#include "DataAsset/LLL_FeatherStormDataAsset.h"

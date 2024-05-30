@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Base/LLL_AbilityObjectAttributeSet.h"
-#include "LLL_PlayerThreateningDeathAttributeSet.generated.h"
+#include "LLL_ThreateningDeathAttributeSet.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PlayerThreateningDeathAttributeSet : public ULLL_AbilityObjectAttributeSet
+class PROJECT_LLL_API ULLL_ThreateningDeathAttributeSet : public ULLL_AbilityObjectAttributeSet
 {
 	GENERATED_BODY()
 
