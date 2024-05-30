@@ -9,7 +9,7 @@
 
 bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCueParameters& Parameters) const
 {
-	FLLL_FModPlayHelper::PlayFModEvent(MyTarget, FModEvent, FModParameter);
+	FLLL_FModPlayHelper::PlayFModEvent(MyTarget, FModEvent, FModParameter, SocketName);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	UGameInstance* GameInstance = MyTarget->GetGameInstance();

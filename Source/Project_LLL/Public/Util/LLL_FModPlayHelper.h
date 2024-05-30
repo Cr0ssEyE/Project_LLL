@@ -9,12 +9,13 @@
 class PROJECT_LLL_API FLLL_FModPlayHelper
 {
 public:
-	static void PlayFModEvent(AActor* SourceActor, UFMODEvent* FModEvent, EFModParameter FModParameter)
+	static void PlayFModEvent(AActor* SourceActor, UFMODEvent* FModEvent, EFModParameter FModParameter, FName SocketName)
 	{
 		if (ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(SourceActor))
 		{
 			UFMODAudioComponent* FModAudioComponent = FModInterface->GetFModAudioComponent();
 			FModAudioComponent->Release();
+			FModAudioComponent->AttachToComponent(SourceActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform, SocketName);
 			FModAudioComponent->SetEvent(FModEvent);
 			FModAudioComponent->SetPitch(SourceActor->CustomTimeDilation);
 			FModAudioComponent->Play();

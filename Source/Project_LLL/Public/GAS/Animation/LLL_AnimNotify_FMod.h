@@ -3,25 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FMODAnimNotifyPlay.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "LLL_AnimNotify_FMod.generated.h"
 
 enum class EFModParameter : uint8;
-class UFMODEvent;
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_AnimNotify_FMod : public UAnimNotify
+class PROJECT_LLL_API ULLL_AnimNotify_FMod : public UFMODAnimNotifyPlay
 {
 	GENERATED_BODY()
 
 protected:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 	
-	UPROPERTY(EditAnywhere, DisplayName = "FMOD 이벤트")
-	TObjectPtr<UFMODEvent> FModEvent;
-	
-	UPROPERTY(EditAnywhere, DisplayName = "FMOD 파라미터")
-	EFModParameter FModParameter;
+	UPROPERTY(EditAnywhere, Category = "FMOD Anim Notify")
+	EFModParameter Parameter;
 };

@@ -20,9 +20,12 @@ public:
 	virtual bool OnExecute_Implementation(AActor* MyTarget, const FGameplayCueParameters& Parameters) const override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "FMOD 이벤트")
+	UPROPERTY(EditDefaultsOnly, Category = "FMod")
 	TObjectPtr<UFMODEvent> FModEvent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "FMOD 파라미터")
+	UPROPERTY(EditDefaultsOnly, Category = "FMod")
 	EFModParameter FModParameter;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FMod")
+	FName SocketName;
 };
