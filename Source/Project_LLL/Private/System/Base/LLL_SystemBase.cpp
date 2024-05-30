@@ -4,6 +4,7 @@
 #include "System/Base/LLL_SystemBase.h"
 
 #include "FMODAudioComponent.h"
+#include "NiagaraComponent.h"
 
 ALLL_SystemBase::ALLL_SystemBase()
 {
@@ -11,4 +12,7 @@ ALLL_SystemBase::ALLL_SystemBase()
 	
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	FModAudioComponent->SetupAttachment(RootComponent);
+	
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
+	NiagaraComponent->SetupAttachment(RootComponent);
 }

@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Animation/LLL_AnimNotify_GameplayTag.h"
+#include "AnimNotify/LLL_AnimNotify_GameplayTag.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
@@ -51,7 +51,7 @@ FString ULLL_AnimNotify_GameplayTag::GetNotifyName_Implementation() const
 
 void ULLL_AnimNotify_GameplayTag::Notify_TagEventTriggered(AActor* OwnerActor)
 {
-	if (OwnerActor)
+	if (Cast<IAbilitySystemInterface>(OwnerActor))
 	{
 		FGameplayEventData PayloadData;
 		PayloadData.EventMagnitude = NotifyLevel;
