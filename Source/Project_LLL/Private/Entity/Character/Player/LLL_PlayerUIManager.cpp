@@ -44,7 +44,7 @@ void ULLL_PlayerUIManager::BeginPlay()
 	if(IsValid(SelectRewardWidgetClass))
 	{
 		SelectRewardWidget = CastChecked<ULLL_SelectRewardWidget>(CreateWidget(GetWorld(), SelectRewardWidgetClass));
-		SelectRewardWidget->AddToViewport();
+		SelectRewardWidget->AddToViewport(1);
 		SelectRewardWidget->SetVisibility(ESlateVisibility::Hidden);
 		SelectRewardWidget->SetIsEnabled(false);
 	}
@@ -52,13 +52,19 @@ void ULLL_PlayerUIManager::BeginPlay()
 	if(IsValid(CharacterStatusWidgetClass))
 	{
 		CharacterStatusWidget = CastChecked<ULLL_CharacterStatusWidget>(CreateWidget(GetWorld(), CharacterStatusWidgetClass));
-		CharacterStatusWidget->AddToViewport();
+		CharacterStatusWidget->AddToViewport(3);
 	}
 
+	if (IsValid(MainEruriaInfoWidgetClass))
+	{
+		MainEruriaInfoWidget = CastChecked<ULLL_MainEruriaInfoWidget>(CreateWidget(GetWorld(), MainEruriaInfoWidgetClass));
+		MainEruriaInfoWidget->AddToViewport(3);
+	}
+	
 	if(IsValid(InventoryWidgetClass))
 	{
 		InventoryWidget = CastChecked<ULLL_InventoryWidget>(CreateWidget(GetWorld(), InventoryWidgetClass));
-		InventoryWidget->AddToViewport();
+		InventoryWidget->AddToViewport(2);
 		InventoryWidget->SetIsEnabled(false);
 	}
 
@@ -69,11 +75,6 @@ void ULLL_PlayerUIManager::BeginPlay()
 		InteractionWidget->SetIsEnabled(false);
 	}
 	
-	if(IsValid(ChaseActionWidgetClass))
-	{
-		ChaseActionWidget = CastChecked<ULLL_PlayerChaseActionWidget>(CreateWidget(GetWorld(), ChaseActionWidgetClass));
-	}
-	
 	if(IsValid(ComboWidgetClass))
 	{
 		ComboWidget = CastChecked<ULLL_PlayerComboWidget>(CreateWidget(GetWorld(), ComboWidgetClass));
@@ -81,18 +82,17 @@ void ULLL_PlayerUIManager::BeginPlay()
 		ComboWidget->SetComboText(0);
 	}
 
-	if (IsValid(MainEruriaInfoWidgetClass))
-	{
-		MainEruriaInfoWidget = CastChecked<ULLL_MainEruriaInfoWidget>(CreateWidget(GetWorld(), MainEruriaInfoWidgetClass));
-		MainEruriaInfoWidget->AddToViewport();
-	}
-
 	if(IsValid(GamePauseWidgetClass))
 	{
 		GamePauseWidget = CastChecked<ULLL_GamePauseWidget>(CreateWidget(GetWorld(), GamePauseWidgetClass));
-		GamePauseWidget->AddToViewport();
+		GamePauseWidget->AddToViewport(99);
 		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
 		GamePauseWidget->SetIsEnabled(false);
+	}
+
+	if(IsValid(ChaseActionWidgetClass))
+	{
+		ChaseActionWidget = CastChecked<ULLL_PlayerChaseActionWidget>(CreateWidget(GetWorld(), ChaseActionWidgetClass));
 	}
 }
 

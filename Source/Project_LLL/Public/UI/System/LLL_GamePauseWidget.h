@@ -21,6 +21,8 @@ class PROJECT_LLL_API ULLL_GamePauseWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+	
 public:
 	void SetupPauseState();
 	void RestorePauseState();
