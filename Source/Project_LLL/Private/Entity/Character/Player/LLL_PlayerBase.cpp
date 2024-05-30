@@ -19,6 +19,7 @@
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_MaterialParameterName.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -34,6 +35,9 @@
 #include "GAS/ASC/LLL_PlayerASC.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
 #include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 
@@ -66,6 +70,9 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
 
+	FWeightedBlendable PlayerLowHPMaterialInst = FWeightedBlendable(1, FLLL_ConstructorHelper::FindAndGetObject<UObject>(PATH_PLAYER_LOWHP_MATERIAL_INST, EAssertionLevel::Check));
+	Camera->PostProcessSettings.WeightedBlendables.Array.Emplace(PlayerLowHPMaterialInst);
+	
 	SpringArm->TargetArmLength = 0.f;
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->bEnableCameraLag = true;
@@ -124,6 +131,7 @@ void ALLL_PlayerBase::BeginPlay()
 		SpringArm->SetRelativeRotation(CameraDataAsset->SpringArmAngle);
 	}
 
+	
 	ChaseHandActor = Cast<ALLL_PlayerChaseHand>(GetWorld()->SpawnActor(ALLL_PlayerChaseHand::StaticClass()));
 	ChaseHandActor->SetOwner(this);
 
@@ -565,11 +573,10 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
 	}
 
-	const IInterface_PostProcessVolume* PP = GetWorld()->PostProcessVolumes[0];
-	FPostProcessVolumeProperties Properties = PP->GetProperties();
-	const FPostProcessSettings* Settings = Properties.Settings;
-	FWeightedBlendable PlayerHitMaterial = Settings->WeightedBlendables.Array.Last();
-	PlayerHitMaterial.Weight = 1;
+	ActivatePPLowHP();
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DeactivatePPLowHP);
+	
 	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Attacker);
 	if (!IsValid(Monster))
 	{
@@ -597,4 +604,24 @@ void ALLL_PlayerBase::Dead()
 void ALLL_PlayerBase::DeadMotionEndedHandle()
 {
 	PlayerUIManager->TogglePauseWidget(bIsDead);
+}
+
+void ALLL_PlayerBase::DeactivatePPLowHP()
+{
+	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(GetGameInstance());
+	UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
+	ScalarValue += GetWorld()->GetDeltaSeconds() / 3;
+	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOWHP_RADIUS, ScalarValue);
+	if (ScalarValue <= PlayerDataAsset->HPLowScalarMaxValue)
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DeactivatePPLowHP);
+	}
+}
+
+void ALLL_PlayerBase::ActivatePPLowHP()
+{
+	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(GetGameInstance());
+	UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
+	ScalarValue = PlayerDataAsset->HPLowScalarLowValue;
+	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOWHP_RADIUS, ScalarValue);
 }

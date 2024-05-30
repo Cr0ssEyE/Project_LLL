@@ -7,6 +7,7 @@
 #include "Interface/LLL_FModInterface.h"
 #include "System/MapSound/LLL_MapSoundManager.h"
 #include "Util/LLL_ConstructorHelper.h"
+#include "Materials/MaterialParameterCollection.h"
 
 ULLL_GameInstance::ULLL_GameInstance()
 {
@@ -17,6 +18,8 @@ ULLL_GameInstance::ULLL_GameInstance()
 	RewardDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_REWARD_DATA_TABLE, EAssertionLevel::Check);
 
 	StringDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_STRING_DATA, EAssertionLevel::Check);
+	
+	PostProcessMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_POSTPROCESS_MPC, EAssertionLevel::Check);
 	
 	CustomTimeDilation = 1.0f;
 	CustomTimeDilationInterpSpeed = 5.0f;
@@ -56,6 +59,8 @@ void ULLL_GameInstance::Init()
 	{
 		StringData.Add(*LoadStringData);
 	}
+
+	GetWorld()->AddParameterCollectionInstance(PostProcessMPC, true);
 }
 
 void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)

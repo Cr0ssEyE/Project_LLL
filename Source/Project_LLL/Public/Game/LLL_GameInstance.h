@@ -32,6 +32,13 @@ public:
 	FORCEINLINE TArray<FStringDataTable> GetStringDataTablesData() const { return StringData; }
 	FORCEINLINE bool CheckCustomTimeDilationIsChanging() const { return bCustomTimeDilationIsChanging; }
 
+	// MPC Getter
+	FORCEINLINE UMaterialParameterCollection* GetPlayerMPC() const { return PlayerMPC; }
+	FORCEINLINE UMaterialParameterCollection* GetObjectMPC() const { return ObjectMPC; }
+	FORCEINLINE UMaterialParameterCollection* GetMonsterMPC() const { return MonsterMPC; }
+	FORCEINLINE UMaterialParameterCollection* GetInterfaceMPC() const { return InterfaceMPC; }
+	FORCEINLINE UMaterialParameterCollection* GetPostProcessMPC() const { return PostProcessMPC; }
+
 public:
 	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
 
@@ -40,7 +47,6 @@ protected:
 	
 	// 머티리얼 파라미터 컬렉션 
 protected:
-
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> PlayerMPC;
 
@@ -52,6 +58,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> InterfaceMPC;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UMaterialParameterCollection> PostProcessMPC;
 
 	// 데이터 테이블 변수
 protected:
