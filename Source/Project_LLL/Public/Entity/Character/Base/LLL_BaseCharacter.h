@@ -109,6 +109,6 @@ protected:
 	TObjectPtr<ULLL_BaseCharacterUIManager> CharacterUIManager;
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "FMOD")
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 };
