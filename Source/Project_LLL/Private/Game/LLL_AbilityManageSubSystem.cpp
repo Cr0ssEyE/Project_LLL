@@ -113,10 +113,14 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 			{
 				continue;
 			}
-			
-			if (EffectObject->GetID() == ID)
+
+			for (auto EffectID : EffectObject->GetID())
 			{
-				FilteredDataSet.Emplace(Data);
+				if (EffectID == ID)
+				{
+					FilteredDataSet.Emplace(Data);
+					break;
+				}
 			}
 		}
 		
