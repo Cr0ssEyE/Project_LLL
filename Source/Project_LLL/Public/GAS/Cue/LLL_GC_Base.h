@@ -6,8 +6,10 @@
 #include "GameplayCueNotify_Burst.h"
 #include "LLL_GC_Base.generated.h"
 
+struct FFModInfo;
 enum class EFModParameter : uint8;
 class UFMODEvent;
+
 /**
  * 
  */
@@ -20,9 +22,6 @@ public:
 	virtual bool OnExecute_Implementation(AActor* MyTarget, const FGameplayCueParameters& Parameters) const override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "FMOD 이벤트")
-	TObjectPtr<UFMODEvent> FModEvent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "FMOD 파라미터")
-	EFModParameter FModParameter;
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "사운드 리스트")
+	TArray<FFModInfo> FModInfos;
 };

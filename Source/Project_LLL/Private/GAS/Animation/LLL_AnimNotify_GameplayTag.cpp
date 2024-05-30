@@ -41,13 +41,12 @@ void ULLL_AnimNotify_GameplayTag::Notify(USkeletalMeshComponent* MeshComp, UAnim
 
 FString ULLL_AnimNotify_GameplayTag::GetNotifyName_Implementation() const
 {
-	FString Name = Super::GetNotifyName_Implementation();
-
 	if (NotifyName != TEXT(""))
 	{
 		return NotifyName;
 	}
-	return Name;
+	
+	return Super::GetNotifyName_Implementation();
 }
 
 void ULLL_AnimNotify_GameplayTag::Notify_TagEventTriggered(AActor* OwnerActor)
