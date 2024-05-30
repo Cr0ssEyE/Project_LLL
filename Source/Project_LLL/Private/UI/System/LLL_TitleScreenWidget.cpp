@@ -19,9 +19,21 @@ void ULLL_TitleScreenWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	NewGameStartButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::NewGameStartButtonEvent);
+	NewGameStartButton->OnHovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlayNewGameStartHoverAnimation);
+	NewGameStartButton->OnUnhovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlayNewGameStartUnHoverAnimation);
+	
 	LoadGameButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::LoadGameButtonEvent);
+	LoadGameButton->OnHovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlayLoadGameHoverAnimation);
+	LoadGameButton->OnUnhovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlayLoadGameUnHoverAnimation);
+	
 	SettingButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::SettingButtonEvent);
+	SettingButton->OnHovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlaySettingHoverAnimation);
+	SettingButton->OnUnhovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlaySettingUnHoverAnimation);
+	
 	ExitGameButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::ExitGameButtonEvent);
+	ExitGameButton->OnHovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlayExitGameHoverAnimation);
+	ExitGameButton->OnUnhovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlayExitGameUnHoverAnimation);
+	
 	ExitConfirmButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::ExitConfirmButtonEvent);
 	ExitCancelButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::ExitCancelButtonEvent);
 	
@@ -35,6 +47,10 @@ void ULLL_TitleScreenWidget::NativeConstruct()
 	{
 		LoadGameButton->SetVisibility(ESlateVisibility::Hidden);
 		LobbyButtonVerticalBox->RemoveChild(LoadGameButton);
+		if (LobbyHoverVerticalBox->HasAnyChildren())
+		{
+			LobbyHoverVerticalBox->RemoveChildAt(1);
+		}
 		TestEnabled = true;
 	}
 	
@@ -42,14 +58,14 @@ void ULLL_TitleScreenWidget::NativeConstruct()
 	{
 		LoadGameButton->SetVisibility(ESlateVisibility::Hidden);
 		LobbyButtonVerticalBox->RemoveChild(LoadGameButton);
+
+		if (LobbyHoverVerticalBox->HasAnyChildren())
+		{
+			LobbyHoverVerticalBox->RemoveChildAt(1);
+		}
 	}
-
+	
 	// 인트로 애니메이션 재생은 BP에서 함
-}
-
-void ULLL_TitleScreenWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
 }
 
 void ULLL_TitleScreenWidget::NewGameStartButtonEvent()
