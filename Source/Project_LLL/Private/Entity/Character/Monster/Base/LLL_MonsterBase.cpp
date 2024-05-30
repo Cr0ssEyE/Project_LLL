@@ -8,6 +8,7 @@
 #include "BrainComponent.h"
 #include "FMODAudioComponent.h"
 #include "GameplayAbilitiesModule.h"
+#include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
@@ -163,6 +164,11 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 
 	MonsterBaseAnimInstance->StopAllMontages(1.0f);
 	PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+
+	if (IsValid(NiagaraComponent))
+	{
+		NiagaraComponent->DestroyComponent();
+	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))

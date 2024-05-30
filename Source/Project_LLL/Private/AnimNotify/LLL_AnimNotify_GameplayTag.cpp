@@ -51,7 +51,7 @@ FString ULLL_AnimNotify_GameplayTag::GetNotifyName_Implementation() const
 
 void ULLL_AnimNotify_GameplayTag::Notify_TagEventTriggered(AActor* OwnerActor)
 {
-	if (OwnerActor)
+	if (Cast<IAbilitySystemInterface>(OwnerActor))
 	{
 		FGameplayEventData PayloadData;
 		PayloadData.EventMagnitude = NotifyLevel;
