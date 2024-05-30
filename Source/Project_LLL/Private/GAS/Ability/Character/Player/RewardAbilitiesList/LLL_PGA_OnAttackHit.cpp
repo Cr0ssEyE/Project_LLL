@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbility_OnAttackHit.h"
+#include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_OnAttackHit.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -11,7 +11,7 @@
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
-void ULLL_PGA_RewardAbility_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
@@ -30,7 +30,7 @@ void ULLL_PGA_RewardAbility_OnAttackHit::ActivateAbility(const FGameplayAbilityS
 	ApplyEffectWhenHit();
 }
 
-void ULLL_PGA_RewardAbility_OnAttackHit::ApplyEffectWhenHit()
+void ULLL_PGA_OnAttackHit::ApplyEffectWhenHit()
 {
 	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());

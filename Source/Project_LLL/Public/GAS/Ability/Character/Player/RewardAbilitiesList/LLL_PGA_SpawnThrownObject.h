@@ -23,4 +23,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, DisplayName = "Instigator에게 공격")
 	uint8 bTargetIsInstigator : 1;
+
+	UPROPERTY(EditAnywhere, DisplayName = "스폰 시 플레이어와의 거리")
+	float Offset;
 };

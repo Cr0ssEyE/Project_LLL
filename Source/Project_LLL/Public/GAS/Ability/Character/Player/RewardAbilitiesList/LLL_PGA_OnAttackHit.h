@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LLL_PGA_RewardAbilityBase.h"
-#include "LLL_PGA_RewardAbility_OnAttackHit.generated.h"
+#include "Base/LLL_PGA_RewardAbilityBase.h"
+#include "LLL_PGA_OnAttackHit.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_PGA_RewardAbility_OnAttackHit : public ULLL_PGA_RewardAbilityBase
+class PROJECT_LLL_API ULLL_PGA_OnAttackHit : public ULLL_PGA_RewardAbilityBase
 {
 	GENERATED_BODY()
 
