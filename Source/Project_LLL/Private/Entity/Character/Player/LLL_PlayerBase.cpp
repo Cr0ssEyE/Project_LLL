@@ -564,6 +564,11 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
 	}
 
+	const IInterface_PostProcessVolume* PP = GetWorld()->PostProcessVolumes[0];
+	FPostProcessVolumeProperties Properties = PP->GetProperties();
+	const FPostProcessSettings* Settings = Properties.Settings;
+	FWeightedBlendable PlayerHitMaterial = Settings->WeightedBlendables.Array.Last();
+	PlayerHitMaterial.Weight = 1;
 	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Attacker);
 	if (!IsValid(Monster))
 	{
