@@ -4,11 +4,8 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbility_OnAttackHit.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "DataTable/LLL_AbilityDataTable.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
@@ -18,22 +15,23 @@ void ULLL_PGA_RewardAbility_OnAttackHit::ActivateAbility(const FGameplayAbilityS
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	ULLL_AT_WaitTargetData* TargetDataTask = ULLL_AT_WaitTargetData::CreateTask(this, ALLL_MonsterBase::StaticClass(), false, false);
-	TargetDataTask->TargetDataReceivedDelegate.AddDynamic(this, &ULLL_PGA_RewardAbility_OnAttackHit::OnTraceResultCallBack);
-	TargetDataTask->ReadyForActivation();
-
-	UAbilityTask_WaitGameplayEvent* TraceEndTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_ATTACK_HIT_CHECK_COMPLETE);
-	TraceEndTask->EventReceived.AddDynamic(this, &ULLL_PGA_RewardAbility_OnAttackHit::OnTraceEndCallBack);
-	TraceEndTask->ReadyForActivation();
-}
-
-void ULLL_PGA_RewardAbility_OnAttackHit::OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
-{
-	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
+	if (TriggerRequiredTag.IsValid() && !TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag))
 	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}
+	
+	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(CurrentEventData.TargetData, 0))
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
+	}
+	
+	ApplyEffectWhenHit();
+}
 
+void ULLL_PGA_RewardAbility_OnAttackHit::ApplyEffectWhenHit()
+{
 	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
 
@@ -51,11 +49,8 @@ void ULLL_PGA_RewardAbility_OnAttackHit::OnTraceResultCallBack(const FGameplayAb
 	}
 	else
 	{
-		K2_ApplyGameplayEffectSpecToTarget(EffectHandle, TargetDataHandle);
+		K2_ApplyGameplayEffectSpecToTarget(EffectHandle, CurrentEventData.TargetData);
 	}
-}
-
-void ULLL_PGA_RewardAbility_OnAttackHit::OnTraceEndCallBack(FGameplayEventData EventData)
-{
+	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

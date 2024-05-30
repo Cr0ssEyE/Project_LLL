@@ -31,14 +31,12 @@ void ULLL_TitleScreenWidget::NativeConstruct()
 
 	bool TestEnabled = false;
 	
-#if WITH_EDITOR
 	if (bTestNoneSaveFileUI)
 	{
 		LoadGameButton->SetVisibility(ESlateVisibility::Hidden);
 		LobbyButtonVerticalBox->RemoveChild(LoadGameButton);
 		TestEnabled = true;
 	}
-#endif
 	
 	if (!TestEnabled && !IsValid(UGameplayStatics::LoadGameFromSlot(DEFAULT_FILE_NAME, DEFAULT_FILE_INDEX)))
 	{
@@ -108,7 +106,12 @@ void ULLL_TitleScreenWidget::DisableWidgetActivation()
 
 void ULLL_TitleScreenWidget::OpenIntroLevel()
 {
-	UGameplayStatics::OpenLevel(this, LEVEL_INTRO);
+	if (bIsLoadTestLevel)
+	{
+		UGameplayStatics::OpenLevel(this, LEVEL_TUTORIAL);
+		return;
+	}
+	UGameplayStatics::OpenLevel(this, LEVEL_TUTORIAL);
 }
 
 void ULLL_TitleScreenWidget::OpenSavedLevel()
@@ -119,6 +122,6 @@ void ULLL_TitleScreenWidget::OpenSavedLevel()
 
 void ULLL_TitleScreenWidget::CloseGame()
 {
-	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+	UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
 }
 

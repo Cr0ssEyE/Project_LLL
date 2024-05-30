@@ -20,13 +20,12 @@ protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
 protected:
-	UFUNCTION()
-	void OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
-
-	UFUNCTION()
-	void OnTraceEndCallBack(FGameplayEventData TriggerEventData);
+	virtual void KnockBackTarget();
 	
 protected:
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그")
+	FGameplayTag TriggerRequiredTag;
+	
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "넉백 발생시 적용 GE")
 	TSubclassOf<UGameplayEffect> KnockBackEffect;
 

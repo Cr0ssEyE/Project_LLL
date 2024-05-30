@@ -56,7 +56,7 @@ protected:
 	
 	UFUNCTION()
 	void CloseGame();
-	
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> LobbyUIPanel;
@@ -91,9 +91,9 @@ protected:
 	TObjectPtr<ULLL_SettingWidget> SettingWidget;
 
 protected:
-#if WITH_EDITORONLY_DATA
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bTestNoneSaveFileUI : 1;
-#endif
-	
+
+	UPROPERTY(EditDefaultsOnly)
+	uint8 bIsLoadTestLevel : 1;
 };
