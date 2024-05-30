@@ -8,6 +8,7 @@
 #include "BrainComponent.h"
 #include "FMODAudioComponent.h"
 #include "GameplayAbilitiesModule.h"
+#include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
@@ -164,6 +165,11 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 	MonsterBaseAnimInstance->StopAllMontages(1.0f);
 	PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
 
+	if (IsValid(NiagaraComponent))
+	{
+		NiagaraComponent->DestroyComponent();
+	}
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -198,7 +204,7 @@ void ALLL_MonsterBase::Dead()
 	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	if (IsValid(PlayerBase))
 	{
-		FVector ImpulseDirection = PlayerBase->GetActorForwardVector();
+		FVector ImpulseDirection = GetActorLocation() - PlayerBase->GetActorLocation();
 		ImpulseDirection.Normalize();
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 		const float ImpulseStrength = PlayerAttributeSet->GetImpulseStrength();
@@ -208,6 +214,11 @@ void ALLL_MonsterBase::Dead()
 	}
 
 	MonsterStatusWidgetComponent->SetHiddenInGame(true);
+
+	if (IsValid(NiagaraComponent))
+	{
+		NiagaraComponent->DestroyComponent();
+	}
 
 	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();
 	FTimerHandle DestroyTimerHandle;

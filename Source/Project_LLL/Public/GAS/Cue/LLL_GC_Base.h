@@ -6,6 +6,7 @@
 #include "GameplayCueNotify_Burst.h"
 #include "LLL_GC_Base.generated.h"
 
+struct FNiagaraInfo;
 struct FFModInfo;
 enum class EFModParameter : uint8;
 class UFMODEvent;
@@ -24,4 +25,7 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "사운드 리스트")
 	TArray<FFModInfo> FModInfos;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "파티클 리스트")
+	TArray<FNiagaraInfo> NiagaraInfos;
 };
