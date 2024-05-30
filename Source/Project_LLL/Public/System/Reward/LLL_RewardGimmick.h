@@ -70,7 +70,7 @@ protected:
 	uint32 FirstButtonIndex;
 	uint32 SecondButtonIndex;
 	uint32 ThirdButtonIndex;
-	TArray<uint32> GettenIndexArray; 
+	TArray<uint32> GettenAbilityIDArray;
 	
 	FAbilityDataTable* ButtonAbilityData1;
 	FAbilityDataTable* ButtonAbilityData2;

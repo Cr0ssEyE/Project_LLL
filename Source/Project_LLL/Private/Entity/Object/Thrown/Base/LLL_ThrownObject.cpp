@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "FMODAudioComponent.h"
+#include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
@@ -44,7 +45,8 @@ void ALLL_ThrownObject::BeginPlay()
 void ALLL_ThrownObject::Activate()
 {
 	bIsActivated = true;
-	
+
+	NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ProjectileMovementComponent->Activate();
 	SetActorHiddenInGame(false);
@@ -57,6 +59,10 @@ void ALLL_ThrownObject::Deactivate()
 
 	FModAudioComponent->Stop();
 	FModAudioComponent->Release();
+	if (IsValid(NiagaraComponent))
+	{
+		NiagaraComponent->DestroyComponent();
+	}
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProjectileMovementComponent->Deactivate();
 	SetActorHiddenInGame(true);
