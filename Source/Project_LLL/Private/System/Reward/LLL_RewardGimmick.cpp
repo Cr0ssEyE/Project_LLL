@@ -99,36 +99,77 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	}
 	
 	//보상쪽 상세 시스템 기획이 나오면 바뀔 부분
-
+	// do while 종료 조건
+	// bIsImplement == true
+	// !GettenIndexArray.Contains(Index)
+	// !InstanceRewardIndexArray.Contains(Index)
+	
 	TArray<uint8> InstanceRewardIndexArray;
 	uint8 Index;
 	do
 	{
 		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	}while (!GettenIndexArray.IsEmpty() && !GettenIndexArray.Contains(Index) && !InstanceRewardIndexArray.Contains(Index));
+	}while (!AbilityData[Index].bIsImplement || GettenAbilityIDArray.Contains(AbilityData[Index].ID));
 	
 	// ButtonAbilityData1 = &AbilityData[Index];
 	FirstButtonIndex = Index;
 	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
 	InstanceRewardIndexArray.Emplace(FirstButtonIndex);
+
+	for (int i = 0; i < 3; ++i)
+	{
+		if (Index + i >= AbilityData.Num() || Index - i < 0)
+		{
+			continue;
+		}
+		
+		if (AbilityData[Index + i].AbilityName == AbilityData[Index].AbilityName)
+		{
+			InstanceRewardIndexArray.Emplace(Index + i);
+		}
+
+		if (AbilityData[Index - i].AbilityName == AbilityData[Index].AbilityName)
+		{
+			InstanceRewardIndexArray.Emplace(Index - i);
+		}
+	}
 	
 	do
 	{
 		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	}while (!GettenIndexArray.IsEmpty() && !GettenIndexArray.Contains(Index) && !InstanceRewardIndexArray.Contains(Index));
+	}while (!AbilityData[Index].bIsImplement || GettenAbilityIDArray.Contains(AbilityData[Index].ID) || InstanceRewardIndexArray.Contains(Index));
+	
 	// ButtonAbilityData2 = &AbilityData[Index];
 	SecondButtonIndex = Index;
 	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
 	InstanceRewardIndexArray.Emplace(SecondButtonIndex);
+
+	for (int i = 0; i < 3; ++i)
+	{
+		if (Index + i >= AbilityData.Num() || Index - i < 0)
+		{
+			continue;
+		}
+		
+		if (AbilityData[Index + i].AbilityName == AbilityData[Index].AbilityName)
+		{
+			InstanceRewardIndexArray.Emplace(Index + i);
+		}
+
+		if (AbilityData[Index - i].AbilityName == AbilityData[Index].AbilityName)
+		{
+			InstanceRewardIndexArray.Emplace(Index - i);
+		}
+	}
 	
 	do
 	{
 		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	}while (!GettenIndexArray.IsEmpty() && !GettenIndexArray.Contains(Index) && !InstanceRewardIndexArray.Contains(Index));
+	}while (!AbilityData[Index].bIsImplement || GettenAbilityIDArray.Contains(AbilityData[Index].ID) || InstanceRewardIndexArray.Contains(Index));
+	
 	// ButtonAbilityData3 = &AbilityData[Index];
 	ThirdButtonIndex = Index;
 	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
-	InstanceRewardIndexArray.Emplace(ThirdButtonIndex);
 	
 	RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
 }
@@ -144,19 +185,19 @@ void ALLL_RewardGimmick::SetDataTable()
 void ALLL_RewardGimmick::ClickFirstButton()
 {
 	ClickButtonEvent(ButtonAbilityDataArray[0]);
-	GettenIndexArray.Emplace(FirstButtonIndex);
+	GettenAbilityIDArray.Emplace(FirstButtonIndex);
 }
 
 void ALLL_RewardGimmick::ClickSecondButton()
 {
 	ClickButtonEvent(ButtonAbilityDataArray[1]);
-	GettenIndexArray.Emplace(SecondButtonIndex);
+	GettenAbilityIDArray.Emplace(SecondButtonIndex);
 }
 
 void ALLL_RewardGimmick::ClickThirdButton()
 {
 	ClickButtonEvent(ButtonAbilityDataArray[2]);
-	GettenIndexArray.Emplace(ThirdButtonIndex);
+	GettenAbilityIDArray.Emplace(ThirdButtonIndex);
 }
 
 void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData)
@@ -268,6 +309,8 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 				}
 			}
 		}
+		
+		GettenAbilityIDArray.Append(Effect->GetID());
 	}
 
 	// TODO: UI 관련 상호작용 구현.
