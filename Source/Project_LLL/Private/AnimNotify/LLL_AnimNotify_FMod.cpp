@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Animation/LLL_AnimNotify_FMod.h"
+#include "AnimNotify/LLL_AnimNotify_FMod.h"
 
 #include "FMODBlueprintStatics.h"
 #include "Game/ProtoGameInstance.h"
