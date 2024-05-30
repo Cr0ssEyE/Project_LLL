@@ -6,7 +6,9 @@
 #include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
 #include "Components/Overlay.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
+#include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/System/Setting/LLL_SettingWidget.h"
@@ -32,6 +34,17 @@ void ULLL_GamePauseWidget::NativeConstruct()
 	
 	SettingWidget->SetRenderScale(FVector2d::Zero());
 	SettingWidget->SetIsEnabled(false);
+}
+
+FReply ULLL_GamePauseWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (InKeyEvent.GetKey() == EKeys::Escape || InKeyEvent.GetKey() == EKeys::BackSpace)
+	{
+		Cast<ALLL_PlayerBase>(GetOwningPlayerPawn())->GetPlayerUIManager()->TogglePauseWidget(false);
+		return FReply::Handled();
+	}
+	
+	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 }
 
 void ULLL_GamePauseWidget::SetupPauseState()

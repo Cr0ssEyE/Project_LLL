@@ -30,7 +30,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "고정 종횡비 사용", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
 	uint8 bUseConstraintAspectRatio : 1;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "종횡비 비율", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic && bUseConstraintAspectRatio == false", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "종횡비 비율", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic && bUseConstraintAspectRatio == true", EditConditionHides))
 	float AspectRatio;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))

@@ -70,6 +70,11 @@ void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actor
 
 void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation)
 {
+	if (!IsValid(GetWorld()))
+	{
+		return;
+	}
+	
 	for (const auto Actor : Actors)
 	{
 		if (!IsValid(Actor))

@@ -5,7 +5,9 @@
 
 #include "Components/Image.h"
 #include "Components/RichTextBlock.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
+#include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Game/ProtoGameInstance.h"
 
 void ULLL_SelectRewardWidget::NativeConstruct()
@@ -23,6 +25,23 @@ void ULLL_SelectRewardWidget::NativeConstruct()
 	RewardButton3->OnClicked.AddDynamic(this, &ULLL_SelectRewardWidget::PlayRewardThreeSelectAnimation);
 	RewardButton3->OnHovered.AddDynamic(this, &ULLL_SelectRewardWidget::PlayRewardThreeHoverAnimation);
 	RewardButton3->OnUnhovered.AddDynamic(this, &ULLL_SelectRewardWidget::PlayRewardThreeUnHoverAnimation);
+}
+
+FReply ULLL_SelectRewardWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (InKeyEvent.GetKey() == EKeys::Tab)
+	{
+		Cast<ALLL_PlayerBase>(GetOwningPlayerPawn())->GetPlayerUIManager()->ToggleInventoryWidget();
+		return FReply::Handled();
+	}
+
+	if (InKeyEvent.GetKey() == EKeys::Escape || InKeyEvent.GetKey() == EKeys::BackSpace)
+	{
+		Cast<ALLL_PlayerBase>(GetOwningPlayerPawn())->GetPlayerUIManager()->TogglePauseWidget(false);
+		return FReply::Handled();
+	}
+	
+	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 }
 
 void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDataArray)
@@ -50,16 +69,19 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDa
 	RewardInfoText1->SetText(FText::FromString(WidgetInfoTexts[0].Value));
 	RewardNameText1->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[0]->AbilityRank)]);
 	RewardIconImage1->SetBrushFromTexture(EruriaIConTextures[static_cast<uint32>(AbilityDataArray[0]->AbilityType)]);
+	RewardBackgroundImage1->SetBrushFromTexture(EruriaBackgroundTextures[static_cast<uint32>(AbilityDataArray[0]->AbilityType)]);
 	
 	RewardNameText2->SetText(FText::FromString(WidgetInfoTexts[1].Key));
 	RewardInfoText2->SetText(FText::FromString(WidgetInfoTexts[1].Value));
 	RewardNameText2->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[1]->AbilityRank)]);
 	RewardIconImage2->SetBrushFromTexture(EruriaIConTextures[static_cast<uint32>(AbilityDataArray[1]->AbilityType)]);
+	RewardBackgroundImage2->SetBrushFromTexture(EruriaBackgroundTextures[static_cast<uint32>(AbilityDataArray[1]->AbilityType)]);
 	
 	RewardNameText3->SetText(FText::FromString(WidgetInfoTexts[2].Key));
 	RewardInfoText3->SetText(FText::FromString(WidgetInfoTexts[2].Value));
 	RewardNameText3->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[2]->AbilityRank)]);
 	RewardIconImage3->SetBrushFromTexture(EruriaIConTextures[static_cast<uint32>(AbilityDataArray[2]->AbilityType)]);
+	RewardBackgroundImage3->SetBrushFromTexture(EruriaBackgroundTextures[static_cast<uint32>(AbilityDataArray[2]->AbilityType)]);
 }
 
 void ULLL_SelectRewardWidget::FocusToUI()
