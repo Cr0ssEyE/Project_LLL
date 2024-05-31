@@ -13,6 +13,8 @@
  * 
  */
 
+class ULLL_ShareableNiagaraDataAsset;
+
 UCLASS()
 class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
 {
@@ -32,6 +34,9 @@ public:
 	FORCEINLINE TArray<FStringDataTable> GetStringDataTablesData() const { return StringData; }
 	FORCEINLINE bool CheckCustomTimeDilationIsChanging() const { return bCustomTimeDilationIsChanging; }
 
+	// 데이터 에셋
+public:
+	FORCEINLINE TObjectPtr<const ULLL_ShareableNiagaraDataAsset> GetShareableNiagaraDataAsset() const { return ShareableNiagaraDataAsset; }
 public:
 	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
 
@@ -53,6 +58,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> InterfaceMPC;
 
+	// 범용 데이터 에셋
+protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<const ULLL_ShareableNiagaraDataAsset> ShareableNiagaraDataAsset;
+	
 	// 데이터 테이블 변수
 protected:
 	UPROPERTY(EditAnywhere)
