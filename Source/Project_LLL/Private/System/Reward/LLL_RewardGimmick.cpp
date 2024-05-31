@@ -321,6 +321,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		}
 		
 		GettenAbilityIDArray.Append(Effect->GetID());
+		break;
 	}
 
 	// TODO: UI 관련 상호작용 구현.
@@ -335,4 +336,5 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	}
 	
 	CurrentAbilityData = nullptr;
+	bIsButtonEventSetup = false;
 }

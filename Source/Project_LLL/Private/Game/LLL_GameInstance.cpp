@@ -8,6 +8,7 @@
 #include "Interface/LLL_FModInterface.h"
 #include "System/MapSound/LLL_MapSoundManager.h"
 #include "Util/LLL_ConstructorHelper.h"
+#include "Materials/MaterialParameterCollection.h"
 
 ULLL_GameInstance::ULLL_GameInstance()
 {
@@ -20,6 +21,8 @@ ULLL_GameInstance::ULLL_GameInstance()
 	StringDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_STRING_DATA, EAssertionLevel::Check);
 
 	ShareableNiagaraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_ShareableNiagaraDataAsset>(PATH_SHAREABLE_NIAGARA_EFFECTS, EAssertionLevel::Check);
+	
+	PostProcessMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_POSTPROCESS_MPC, EAssertionLevel::Check);
 	
 	CustomTimeDilation = 1.0f;
 	CustomTimeDilationInterpSpeed = 5.0f;
@@ -59,6 +62,8 @@ void ULLL_GameInstance::Init()
 	{
 		StringData.Add(*LoadStringData);
 	}
+
+	GetWorld()->AddParameterCollectionInstance(PostProcessMPC, true);
 }
 
 void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)
