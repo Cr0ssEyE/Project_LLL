@@ -39,7 +39,29 @@ void ALLL_FallableWallGimmick::NotifyHit(UPrimitiveComponent* MyComp, AActor* Ot
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Other);
+	// ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Other);
+	// if (!IsValid(Monster) || Monster->CheckCharacterIsDead())
+	// {
+	// 	return;
+	// }
+	// 
+	// if(!Monster->GetAbilitySystemComponent()->GetGameplayTagCount(TAG_GAS_MONSTER_FALLABLE))
+	// {
+	// 	return;
+	// }
+	// 
+	// Monster->GetAbilitySystemComponent()->RemoveLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE, 99);
+	// Monster->GetCharacterMovement()->Velocity = FVector::Zero();
+	// Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
+	// // 여기에 연출 입력
+	// FallOutBegin(Monster, HitNormal, HitLocation);
+}
+
+void ALLL_FallableWallGimmick::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+	
+	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(OtherActor);
 	if (!IsValid(Monster) || Monster->CheckCharacterIsDead())
 	{
 		return;
@@ -51,10 +73,12 @@ void ALLL_FallableWallGimmick::NotifyHit(UPrimitiveComponent* MyComp, AActor* Ot
 	}
 
 	Monster->GetAbilitySystemComponent()->RemoveLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE, 99);
+	FVector OverlapDirection = Monster->GetCharacterMovement()->Velocity.GetSafeNormal2D();
 	Monster->GetCharacterMovement()->Velocity = FVector::Zero();
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
+	
 	// 여기에 연출 입력
-	FallOutBegin(Monster, HitNormal, HitLocation);
+	FallOutBegin(Monster, OverlapDirection, Monster->GetActorLocation());
 }
 
 void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FVector HitLocation)

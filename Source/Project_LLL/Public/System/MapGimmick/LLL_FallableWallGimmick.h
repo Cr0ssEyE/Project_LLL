@@ -20,6 +20,8 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	
 protected:
 	void FallOutBegin(AActor* Actor, FVector HitNormal, FVector HitLocation);
 
