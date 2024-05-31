@@ -81,16 +81,26 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
     const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
     ULLL_SelectRewardWidget* RewardWidget = PlayerUIManager->GetSelectRewardWidget();
-    RewardWidget->GetFirstButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickFirstButton);
-    RewardWidget->GetSecondButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickSecondButton);
-    RewardWidget->GetThirdButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickThirdButton);
+
+	if (!RewardWidget->GetFirstButton()->OnClicked.IsAlreadyBound(this, &ALLL_RewardGimmick::ClickFirstButton))
+	{
+		RewardWidget->GetFirstButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickFirstButton);
+	}
+	
+	if (!RewardWidget->GetSecondButton()->OnClicked.IsAlreadyBound(this, &ALLL_RewardGimmick::ClickSecondButton))
+	{
+		RewardWidget->GetSecondButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickSecondButton);
+	}
+
+	if (!RewardWidget->GetThirdButton()->OnClicked.IsAlreadyBound(this, &ALLL_RewardGimmick::ClickThirdButton))
+	{
+		RewardWidget->GetThirdButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickThirdButton);
+	}
+	
     bIsButtonEventSetup = true;
 	
 	if (bIsTest)
 	{
-		// ButtonAbilityData1 = &AbilityData[TestAbilityDataArrayNum1];
-		// ButtonAbilityData2 = &AbilityData[TestAbilityDataArrayNum2];
-		// ButtonAbilityData3 = &AbilityData[TestAbilityDataArrayNum3];
 		ButtonAbilityDataArray.Emplace(&AbilityData[TestAbilityDataArrayNum1]);
 		ButtonAbilityDataArray.Emplace(&AbilityData[TestAbilityDataArrayNum2]);
 		ButtonAbilityDataArray.Emplace(&AbilityData[TestAbilityDataArrayNum3]);
@@ -235,7 +245,7 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData)
 void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects)
 {
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	ULLL_PlayerUIManager* PlayerUIManager =	Player->GetPlayerUIManager();
+	const ULLL_PlayerUIManager* PlayerUIManager =	Player->GetPlayerUIManager();
 	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
 
 	if (!IsValid(PlayerUIManager) || !IsValid(ASC))
@@ -272,7 +282,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("커먼 이펙트 아님")));
 			IsCommonEffect = false;
 			TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
-			for (auto EffectHandle : EffectHandles)
+			for (const auto EffectHandle : EffectHandles)
 			{
 				const ULLL_ExtendedGameplayEffect* ActiveEffect = Cast<ULLL_ExtendedGameplayEffect>(ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def);
 				if (!IsValid(ActiveEffect))
@@ -280,7 +290,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 					continue;
 				}
 				
-				if (EffectHandle.IsValid() && CurrentAbilityData->AbilityPart == ActiveEffect->GetAbilityData()->AbilityPart)
+				if (CurrentAbilityData->AbilityPart == ActiveEffect->GetAbilityData()->AbilityPart)
 				{
 					ASC->RemoveActiveGameplayEffect(EffectHandle);
 					for (auto GameplayTag : TagContainer.GetGameplayTagArray())
