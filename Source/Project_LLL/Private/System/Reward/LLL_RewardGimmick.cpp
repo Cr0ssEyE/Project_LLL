@@ -109,7 +109,7 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	do
 	{
 		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	}while (!AbilityData[Index].bIsImplement || GettenAbilityIDArray.Contains(AbilityData[Index].ID));
+	}while (GettenAbilityIDArray.Contains(AbilityData[Index].ID) || !AbilityData[Index].bIsImplement);
 	
 	// ButtonAbilityData1 = &AbilityData[Index];
 	FirstButtonIndex = Index;
@@ -137,7 +137,7 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	do
 	{
 		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	}while (!AbilityData[Index].bIsImplement || GettenAbilityIDArray.Contains(AbilityData[Index].ID) || InstanceRewardIndexArray.Contains(Index));
+	}while (GettenAbilityIDArray.Contains(AbilityData[Index].ID) || InstanceRewardIndexArray.Contains(Index)|| !AbilityData[Index].bIsImplement);
 	
 	// ButtonAbilityData2 = &AbilityData[Index];
 	SecondButtonIndex = Index;
@@ -165,7 +165,7 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	do
 	{
 		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	}while (!AbilityData[Index].bIsImplement || GettenAbilityIDArray.Contains(AbilityData[Index].ID) || InstanceRewardIndexArray.Contains(Index));
+	}while (GettenAbilityIDArray.Contains(AbilityData[Index].ID) || InstanceRewardIndexArray.Contains(Index) || !AbilityData[Index].bIsImplement);
 	
 	// ButtonAbilityData3 = &AbilityData[Index];
 	ThirdButtonIndex = Index;

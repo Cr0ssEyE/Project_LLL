@@ -130,7 +130,10 @@ void ALLL_MapGimmick::CreateMap()
 	StageActor->GetAllChildActors(StageChildActors, true);
 	for (AActor* ChildActor : StageChildActors)
 	{
-		MonsterSpawner = CastChecked<ALLL_MonsterSpawner>(ChildActor);
+		if (ALLL_MonsterSpawner* Spawner = Cast<ALLL_MonsterSpawner>(ChildActor))
+		{
+			MonsterSpawner = Spawner;
+		}
 	}
 	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
 

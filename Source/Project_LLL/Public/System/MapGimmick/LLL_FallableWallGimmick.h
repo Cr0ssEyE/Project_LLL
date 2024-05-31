@@ -21,9 +21,9 @@ protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
 protected:
-	void FallOutEvent();
-	
-	void WorldDilationDecelerate();
+	void FallOutBegin(AActor* Actor, FVector HitNormal, FVector HitLocation);
+
+	void FallOutStart(AActor* Actor, FVector HitNormal);
 	
 protected:
 	UPROPERTY(EditAnywhere)

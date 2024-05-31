@@ -80,7 +80,7 @@ void ULLL_GC_Base::ReceiveSpawnResult(AActor* Target, const FGameplayCueNotify_S
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("블루프린트에서 함수 호출")));
 	
 	// FGameplayCueNotify_SpawnContext가 영문도 모른 채 코드에서 LNK2019 오류 뿜어대서 블루프린트로 우회 구현
-	// ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(Target);
+	ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(Target);
 	if (SpawnResult.FxSystemComponents.IsEmpty())
 	{
 		return;

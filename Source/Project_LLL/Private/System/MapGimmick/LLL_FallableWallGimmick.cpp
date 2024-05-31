@@ -5,10 +5,13 @@
 
 #include "FMODAudioComponent.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Util/LLL_MathHelper.h"
 
 
 // Sets default values
@@ -38,7 +41,7 @@ void ALLL_FallableWallGimmick::NotifyHit(UPrimitiveComponent* MyComp, AActor* Ot
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, FString::Printf(TEXT("HitNormal 값 테스트 : %f, %f, %f"), HitNormal.X, HitNormal.Y, HitNormal.Z));
 	
 	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Other);
-	if (!IsValid(Monster))
+	if (!IsValid(Monster) || Monster->CheckCharacterIsDead())
 	{
 		return;
 	}
@@ -48,20 +51,37 @@ void ALLL_FallableWallGimmick::NotifyHit(UPrimitiveComponent* MyComp, AActor* Ot
 		return;
 	}
 
+	Monster->GetAbilitySystemComponent()->RemoveLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE, 99);
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
-	
 	// 여기에 연출 입력
-	FallOutEvent();
+	FallOutBegin(Monster, HitNormal, HitLocation);
 }
 
-void ALLL_FallableWallGimmick::FallOutEvent()
+void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FVector HitLocation)
 {
-	GetWorldSettings()->SetTimeDilation(0.2f);
+	GetWorldSettings()->SetTimeDilation(0.1f);
+	CustomTimeDilation = 1.f / GetWorldSettings()->TimeDilation;
+	UNiagaraSystem* WallCrashNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->InvisibleWallCrashNiagaraSystem;
+	NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), WallCrashNiagaraSystem, HitLocation, HitNormal.Rotation());
+	NiagaraComponent->SetCustomTimeDilation(CustomTimeDilation);
 	
 	FTimerHandle DilationTimerHandle;
-	GetWorldTimerManager().SetTimer(DilationTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]
+	GetWorldTimerManager().SetTimer(DilationTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, FString::Printf(TEXT("넉백 연출 준비 타이머 종료")));
 		GetWorldSettings()->SetTimeDilation(1.f);
+		CustomTimeDilation = 1.f;
+		FallOutStart(Actor, HitNormal);
 	}), GetWorldSettings()->TimeDilation, false);
+}
+
+void ALLL_FallableWallGimmick::FallOutStart(AActor* Actor, FVector HitNormal)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, FString::Printf(TEXT("넉백 연출 시작")));
+	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Actor);
+	
+	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
+	FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(HitNormal, Monster->GetKnockBackedPower()) * 3.f;
+	Monster->AddKnockBackVelocity(LaunchVelocity, Monster->GetKnockBackedPower());
 }
 
