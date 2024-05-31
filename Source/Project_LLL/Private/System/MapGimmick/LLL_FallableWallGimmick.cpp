@@ -11,6 +11,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Util/LLL_MathHelper.h"
 
 
@@ -37,9 +38,7 @@ void ALLL_FallableWallGimmick::BeginPlay()
 void ALLL_FallableWallGimmick::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
-	
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, FString::Printf(TEXT("HitNormal 값 테스트 : %f, %f, %f"), HitNormal.X, HitNormal.Y, HitNormal.Z));
-	
+
 	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Other);
 	if (!IsValid(Monster) || Monster->CheckCharacterIsDead())
 	{
@@ -52,6 +51,7 @@ void ALLL_FallableWallGimmick::NotifyHit(UPrimitiveComponent* MyComp, AActor* Ot
 	}
 
 	Monster->GetAbilitySystemComponent()->RemoveLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE, 99);
+	Monster->GetCharacterMovement()->Velocity = FVector::Zero();
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
 	// 여기에 연출 입력
 	FallOutBegin(Monster, HitNormal, HitLocation);
@@ -68,7 +68,6 @@ void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FV
 	FTimerHandle DilationTimerHandle;
 	GetWorldTimerManager().SetTimer(DilationTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, FString::Printf(TEXT("넉백 연출 준비 타이머 종료")));
 		GetWorldSettings()->SetTimeDilation(1.f);
 		CustomTimeDilation = 1.f;
 		FallOutStart(Actor, HitNormal);
@@ -77,7 +76,6 @@ void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FV
 
 void ALLL_FallableWallGimmick::FallOutStart(AActor* Actor, FVector HitNormal)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, FString::Printf(TEXT("넉백 연출 시작")));
 	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Actor);
 	
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);

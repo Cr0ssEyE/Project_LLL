@@ -175,7 +175,7 @@ public:
 			LaunchLocation,
 			FQuat::Identity,
 			ECC_WALL_ONLY,
-			FCollisionShape::MakeCapsule(CapsuleExtent.X, CapsuleExtent.Y * 10),
+			FCollisionShape::MakeCapsule(5.f, CapsuleExtent.Y * 10),
 			Params
 			);
 			
@@ -227,7 +227,7 @@ public:
 				CorrectionLaunchLocation,
 				FQuat::Identity,
 				ECC_WALL_ONLY,
-				FCollisionShape::MakeCapsule(CapsuleExtent.X, CapsuleExtent.Y * 10),
+				FCollisionShape::MakeCapsule(5.f, CapsuleExtent.Y * 10),
 				Params
 				);
 				
@@ -258,7 +258,7 @@ public:
 			{
 				if(ProtoGameInstance->CheckPlayerDashDebug())
 				{
-					DrawDebugCapsule(World, NewLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Magenta, false, 2.f);
+					DrawDebugCapsule(World, NewLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Cyan, false, 2.f);
 				}
 			}
 #endif
@@ -271,12 +271,13 @@ public:
 				NewLocation,
 				FQuat::Identity,
 				ECC_WALL_ONLY,
-				FCollisionShape::MakeCapsule(CapsuleExtent.X, CapsuleExtent.Y * 10),
+				FCollisionShape::MakeCapsule(5.f, CapsuleExtent.Y * 10),
 				Params
 				);
 
 				if (Cast<UStaticMeshComponent>(FurthestLocationHitResult.GetComponent()))
 				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("대쉬 장거리 체크 발동")));
 					return NewLocation;
 				}
 			}
