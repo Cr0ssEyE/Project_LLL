@@ -66,12 +66,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> PostProcessMPC;
-	
+
 	// 범용 데이터 에셋
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<const ULLL_ShareableNiagaraDataAsset> ShareableNiagaraDataAsset;
-
+	
 	// 데이터 테이블 변수
 protected:
 	UPROPERTY(EditAnywhere)
