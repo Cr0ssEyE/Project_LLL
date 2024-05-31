@@ -70,9 +70,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
-
-	FWeightedBlendable PlayerLowHPMaterialInst = FWeightedBlendable(1, FLLL_ConstructorHelper::FindAndGetObject<UObject>(PATH_PLAYER_LOWHP_MATERIAL_INST, EAssertionLevel::Check));
-	Camera->PostProcessSettings.WeightedBlendables.Array.Emplace(PlayerLowHPMaterialInst);
 	
 	SpringArm->TargetArmLength = 0.f;
 	SpringArm->bDoCollisionTest = false;

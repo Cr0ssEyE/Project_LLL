@@ -4,10 +4,8 @@
 #include "System/MapGimmick/LLL_KillZone.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
-#include "Entity/Character/Base/LLL_BaseCharacter.h"
-#include <Entity/Character/Monster/Base/LLL_MonsterBase.h>
-#include <Entity/Character/Player/LLL_PlayerBase.h>
-#include <System/MapGimmick/LLL_PlayerSpawnPointComponent.h>
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 
 // Sets default values
 ALLL_KillZone::ALLL_KillZone()
