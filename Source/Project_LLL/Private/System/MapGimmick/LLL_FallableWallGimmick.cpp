@@ -35,28 +35,6 @@ void ALLL_FallableWallGimmick::BeginPlay()
 	
 }
 
-void ALLL_FallableWallGimmick::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
-{
-	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
-
-	// ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Other);
-	// if (!IsValid(Monster) || Monster->CheckCharacterIsDead())
-	// {
-	// 	return;
-	// }
-	// 
-	// if(!Monster->GetAbilitySystemComponent()->GetGameplayTagCount(TAG_GAS_MONSTER_FALLABLE))
-	// {
-	// 	return;
-	// }
-	// 
-	// Monster->GetAbilitySystemComponent()->RemoveLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE, 99);
-	// Monster->GetCharacterMovement()->Velocity = FVector::Zero();
-	// Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
-	// // 여기에 연출 입력
-	// FallOutBegin(Monster, HitNormal, HitLocation);
-}
-
 void ALLL_FallableWallGimmick::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
@@ -74,6 +52,7 @@ void ALLL_FallableWallGimmick::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	Monster->GetAbilitySystemComponent()->RemoveLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE, 99);
 	FVector OverlapDirection = Monster->GetCharacterMovement()->Velocity.GetSafeNormal2D();
+	Monster->CustomTimeDilation = 1.f;
 	Monster->GetCharacterMovement()->Velocity = FVector::Zero();
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
 	
@@ -101,9 +80,14 @@ void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FV
 void ALLL_FallableWallGimmick::FallOutStart(AActor* Actor, FVector HitNormal)
 {
 	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Actor);
+	CustomTimeDilation = 1.f;
+	Monster->CustomTimeDilation = 1.f;
 	
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
-	FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(HitNormal, Monster->GetKnockBackedPower()) * 3.f;
-	Monster->AddKnockBackVelocity(LaunchVelocity, Monster->GetKnockBackedPower());
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&, HitNormal, Monster]
+	{
+		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(HitNormal, Monster->GetKnockBackedPower() * 3.f);
+		Monster->AddKnockBackVelocity(LaunchVelocity, Monster->GetKnockBackedPower() * 3.f);
+	}));
 }
 
