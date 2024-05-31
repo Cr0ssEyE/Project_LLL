@@ -11,6 +11,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Util/LLL_MathHelper.h"
 
 
@@ -50,6 +51,7 @@ void ALLL_FallableWallGimmick::NotifyHit(UPrimitiveComponent* MyComp, AActor* Ot
 	}
 
 	Monster->GetAbilitySystemComponent()->RemoveLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE, 99);
+	Monster->GetCharacterMovement()->Velocity = FVector::Zero();
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
 	// 여기에 연출 입력
 	FallOutBegin(Monster, HitNormal, HitLocation);
