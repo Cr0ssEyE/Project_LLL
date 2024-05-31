@@ -46,6 +46,7 @@
 #define PATH_MONSTER_SPAWN_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/MonsterSpawnData.MonsterSpawnData'")
 #define PATH_FMOD_PARAMETER_NAME_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/FModParameterNameData.FModParameterNameData'")
 #define PATH_STRING_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/MiscellaneousDatas/DT_StringData.DT_StringData'")
+#define PATH_SHAREABLE_NIAGARA_EFFECTS TEXT("/Script/Project_LLL.LLL_ShareableNiagaraDataAsset'/Game/DataAsset/DA_NiagaraEffects.DA_NiagaraEffects'")
 
 // 맵 및 보상 시스템 관련
 #define PATH_MAP_DATA TEXT("/Script/Project_LLL.LLL_MapDataAsset'/Game/DataAsset/DA_Map.DA_Map'")

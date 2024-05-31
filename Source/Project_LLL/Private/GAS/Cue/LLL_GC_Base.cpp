@@ -74,3 +74,27 @@ bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCue
 	
 	return Super::OnExecute_Implementation(MyTarget, Parameters);
 }
+
+void ULLL_GC_Base::ReceiveSpawnResult(AActor* Target, const FGameplayCueNotify_SpawnResult& SpawnResult) const
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("블루프린트에서 함수 호출")));
+	
+	// FGameplayCueNotify_SpawnContext가 영문도 모른 채 코드에서 LNK2019 오류 뿜어대서 블루프린트로 우회 구현
+	ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(Target);
+	if (SpawnResult.FxSystemComponents.IsEmpty())
+	{
+		return;
+	}
+
+	for (auto SpawnComponent : SpawnResult.FxSystemComponents)
+	{
+		UNiagaraComponent* Component = Cast<UNiagaraComponent>(SpawnComponent);
+		if (!IsValid(Component))
+		{
+			continue;
+		}
+
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("나이아가라 컴포넌트 생성 %s"), *Component->GetFName().ToString()));
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("나이아가라 시스템 이름 %s"), *Component->GetAsset()->GetFName().ToString()));
+	}
+}

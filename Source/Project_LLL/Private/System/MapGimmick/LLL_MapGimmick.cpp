@@ -12,9 +12,9 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
-#include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
-#include "System/MapGimmick/LLL_ShoppingMapComponent.h"
-#include "System/MapGimmick/LLL_PlayerSpawnPointComponent.h"
+#include "System/MapGimmick/Components/LLL_GateSpawnPointComponent.h"
+#include "System/MapGimmick/Components/LLL_ShoppingMapComponent.h"
+#include "System/MapGimmick/Components/LLL_PlayerSpawnPointComponent.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawner.h"
 #include "System/Reward/LLL_RewardGimmick.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -130,7 +130,10 @@ void ALLL_MapGimmick::CreateMap()
 	StageActor->GetAllChildActors(StageChildActors, true);
 	for (AActor* ChildActor : StageChildActors)
 	{
-		MonsterSpawner = CastChecked<ALLL_MonsterSpawner>(ChildActor);
+		if (ALLL_MonsterSpawner* Spawner = Cast<ALLL_MonsterSpawner>(ChildActor))
+		{
+			MonsterSpawner = Spawner;
+		}
 	}
 	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
 

@@ -13,6 +13,8 @@
  * 
  */
 
+class ULLL_ShareableNiagaraDataAsset;
+
 UCLASS()
 class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
 {
@@ -39,6 +41,9 @@ public:
 	FORCEINLINE UMaterialParameterCollection* GetInterfaceMPC() const { return InterfaceMPC; }
 	FORCEINLINE UMaterialParameterCollection* GetPostProcessMPC() const { return PostProcessMPC; }
 
+	// 데이터 에셋
+public:
+	FORCEINLINE TObjectPtr<const ULLL_ShareableNiagaraDataAsset> GetShareableNiagaraDataAsset() const { return ShareableNiagaraDataAsset; }
 public:
 	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
 
@@ -62,6 +67,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> PostProcessMPC;
 
+	// 범용 데이터 에셋
+protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<const ULLL_ShareableNiagaraDataAsset> ShareableNiagaraDataAsset;
+	
 	// 데이터 테이블 변수
 protected:
 	UPROPERTY(EditAnywhere)

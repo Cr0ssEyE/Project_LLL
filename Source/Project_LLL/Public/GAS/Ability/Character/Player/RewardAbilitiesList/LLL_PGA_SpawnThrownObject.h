@@ -26,4 +26,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, DisplayName = "스폰 시 플레이어와의 거리")
 	float Offset;
+
+	UPROPERTY(EditAnywhere, DisplayName = "스폰 간격 시간")
+	float SpawnOffsetTime;
 };
