@@ -8,7 +8,7 @@
 
 class UNiagaraComponent;
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, BlueprintType, meta = (CannotImplementInterfaceInBlueprint))
 class ULLL_NiagaraInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -23,5 +23,6 @@ class PROJECT_LLL_API ILLL_NiagaraInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	UFUNCTION(BlueprintCallable)
 	virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) = 0;
 };

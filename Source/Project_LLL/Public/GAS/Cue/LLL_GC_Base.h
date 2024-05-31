@@ -14,13 +14,16 @@ class UFMODEvent;
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class PROJECT_LLL_API ULLL_GC_Base : public UGameplayCueNotify_Burst
 {
 	GENERATED_BODY()
 
 public:
-	virtual bool OnExecute_Implementation(AActor* MyTarget, const FGameplayCueParameters& Parameters) const override;
+	virtual bool OnExecute_Implementation(AActor* Target, const FGameplayCueParameters& Parameters) const override;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure = false)
+	virtual void ReceiveSpawnResult(AActor* Target, const FGameplayCueNotify_SpawnResult& SpawnResult) const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "사운드 리스트")
