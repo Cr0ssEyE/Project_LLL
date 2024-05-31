@@ -7,8 +7,8 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/LLL_AbilityRewardObject.h"
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
-#include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
-#include "System/MapGimmick/LLL_PlayerSpawnPointComponent.h"
+#include "System/MapGimmick/Components/LLL_GateSpawnPointComponent.h"
+#include "System/MapGimmick/Components/LLL_PlayerSpawnPointComponent.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include <Kismet/GameplayStatics.h>
 #include <Constant/LLL_LevelNames.h>
