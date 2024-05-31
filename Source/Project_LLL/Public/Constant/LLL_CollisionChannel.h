@@ -24,6 +24,7 @@
 #define CP_PLAYER_THROWN_OBJECT TEXT("PlayerThrownObject")
 #define CP_NO_COLLISION TEXT("NoCollision")
 #define CP_OVERLAP_ALL TEXT("OverlapAll")
+#define CP_INVISIBLE_WALL TEXT("InvisibleWall")
 #define CP_STATIC_ONLY TEXT("IgnoreOnlyPawn")
 #define CP_RAGDOLL TEXT("Ragdoll")
 #define CP_PLAYER TEXT("Player")

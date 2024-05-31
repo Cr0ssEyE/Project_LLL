@@ -88,6 +88,10 @@ void ULLL_TitleScreenWidget::SettingButtonEvent()
 {
 	const bool IsOpened = !SettingWidget->GetRenderTransform().Scale.X;
 	SettingWidget->SetRenderScale(FVector2D::One() * IsOpened);
+	if (IsOpened)
+	{
+		SettingWidget->SetIsEnabled(true);
+	}
 }
 
 void ULLL_TitleScreenWidget::ExitGameButtonEvent()
