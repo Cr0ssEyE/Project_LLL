@@ -29,7 +29,23 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		
 		ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
 		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
-		
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckPlayerIsInvincible())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 무적 상태")));
+				Player->Damaged(Attacker, DOT);
+				Player->TakeDamageDelegate.Broadcast(DOT);
+
+				FGameplayEventData PayloadData;
+				PayloadData.Instigator = Attacker;
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
+				return;
+			}
+		}
+#endif
 		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
 		if (GetCurrentHealth() == 0)
 		{
@@ -45,17 +61,6 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckPlayerIsInvincible())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 무적 상태")));
-				Player->TakeDamageDelegate.Broadcast(DOT);
-
-				FGameplayEventData PayloadData;
-				PayloadData.Instigator = Attacker;
-				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
-				return;
-			}
-			
 			if (ProtoGameInstance->CheckPlayerHitDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 데미지 입음. : %f"), Data.EvaluatedData.Magnitude));

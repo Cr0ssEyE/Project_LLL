@@ -9,6 +9,7 @@
 #include "GameFramework/Character.h"
 #include "Game/ProtoGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 
 class PROJECT_LLL_API FLLL_MathHelper
 {
@@ -96,7 +97,7 @@ public:
 		}
 		
 		float FallableCheckPower = 500.f;
-		ACharacter* Character = World->GetFirstPlayerController()->GetCharacter();
+		ACharacter* Character = UGameplayStatics::GetPlayerCharacter(World, 0);
 		if (!IsValid(Character))
 		{
 			return false;

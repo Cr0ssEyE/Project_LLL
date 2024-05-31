@@ -19,9 +19,21 @@ void ULLL_TitleScreenWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	NewGameStartButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::NewGameStartButtonEvent);
+	NewGameStartButton->OnHovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlayNewGameStartHoverAnimation);
+	NewGameStartButton->OnUnhovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlayNewGameStartUnHoverAnimation);
+	
 	LoadGameButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::LoadGameButtonEvent);
+	LoadGameButton->OnHovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlayLoadGameHoverAnimation);
+	LoadGameButton->OnUnhovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlayLoadGameUnHoverAnimation);
+	
 	SettingButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::SettingButtonEvent);
+	SettingButton->OnHovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlaySettingHoverAnimation);
+	SettingButton->OnUnhovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlaySettingUnHoverAnimation);
+	
 	ExitGameButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::ExitGameButtonEvent);
+	ExitGameButton->OnHovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlayExitGameHoverAnimation);
+	ExitGameButton->OnUnhovered.AddDynamic(this, &ULLL_TitleScreenWidget::PlayExitGameUnHoverAnimation);
+	
 	ExitConfirmButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::ExitConfirmButtonEvent);
 	ExitCancelButton->OnClicked.AddDynamic(this, &ULLL_TitleScreenWidget::ExitCancelButtonEvent);
 	
@@ -31,27 +43,29 @@ void ULLL_TitleScreenWidget::NativeConstruct()
 
 	bool TestEnabled = false;
 	
-#if WITH_EDITOR
 	if (bTestNoneSaveFileUI)
 	{
 		LoadGameButton->SetVisibility(ESlateVisibility::Hidden);
 		LobbyButtonVerticalBox->RemoveChild(LoadGameButton);
+		if (LobbyHoverVerticalBox->HasAnyChildren())
+		{
+			LobbyHoverVerticalBox->RemoveChildAt(1);
+		}
 		TestEnabled = true;
 	}
-#endif
 	
 	if (!TestEnabled && !IsValid(UGameplayStatics::LoadGameFromSlot(DEFAULT_FILE_NAME, DEFAULT_FILE_INDEX)))
 	{
 		LoadGameButton->SetVisibility(ESlateVisibility::Hidden);
 		LobbyButtonVerticalBox->RemoveChild(LoadGameButton);
+
+		if (LobbyHoverVerticalBox->HasAnyChildren())
+		{
+			LobbyHoverVerticalBox->RemoveChildAt(1);
+		}
 	}
-
+	
 	// 인트로 애니메이션 재생은 BP에서 함
-}
-
-void ULLL_TitleScreenWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
 }
 
 void ULLL_TitleScreenWidget::NewGameStartButtonEvent()
@@ -108,7 +122,12 @@ void ULLL_TitleScreenWidget::DisableWidgetActivation()
 
 void ULLL_TitleScreenWidget::OpenIntroLevel()
 {
-	UGameplayStatics::OpenLevel(this, LEVEL_INTRO);
+	if (bIsLoadTestLevel)
+	{
+		UGameplayStatics::OpenLevel(this, LEVEL_TUTORIAL);
+		return;
+	}
+	UGameplayStatics::OpenLevel(this, LEVEL_TUTORIAL);
 }
 
 void ULLL_TitleScreenWidget::OpenSavedLevel()
@@ -119,6 +138,6 @@ void ULLL_TitleScreenWidget::OpenSavedLevel()
 
 void ULLL_TitleScreenWidget::CloseGame()
 {
-	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+	UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
 }
 

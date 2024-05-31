@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "FMODAudioComponent.h"
+#include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -21,8 +22,12 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	bIsDead = false;
 
 	ASC = CreateDefaultSubobject<ULLL_BaseASC>(TEXT("AbilitySystem"));
+	
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	FModAudioComponent->SetupAttachment(RootComponent);
+
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
+	NiagaraComponent->SetupAttachment(RootComponent);
 
 	Level = 1;
 }
@@ -151,7 +156,7 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 
 void ALLL_BaseCharacter::Damaged(AActor* Attacker, bool IsDOT)
 {
-	FLLL_FModPlayHelper::PlayFModEvent(this, CharacterDataAsset->DamagedFModEvent);
+	
 }
 
 void ALLL_BaseCharacter::Dead()

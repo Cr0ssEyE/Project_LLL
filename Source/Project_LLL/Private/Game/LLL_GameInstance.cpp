@@ -4,6 +4,7 @@
 #include "Game/LLL_GameInstance.h"
 
 #include "Constant/LLL_FilePath.h"
+#include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Interface/LLL_FModInterface.h"
 #include "System/MapSound/LLL_MapSoundManager.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -17,6 +18,8 @@ ULLL_GameInstance::ULLL_GameInstance()
 	RewardDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_REWARD_DATA_TABLE, EAssertionLevel::Check);
 
 	StringDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_STRING_DATA, EAssertionLevel::Check);
+
+	ShareableNiagaraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_ShareableNiagaraDataAsset>(PATH_SHAREABLE_NIAGARA_EFFECTS, EAssertionLevel::Check);
 	
 	CustomTimeDilation = 1.0f;
 	CustomTimeDilationInterpSpeed = 5.0f;
@@ -56,12 +59,32 @@ void ULLL_GameInstance::Init()
 	{
 		StringData.Add(*LoadStringData);
 	}
-}	
+}
+
+void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)
+{
+	if (!bCustomTimeDilationIsChanging)
+	{
+		bCustomTimeDilationIsChanging = true;
+
+		SetActorsCustomTimeDilationRecursive(Actors, InCustomTimeDilation);
+	}
+}
 
 void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation)
 {
+	if (!IsValid(GetWorld()))
+	{
+		return;
+	}
+	
 	for (const auto Actor : Actors)
 	{
+		if (!IsValid(Actor))
+		{
+			continue;
+		}
+		
 		Actor->CustomTimeDilation = CustomTimeDilation;
 	
 		if (const ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(Actor))

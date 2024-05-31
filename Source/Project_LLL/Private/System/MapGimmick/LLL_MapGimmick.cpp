@@ -12,15 +12,16 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
-#include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
-#include "System/MapGimmick/LLL_ShoppingMapComponent.h"
-#include "System/MapGimmick/LLL_PlayerSpawnPointComponent.h"
+#include "System/MapGimmick/Components/LLL_GateSpawnPointComponent.h"
+#include "System/MapGimmick/Components/LLL_ShoppingMapComponent.h"
+#include "System/MapGimmick/Components/LLL_PlayerSpawnPointComponent.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawner.h"
 #include "System/Reward/LLL_RewardGimmick.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
+#include "Kismet/GameplayStatics.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
@@ -129,12 +130,15 @@ void ALLL_MapGimmick::CreateMap()
 	StageActor->GetAllChildActors(StageChildActors, true);
 	for (AActor* ChildActor : StageChildActors)
 	{
-		MonsterSpawner = CastChecked<ALLL_MonsterSpawner>(ChildActor);
+		if (ALLL_MonsterSpawner* Spawner = Cast<ALLL_MonsterSpawner>(ChildActor))
+		{
+			MonsterSpawner = Spawner;
+		}
 	}
 	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
 
 	// TODO: Player loaction change 
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 	SetState(EStageState::READY);
 }
@@ -180,7 +184,7 @@ void ALLL_MapGimmick::EnableAllGates()
 {
 	for (const auto Gate:Gates)
 	{
-		Gate->GateEnable();
+		Gate->SetActivate();
 	}
 }
 
@@ -237,12 +241,12 @@ void ALLL_MapGimmick::RewardDestroyed(AActor* DestroyedActor)
 
 void ALLL_MapGimmick::RewardSpawn()
 {
-	if (!GetWorld()->GetFirstPlayerController())
+	if (!UGameplayStatics::GetPlayerController(GetWorld(), 0))
 	{
 		return;
 	}
 	RewardGimmick->SetRewardButtons();
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActor<ALLL_RewardObject>(RewardObjectClass, Player->GetActorLocation(), Player->GetActorRotation());
 	if (IsValid(RewardObject))
 	{

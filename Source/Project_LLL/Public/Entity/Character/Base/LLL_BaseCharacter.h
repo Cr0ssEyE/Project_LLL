@@ -9,6 +9,7 @@
 #include "AbilitySystemInterface.h"
 #include "Interface/LLL_EntityInterface.h"
 #include "Interface/LLL_FModInterface.h"
+#include "Interface/LLL_NiagaraInterface.h"
 #include "LLL_BaseCharacter.generated.h"
 
 class UFMODAudioComponent;
@@ -26,7 +27,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateWidgetDelegate);
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface, public ILLL_EntityInterface, public ILLL_FModInterface
+class PROJECT_LLL_API ALLL_BaseCharacter : public ACharacter, public IAbilitySystemInterface, public ILLL_EntityInterface, public ILLL_FModInterface, public ILLL_NiagaraInterface
 {
 	GENERATED_BODY()
 
@@ -39,9 +40,11 @@ public:
 	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
+	
 	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
 	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
 	FORCEINLINE float GetCharacterLevel() const { return Level; }
+	FORCEINLINE virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override { NiagaraComponent = InNiagaraComponent; }
 
 	// 플레이어
 protected:
@@ -51,6 +54,9 @@ protected:
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
 	virtual void InitAttributeSet();
+
+protected:
+	virtual void SetFModParameter(EFModParameter FModParameter) override {}
 	
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -106,6 +112,9 @@ protected:
 	TObjectPtr<ULLL_BaseCharacterUIManager> CharacterUIManager;
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "FMOD")
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UNiagaraComponent> NiagaraComponent;
 };

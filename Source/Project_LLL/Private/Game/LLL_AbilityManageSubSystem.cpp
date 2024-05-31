@@ -96,6 +96,13 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 	{
 		Paths.Emplace(Effect.ToSoftObjectPath());
 	}
+
+	if (Paths.IsEmpty())
+	{
+		Delegate.Broadcast(DataSet);
+		return;	
+	}
+	
 	StreamableManager.RequestAsyncLoad(Paths, FStreamableDelegate::CreateWeakLambda(this, [=]()
 	{
 		TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>> FilteredDataSet;
@@ -106,10 +113,14 @@ void ULLL_AbilityManageSubSystem::ASyncLoadEffectsByID(FAsyncLoadEffectDelegate 
 			{
 				continue;
 			}
-			
-			if (EffectObject->GetID() == ID)
+
+			for (auto EffectID : EffectObject->GetID())
 			{
-				FilteredDataSet.Emplace(Data);
+				if (EffectID == ID)
+				{
+					FilteredDataSet.Emplace(Data);
+					break;
+				}
 			}
 		}
 		
@@ -129,7 +140,7 @@ void ULLL_AbilityManageSubSystem::LoadEffectsFromPath(TArray<TSoftClassPtr<ULLL_
 		{
 			SoftPtr.LoadSynchronous();
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Cyan, FString::Printf(TEXT("추가 이펙트 %s"), *AssetData.PrimaryAssetName.ToString()));
+		// GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Cyan, FString::Printf(TEXT("추가 이펙트 %s"), *AssetData.PrimaryAssetName.ToString()));
 		Container.Emplace(SoftPtr.Get());
 	}
 }
