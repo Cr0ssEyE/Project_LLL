@@ -40,6 +40,7 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
+#include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
@@ -84,6 +85,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	// SpringArm->SetupAttachment(RootComponent);
 
 	LastCheckedMouseLocation = FVector::Zero();
+	
+	bIsLowHP = false;
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -574,8 +577,11 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 	}
 
 	ActivatePPLowHP();
-	
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DeactivatePPLowHP);
+	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= 0.3f)
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PlayLowHPAnimation);
+	}
 	
 	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Attacker);
 	if (!IsValid(Monster))
@@ -624,4 +630,20 @@ void ALLL_PlayerBase::ActivatePPLowHP()
 	UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
 	ScalarValue = PlayerDataAsset->HPLowScalarLowValue;
 	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOWHP_RADIUS, ScalarValue);
+}
+
+void ALLL_PlayerBase::PlayLowHPAnimation()
+{
+	ULLL_PlayerStatusWidget* StateWidget = Cast<ULLL_PlayerStatusWidget>(PlayerUIManager->GetCharacterStatusWidget());
+	StateWidget->PlayLowHPAnimation();
+	FTimerHandle LowHPHandle;
+	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= 0.3f && !bIsLowHP)
+	{
+		bIsLowHP = true;
+		GetWorld()->GetTimerManager().SetTimer(LowHPHandle, this, &ALLL_PlayerBase::PlayLowHPAnimation, 1.0f, true);
+	}
+	else if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() > 0.3f)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(LowHPHandle);
+	}
 }

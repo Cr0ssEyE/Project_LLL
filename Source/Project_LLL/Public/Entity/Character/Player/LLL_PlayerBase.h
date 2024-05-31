@@ -169,6 +169,12 @@ protected:
 	UFUNCTION()
 	void ActivatePPLowHP();
 
+	UFUNCTION()
+	void PlayLowHPAnimation();
+
+	UPROPERTY(EditAnywhere)
+	uint8 bIsLowHP : 1;
+
 	UPROPERTY(EditDefaultsOnly)
 	float ScalarValue;
 };
