@@ -18,7 +18,7 @@ void ULLL_PGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 
-	int32 SpawnCount = 1;
+	int32 SpawnCount = AbilityData->UnchangeableValue == 0 ? 1 : AbilityData->UnchangeableValue;
 	if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
 	{
 		const UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
