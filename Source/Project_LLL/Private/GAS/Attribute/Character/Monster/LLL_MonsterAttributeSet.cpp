@@ -7,6 +7,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -14,6 +15,12 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
+		AActor* Attacker = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
+		if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Attacker))
+		{
+			Attacker = ThrownObject->GetOwner();
+		}
+		
 		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
 		
@@ -21,7 +28,7 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		{
 			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
 		
-			Monster->Damaged(DOT);
+			Monster->Damaged(Attacker, DOT);
 		}
 		else
 		{
@@ -33,7 +40,7 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 			}
 			else
 			{
-				Monster->Damaged(DOT);
+				Monster->Damaged(Attacker, DOT);
 			}
 		}
 		
@@ -52,7 +59,7 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data)
 {
 	float Damage = GetReceiveDamage();
-	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (!IsValid(PlayerCharacter))
 	{
 		return;

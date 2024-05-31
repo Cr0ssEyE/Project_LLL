@@ -22,6 +22,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, DetectDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, ChargeTimer);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackCoolDown);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FieldOfView);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FindPatrolPosRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, DestroyTimer);
@@ -49,6 +50,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ChargeTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData AttackCoolDown;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData FieldOfView;
