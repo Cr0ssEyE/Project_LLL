@@ -77,7 +77,6 @@ void ALLL_ThrownFeather::Activate()
 	Super::Activate();
 
 	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	bTargetIsDead = false;
 }
 
 void ALLL_ThrownFeather::Deactivate()
@@ -92,6 +91,7 @@ void ALLL_ThrownFeather::Deactivate()
 	{
 		TargetCharacter->CharacterDeadDelegate.RemoveDynamic(this, &ALLL_ThrownFeather::TargetDeadHandle);
 	}
+	bTargetIsDead = false;
 }
 
 void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed)
@@ -102,7 +102,16 @@ void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpee
 	if (IsValid(TargetCharacter))
 	{
 		TargetCapsuleRadius = TargetCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius();
-		TargetCharacter->CharacterDeadDelegate.AddDynamic(this, &ALLL_ThrownFeather::TargetDeadHandle);
+
+		if (!TargetCharacter->CheckCharacterIsDead())
+		{
+			TargetCharacter->CharacterDeadDelegate.AddDynamic(this, &ALLL_ThrownFeather::TargetDeadHandle);
+		}
+		else
+		{
+			TargetDeadLocation = Target->GetActorLocation();
+			bTargetIsDead = true;
+		}
 	}
 }
 
