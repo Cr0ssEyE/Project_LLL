@@ -26,9 +26,6 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	FModAudioComponent->SetupAttachment(RootComponent);
 
-	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
-	NiagaraComponent->SetupAttachment(RootComponent);
-
 	Level = 1;
 }
 
@@ -133,6 +130,12 @@ void ALLL_BaseCharacter::InitAttributeSet()
 	{
 		UE_LOG(LogTemp, Log, TEXT("- %s"), *SpawnedAttribute->GetName())
 	}
+}
+
+void ALLL_BaseCharacter::SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
+{
+	NiagaraComponents.Remove(nullptr);
+	NiagaraComponents.Emplace(InNiagaraComponent);
 }
 
 void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)

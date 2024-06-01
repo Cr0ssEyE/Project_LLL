@@ -110,4 +110,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "피격 이벤트 파라미터 속성")
 	TMap<int32, EPlayerDamagedTypeParameter> DamagedEventParameterProperties;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "PP", DisplayName = "PP HPLow 파라미터 최대값")
+	float HPLowScalarMaxValue;
+
+	UPROPERTY(EditDefaultsOnly, Category = "PP", DisplayName = "PP HPLow 파라미터 최소값")
+	float HPLowScalarLowValue;
 };

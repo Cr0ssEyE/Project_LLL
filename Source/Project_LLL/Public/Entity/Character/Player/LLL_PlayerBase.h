@@ -160,4 +160,21 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> ChaseActionGaugeWidgetComponent;
+
+	// MPC 관련
+protected:
+	UFUNCTION()
+	void DeactivatePPLowHP();
+
+	UFUNCTION()
+	void ActivatePPLowHP();
+
+	UFUNCTION()
+	void PlayLowHPAnimation();
+
+	UPROPERTY(EditAnywhere)
+	uint8 bIsLowHP : 1;
+
+	UPROPERTY(EditDefaultsOnly)
+	float ScalarValue;
 };
