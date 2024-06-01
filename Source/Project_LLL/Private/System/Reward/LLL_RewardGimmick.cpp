@@ -3,6 +3,7 @@
 
 #include "System/Reward/LLL_RewardGimmick.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
@@ -244,8 +245,8 @@ void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData)
 
 void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects)
 {
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	const ULLL_PlayerUIManager* PlayerUIManager =	Player->GetPlayerUIManager();
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
 	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
 
 	if (!IsValid(PlayerUIManager) || !IsValid(ASC))
@@ -321,6 +322,8 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		}
 		
 		GettenAbilityIDArray.Append(Effect->GetID());
+		FGameplayEventData PayLoadData;
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ABILITY_PART_GRANT, PayLoadData);
 		break;
 	}
 
