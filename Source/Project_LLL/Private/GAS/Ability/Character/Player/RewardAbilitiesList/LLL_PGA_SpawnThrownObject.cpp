@@ -57,7 +57,7 @@ void ULLL_PGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 			ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(Player->GetObjectPoolingComponent()->GetActor(ThrownObjectClass));
 			ThrownObject->SetActorLocationAndRotation(Location, Rotator);
 			ThrownObject->SetAbilityInfo(AbilityData, GetAbilityLevel());
-			ThrownObject->Throw(Player, Target, Speed);
+			ThrownObject->Throw(Player, const_cast<AActor*>(Target), Speed);
 
 			if (i == SpawnCount - 1)
 			{

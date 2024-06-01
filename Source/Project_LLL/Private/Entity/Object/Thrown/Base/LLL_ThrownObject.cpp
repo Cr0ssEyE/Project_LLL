@@ -69,7 +69,7 @@ void ALLL_ThrownObject::Deactivate()
 	GetWorldTimerManager().ClearTimer(HideTimerHandle);
 }
 
-void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget, float InSpeed)
+void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed)
 {
 	SetOwner(NewOwner);
 	Target = NewTarget;
