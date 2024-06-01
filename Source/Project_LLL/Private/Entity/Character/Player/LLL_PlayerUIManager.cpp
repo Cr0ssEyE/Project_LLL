@@ -100,10 +100,6 @@ void ULLL_PlayerUIManager::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwner());
-	/*if (Player->GetChaseActionGaugeWidgetComponent()->GetWidget())
-	{
-		ChaseActionWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
-	}*/
 	ChaseActionWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
 }
 

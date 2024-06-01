@@ -31,13 +31,10 @@ void ALLL_KillZone::OnKillTriggerBeginOverlap(UPrimitiveComponent* OverlappedCom
 	if (IsValid(Monster))
 	{
 		Monster->Dead();
-		return;
 	}
-
-	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OtherActor);
-	if (IsValid(Player))
+	else
 	{
-		Player->SetActorLocation(FVector(0, 0, 300.0f));
+		OtherActor->SetActorLocation(FVector(0, 0, 300.0f));
 	}
 } 
 

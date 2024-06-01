@@ -8,6 +8,7 @@
 #include "Interface/LLL_FModInterface.h"
 #include "System/MapSound/LLL_MapSoundManager.h"
 #include "Util/LLL_ConstructorHelper.h"
+#include "Materials/MaterialParameterCollection.h"
 
 ULLL_GameInstance::ULLL_GameInstance()
 {
@@ -21,8 +22,10 @@ ULLL_GameInstance::ULLL_GameInstance()
 
 	ShareableNiagaraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_ShareableNiagaraDataAsset>(PATH_SHAREABLE_NIAGARA_EFFECTS, EAssertionLevel::Check);
 	
-	CustomTimeDilation = 1.0f;
-	CustomTimeDilationInterpSpeed = 5.0f;
+	PostProcessMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_POSTPROCESS_MPC, EAssertionLevel::Check);
+	
+	CustomTimeDilation = 1.f;
+	CustomTimeDilationInterpSpeed = 15.f;
 }
 
 void ULLL_GameInstance::Init()
@@ -59,6 +62,8 @@ void ULLL_GameInstance::Init()
 	{
 		StringData.Add(*LoadStringData);
 	}
+
+	GetWorld()->AddParameterCollectionInstance(PostProcessMPC, true);
 }
 
 void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)
@@ -77,11 +82,18 @@ void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Act
 	{
 		return;
 	}
-	
+
+	TArray<AActor*> SucceedActors;
 	for (const auto Actor : Actors)
 	{
 		if (!IsValid(Actor))
 		{
+			continue;
+		}
+
+		if (Actor->CustomTimeDilation == InCustomTimeDilation)
+		{
+			SucceedActors.Emplace(Actor);
 			continue;
 		}
 		
@@ -95,6 +107,14 @@ void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Act
 		if (const ALLL_MapSoundManager* MapSoundManager = Cast<ALLL_MapSoundManager>(Actor))
 		{
 			MapSoundManager->SetPitch(CustomTimeDilation);
+		}
+	}
+
+	for (auto Actor : SucceedActors)
+	{
+		if (Actors.Contains(Actor))
+		{
+			Actors.Remove(Actor);
 		}
 	}
 	

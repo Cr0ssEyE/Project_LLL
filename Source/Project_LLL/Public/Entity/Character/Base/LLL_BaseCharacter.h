@@ -44,7 +44,6 @@ public:
 	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
 	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
 	FORCEINLINE float GetCharacterLevel() const { return Level; }
-	FORCEINLINE virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override { NiagaraComponent = InNiagaraComponent; }
 
 	// 플레이어
 protected:
@@ -57,6 +56,7 @@ protected:
 
 protected:
 	virtual void SetFModParameter(EFModParameter FModParameter) override {}
+	virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
 	
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -116,5 +116,5 @@ protected:
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UNiagaraComponent> NiagaraComponent;
+	TArray<TObjectPtr<UNiagaraComponent>> NiagaraComponents;
 };
