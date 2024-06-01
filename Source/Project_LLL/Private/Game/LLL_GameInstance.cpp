@@ -72,16 +72,6 @@ void ULLL_GameInstance::Init()
 	GetWorld()->AddParameterCollectionInstance(PostProcessMPC, true);
 }
 
-void ULLL_GameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
-{
-	Super::OnWorldChanged(OldWorld, NewWorld);
-	
-	NewWorld->AddParameterCollectionInstance(MonsterMPC, true);
-	NewWorld->AddParameterCollectionInstance(ObjectMPC, true);
-	NewWorld->AddParameterCollectionInstance(PlayerMPC, true);
-	NewWorld->AddParameterCollectionInstance(PostProcessMPC, true);
-}
-
 void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)
 {
 	if (!bCustomTimeDilationIsChanging)

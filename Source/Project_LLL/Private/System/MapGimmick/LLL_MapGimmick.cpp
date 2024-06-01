@@ -247,7 +247,8 @@ void ALLL_MapGimmick::RewardSpawn()
 	}
 	RewardGimmick->SetRewardButtons();
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActor<ALLL_RewardObject>(RewardObjectClass, Player->GetActorLocation(), Player->GetActorRotation());
+	FTransform RewardTransform = Player->GetTransform();
+	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActorDeferred<ALLL_RewardObject>(RewardObjectClass, RewardTransform);
 	if (IsValid(RewardObject))
 	{
 		RewardObject->SetInformation(RewardData);
@@ -265,4 +266,20 @@ void ALLL_MapGimmick::RewardSpawn()
 		break;
 	default: ;
 	}
+	
+	FHitResult Result;
+	GetWorld()->SweepSingleByChannel
+	(Result,
+	Player->GetActorLocation(),
+	Player->GetActorLocation(),
+	FQuat::Identity,
+	ECC_TRACE_FIELD,
+	FCollisionShape::MakeBox(FVector(10.f, 10.f, 200.f))
+	);
+	
+	if (!Result.GetActor())
+	{
+		RewardTransform.SetLocation(FVector::Zero() + FVector(0.f, 0.f, 300.f));
+	}
+	RewardObject->FinishSpawning(RewardTransform);
 }

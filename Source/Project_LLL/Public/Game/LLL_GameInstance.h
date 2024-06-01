@@ -25,8 +25,6 @@ public:
 
 	virtual void Init() override;
 
-	virtual void OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld) override;
-	
 public:
 	// 데이터 테이블 Getter
 	FORCEINLINE TArray<FAbilityDataTable> GetAbilityDataTable() const { return AbilityData; }

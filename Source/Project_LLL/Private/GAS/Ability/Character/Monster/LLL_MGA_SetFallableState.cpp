@@ -13,6 +13,19 @@
 #include "GAS/Task/LLL_AT_WaitOverlap.h"
 #include "Util/LLL_MathHelper.h"
 
+bool ULLL_MGA_SetFallableState::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	bool Result = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+
+	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+	if (Monster->GetCapsuleComponent()->GetCollisionProfileName() == CP_MONSTER_FALLABLE)
+	{
+		return false;
+	}
+
+	return Result;
+}
+
 void ULLL_MGA_SetFallableState::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);

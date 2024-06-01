@@ -4,8 +4,7 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_ChangeActionEffects.h"
 
 #include "AnimNotify_PlayNiagaraEffect.h"
-#include "Game/LLL_GameInstance.h"
-#include "Materials/MaterialParameterCollectionInstance.h"
+#include "NiagaraSystem.h"
 
 ULLL_PGA_ChangeActionEffects::ULLL_PGA_ChangeActionEffects() :
 	bIsGenerated(false)
@@ -29,9 +28,6 @@ void ULLL_PGA_ChangeActionEffects::ActivateAbility(const FGameplayAbilitySpecHan
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	const UMaterialParameterCollection* PlayerMPC = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetPlayerMPC();
-	UMaterialParameterCollectionInstance* PlayerMPCInstance = GetWorld()->GetParameterCollectionInstance(PlayerMPC);
-	
 	for (auto Notify : TargetAnimMontage->Notifies)
 	{
 		UAnimNotify_PlayNiagaraEffect* NiagaraEffectNotify = Cast<UAnimNotify_PlayNiagaraEffect>(Notify.Notify);
@@ -45,10 +41,11 @@ void ULLL_PGA_ChangeActionEffects::ActivateAbility(const FGameplayAbilitySpecHan
 			if (NiagaraEffectNotify->Template == TargetNiagaraSystem[i])
 			{
 				NiagaraEffectNotify->Template = NewNiagaraSystem[i];
+				// GC 컬렉팅 방지.
+				NewNiagaraSystem[i]->AddToRoot();
 			}
 		}
 	}
-
 	bIsGenerated = true;
 }
 
@@ -61,12 +58,14 @@ void ULLL_PGA_ChangeActionEffects::EndAbility(const FGameplayAbilitySpecHandle H
 		{
 			continue;
 		}
-
+		
 		for (int i = 0; i < TargetNiagaraSystem.Num(); ++i)
 		{
 			if (NiagaraEffectNotify->Template == NewNiagaraSystem[i])
 			{
 				NiagaraEffectNotify->Template = TargetNiagaraSystem[i];
+				TargetNiagaraSystem[i]->AddToRoot();
+				NewNiagaraSystem[i]->RemoveFromRoot();
 			}
 		}
 	}
