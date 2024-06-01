@@ -22,7 +22,6 @@ protected:
 	
 protected:
 	void FallOutBegin(AActor* Actor, FVector HitNormal, FVector HitLocation);
-
 	void FallOutStart(AActor* Actor, FVector HitNormal);
 	
 protected:

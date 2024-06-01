@@ -12,7 +12,10 @@ ALLL_SystemBase::ALLL_SystemBase()
 	
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	FModAudioComponent->SetupAttachment(RootComponent);
-	
-	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
-	NiagaraComponent->SetupAttachment(RootComponent);
+}
+
+void ALLL_SystemBase::SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
+{
+	NiagaraComponents.Remove(nullptr);
+	NiagaraComponents.Emplace(InNiagaraComponent);
 }

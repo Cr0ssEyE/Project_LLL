@@ -165,9 +165,11 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 	MonsterBaseAnimInstance->StopAllMontages(1.0f);
 	PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
 
-	if (IsValid(NiagaraComponent))
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
-		NiagaraComponent->DestroyComponent();
+		TempNiagaraComponent->DestroyComponent();
+		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -215,9 +217,11 @@ void ALLL_MonsterBase::Dead()
 
 	MonsterStatusWidgetComponent->SetHiddenInGame(true);
 
-	if (IsValid(NiagaraComponent))
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
-		NiagaraComponent->DestroyComponent();
+    	TempNiagaraComponent->DestroyComponent();
+		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 
 	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();
