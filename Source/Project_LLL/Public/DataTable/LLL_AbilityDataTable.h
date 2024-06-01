@@ -48,7 +48,7 @@ struct FAbilityDataTable : public FTableRowBase
 	EAbilityCategory AbilityCategory;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 이름")
-	FName AbilityName;
+	FString AbilityName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 정보")
 	FString AbilityInformation;

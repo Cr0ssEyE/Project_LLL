@@ -18,7 +18,7 @@ ALLL_GateObject::ALLL_GateObject()
 	bIsGateEnabled = false;
 }
 
-void ALLL_GateObject::SetGateInformation(FRewardDataTable* Data)
+void ALLL_GateObject::SetGateInformation(const FRewardDataTable* Data)
 {
 	RewardData = Data;
 	

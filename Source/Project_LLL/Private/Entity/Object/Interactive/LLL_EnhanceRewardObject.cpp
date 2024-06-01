@@ -4,7 +4,7 @@
 #include "Entity/Object/Interactive/LLL_EnhanceRewardObject.h"
 #include "Game/ProtoGameInstance.h"
 
-void ALLL_EnhanceRewardObject::SetInformation(FRewardDataTable* Data)
+void ALLL_EnhanceRewardObject::SetInformation(const FRewardDataTable* Data)
 {
 	Super::SetInformation(Data);
 }

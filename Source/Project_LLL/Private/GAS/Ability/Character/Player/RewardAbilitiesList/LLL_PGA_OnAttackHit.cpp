@@ -35,8 +35,11 @@ void ULLL_PGA_OnAttackHit::ApplyEffectWhenHit()
 	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
 
-	const float MagnitudeValue = (AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel()) / static_cast<uint32>(AbilityData->AbilityValueType);
-	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, MagnitudeValue);
+	const float ChangeableValue = (AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel()) / static_cast<uint32>(AbilityData->AbilityValueType);
+	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, ChangeableValue);
+
+	const float UnChangeableValue = AbilityData->UnchangeableValue;
+	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_UNCHANGEABLE_VALUE, UnChangeableValue);
 	
 	if (AbilityTags.HasTag(TAG_GAS_ABNORMAL_STATUS))
 	{

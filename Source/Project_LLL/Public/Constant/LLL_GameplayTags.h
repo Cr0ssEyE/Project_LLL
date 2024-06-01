@@ -76,8 +76,9 @@
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))
 
-// 플레이어 보상 어빌리티 관련 게임플레이 태그 (SetByCaller)
-#define TAG_GAS_ABILITY_EFFECT_VALUE FGameplayTag::RequestGameplayTag(FName("Ability.EffectValue"))
+// 플레이어 보상 어빌리티 관련 게임플레이 태그
+#define TAG_GAS_ABILITY_CHANGEABLE_VALUE FGameplayTag::RequestGameplayTag(FName("Ability.Value.ChangeableValue"))
+#define TAG_GAS_ABILITY_UNCHANGEABLE_VALUE FGameplayTag::RequestGameplayTag(FName("Ability.Value.UnChangeableValue"))
 
 // 어빌리티 슬롯 관련 태그
 #define TAG_GAS_ABILITY_PART FGameplayTag::RequestGameplayTag(FName("AbilityPart"))
@@ -86,3 +87,5 @@
 #define TAG_GAS_ABILITY_PART_CHASE FGameplayTag::RequestGameplayTag(FName("AbilityPart.Chase"))
 #define TAG_GAS_ABILITY_PART_COMBO_SKILL FGameplayTag::RequestGameplayTag(FName("AbilityPart.ComboSkill"))
 #define TAG_GAS_ABILITY_PART_DASH FGameplayTag::RequestGameplayTag(FName("AbilityPart.Dash"))
+#define TAG_GAS_ABILITY_PART_GRANT FGameplayTag::RequestGameplayTag(FName("AbilityPart.Event.Granted"))
+#define TAG_GAS_ABILITY_PART_REMOVE FGameplayTag::RequestGameplayTag(FName("AbilityPart.Event.Removed"))

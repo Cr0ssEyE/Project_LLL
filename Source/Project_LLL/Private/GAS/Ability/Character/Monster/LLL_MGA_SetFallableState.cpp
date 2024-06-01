@@ -4,8 +4,6 @@
 #include "GAS/Ability/Character/Monster/LLL_MGA_SetFallableState.h"
 
 #include "AbilitySystemComponent.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
-#include "Abilities/Tasks/AbilityTask_WaitOverlap.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -18,7 +16,6 @@ void ULLL_MGA_SetFallableState::ActivateAbility(const FGameplayAbilitySpecHandle
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 		
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
-	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
 	const float KnockBackTime = FLLL_MathHelper::CalculatePlayerKnockBackCollisionCheckEndApproximation(Monster->GetKnockBackedPower());
 	
 	FTimerHandle CollisionRestoreHandle;
@@ -29,6 +26,23 @@ void ULLL_MGA_SetFallableState::ActivateAbility(const FGameplayAbilitySpecHandle
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		}
 	}), KnockBackTime, false);
+
+	if (Monster->GetCapsuleComponent()->GetCollisionProfileName() == CP_MONSTER_FALLABLE)
+	{
+		CollisionRestoreHandle.Invalidate();
+		GetWorld()->GetTimerManager().SetTimer(CollisionRestoreHandle, FTimerDelegate::CreateWeakLambda(this, [&]()
+		{
+			if (IsValid(GetAvatarActorFromActorInfo()) && IsValid(this))
+			{
+				Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_OVERLAP_ALL);
+				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+			}
+		}), KnockBackTime, false);
+	}
+	else
+	{
+		Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
+	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
