@@ -83,14 +83,17 @@ void ALLL_RewardObject::InteractiveEvent()
 	}
 	switch (RewardData->ID)
 	{
+		// 능력
 	case 1:
 		SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 		SelectRewardWidget->SetIsEnabled(true);
 		SelectRewardWidget->FocusToUI();
 		break;
+		// 재화
 	case 2:
 		PlayerGoldComponent->IncreaseMoney(RewardData->Value);
 		break;
+		// 최대 체력
 	case 3:
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
@@ -102,6 +105,7 @@ void ALLL_RewardObject::InteractiveEvent()
 		}
 #endif
 		break;
+		// 능력 강화
 	case 4:
 		break;
 	default:;
