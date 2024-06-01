@@ -21,7 +21,10 @@ ULLL_GameInstance::ULLL_GameInstance()
 	StringDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_STRING_DATA, EAssertionLevel::Check);
 
 	ShareableNiagaraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_ShareableNiagaraDataAsset>(PATH_SHAREABLE_NIAGARA_EFFECTS, EAssertionLevel::Check);
-	
+
+	MonsterMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_MONSTER_MPC, EAssertionLevel::Check);
+	ObjectMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_OBJECT_MPC, EAssertionLevel::Check);
+	PlayerMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_PLAYER_MPC, EAssertionLevel::Check);
 	PostProcessMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_POSTPROCESS_MPC, EAssertionLevel::Check);
 	
 	CustomTimeDilation = 1.f;
@@ -63,7 +66,20 @@ void ULLL_GameInstance::Init()
 		StringData.Add(*LoadStringData);
 	}
 
+	GetWorld()->AddParameterCollectionInstance(MonsterMPC, true);
+	GetWorld()->AddParameterCollectionInstance(ObjectMPC, true);
+	GetWorld()->AddParameterCollectionInstance(PlayerMPC, true);
 	GetWorld()->AddParameterCollectionInstance(PostProcessMPC, true);
+}
+
+void ULLL_GameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
+{
+	Super::OnWorldChanged(OldWorld, NewWorld);
+	
+	NewWorld->AddParameterCollectionInstance(MonsterMPC, true);
+	NewWorld->AddParameterCollectionInstance(ObjectMPC, true);
+	NewWorld->AddParameterCollectionInstance(PlayerMPC, true);
+	NewWorld->AddParameterCollectionInstance(PostProcessMPC, true);
 }
 
 void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)

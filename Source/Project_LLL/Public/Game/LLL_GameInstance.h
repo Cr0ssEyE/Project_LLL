@@ -24,6 +24,8 @@ public:
 	ULLL_GameInstance();
 
 	virtual void Init() override;
+
+	virtual void OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld) override;
 	
 public:
 	// 데이터 테이블 Getter
@@ -38,7 +40,6 @@ public:
 	FORCEINLINE UMaterialParameterCollection* GetPlayerMPC() const { return PlayerMPC; }
 	FORCEINLINE UMaterialParameterCollection* GetObjectMPC() const { return ObjectMPC; }
 	FORCEINLINE UMaterialParameterCollection* GetMonsterMPC() const { return MonsterMPC; }
-	FORCEINLINE UMaterialParameterCollection* GetInterfaceMPC() const { return InterfaceMPC; }
 	FORCEINLINE UMaterialParameterCollection* GetPostProcessMPC() const { return PostProcessMPC; }
 
 	// 데이터 에셋
@@ -60,9 +61,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> MonsterMPC;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UMaterialParameterCollection> InterfaceMPC;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> PostProcessMPC;

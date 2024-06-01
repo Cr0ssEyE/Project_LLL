@@ -4,6 +4,8 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_ChangeActionEffects.h"
 
 #include "AnimNotify_PlayNiagaraEffect.h"
+#include "Game/LLL_GameInstance.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
 
 ULLL_PGA_ChangeActionEffects::ULLL_PGA_ChangeActionEffects() :
 	bIsGenerated(false)
@@ -26,6 +28,9 @@ bool ULLL_PGA_ChangeActionEffects::CanActivateAbility(const FGameplayAbilitySpec
 void ULLL_PGA_ChangeActionEffects::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	const UMaterialParameterCollection* PlayerMPC = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetPlayerMPC();
+	UMaterialParameterCollectionInstance* PlayerMPCInstance = GetWorld()->GetParameterCollectionInstance(PlayerMPC);
 	
 	for (auto Notify : TargetAnimMontage->Notifies)
 	{
@@ -45,5 +50,26 @@ void ULLL_PGA_ChangeActionEffects::ActivateAbility(const FGameplayAbilitySpecHan
 	}
 
 	bIsGenerated = true;
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+}
+
+void ULLL_PGA_ChangeActionEffects::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	for (auto Notify : TargetAnimMontage->Notifies)
+	{
+		UAnimNotify_PlayNiagaraEffect* NiagaraEffectNotify = Cast<UAnimNotify_PlayNiagaraEffect>(Notify.Notify);
+		if (!NiagaraEffectNotify)
+		{
+			continue;
+		}
+
+		for (int i = 0; i < TargetNiagaraSystem.Num(); ++i)
+		{
+			if (NiagaraEffectNotify->Template == NewNiagaraSystem[i])
+			{
+				NiagaraEffectNotify->Template = TargetNiagaraSystem[i];
+			}
+		}
+	}
+	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

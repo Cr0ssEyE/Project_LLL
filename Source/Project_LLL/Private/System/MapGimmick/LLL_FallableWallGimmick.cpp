@@ -83,7 +83,7 @@ void ALLL_FallableWallGimmick::FallOutStart(AActor* Actor, FVector HitNormal)
 	CustomTimeDilation = 1.f;
 	Monster->CustomTimeDilation = 1.f;
 	
-	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
+	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_NO_COLLISION);
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&, HitNormal, Monster]
 	{
 		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(HitNormal, Monster->GetKnockBackedPower() * 3.f);
