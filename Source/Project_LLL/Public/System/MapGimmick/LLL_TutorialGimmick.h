@@ -46,7 +46,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_GateSpawnPointComponent> GateSpawnPointComponent;
 
-	void OnInteractionGate(FRewardDataTable* Data);
+	void OnInteractionGate(const FRewardDataTable* Data);
 
 	UFUNCTION()
 	void RewardDestroyed(AActor* DestroyedActor);

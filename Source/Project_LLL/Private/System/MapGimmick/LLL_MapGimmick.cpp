@@ -173,7 +173,7 @@ void ALLL_MapGimmick::AllGatesDestroy()
 	Gates.Empty();
 }
 
-void ALLL_MapGimmick::OnInteractionGate(FRewardDataTable* Data)
+void ALLL_MapGimmick::OnInteractionGate(const FRewardDataTable* Data)
 {
 	RewardData = Data;
 	StageChildActors.Empty();

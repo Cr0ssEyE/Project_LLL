@@ -44,7 +44,7 @@ FReply ULLL_SelectRewardWidget::NativeOnKeyDown(const FGeometry& InGeometry, con
 	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 }
 
-void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDataArray)
+void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<const FAbilityDataTable*> AbilityDataArray)
 {
 	if (AbilityDataArray.IsEmpty())
 	{
@@ -57,7 +57,7 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDa
 	TArray<TTuple<FString, FString>> WidgetInfoTexts;
 	for (auto AbilityData : AbilityDataArray)
 	{
-		FString AbilityName = StringDataTable->FindRow<FStringDataTable>(AbilityData->AbilityName, TEXT("Failed To Load Ability Name"))->Korean;
+		FString AbilityName = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityName, TEXT("Failed To Load Ability Name"))->Korean;
 		FString AbilityInformation = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityInformation, TEXT("Failed To Load Ability Information"))->Korean;
 		
 		// TODO: 강화 UI는 AbilityData->ChangeValue 고려하도록 개선하기

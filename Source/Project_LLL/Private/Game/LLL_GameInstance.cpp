@@ -48,7 +48,11 @@ void ULLL_GameInstance::Init()
 
 	for (const FAbilityDataTable* LoadAbilityData : LoadAbilityDataArray)
 	{
-		AbilityData.Add(*LoadAbilityData);
+		if (!LoadAbilityData->bIsImplement)
+		{
+			continue;
+		}
+		AbilityData.Add(LoadAbilityData);
 	}
 	
 	TArray<FRewardDataTable*> LoadRewardDataArray;
@@ -56,14 +60,14 @@ void ULLL_GameInstance::Init()
 
 	for (const FRewardDataTable* LoadRewardData : LoadRewardDataArray)
 	{
-		RewardData.Add(*LoadRewardData);
+		RewardData.Add(LoadRewardData);
 	}
 
 	TArray<FStringDataTable*> LoadStringDataArray;
 	StringDataTable->GetAllRows<FStringDataTable>(TEXT("Failed To Load Reward Data Tables"), LoadStringDataArray);
 	for (const FStringDataTable* LoadStringData : LoadStringDataArray)
 	{
-		StringData.Add(*LoadStringData);
+		StringData.Add(LoadStringData);
 	}
 
 	GetWorld()->AddParameterCollectionInstance(MonsterMPC, true);

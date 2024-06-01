@@ -31,8 +31,8 @@ public:
 	FORCEINLINE EEffectAccessRange GetAccessRange() const { return EffectAccessRange; }
 	FORCEINLINE EEffectApplyTarget GetEffectApplyTarget() const { return EffectApplyTarget; }
 	FORCEINLINE TArray<int32> GetID() const { return IdList; }
-	FORCEINLINE FAbilityDataTable* GetAbilityData() const { return AbilityData; }
-	FORCEINLINE void SetAbilityInfo(FAbilityDataTable* InAbilityData) { AbilityData = InAbilityData; }
+	FORCEINLINE const FAbilityDataTable* GetAbilityData() const { return AbilityData; }
+	FORCEINLINE void SetAbilityInfo(const FAbilityDataTable* InAbilityData) { AbilityData = InAbilityData; }
 
 	FPrimaryAssetId GetPrimaryAssetId() const override
 	{
@@ -74,5 +74,5 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS", DisplayName = "고유 ID 리스트", meta=(DisplayPriority = 1))
 	TArray<int32> IdList;
 	
-	FAbilityDataTable* AbilityData;
+	const FAbilityDataTable* AbilityData;
 };

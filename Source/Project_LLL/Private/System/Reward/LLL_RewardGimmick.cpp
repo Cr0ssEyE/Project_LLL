@@ -10,6 +10,8 @@
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Game/ProtoGameInstance.h"
 #include "AbilitySystemComponent.h"
+#include "Algo/RandomShuffle.h"
+#include "Constant/LLL_AbilityRealNumbers.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
@@ -18,14 +20,12 @@
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetArrayLibrary.h"
 #include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
 #include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
 
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick() :
-	ButtonAbilityData1(nullptr),
-	ButtonAbilityData2(nullptr),
-	ButtonAbilityData3(nullptr),
 	CurrentAbilityData(nullptr),
 	bIsButtonEventSetup(false),
 	bMapGimmickIsExist(false),
@@ -63,7 +63,7 @@ void ALLL_RewardGimmick::SetRewardToGate(ALLL_GateObject* Gate)
 {
 	const uint8 Index = FMath::RandRange(0, RewardData.Num() - 1);
 	
-	Gate->SetGateInformation(&RewardData[Index]);
+	Gate->SetGateInformation(RewardData[Index]);
 }
 
 void ALLL_RewardGimmick::SetRewardButtons()
@@ -71,8 +71,11 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	if (RewardData.IsEmpty() || AbilityData.IsEmpty())
 	{
 		SetDataTable();
+		SetRewardWeight();
 	}
-
+	
+	Algo::RandomShuffle(NormalizedWeightRewardArray);
+	
 	if (bIsButtonEventSetup && !IsValid(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
 		ensure(false);
@@ -102,9 +105,9 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	
 	if (bIsTest)
 	{
-		ButtonAbilityDataArray.Emplace(&AbilityData[TestAbilityDataArrayNum1]);
-		ButtonAbilityDataArray.Emplace(&AbilityData[TestAbilityDataArrayNum2]);
-		ButtonAbilityDataArray.Emplace(&AbilityData[TestAbilityDataArrayNum3]);
+		ButtonAbilityDataArray.Emplace(AbilityData[TestAbilityDataArrayNum1]);
+		ButtonAbilityDataArray.Emplace(AbilityData[TestAbilityDataArrayNum2]);
+		ButtonAbilityDataArray.Emplace(AbilityData[TestAbilityDataArrayNum3]);
 		RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
 		return;
 	}
@@ -114,73 +117,21 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	// bIsImplement == true
 	// !GettenIndexArray.Contains(Index)
 	// !InstanceRewardIndexArray.Contains(Index)
-	
-	TArray<uint8> InstanceRewardIndexArray;
-	uint8 Index;
-	do
-	{
-		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	}while (GettenAbilityIDArray.Contains(AbilityData[Index].ID) || !AbilityData[Index].bIsImplement);
-	
-	// ButtonAbilityData1 = &AbilityData[Index];
-	FirstButtonIndex = Index;
-	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
-	InstanceRewardIndexArray.Emplace(FirstButtonIndex);
 
-	for (int i = 0; i < 3; ++i)
+	TArray<TTuple<const FAbilityDataTable*, float>> AbilityDataTables = NormalizedWeightRewardArray;
+	
+	RollReward(AbilityDataTables);
+	if (ButtonAbilityDataArray.IsEmpty())
 	{
-		if (Index + i >= AbilityData.Num() || Index - i < 0)
-		{
-			continue;
-		}
-		
-		if (AbilityData[Index + i].AbilityName == AbilityData[Index].AbilityName)
-		{
-			InstanceRewardIndexArray.Emplace(Index + i);
-		}
-
-		if (AbilityData[Index - i].AbilityName == AbilityData[Index].AbilityName)
-		{
-			InstanceRewardIndexArray.Emplace(Index - i);
-		}
+		ensure(false);
+		return;
 	}
-	
-	do
-	{
-		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	}while (GettenAbilityIDArray.Contains(AbilityData[Index].ID) || InstanceRewardIndexArray.Contains(Index)|| !AbilityData[Index].bIsImplement);
-	
-	// ButtonAbilityData2 = &AbilityData[Index];
-	SecondButtonIndex = Index;
-	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
-	InstanceRewardIndexArray.Emplace(SecondButtonIndex);
 
-	for (int i = 0; i < 3; ++i)
+	while (ButtonAbilityDataArray.Num() < 3)
 	{
-		if (Index + i >= AbilityData.Num() || Index - i < 0)
-		{
-			continue;
-		}
-		
-		if (AbilityData[Index + i].AbilityName == AbilityData[Index].AbilityName)
-		{
-			InstanceRewardIndexArray.Emplace(Index + i);
-		}
-
-		if (AbilityData[Index - i].AbilityName == AbilityData[Index].AbilityName)
-		{
-			InstanceRewardIndexArray.Emplace(Index - i);
-		}
+		AbilityDataTables = NormalizedWeightRewardArray;
+		RollReward(AbilityDataTables);
 	}
-	
-	do
-	{
-		Index = FMath::RandRange(0, AbilityData.Num() - 1);
-	}while (GettenAbilityIDArray.Contains(AbilityData[Index].ID) || InstanceRewardIndexArray.Contains(Index) || !AbilityData[Index].bIsImplement);
-	
-	// ButtonAbilityData3 = &AbilityData[Index];
-	ThirdButtonIndex = Index;
-	ButtonAbilityDataArray.Emplace(&AbilityData[Index]);
 	
 	RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
 }
@@ -193,25 +144,113 @@ void ALLL_RewardGimmick::SetDataTable()
 	AbilityData = GameInstance->GetAbilityDataTable();
 }
 
+void ALLL_RewardGimmick::SetRewardWeight()
+{
+	for (auto Data : AbilityData)
+	{
+		TotalRewardWeight += Data->GetAbilityRate;
+	}
+
+	for (auto Data : AbilityData)
+	{
+		NormalizedWeightRewardArray.Emplace(TTuple<const FAbilityDataTable*, float>(Data, static_cast<float>(Data->GetAbilityRate) / static_cast<float>(TotalRewardWeight)));
+	}
+}
+
+void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, float>> AbilityDataTable)
+{
+	for (int i = 0; i < 3 - ButtonAbilityDataArray.Num(); ++i)
+	{
+		float WeightPoint = FMath::RandRange(0.f, 1.f);
+		float CurrentWeight = 0.f;
+		for (auto Reward : AbilityDataTable)
+		{
+			if (CurrentWeight < WeightPoint)
+			{
+				CurrentWeight += Reward.Value;
+				continue;
+			}
+
+			bool IsValidReward = false;
+			if (!GettenAbilityArray.IsEmpty())
+			{
+				for (auto GettenReward : GettenAbilityArray)
+				{
+					if (Reward.Key->AbilityName == GettenReward->AbilityName)
+					{
+						IsValidReward = true;
+						break;
+					}
+				}
+			}
+
+			if (IsValidReward)
+			{
+				CurrentWeight += Reward.Value;
+				continue;
+			}
+			
+			if (!ButtonAbilityDataArray.IsEmpty())
+			{
+				for (auto EmplacedReward : ButtonAbilityDataArray)
+				{
+					if (Reward.Key->AbilityName == EmplacedReward->AbilityName)
+					{
+						IsValidReward = true;
+						break;
+					}
+				}
+			}
+
+			if (IsValidReward)
+			{
+				CurrentWeight += Reward.Value;
+				continue;
+			}
+			
+			ButtonAbilityDataArray.Emplace(Reward.Key);
+			break;
+		}
+	}
+}
+
 void ALLL_RewardGimmick::ClickFirstButton()
 {
+	if (ButtonAbilityDataArray.IsEmpty())
+	{
+		return;
+	}
+	
 	ClickButtonEvent(ButtonAbilityDataArray[0]);
-	GettenAbilityIDArray.Emplace(FirstButtonIndex);
+	GettenAbilityArray.Emplace(ButtonAbilityDataArray[0]);
+	ButtonAbilityDataArray.Empty();
 }
 
 void ALLL_RewardGimmick::ClickSecondButton()
 {
+	if (ButtonAbilityDataArray.IsEmpty())
+	{
+		return;
+	}
+	
 	ClickButtonEvent(ButtonAbilityDataArray[1]);
-	GettenAbilityIDArray.Emplace(SecondButtonIndex);
+	GettenAbilityArray.Emplace(ButtonAbilityDataArray[1]);
+	ButtonAbilityDataArray.Empty();
 }
 
 void ALLL_RewardGimmick::ClickThirdButton()
 {
+	if (ButtonAbilityDataArray.IsEmpty())
+	{
+		return;
+	}
+	
 	ClickButtonEvent(ButtonAbilityDataArray[2]);
-	GettenAbilityIDArray.Emplace(ThirdButtonIndex);
+	GettenAbilityArray.Emplace(ButtonAbilityDataArray[2]);
+	ButtonAbilityDataArray.Empty();
 }
 
-void ALLL_RewardGimmick::ClickButtonEvent(FAbilityDataTable* ButtonAbilityData)
+void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbilityData)
 {
 	CurrentAbilityData = ButtonAbilityData;
 	
@@ -321,7 +360,6 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 			}
 		}
 		
-		GettenAbilityIDArray.Append(Effect->GetID());
 		FGameplayEventData PayLoadData;
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ABILITY_PART_GRANT, PayLoadData);
 		break;
@@ -337,6 +375,38 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	{
 		PlayerUIManager->GetMainEruriaWidget()->SetEruriaInfo(CurrentAbilityData);
 	}
+
+	TArray<const FAbilityDataTable*> EqualAbilities;
+	uint8 Count = 2;
+	for (auto Data : AbilityData)
+	{
+		// 전설 이누리아의 경우 For문 중단
+		if (CurrentAbilityData->ID % 10000 > ABILITY_RANK_LEGEND)
+		{
+			EqualAbilities.Emplace(Data);
+			break;
+		}
+		
+		if (Data->ID % ABILITY_INFO_ID == CurrentAbilityData->ID % ABILITY_INFO_ID)
+		{
+			EqualAbilities.Emplace(Data);
+			--Count;
+			if (!Count)
+			{
+				break;
+			}
+		}
+	}
+
+	if (!EqualAbilities.IsEmpty())
+	{
+		for (auto EqualAbility : EqualAbilities)
+		{
+			AbilityData.Remove(EqualAbility);
+		}
+	}
+	// 테이블에서 중복 보상 제거 후 가중치 재계산
+	SetRewardWeight();
 	
 	CurrentAbilityData = nullptr;
 	bIsButtonEventSetup = false;

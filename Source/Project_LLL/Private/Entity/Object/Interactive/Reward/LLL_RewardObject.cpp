@@ -53,7 +53,7 @@ void ALLL_RewardObject::ApplyProductEvent()
 	PriceWidget->SetPrice(Price);
 }
 
-void ALLL_RewardObject::SetInformation(FRewardDataTable* Data)
+void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data)
 {
 	RewardData = Data;
 }
@@ -77,9 +77,9 @@ void ALLL_RewardObject::InteractiveEvent()
 	if (!RewardData)
 	{
 		const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-		TArray<FRewardDataTable> RewardDataArray = GameInstance->GetRewardDataTable();
+		TArray<const FRewardDataTable*> RewardDataArray = GameInstance->GetRewardDataTable();
 		const uint8 Index = FMath::RandRange(0, RewardDataArray.Num() - 1);
-		RewardData = &RewardDataArray[Index];
+		RewardData = RewardDataArray[Index];
 	}
 	switch (RewardData->ID)
 	{

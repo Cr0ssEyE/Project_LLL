@@ -27,11 +27,11 @@ public:
 
 public:
 	// 데이터 테이블 Getter
-	FORCEINLINE TArray<FAbilityDataTable> GetAbilityDataTable() const { return AbilityData; }
+	FORCEINLINE TArray<const FAbilityDataTable*> GetAbilityDataTable() const { return AbilityData; }
 	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterData; }
-	FORCEINLINE TArray<FRewardDataTable> GetRewardDataTable() const { return RewardData; }
+	FORCEINLINE TArray<const FRewardDataTable*> GetRewardDataTable() const { return RewardData; }
 	FORCEINLINE const UDataTable* GetStringDataTable() const { return StringDataTable; }
-	FORCEINLINE TArray<FStringDataTable> GetStringDataTablesData() const { return StringData; }
+	FORCEINLINE TArray<const FStringDataTable*> GetStringDataTablesData() const { return StringData; }
 	FORCEINLINE bool CheckCustomTimeDilationIsChanging() const { return bCustomTimeDilationIsChanging; }
 
 	// MPC Getter
@@ -73,8 +73,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<const UDataTable> AbilityDataTable;
 	
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FAbilityDataTable> AbilityData;
+	TArray<const FAbilityDataTable*> AbilityData;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const UDataTable> FModParameterDataTable;
@@ -85,14 +84,12 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<const UDataTable> RewardDataTable;
 	
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FRewardDataTable> RewardData;
+	TArray<const FRewardDataTable*> RewardData;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<const UDataTable> StringDataTable;
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FStringDataTable> StringData;
+
+	TArray<const FStringDataTable*> StringData;
 	
 protected:
 	UPROPERTY(VisibleAnywhere)

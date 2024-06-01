@@ -16,7 +16,7 @@ class PROJECT_LLL_API ALLL_GoldRewardObject : public ALLL_RewardObject
 
 public:
 
-	virtual void SetInformation(FRewardDataTable* Data) override;
+	virtual void SetInformation(const FRewardDataTable* Data) override;
 
 	virtual void InteractiveEvent() override;
 
