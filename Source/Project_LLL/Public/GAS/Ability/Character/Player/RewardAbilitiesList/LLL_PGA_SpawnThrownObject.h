@@ -21,11 +21,11 @@ protected:
 	UPROPERTY(EditAnywhere, DisplayName = "스폰 투사체 클래스")
 	TSubclassOf<ALLL_ThrownObject> ThrownObjectClass;
 
+	UPROPERTY(EditAnywhere, DisplayName = "속도")
+	float Speed;
+
 	UPROPERTY(EditAnywhere, DisplayName = "Instigator에게 공격")
 	uint8 bTargetIsInstigator : 1;
-
-	UPROPERTY(EditAnywhere, DisplayName = "스폰 시 플레이어와의 거리")
-	float Offset;
 
 	UPROPERTY(EditAnywhere, DisplayName = "스폰 간격 시간")
 	float SpawnOffsetTime;
