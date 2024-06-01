@@ -10,6 +10,8 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/ProtoGameInstance.h"
 #include "UI/Object/LLL_ProductObjectPriceWidget.h"
+#include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "UI/System/LLL_SelectRewardWidget.h"
 
 ALLL_RewardObject::ALLL_RewardObject()
 {
@@ -59,9 +61,9 @@ void ALLL_RewardObject::SetInformation(FRewardDataTable* Data)
 void ALLL_RewardObject::InteractiveEvent()
 {
 	Super::InteractiveEvent();
-	
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	ULLL_PlayerGoldComponent* PlayerGoldComponent = Player->GetGoldComponent();
+	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
 	if (bIsProduct && PlayerGoldComponent->GetMoney() < Price)
 	{
 		//구매 불가능 UI 생성
@@ -79,7 +81,31 @@ void ALLL_RewardObject::InteractiveEvent()
 		const uint8 Index = FMath::RandRange(0, RewardDataArray.Num() - 1);
 		RewardData = &RewardDataArray[Index];
 	}
-
+	switch (RewardData->ID)
+	{
+	case 1:
+		SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
+		SelectRewardWidget->SetIsEnabled(true);
+		SelectRewardWidget->FocusToUI();
+		break;
+	case 2:
+		PlayerGoldComponent->IncreaseMoney(RewardData->Value);
+		break;
+	case 3:
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckObjectActivateDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("player 최대 체력 증가"));
+			}
+		}
+#endif
+		break;
+	case 4:
+		break;
+	default:;
+	}
 	
 	Destroy();
 }

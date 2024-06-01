@@ -8,6 +8,7 @@
 #include "BrainComponent.h"
 #include "FMODAudioComponent.h"
 #include "GameplayAbilitiesModule.h"
+#include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
@@ -164,6 +165,11 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 	MonsterBaseAnimInstance->StopAllMontages(1.0f);
 	PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
 
+	if (IsValid(NiagaraComponent))
+	{
+		NiagaraComponent->DestroyComponent();
+	}
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -198,7 +204,7 @@ void ALLL_MonsterBase::Dead()
 	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	if (IsValid(PlayerBase))
 	{
-		FVector ImpulseDirection = PlayerBase->GetActorForwardVector();
+		FVector ImpulseDirection = GetActorLocation() - PlayerBase->GetActorLocation();
 		ImpulseDirection.Normalize();
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 		const float ImpulseStrength = PlayerAttributeSet->GetImpulseStrength();
@@ -208,6 +214,11 @@ void ALLL_MonsterBase::Dead()
 	}
 
 	MonsterStatusWidgetComponent->SetHiddenInGame(true);
+
+	if (IsValid(NiagaraComponent))
+	{
+		NiagaraComponent->DestroyComponent();
+	}
 
 	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();
 	FTimerHandle DestroyTimerHandle;
@@ -222,7 +233,7 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 	if (CustomTimeDilation == 1.f)
 	{
 		StackedKnockBackedPower = KnockBackPower;
-		if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower))
+		if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower) && GetCapsuleComponent()->GetCollisionProfileName() != CP_MONSTER_FALLABLE)
 		{
 			GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
 		}
@@ -239,13 +250,20 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 void ALLL_MonsterBase::ApplyStackedKnockBack()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackVelocity.Length()));
+
+	if (StackedKnockBackVelocity.Length() < 100.f)
+	{
+		ResetKnockBackStack();
+		return;
+	}
+	
 	if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower))
 	{
 		GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
 	}
 
 	// TODO: 나중에 몬스터별 최대 넉백값 같은거 나오면 수정하기
-	FVector ScaledStackedKnockBackVelocity = ClampVector(FVector::One() * -10000.f, FVector::One() * 10000.f, StackedKnockBackVelocity);
+	FVector ScaledStackedKnockBackVelocity = ClampVector(StackedKnockBackVelocity, FVector::One() * -30000.f, FVector::One() * 30000.f);
 	ScaledStackedKnockBackVelocity.Z = 0.f;
 	GetCharacterMovement()->Velocity = FVector::Zero();
 	LaunchCharacter(ScaledStackedKnockBackVelocity, true, true);

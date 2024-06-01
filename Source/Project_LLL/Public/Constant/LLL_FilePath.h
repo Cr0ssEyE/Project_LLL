@@ -18,14 +18,15 @@
 #define PATH_PLAYER_DATA TEXT("/Script/Project_LLL.LLL_PlayerBaseDataAsset'/Game/DataAsset/DA_Player.DA_Player'")
 #define PATH_CAMERA_DATA TEXT("/Script/Project_LLL.LLL_CameraDataAsset'/Game/DataAsset/DA_Camera.DA_Camera'")
 #define PATH_PLAYER_GOLD_COMPONENT_DATA TEXT("/Script/Project_LLL.LLL_GoldComponentDataAsset'/Game/DataAsset/DA_PlayerGoldComponent.DA_PlayerGoldComponent'")
+#define PATH_PLAYER_LOWHP_MATERIAL_INST TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Materials/PostProcess/PPMI_LowHP.PPMI_LowHP'")
 
-// 플레이어 스킬 관련
-#define PATH_PLAYER_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_PlayerFeatherStormDataAsset'/Game/DataAsset/DA_PlayerFeatherStorm.DA_PlayerFeatherStorm'")
-#define PATH_PLAYER_THREATENING_DEATH_DATA TEXT("/Script/Project_LLL.LLL_PlayerThreateningDeathDataAsset'/Game/DataAsset/DA_PlayerThreateningDeath.DA_PlayerThreateningDeath'")
+// 플레이어 어빌리티 오브젝트 관련
+#define PATH_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_FeatherStormDataAsset'/Game/DataAsset/DA_FeatherStorm.DA_FeatherStorm'")
+#define PATH_THREATENING_DEATH_DATA TEXT("/Script/Project_LLL.LLL_ThreateningDeathDataAsset'/Game/DataAsset/DA_ThreateningDeath.DA_ThreateningDeath'")
 
 // 플레이어 투사체 관련
 #define PATH_PLAYER_CHASE_HAND_DATA TEXT("/Script/Project_LLL.LLL_PlayerChaseHandDataAsset'/Game/DataAsset/DA_PlayerChaseHand.DA_PlayerChaseHand'")
-#define PATH_PLAYER_THROWN_FEATHER_DATA TEXT("/Script/Project_LLL.LLL_PlayerThrownFeatherDataAsset'/Game/DataAsset/DA_PlayerThrownFeather.DA_PlayerThrownFeather'")
+#define PATH_THROWN_FEATHER_DATA TEXT("/Script/Project_LLL.LLL_ThrownFeatherDataAsset'/Game/DataAsset/DA_ThrownFeather.DA_ThrownFeather'")
 
 // 몬스터 캐릭터 관련
 #define PATH_SWORD_DASH_DATA TEXT("/Script/Project_LLL.LLL_SwordDashDataAsset'/Game/DataAsset/DA_SwordDash.DA_SwordDash'")
@@ -33,8 +34,7 @@
 #define PATH_CLAW_BASIC_DATA TEXT("/Script/Project_LLL.LLL_ClawBasicDataAsset'/Game/DataAsset/DA_ClawBasic.DA_ClawBasic'")
 
 // 몬스터 투사체 관련
-#define PATH_ENERGY_BLASTER_ENERGY_DATA TEXT("/Script/Project_LLL.LLL_EnergyBlasterEnergyDataAsset'/Game/DataAsset/DA_EnergyBlasterEnergy.DA_EnergyBlasterEnergy'")
-#define PATH_STAFF_BASIC_MAGIC_DATA TEXT("/Script/Project_LLL.LLL_StaffBasicMagicDataAsset'/Game/DataAsset/DA_StaffBasicMagic.DA_StaffBasicMagic'")
+#define PATH_MAGIC_DATA TEXT("/Script/Project_LLL.LLL_MagicDataAsset'/Game/DataAsset/DA_Magic.DA_Magic'")
 
 // 오브젝트 관련
 #define PATH_INTERACTIVE_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_InteractiveObjectData'/Game/DataAsset/DA_InteractiveObject.DA_InteractiveObject'")
@@ -46,15 +46,20 @@
 #define PATH_MONSTER_SPAWN_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/MonsterSpawnData.MonsterSpawnData'")
 #define PATH_FMOD_PARAMETER_NAME_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/FModParameterNameData.FModParameterNameData'")
 #define PATH_STRING_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/MiscellaneousDatas/DT_StringData.DT_StringData'")
+#define PATH_SHAREABLE_NIAGARA_EFFECTS TEXT("/Script/Project_LLL.LLL_ShareableNiagaraDataAsset'/Game/DataAsset/DA_NiagaraEffects.DA_NiagaraEffects'")
 
 // 맵 및 보상 시스템 관련
 #define PATH_MAP_DATA TEXT("/Script/Project_LLL.LLL_MapDataAsset'/Game/DataAsset/DA_Map.DA_Map'")
-#define PATH_GATE_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/Meshes/Prototyping/SM_GateTest.SM_GateTest'")
+#define PATH_GATE_DATA TEXT("/Script/Project_LLL.LLL_GateDataAsset'/Game/DataAsset/DA_Gate.DA_Gate'")
 #define PATH_REWARD_DATA_TABLE TEXT("/Script/Engine.DataTable'/Game/DataTable/RewardDataTable.RewardDataTable'")
 #define PATH_REWARD_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_CornerFrame.SM_CornerFrame'")
 #define PATH_REWARD_OBJECT_TEST_DATA TEXT("/Script/Project_LLL.LLL_RewardObjectDataAsset'/Game/DataAsset/DA_RewardObject.DA_RewardObject'")
+#define PATH_TUTORIAL_MAP_BP TEXT("/Script/Engine.Blueprint'/Game/Blueprints/System/BP_TutorialMap.BP_TutorialMap_C'")
 
 // UI 관련
 #define PATH_REWARD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Reward/WBP_SelectRewordWidget.WBP_SelectRewordWidget_C'")
 #define PATH_PLAYER_GOLD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Player/WBP_PlayerGoldWidget.WBP_PlayerGoldWidget_C'")
 #define PATH_UI_PROGRESSBAR_MATERIAL TEXT("/Script/Engine.Material'/Game/Materials/MasterMaterials/M_UI_CircleProgressBer.M_UI_CircleProgressBer'")
+
+// 머티리얼 파라미터 관련
+#define PATH_POSTPROCESS_MPC TEXT("/Script/Engine.MaterialParameterCollection'/Game/Materials/MaterialParameters/MPC_PostProcess.MPC_PostProcess'")

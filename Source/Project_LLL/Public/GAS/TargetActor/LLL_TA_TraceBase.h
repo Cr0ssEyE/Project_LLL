@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbilityTargetActor.h"
-#include "Enumeration/LLL_EditorSelectHelper.h"
+#include "Enumeration/LLL_EditorSelectEnumHelper.h"
 #include "LLL_TA_TraceBase.generated.h"
 
 UCLASS()

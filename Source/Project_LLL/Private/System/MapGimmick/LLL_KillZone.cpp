@@ -4,7 +4,8 @@
 #include "System/MapGimmick/LLL_KillZone.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
-#include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 
 // Sets default values
 ALLL_KillZone::ALLL_KillZone()
@@ -26,10 +27,14 @@ void ALLL_KillZone::BeginPlay()
 
 void ALLL_KillZone::OnKillTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ALLL_BaseCharacter* Character = CastChecked<ALLL_BaseCharacter>(OtherActor);
-	if (IsValid(Character))
+	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(OtherActor);
+	if (IsValid(Monster))
 	{
-		Character->Dead();
+		Monster->Dead();
+	}
+	else
+	{
+		OtherActor->SetActorLocation(FVector(0, 0, 300.0f));
 	}
 } 
 
