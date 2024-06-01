@@ -24,7 +24,6 @@ public:
 
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
-	FORCEINLINE virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override { NiagaraComponent = InNiagaraComponent; }
 	
 protected:
 	// Called when the game starts or when spawned
@@ -36,6 +35,7 @@ protected:
 
 protected:
 	virtual void SetFModParameter(EFModParameter FModParameter) override {}
+	virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -45,7 +45,7 @@ protected:
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UNiagaraComponent> NiagaraComponent;
+	TArray<TObjectPtr<UNiagaraComponent>> NiagaraComponents;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> BaseMesh;

@@ -88,7 +88,7 @@ void ULLL_GC_Base::ReceiveSpawnResult(AActor* Target, const FGameplayCueNotify_S
 
 	for (auto SpawnComponent : SpawnResult.FxSystemComponents)
 	{
-		UNiagaraComponent* Component = Cast<UNiagaraComponent>(SpawnComponent);
+		const UNiagaraComponent* Component = Cast<UNiagaraComponent>(SpawnComponent);
 		if (!IsValid(Component))
 		{
 			continue;

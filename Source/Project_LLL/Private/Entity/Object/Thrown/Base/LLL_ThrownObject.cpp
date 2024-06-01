@@ -46,22 +46,25 @@ void ALLL_ThrownObject::Activate()
 {
 	bIsActivated = true;
 
-	NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+	NiagaraComponents.Remove(nullptr);
+	NiagaraComponents.Emplace(UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ProjectileMovementComponent->Activate();
 	SetActorHiddenInGame(false);
-	UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+	NiagaraComponents.Emplace(UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
 }
 
 void ALLL_ThrownObject::Deactivate()
 {
 	bIsActivated = false;
-
+	
 	FModAudioComponent->Stop();
 	FModAudioComponent->Release();
-	if (IsValid(NiagaraComponent))
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
-		NiagaraComponent->DestroyComponent();
+		TempNiagaraComponent->DestroyComponent();
+		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProjectileMovementComponent->Deactivate();
@@ -69,7 +72,7 @@ void ALLL_ThrownObject::Deactivate()
 	GetWorldTimerManager().ClearTimer(HideTimerHandle);
 }
 
-void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget, float InSpeed)
+void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed)
 {
 	SetOwner(NewOwner);
 	Target = NewTarget;

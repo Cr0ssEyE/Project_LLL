@@ -4,6 +4,7 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_SpawnThrownObject.h"
 
 #include "AbilitySystemComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_ThrownFeather.h"
@@ -17,7 +18,7 @@ void ULLL_PGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 
-	int32 SpawnCount = 1;
+	int32 SpawnCount = AbilityData->UnchangeableValue == 0 ? 1 : AbilityData->UnchangeableValue;
 	if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
 	{
 		const UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
@@ -41,18 +42,22 @@ void ULLL_PGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 	for (int i = 0; i < SpawnCount; i++)
 	{
 		const AActor* Target = bTargetIsInstigator ? CurrentEventData.Instigator : CurrentEventData.TargetData.Data[0]->GetActors()[0].Get();
-		const FRotator Rotator = FRotationMatrix::MakeFromX(Player->GetActorLocation() - Target->GetActorLocation()).Rotator();
-		const FVector OffsetLocation = Rotator.Vector() * Offset;
 		
 		FTimerHandle SpawnTimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, Player, Target, OffsetLocation, Rotator, i, SpawnCount]{
+		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, Player, Target, i, SpawnCount]{
+			FVector Location = Player->GetActorLocation();
+			FRotator Rotator = FRotationMatrix::MakeFromX(Target->GetActorLocation() - Player->GetActorLocation()).Rotator();
+
+			if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
+			{
+				Location -= Rotator.Vector() * Player->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f;
+				Rotator += FRotator(0.0f, 180.0f + (FMath::RandBool() ? 10.0f : -10.0f), 0.0f);
+			}
+			
 			ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(Player->GetObjectPoolingComponent()->GetActor(ThrownObjectClass));
-	
-			ThrownObject->SetActorLocationAndRotation(Player->GetActorLocation() + OffsetLocation, Rotator);
-			ThrownObject->AddActorLocalRotation(FRotator(0.0f, FMath::RandBool() ? 1.0f : -1.0f, 0.0f));
+			ThrownObject->SetActorLocationAndRotation(Location, Rotator);
 			ThrownObject->SetAbilityInfo(AbilityData, GetAbilityLevel());
-			// Todo : 속도 정보 데이터화 필요
-			ThrownObject->Throw(Player, Target, 2000);
+			ThrownObject->Throw(Player, const_cast<AActor*>(Target), Speed);
 
 			if (i == SpawnCount - 1)
 			{
