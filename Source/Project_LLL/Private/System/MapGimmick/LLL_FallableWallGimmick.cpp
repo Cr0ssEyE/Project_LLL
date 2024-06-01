@@ -32,7 +32,8 @@ ALLL_FallableWallGimmick::ALLL_FallableWallGimmick()
 void ALLL_FallableWallGimmick::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	Wall->SetCollisionProfileName(CP_INVISIBLE_WALL);
+	Wall->SetVisibility(false);
 }
 
 void ALLL_FallableWallGimmick::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -40,8 +41,9 @@ void ALLL_FallableWallGimmick::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 	
 	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(OtherActor);
-	if (!IsValid(Monster) || Monster->CheckCharacterIsDead())
+	if (!IsValid(Monster) || Monster->CheckCharacterIsDead() || Monster->GetCapsuleComponent()->GetCollisionProfileName() == CP_OVERLAP_ALL)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("유효하지 않은 대상 오버랩 감지 또는 이미 사망 예정인 대상 감지")));
 		return;
 	}
 
@@ -60,7 +62,6 @@ void ALLL_FallableWallGimmick::NotifyActorBeginOverlap(AActor* OtherActor)
 	Monster->GetAbilitySystemComponent()->RemoveLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE, 99);
 	Monster->CustomTimeDilation = 1.f;
 	Monster->GetCharacterMovement()->Velocity = FVector::Zero();
-	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
 	
 	// 여기에 연출 입력
 	FallOutBegin(Monster, OverlapDirection, Monster->GetActorLocation());
@@ -81,6 +82,7 @@ bool ALLL_FallableWallGimmick::CheckFallable(FVector HitNormal, FVector HitLocat
 
 	if (Result.GetActor())
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("벽 감지. 넉백 연출 미표기")));
 		return false;
 	}
 	return true;
@@ -88,6 +90,8 @@ bool ALLL_FallableWallGimmick::CheckFallable(FVector HitNormal, FVector HitLocat
 
 void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FVector HitLocation)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("넉백 연출 시작")));
+	
 	GetWorldSettings()->SetTimeDilation(0.1f);
 	CustomTimeDilation = 1.f / GetWorldSettings()->TimeDilation;
 	UNiagaraSystem* WallCrashNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->InvisibleWallCrashNiagaraSystem;
@@ -97,6 +101,7 @@ void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FV
 	FTimerHandle DilationTimerHandle;
 	GetWorldTimerManager().SetTimer(DilationTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("넉백 연출 종료")));
 		GetWorldSettings()->SetTimeDilation(1.f);
 		CustomTimeDilation = 1.f;
 		FallOutStart(Actor, HitNormal);
@@ -109,11 +114,11 @@ void ALLL_FallableWallGimmick::FallOutStart(AActor* Actor, FVector HitNormal)
 	CustomTimeDilation = 1.f;
 	Monster->CustomTimeDilation = 1.f;
 	
-	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
+	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_OVERLAP_ALL);
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&, HitNormal, Monster]
 	{
 		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(HitNormal, Monster->GetKnockBackedPower() * 3.f);
-		Monster->LaunchCharacter(LaunchVelocity, true, true);
+		Monster->AddKnockBackVelocity(LaunchVelocity, -1.f);
 	}));
 }
 

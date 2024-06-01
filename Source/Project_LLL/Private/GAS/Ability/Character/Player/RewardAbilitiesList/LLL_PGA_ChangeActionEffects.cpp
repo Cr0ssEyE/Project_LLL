@@ -42,7 +42,10 @@ void ULLL_PGA_ChangeActionEffects::ActivateAbility(const FGameplayAbilitySpecHan
 			{
 				NiagaraEffectNotify->Template = NewNiagaraSystem[i];
 				// GC 컬렉팅 방지.
-				NewNiagaraSystem[i]->AddToRoot();
+				if (!NewNiagaraSystem[i]->IsRooted())
+				{
+					NewNiagaraSystem[i]->AddToRoot();
+				}
 			}
 		}
 	}
@@ -64,7 +67,10 @@ void ULLL_PGA_ChangeActionEffects::EndAbility(const FGameplayAbilitySpecHandle H
 			if (NiagaraEffectNotify->Template == NewNiagaraSystem[i])
 			{
 				NiagaraEffectNotify->Template = TargetNiagaraSystem[i];
-				TargetNiagaraSystem[i]->AddToRoot();
+				if (!TargetNiagaraSystem[i]->IsRooted())
+				{
+					TargetNiagaraSystem[i]->AddToRoot();
+				}
 				NewNiagaraSystem[i]->RemoveFromRoot();
 			}
 		}

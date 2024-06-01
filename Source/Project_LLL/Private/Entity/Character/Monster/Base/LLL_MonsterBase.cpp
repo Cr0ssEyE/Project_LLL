@@ -230,6 +230,12 @@ void ALLL_MonsterBase::Dead()
 void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower)
 {
 	KnockBackVelocity.Z = 0.f;
+	if (KnockBackPower < 0.f)
+	{
+		LaunchCharacter(KnockBackVelocity, true, true);
+		return;
+	}
+	
 	if (CustomTimeDilation == 1.f)
 	{
 		StackedKnockBackedPower = KnockBackPower;
