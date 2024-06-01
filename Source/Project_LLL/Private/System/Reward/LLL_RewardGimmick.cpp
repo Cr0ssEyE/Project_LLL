@@ -26,13 +26,14 @@
 
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick() :
+	TotalRewardWeight(0),
 	CurrentAbilityData(nullptr),
 	bIsButtonEventSetup(false),
 	bMapGimmickIsExist(false),
 	bIsTest(false),
-	TestAbilityDataArrayNum1(0),
-	TestAbilityDataArrayNum2(1),
-	TestAbilityDataArrayNum3(2)
+	TestAbilityDataID1(110001),
+	TestAbilityDataID2(110002),
+	TestAbilityDataID3(110003)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -105,9 +106,13 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	
 	if (bIsTest)
 	{
-		ButtonAbilityDataArray.Emplace(AbilityData[TestAbilityDataArrayNum1]);
-		ButtonAbilityDataArray.Emplace(AbilityData[TestAbilityDataArrayNum2]);
-		ButtonAbilityDataArray.Emplace(AbilityData[TestAbilityDataArrayNum3]);
+		for (auto Data : AbilityData)
+		{
+			if (Data->ID == TestAbilityDataID1 || Data->ID == TestAbilityDataID2 || Data->ID == TestAbilityDataID3)
+			{
+				ButtonAbilityDataArray.Emplace(Data);
+			}
+		}
 		RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
 		return;
 	}
@@ -171,20 +176,41 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 				continue;
 			}
 
-			bool IsValidReward = false;
-			if (!GettenAbilityArray.IsEmpty())
+			bool IsInValidReward = false;
+			if (GettenAbilityArray.IsEmpty())
+			{
+				if (Reward.Key->RequireCategory != EAbilityCategory::Null)
+				{
+					CurrentWeight += Reward.Value;
+					continue;
+				}
+			}
+			else
 			{
 				for (auto GettenReward : GettenAbilityArray)
 				{
 					if (Reward.Key->AbilityName == GettenReward->AbilityName)
 					{
-						IsValidReward = true;
+						IsInValidReward = true;
+						break;
+					}
+
+					// 획득 조건 체크
+					if (Reward.Key->RequireCategory == EAbilityCategory::Null)
+					{
+						continue;
+					}
+
+					IsInValidReward = false;
+					if (Reward.Key->RequireCategory == GettenReward->AbilityCategory)
+					{
+						IsInValidReward = true;
 						break;
 					}
 				}
 			}
 
-			if (IsValidReward)
+			if (IsInValidReward)
 			{
 				CurrentWeight += Reward.Value;
 				continue;
@@ -196,13 +222,13 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 				{
 					if (Reward.Key->AbilityName == EmplacedReward->AbilityName)
 					{
-						IsValidReward = true;
+						IsInValidReward = true;
 						break;
 					}
 				}
 			}
 
-			if (IsValidReward)
+			if (IsInValidReward)
 			{
 				CurrentWeight += Reward.Value;
 				continue;
@@ -223,7 +249,10 @@ void ALLL_RewardGimmick::ClickFirstButton()
 	
 	ClickButtonEvent(ButtonAbilityDataArray[0]);
 	GettenAbilityArray.Emplace(ButtonAbilityDataArray[0]);
-	ButtonAbilityDataArray.Empty();
+	if (!bIsTest)
+	{
+		ButtonAbilityDataArray.Empty();
+	}
 }
 
 void ALLL_RewardGimmick::ClickSecondButton()
@@ -235,7 +264,10 @@ void ALLL_RewardGimmick::ClickSecondButton()
 	
 	ClickButtonEvent(ButtonAbilityDataArray[1]);
 	GettenAbilityArray.Emplace(ButtonAbilityDataArray[1]);
-	ButtonAbilityDataArray.Empty();
+	if (!bIsTest)
+	{
+		ButtonAbilityDataArray.Empty();
+	}
 }
 
 void ALLL_RewardGimmick::ClickThirdButton()
@@ -247,7 +279,10 @@ void ALLL_RewardGimmick::ClickThirdButton()
 	
 	ClickButtonEvent(ButtonAbilityDataArray[2]);
 	GettenAbilityArray.Emplace(ButtonAbilityDataArray[2]);
-	ButtonAbilityDataArray.Empty();
+	if (!bIsTest)
+	{
+		ButtonAbilityDataArray.Empty();
+	}
 }
 
 void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbilityData)

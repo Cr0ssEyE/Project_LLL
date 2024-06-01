@@ -87,11 +87,11 @@ protected:
 	uint8 bIsTest : 1;
 
 	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
-	uint8 TestAbilityDataArrayNum1;
+	uint32 TestAbilityDataID1;
 
 	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
-	uint8 TestAbilityDataArrayNum2;
+	uint32 TestAbilityDataID2;
 	
 	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
-	uint8 TestAbilityDataArrayNum3;
+	uint32 TestAbilityDataID3;
 };
