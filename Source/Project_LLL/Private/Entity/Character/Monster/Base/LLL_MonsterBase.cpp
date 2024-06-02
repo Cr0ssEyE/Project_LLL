@@ -346,7 +346,7 @@ void ALLL_MonsterBase::UpdateMarkVFX(uint8 NewCount, uint8 MaxCount)
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("표식 값 갱신: %d"), NewCount));
-	MarkVFXComponent->SetFloatParameter(NS_MARK_COUNT, NewCount - 1.f);
+	MarkVFXComponent->SetFloatParameter(NS_MARK_COUNT, FMath::Max(NewCount - 1.f, 0.f));
 	
 	if (NewCount > 0)
 	{
