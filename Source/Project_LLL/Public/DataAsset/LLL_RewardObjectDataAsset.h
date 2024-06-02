@@ -30,4 +30,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "ProductData", DisplayName = "가격")
 	float Price;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "플레이어 최대 체력 증가 이펙트")
+	TSubclassOf<UGameplayEffect> MaxHPEffect;
 };

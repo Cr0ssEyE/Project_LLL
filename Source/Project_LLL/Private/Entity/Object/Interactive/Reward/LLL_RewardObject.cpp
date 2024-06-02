@@ -3,6 +3,8 @@
 
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 
+#include "AbilitySystemComponent.h"
+#include "GameplayEffectTypes.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_FilePath.h"
@@ -83,9 +85,14 @@ void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data)
 void ALLL_RewardObject::InteractiveEvent()
 {
 	Super::InteractiveEvent();
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	ULLL_PlayerGoldComponent* PlayerGoldComponent = Player->GetGoldComponent();
 	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
+	
+	FGameplayEffectContextHandle EffectContextHandle = Player->GetAbilitySystemComponent()->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(Player);
+	const FGameplayEffectSpecHandle EffectSpecHandle = Player->GetAbilitySystemComponent()->MakeOutgoingSpec(RewardObjectDataAsset->MaxHPEffect, 1.0, EffectContextHandle);
+	
 	if (bIsProduct && PlayerGoldComponent->GetMoney() < Price)
 	{
 		//구매 불가능 UI 생성
@@ -118,15 +125,13 @@ void ALLL_RewardObject::InteractiveEvent()
 		break;
 		// 최대 체력
 	case 3:
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("체력 보상 로직 진입"));
+		if(EffectSpecHandle.IsValid())
 		{
-			if (ProtoGameInstance->CheckObjectActivateDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("player 최대 체력 증가"));
-			}
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("플레이어 체력 증가 시작"));
+			Player->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
-#endif
+
 		break;
 		// 능력 강화
 	case 4:
