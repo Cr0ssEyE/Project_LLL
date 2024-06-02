@@ -25,6 +25,8 @@ UCLASS()
 class PROJECT_LLL_API ULLL_ExtendedGameplayEffect : public UGameplayEffect
 {
 	GENERATED_BODY()
+
+public:
 	
 public:
 	FORCEINLINE EEffectOwnerType GetOwnerShip() const { return EffectOwnership; }

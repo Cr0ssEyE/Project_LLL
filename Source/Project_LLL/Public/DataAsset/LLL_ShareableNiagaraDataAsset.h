@@ -15,7 +15,13 @@ class PROJECT_LLL_API ULLL_ShareableNiagaraDataAsset : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, Category = "Niagara", DisplayName = "몬스터 낙사시 투명 벽 파괴 이펙트")
+	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "몬스터 낙사시 투명 벽 파괴 이펙트")
 	TObjectPtr<UNiagaraSystem> InvisibleWallCrashNiagaraSystem;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "몬스터 표식 이펙트")
+	TObjectPtr<UNiagaraSystem> MarkCountNiagaraSystem;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara|Param", DisplayName = "몬스터 표식 파라미터 컬렉션")
+	TObjectPtr<UNiagaraParameterCollection> MarkCountNiagaraParameterCollection;
 	
 };

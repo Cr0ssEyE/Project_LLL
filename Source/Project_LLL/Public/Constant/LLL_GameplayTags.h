@@ -27,7 +27,8 @@
 // 플레이어 행동 관련 게임플레이 태그
 #define TAG_GAS_PLAYER_DASH_START FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash.Start"))
 #define TAG_GAS_PLAYER_DASH_END FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash.End"))
-#define TAG_GAS_PLAYER_BULLET_TIME FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Skill.ActivateBulletTime"))
+#define TAG_GAS_PLAYER_BULLET_TIME_START FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Skill.ActivateBulletTime"))
+#define TAG_GAS_PLAYER_BULLET_TIME_END FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Skill.DeactivateBulletTime"))
 #define TAG_GAS_PLAYER_CHASE_THROW FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Throw"))
 #define TAG_GAS_PLAYER_CHASE_RUSH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Rush"))
 #define TAG_GAS_PLAYER_CHASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Attack"))
