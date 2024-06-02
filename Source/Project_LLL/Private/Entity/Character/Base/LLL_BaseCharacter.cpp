@@ -159,7 +159,7 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 
 void ALLL_BaseCharacter::Damaged(AActor* Attacker, bool IsDOT)
 {
-	
+	UE_LOG(LogTemp, Log, TEXT("%s가 피격되었습니다"), *GetName())
 }
 
 void ALLL_BaseCharacter::Dead()
