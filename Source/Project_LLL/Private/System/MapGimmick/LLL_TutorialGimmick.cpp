@@ -44,7 +44,7 @@ void ALLL_TutorialGimmick::BeginPlay()
 	AbilityReward->OnDestroyed.AddDynamic(this, &ALLL_TutorialGimmick::RewardDestroyed);
 }
 
-void ALLL_TutorialGimmick::OnInteractionGate(FRewardDataTable* Data)
+void ALLL_TutorialGimmick::OnInteractionGate(const FRewardDataTable* Data)
 {
 	LoadLevel();
 }

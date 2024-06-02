@@ -7,19 +7,18 @@
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
-
-ALLL_MapSoundManager::ALLL_MapSoundManager()
-{
-	CollisionBoxForBulletTime = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision For Bullet Time"));
-	CollisionBoxForBulletTime->SetCollisionProfileName(CP_MAP_SOUND_MANAGER);
-	SetRootComponent(CollisionBoxForBulletTime);
-}
 
 void ALLL_MapSoundManager::SetPitch(float InPitch) const
 {
-	UFMODBlueprintStatics::EventInstanceSetPitch(BGMWrapper, InPitch);
+	UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FName(TEXT("Bullettime")), InPitch != 1.0f ? 1.0f : 0.0f);
 	UFMODBlueprintStatics::EventInstanceSetPitch(AMBWrapper, InPitch);
+}
+
+void ALLL_MapSoundManager::SetBattleParameter(float Value)
+{
+	UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FName(TEXT("Battle")), Value);
 }
 
 void ALLL_MapSoundManager::BeginPlay()
@@ -37,7 +36,16 @@ void ALLL_MapSoundManager::BeginPlay()
 	BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), BGM, true);
 	AMBWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), AMB, true);
 
-	CollisionBoxForBulletTime->SetBoxExtent(FVector::OneVector);
+	ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SetMapSoundManager(this);
+}
+
+void ALLL_MapSoundManager::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
+	UFMODBlueprintStatics::EventInstanceStop(AMBWrapper);
 }
 
 void ALLL_MapSoundManager::PlayerDeadHandle(ALLL_BaseCharacter* Character)

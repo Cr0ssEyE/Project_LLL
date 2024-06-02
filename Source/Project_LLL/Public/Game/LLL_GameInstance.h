@@ -13,6 +13,7 @@
  * 
  */
 
+class ALLL_MapSoundManager;
 class ULLL_ShareableNiagaraDataAsset;
 
 UCLASS()
@@ -24,28 +25,31 @@ public:
 	ULLL_GameInstance();
 
 	virtual void Init() override;
-	
+
 public:
+	FORCEINLINE void SetMapSoundManager(ALLL_MapSoundManager* InMapSoundManager) { MapSoundManager = InMapSoundManager; }
+	
 	// 데이터 테이블 Getter
-	FORCEINLINE TArray<FAbilityDataTable> GetAbilityDataTable() const { return AbilityData; }
+	FORCEINLINE TArray<const FAbilityDataTable*> GetAbilityDataTable() const { return AbilityData; }
 	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterData; }
-	FORCEINLINE TArray<FRewardDataTable> GetRewardDataTable() const { return RewardData; }
+	FORCEINLINE TArray<const FRewardDataTable*> GetRewardDataTable() const { return RewardData; }
 	FORCEINLINE const UDataTable* GetStringDataTable() const { return StringDataTable; }
-	FORCEINLINE TArray<FStringDataTable> GetStringDataTablesData() const { return StringData; }
+	FORCEINLINE TArray<const FStringDataTable*> GetStringDataTablesData() const { return StringData; }
 	FORCEINLINE bool CheckCustomTimeDilationIsChanging() const { return bCustomTimeDilationIsChanging; }
 
 	// MPC Getter
 	FORCEINLINE UMaterialParameterCollection* GetPlayerMPC() const { return PlayerMPC; }
 	FORCEINLINE UMaterialParameterCollection* GetObjectMPC() const { return ObjectMPC; }
 	FORCEINLINE UMaterialParameterCollection* GetMonsterMPC() const { return MonsterMPC; }
-	FORCEINLINE UMaterialParameterCollection* GetInterfaceMPC() const { return InterfaceMPC; }
 	FORCEINLINE UMaterialParameterCollection* GetPostProcessMPC() const { return PostProcessMPC; }
 
 	// 데이터 에셋
 public:
 	FORCEINLINE TObjectPtr<const ULLL_ShareableNiagaraDataAsset> GetShareableNiagaraDataAsset() const { return ShareableNiagaraDataAsset; }
+	
 public:
 	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
+	void SetMapSoundManagerBattleParameter(float Value) const;
 
 protected:
 	void SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation);
@@ -62,9 +66,6 @@ protected:
 	TObjectPtr<UMaterialParameterCollection> MonsterMPC;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UMaterialParameterCollection> InterfaceMPC;
-
-	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> PostProcessMPC;
 
 	// 범용 데이터 에셋
@@ -77,8 +78,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<const UDataTable> AbilityDataTable;
 	
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FAbilityDataTable> AbilityData;
+	TArray<const FAbilityDataTable*> AbilityData;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const UDataTable> FModParameterDataTable;
@@ -89,14 +89,15 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<const UDataTable> RewardDataTable;
 	
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FRewardDataTable> RewardData;
+	TArray<const FRewardDataTable*> RewardData;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<const UDataTable> StringDataTable;
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FStringDataTable> StringData;
+
+	TArray<const FStringDataTable*> StringData;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ALLL_MapSoundManager> MapSoundManager;
 	
 protected:
 	UPROPERTY(VisibleAnywhere)

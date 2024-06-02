@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_ThrownFeatherDataAsset.h"
+#include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "LLL_ThrownFeather.generated.h"
 
@@ -25,12 +26,10 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void Activate() override;
 	virtual void Deactivate() override;
+	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed) override;
 
-	UPROPERTY(VisibleAnywhere)
-	float CurveSpeed;
-
-	UPROPERTY(EditAnywhere)
-	float CurveSize;
+	UFUNCTION()
+	void TargetDeadHandle(ALLL_BaseCharacter* Character);
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UBoxComponent> HitCollisionBox;
@@ -40,4 +39,19 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_ThrownFeatherAttributeSet> ThrownFeatherAttributeSet;
+
+	UPROPERTY(VisibleAnywhere)
+	float CurveSpeed;
+
+	UPROPERTY(VisibleAnywhere)
+	float CurveSize;
+
+	UPROPERTY(VisibleAnywhere)
+	float TargetCapsuleRadius;
+
+	UPROPERTY(VisibleAnywhere)
+	FVector TargetDeadLocation;
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 bTargetIsDead : 1;
 };

@@ -165,9 +165,16 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 	MonsterBaseAnimInstance->StopAllMontages(1.0f);
 	PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
 
-	if (IsValid(NiagaraComponent))
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
-		NiagaraComponent->DestroyComponent();
+		if (!IsValid(TempNiagaraComponent))
+		{
+			continue;
+		}
+		
+		TempNiagaraComponent->DestroyComponent();
+		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -215,9 +222,16 @@ void ALLL_MonsterBase::Dead()
 
 	MonsterStatusWidgetComponent->SetHiddenInGame(true);
 
-	if (IsValid(NiagaraComponent))
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
-		NiagaraComponent->DestroyComponent();
+		if (!IsValid(TempNiagaraComponent))
+		{
+			continue;
+		}
+		
+    	TempNiagaraComponent->DestroyComponent();
+		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 
 	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();
@@ -230,10 +244,16 @@ void ALLL_MonsterBase::Dead()
 void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower)
 {
 	KnockBackVelocity.Z = 0.f;
+	if (KnockBackPower < 0.f)
+	{
+		LaunchCharacter(KnockBackVelocity, true, true);
+		return;
+	}
+	
 	if (CustomTimeDilation == 1.f)
 	{
 		StackedKnockBackedPower = KnockBackPower;
-		if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower))
+		if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower) && GetCapsuleComponent()->GetCollisionProfileName() != CP_MONSTER_FALLABLE)
 		{
 			GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
 		}
@@ -263,7 +283,7 @@ void ALLL_MonsterBase::ApplyStackedKnockBack()
 	}
 
 	// TODO: 나중에 몬스터별 최대 넉백값 같은거 나오면 수정하기
-	FVector ScaledStackedKnockBackVelocity = ClampVector(FVector::One() * -10000.f, FVector::One() * 10000.f, StackedKnockBackVelocity);
+	FVector ScaledStackedKnockBackVelocity = ClampVector(StackedKnockBackVelocity, FVector::One() * -30000.f, FVector::One() * 30000.f);
 	ScaledStackedKnockBackVelocity.Z = 0.f;
 	GetCharacterMovement()->Velocity = FVector::Zero();
 	LaunchCharacter(ScaledStackedKnockBackVelocity, true, true);

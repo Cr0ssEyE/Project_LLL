@@ -128,7 +128,7 @@ void ALLL_MonsterSpawner::SpawnMonster()
 
 					FTimerHandle SpawnParticleTimerHandle;
 					GetWorldTimerManager().SetTimer(SpawnParticleTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, SpawnPoint]{
-						UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MonsterSpawnerDataAsset->SpawnParticle, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+						SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MonsterSpawnerDataAsset->SpawnParticle, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation()));
 					}), MonsterSpawnerDataAsset->SpawnParticleTimer, false);
 				}
 			}

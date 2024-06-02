@@ -513,6 +513,24 @@ void ALLL_PlayerBase::PlayerRotateToMouseCursor(float RotationMultiplyValue, boo
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
 }
 
+void ALLL_PlayerBase::SetAttacker(ALLL_BaseCharacter* Attacker)
+{
+	if (Attackers.Contains(Attacker))
+	{
+		return;
+	}
+
+	if (Attacker->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_PlayerBase::AttackerDeadHandle))
+	{
+		return;
+	}
+	
+	Attacker->CharacterDeadDelegate.AddDynamic(this, &ALLL_PlayerBase::AttackerDeadHandle);
+	Attackers.Emplace(Attacker);
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SetMapSoundManagerBattleParameter(1.0f);
+}
+
 void ALLL_PlayerBase::TurnToMouseCursor()
 {
 	if (GetActorRotation() == MouseDirectionRotator || !GetCharacterAnimInstance()->IsSlotActive(ANIM_SLOT_ATTACK))
@@ -580,7 +598,7 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PlayLowHPAnimation);
 	}
 	
-	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Attacker);
+	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Attacker);
 	if (!IsValid(Monster))
 	{
 		return;
@@ -607,6 +625,17 @@ void ALLL_PlayerBase::Dead()
 void ALLL_PlayerBase::DeadMotionEndedHandle()
 {
 	PlayerUIManager->TogglePauseWidget(bIsDead);
+}
+
+void ALLL_PlayerBase::AttackerDeadHandle(ALLL_BaseCharacter* Character)
+{
+	Attackers.Remove(Character);
+
+	if (Attackers.Num() == 0)
+	{
+		const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+		GameInstance->SetMapSoundManagerBattleParameter(0.0f);
+	}
 }
 
 void ALLL_PlayerBase::DeactivatePPLowHP()
