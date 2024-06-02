@@ -168,6 +168,11 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
 	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
+		if (!IsValid(TempNiagaraComponent))
+		{
+			continue;
+		}
+		
 		TempNiagaraComponent->DestroyComponent();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
@@ -220,6 +225,11 @@ void ALLL_MonsterBase::Dead()
 	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
 	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
+		if (!IsValid(TempNiagaraComponent))
+		{
+			continue;
+		}
+		
     	TempNiagaraComponent->DestroyComponent();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}

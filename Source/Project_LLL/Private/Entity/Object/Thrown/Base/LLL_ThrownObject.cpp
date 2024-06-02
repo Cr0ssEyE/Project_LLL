@@ -63,6 +63,11 @@ void ALLL_ThrownObject::Deactivate()
 	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
 	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
+		if (!IsValid(TempNiagaraComponent))
+		{
+			continue;
+		}
+		
 		TempNiagaraComponent->DestroyComponent();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
