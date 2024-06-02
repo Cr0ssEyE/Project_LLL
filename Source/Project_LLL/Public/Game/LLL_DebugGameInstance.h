@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "LLL_GameInstance.h"
 #include "Engine/GameInstance.h"
-#include "ProtoGameInstance.generated.h"
+#include "LLL_DebugGameInstance.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMonsterToggleAIDelegate, bool, value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FObjectTrapActivateDelegate);
@@ -14,12 +14,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FObjectTrapActivateDelegate);
  * 
  */
 UCLASS(Blueprintable)
-class PROJECT_LLL_API UProtoGameInstance : public ULLL_GameInstance
+class PROJECT_LLL_API ULLL_DebugGameInstance : public ULLL_GameInstance
 {
 	GENERATED_BODY()
 
 public:
-	UProtoGameInstance();
+	ULLL_DebugGameInstance();
 	
 	// 디버그용 델리게이트
 public:

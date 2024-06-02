@@ -5,7 +5,7 @@
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Enumeration/LLL_UserInterfaceEnumHelper.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 
 void UProtoDebugWidget::NativeConstruct()
 {
@@ -41,5 +41,5 @@ void UProtoDebugWidget::ToggleWidget()
 
 void UProtoDebugWidget::ToggleSoundMessage()
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->ToggleSoundMessageDebug();
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->ToggleSoundMessageDebug();
 }

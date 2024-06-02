@@ -2,7 +2,7 @@
 
 
 #include "Entity/Object/Interactive/LLL_EnhanceRewardObject.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 
 void ALLL_EnhanceRewardObject::SetInformation(const FRewardDataTable* Data)
 {
@@ -14,9 +14,9 @@ void ALLL_EnhanceRewardObject::InteractiveEvent()
 	Super::InteractiveEvent();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckObjectActivateDebug())
+		if(DebugGameInstance->CheckObjectActivateDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("능력 강화 보상 상호작용")));
 		}

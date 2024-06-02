@@ -16,7 +16,7 @@ void ALLL_MapSoundManager::SetPitch(float InPitch) const
 	UFMODBlueprintStatics::EventInstanceSetPitch(AMBWrapper, InPitch);
 }
 
-void ALLL_MapSoundManager::SetBattleParameter(float Value)
+void ALLL_MapSoundManager::SetBattleParameter(float Value) const
 {
 	UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FName(TEXT("Battle")), Value);
 }
@@ -45,14 +45,14 @@ void ALLL_MapSoundManager::BeginDestroy()
 	Super::BeginDestroy();
 
 	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
+	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
+	
 	UFMODBlueprintStatics::EventInstanceStop(AMBWrapper);
+	UFMODBlueprintStatics::EventInstanceRelease(AMBWrapper);
 }
 
 void ALLL_MapSoundManager::PlayerDeadHandle(ALLL_BaseCharacter* Character)
 {
-	BGMWrapper.Instance->stop(FMOD_STUDIO_STOP_IMMEDIATE);
-	BGMWrapper.Instance->release();
-	
-	AMBWrapper.Instance->stop(FMOD_STUDIO_STOP_IMMEDIATE);
-	AMBWrapper.Instance->release();
+	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
+	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
 }
