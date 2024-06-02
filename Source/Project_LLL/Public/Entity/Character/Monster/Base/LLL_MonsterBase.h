@@ -66,10 +66,14 @@ public:
 
 public:
 	void UpdateMarkVFX(uint8 NewCount = 0, uint8 MaxCount = 0);
+	void UpdateBleedingVFX(bool ActiveState = true);
 	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UNiagaraComponent> MarkVFXComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraComponent> BleedingVFXComponent;
 	
 //gold section
 public:
