@@ -63,6 +63,11 @@ void ALLL_ThrownObject::Deactivate()
 	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
 	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
+		if (!IsValid(TempNiagaraComponent))
+		{
+			continue;
+		}
+		
 		TempNiagaraComponent->DestroyComponent();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
@@ -105,7 +110,7 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	{
 		OffencePower = (AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel) / static_cast<uint32>(AbilityData->AbilityValueType);
 	}
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, OffencePower);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
 	
 	if(EffectSpecHandle.IsValid())
 	{

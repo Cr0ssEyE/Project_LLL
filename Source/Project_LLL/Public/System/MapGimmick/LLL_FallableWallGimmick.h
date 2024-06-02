@@ -21,6 +21,8 @@ protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
 protected:
+	bool CheckFallable(FVector HitNormal, FVector HitLocation);
+	
 	void FallOutBegin(AActor* Actor, FVector HitNormal, FVector HitLocation);
 	void FallOutStart(AActor* Actor, FVector HitNormal);
 	

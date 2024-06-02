@@ -21,7 +21,10 @@ ULLL_GameInstance::ULLL_GameInstance()
 	StringDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_STRING_DATA, EAssertionLevel::Check);
 
 	ShareableNiagaraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_ShareableNiagaraDataAsset>(PATH_SHAREABLE_NIAGARA_EFFECTS, EAssertionLevel::Check);
-	
+
+	MonsterMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_MONSTER_MPC, EAssertionLevel::Check);
+	ObjectMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_OBJECT_MPC, EAssertionLevel::Check);
+	PlayerMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_PLAYER_MPC, EAssertionLevel::Check);
 	PostProcessMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_POSTPROCESS_MPC, EAssertionLevel::Check);
 	
 	CustomTimeDilation = 1.f;
@@ -45,7 +48,11 @@ void ULLL_GameInstance::Init()
 
 	for (const FAbilityDataTable* LoadAbilityData : LoadAbilityDataArray)
 	{
-		AbilityData.Add(*LoadAbilityData);
+		if (!LoadAbilityData->bIsImplement)
+		{
+			continue;
+		}
+		AbilityData.Add(LoadAbilityData);
 	}
 	
 	TArray<FRewardDataTable*> LoadRewardDataArray;
@@ -53,16 +60,19 @@ void ULLL_GameInstance::Init()
 
 	for (const FRewardDataTable* LoadRewardData : LoadRewardDataArray)
 	{
-		RewardData.Add(*LoadRewardData);
+		RewardData.Add(LoadRewardData);
 	}
 
 	TArray<FStringDataTable*> LoadStringDataArray;
 	StringDataTable->GetAllRows<FStringDataTable>(TEXT("Failed To Load Reward Data Tables"), LoadStringDataArray);
 	for (const FStringDataTable* LoadStringData : LoadStringDataArray)
 	{
-		StringData.Add(*LoadStringData);
+		StringData.Add(LoadStringData);
 	}
 
+	GetWorld()->AddParameterCollectionInstance(MonsterMPC, true);
+	GetWorld()->AddParameterCollectionInstance(ObjectMPC, true);
+	GetWorld()->AddParameterCollectionInstance(PlayerMPC, true);
 	GetWorld()->AddParameterCollectionInstance(PostProcessMPC, true);
 }
 
