@@ -3,11 +3,14 @@
 
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 
+#include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_GateDataAsset.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
+#include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_GateObject::ALLL_GateObject()
@@ -79,11 +82,23 @@ void ALLL_GateObject::OpenGate()
 {
 	//문 오픈 애니 및 이펙
 	FTimerHandle StageDestroyTimerHandle;
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	/*UNiagaraComponent* NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("PlayerTeleportEffect"));
+	NiagaraComponent->SetAsset(GateDataAsset->Particle);
+	NiagaraComponent->SetWorldLocation(Player->GetActorLocation());
+	NiagaraComponent->OnSystemFinished.AddDynamic(this, &ALLL_GateObject::PlayerTeleport);*/
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,GateDataAsset->Particle, Player->GetActorLocation(), FRotator::ZeroRotator, GateDataAsset->ParticleScale);
 	
-	GetWorld()->GetTimerManager().SetTimer(StageDestroyTimerHandle, this, &ALLL_GateObject::StartDestroy, 0.1f, false, 0.5f);
+	GetWorld()->GetTimerManager().SetTimer(StageDestroyTimerHandle, this, &ALLL_GateObject::StartDestroy, 0.1f, false, 3.0f);
 }
 
 void ALLL_GateObject::StartDestroy()
 {
 	GateInteractionDelegate.Broadcast(RewardData);
+}
+
+void ALLL_GateObject::PlayerTeleport(UNiagaraComponent* NiagaraComponent)
+{
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	Player->SetActorHiddenInGame(true);
 }

@@ -49,4 +49,7 @@ protected:
 	void OpenGate();
 
 	void StartDestroy();
+
+	UFUNCTION()
+	void PlayerTeleport(UNiagaraComponent* NiagaraComponent);
 };
