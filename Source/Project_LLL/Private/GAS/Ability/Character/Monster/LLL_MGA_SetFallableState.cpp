@@ -45,7 +45,7 @@ void ULLL_MGA_SetFallableState::ActivateAbility(const FGameplayAbilitySpecHandle
 	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if (ProtoGameInstance->CheckMonsterCollisionDebug())
 		{
@@ -61,7 +61,7 @@ void ULLL_MGA_SetFallableState::ActivateAbility(const FGameplayAbilitySpecHandle
 void ULLL_MGA_SetFallableState::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if (ProtoGameInstance->CheckMonsterCollisionDebug())
 		{

@@ -7,7 +7,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/Character.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -180,7 +180,7 @@ public:
 			);
 			
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+			if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(World->GetGameInstance()))
 			{
 				if(ProtoGameInstance->CheckPlayerDashDebug())
 				{
@@ -209,7 +209,7 @@ public:
 				Params
 				);
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+			if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(World->GetGameInstance()))
 			{
 				if(ProtoGameInstance->CheckPlayerDashDebug())
 				{
@@ -254,7 +254,7 @@ public:
 				);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+			if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(World->GetGameInstance()))
 			{
 				if(ProtoGameInstance->CheckPlayerDashDebug())
 				{

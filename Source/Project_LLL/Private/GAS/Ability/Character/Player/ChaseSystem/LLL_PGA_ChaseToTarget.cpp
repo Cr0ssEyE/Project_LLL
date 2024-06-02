@@ -14,7 +14,7 @@
 #include "Constant/LLL_MonatgeSectionName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 
@@ -59,7 +59,7 @@ void ULLL_PGA_ChaseToTarget::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseToTarget::OwnerLaunchToChaseHand);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckPlayerDashDebug())
 		{
@@ -93,7 +93,7 @@ void ULLL_PGA_ChaseToTarget::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckPlayerDashDebug())
 		{

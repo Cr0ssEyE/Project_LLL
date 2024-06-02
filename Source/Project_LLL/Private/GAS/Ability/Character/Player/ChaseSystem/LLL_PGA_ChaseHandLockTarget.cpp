@@ -10,7 +10,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 
@@ -49,7 +49,7 @@ void ULLL_PGA_ChaseHandLockTarget::ActivateAbility(const FGameplayAbilitySpecHan
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandLockTarget::GrabTargetEntity);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
 		{
@@ -91,7 +91,7 @@ bool ULLL_PGA_ChaseHandLockTarget::TryGrabAroundEntity(const FGameplayAbilitySpe
 	if(Result.GetActor())
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if(ProtoGameInstance->CheckPlayerChaseActionDebug())
 			{
@@ -105,7 +105,7 @@ bool ULLL_PGA_ChaseHandLockTarget::TryGrabAroundEntity(const FGameplayAbilitySpe
 	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
 		{
@@ -133,7 +133,7 @@ void ULLL_PGA_ChaseHandLockTarget::GrabTargetEntity()
 	HandProjectile->Deactivate();
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
 		{
@@ -165,7 +165,7 @@ void ULLL_PGA_ChaseHandLockTarget::CheckGrabbedTime()
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if(ProtoGameInstance->CheckPlayerChaseActionDebug())
 			{

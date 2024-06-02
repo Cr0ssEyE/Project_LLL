@@ -9,7 +9,7 @@
 #include "LevelSequencePlayer.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 #include "Interface/LLL_KnockBackInterface.h"
@@ -53,7 +53,7 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 	else
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if (ProtoGameInstance->CheckPlayerSkillDebug())
 			{
@@ -99,7 +99,7 @@ void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 	if (HitResults.IsEmpty())
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if (ProtoGameInstance->CheckPlayerSkillDebug())
 			{

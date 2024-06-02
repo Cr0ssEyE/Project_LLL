@@ -7,7 +7,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_MagicDataAsset.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Object/Thrown/LLL_MagicAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
@@ -37,7 +37,7 @@ void ALLL_Magic::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if (ProtoGameInstance->CheckMonsterAttackDebug())
 		{

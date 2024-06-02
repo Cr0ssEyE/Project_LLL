@@ -8,7 +8,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "DataTable/LLL_RewardDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "UI/Object/LLL_ProductObjectPriceWidget.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
@@ -119,7 +119,7 @@ void ALLL_RewardObject::InteractiveEvent()
 		// 최대 체력
 	case 3:
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if (ProtoGameInstance->CheckObjectActivateDebug())
 			{
@@ -131,7 +131,7 @@ void ALLL_RewardObject::InteractiveEvent()
 		// 능력 강화
 	case 4:
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if (ProtoGameInstance->CheckObjectActivateDebug())
 			{

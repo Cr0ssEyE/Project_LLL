@@ -14,7 +14,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "DataAsset/LLL_PlayerChaseHandDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -109,7 +109,7 @@ void ALLL_PlayerChaseHand::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other,
 	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
 		{

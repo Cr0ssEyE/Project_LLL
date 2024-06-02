@@ -3,7 +3,7 @@
 
 #include "Entity/Object/Interactive/LLL_MaxHPRewardObject.h"
 
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 
 void ALLL_MaxHPRewardObject::SetInformation(const FRewardDataTable* Data)
 {
@@ -17,7 +17,7 @@ void ALLL_MaxHPRewardObject::InteractiveEvent()
 	Super::InteractiveEvent();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if(ProtoGameInstance->CheckObjectActivateDebug())
 			{

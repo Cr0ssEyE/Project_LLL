@@ -11,7 +11,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 
 ALLL_BreakableObjectBase::ALLL_BreakableObjectBase()
 {
@@ -58,7 +58,7 @@ void ALLL_BreakableObjectBase::DropGold(const FGameplayTag tag, int32 data)
 		{
 			GoldComponent->IncreaseMoney(GoldData);
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+			if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 			{
 				if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
 				{

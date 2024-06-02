@@ -10,7 +10,7 @@
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 #include "Util/LLL_FModPlayHelper.h"
@@ -49,7 +49,7 @@ void ULLL_PGA_ChaseHandThrow::EndAbility(const FGameplayAbilitySpecHandle Handle
 	{
 		// 단, 도달한 위치 주변에 몬스터가 있다면 그랩으로 전환
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if(ProtoGameInstance->CheckPlayerChaseActionDebug())
 			{
@@ -61,7 +61,7 @@ void ULLL_PGA_ChaseHandThrow::EndAbility(const FGameplayAbilitySpecHandle Handle
 		{
 			GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_RELEASE));
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+			if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 			{
 				if(ProtoGameInstance->CheckPlayerChaseActionDebug())
 				{
@@ -91,7 +91,7 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 		TargetLocation = StartLocation + (TargetLocation - StartLocation).GetSafeNormal2D() * ChaseHandAttributeSet->GetMinimumThrowDistance();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if(ProtoGameInstance->CheckPlayerChaseActionDebug())
 			{
@@ -123,7 +123,7 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandThrow::CheckReached);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
 		{

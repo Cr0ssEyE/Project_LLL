@@ -10,7 +10,7 @@
 #include "DataTable/LLL_MonsterSpawnDataTable.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "NiagaraFunctionLibrary.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawnPointComponent.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -115,7 +115,7 @@ void ALLL_MonsterSpawner::SpawnMonster()
 							Monsters.Emplace(MonsterBase);
 						
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-							if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+							if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 							{
 								if (ProtoGameInstance->CheckMonsterSpawnDataDebug())
 								{
