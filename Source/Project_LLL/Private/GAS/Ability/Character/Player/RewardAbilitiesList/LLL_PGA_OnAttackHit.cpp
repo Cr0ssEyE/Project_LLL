@@ -17,14 +17,15 @@
 #include "Util/LLL_AbilityDataHelper.h"
 
 ULLL_PGA_OnAttackHit::ULLL_PGA_OnAttackHit() :
-bUseOnAttackHitEffect(false),
-bUseOnAttackHitSpawnObject(false),
-AbilityObjectLocationTarget(EEffectApplyTarget::Target),
-bUseOnAttackHitSpawnThrown(false),
-ThrowSpeed(0.f),
-SpawnOffsetTime(0.f)
+	bUseOnAttackHitEffect(false),
+	bUseOnAttackHitSpawnObject(false),
+	AbilityObjectLocationTarget(EEffectApplyTarget::Target),
+	bUseOnAttackHitSpawnThrown(false),
+	ThrowSpeed(0.f),
+	SpawnOffsetTime(0.f),
+	bUseOnAttackHitGrantTag(false),
+	bAdditiveOrSubtract(true)
 {
-	
 }
 
 void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -63,6 +64,13 @@ void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	{
 		SpawnThrownWhenHit();
 	}
+
+	if (bUseOnAttackHitGrantTag && GrantTagContainer.IsValid())
+	{
+		GrantTagWhenHit();
+	}
+
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void ULLL_PGA_OnAttackHit::ApplyEffectWhenHit()
@@ -89,8 +97,6 @@ void ULLL_PGA_OnAttackHit::ApplyEffectWhenHit()
 	{
 		K2_ApplyGameplayEffectSpecToTarget(EffectHandle, CurrentEventData.TargetData);
 	}
-	
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void ULLL_PGA_OnAttackHit::SpawnObjectWhenHit()
@@ -150,5 +156,39 @@ void ULLL_PGA_OnAttackHit::SpawnThrownWhenHit()
 		}), TempSpawnOffsetTime, false);
 
 		TempSpawnOffsetTime += SpawnOffsetTime;
+	}
+}
+
+void ULLL_PGA_OnAttackHit::GrantTagWhenHit()
+{
+	float GrantNum = 1.f;
+	if (TagGrantNumTag == TAG_GAS_ABILITY_CHANGEABLE_VALUE)
+	{
+		GrantNum = AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel();
+	}
+	else // TagGrantNumTag == TAG_GAS_ABILITY_UNCHANGEABLE_VALUE
+	{
+		GrantNum = AbilityData->UnchangeableValue;
+	}
+	
+	if (bAdditiveOrSubtract) // Add
+	{
+		for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
+		{
+			if (IAbilitySystemInterface* ASC = Cast<IAbilitySystemInterface>(Actor))
+			{
+				ASC->GetAbilitySystemComponent()->AddLooseGameplayTags(GrantTagContainer, GrantNum);
+			}
+		}
+	}
+	else // Subtract
+	{
+		for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
+		{
+			if (IAbilitySystemInterface* ASC = Cast<IAbilitySystemInterface>(Actor))
+			{
+				ASC->GetAbilitySystemComponent()->RemoveLooseGameplayTags(GrantTagContainer, GrantNum);
+			}
+		}
 	}
 }

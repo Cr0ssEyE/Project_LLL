@@ -14,6 +14,8 @@
 #include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_MaterialParameterName.h"
+#include "Constant/LLL_MeshSocketName.h"
 #include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
@@ -56,6 +58,7 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 
 	MarkVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MarkStatusEffect"));
 	MarkVFXComponent->SetupAttachment(RootComponent);
+	MarkVFXComponent->SetAutoActivate(false);
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -84,9 +87,11 @@ void ALLL_MonsterBase::BeginPlay()
 	MaskMeshComponent->SetRelativeTransform(MonsterBaseDataAsset->MaskTransform);
 
 	UNiagaraSystem* MarkCountNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->MarkCountNiagaraSystem;
-	MarkVFXComponent->SetAsset(MarkCountNiagaraSystem);
-	MarkVFXComponent->SetAutoActivate(false);
-	MarkVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+	if (IsValid(MarkCountNiagaraSystem))
+	{
+		MarkVFXComponent->SetAsset(MarkCountNiagaraSystem);
+		MarkVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_OVERHEAD);
+	}
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
@@ -319,13 +324,28 @@ void ALLL_MonsterBase::ToggleAIHandle(bool value)
 
 void ALLL_MonsterBase::UpdateMarkVFX(uint8 NewCount, uint8 MaxCount)
 {
-	if (NewCount >= MaxCount)
+	if (NewCount > MaxCount)
 	{
 		return;
 	}
 
+	UNiagaraParameterCollection* MarkParam = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->MarkCountNiagaraParameterCollection;
+	if (!IsValid(MarkParam))
+	{
+		return;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("표식 값 갱신: %d"), NewCount));
+	MarkVFXComponent->SetFloatParameter(NS_MARK_COUNT, NewCount - 1.f);
 	
-	// MarkVFXComponent
+	if (NewCount > 0)
+	{
+		MarkVFXComponent->ActivateSystem();
+	}
+	else
+	{
+		MarkVFXComponent->Deactivate();
+	}
 }
 
 void ALLL_MonsterBase::DropGold(const FGameplayTag tag, int32 data)

@@ -68,7 +68,7 @@ public:
 	void UpdateMarkVFX(uint8 NewCount = 0, uint8 MaxCount = 0);
 	
 protected:
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UNiagaraComponent> MarkVFXComponent;
 	
 //gold section

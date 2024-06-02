@@ -27,6 +27,8 @@ protected:
 	virtual void SpawnObjectWhenHit();
 
 	virtual void SpawnThrownWhenHit();
+
+	virtual void GrantTagWhenHit();
 	
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그")
@@ -67,4 +69,18 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "GAS|ThrownObject", DisplayName = "투사체 스폰 간격 시간", meta =(EditCondition = "bUseOnAttackHitSpawnThrown == true", EditConditionHides))
 	float SpawnOffsetTime;
+
+	// Tag
+protected:
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "적중시 태그 부여 여부")
+	uint8 bUseOnAttackHitGrantTag : 1;
+
+	UPROPERTY(EditAnywhere, Category = "GAS|GrantTag", DisplayName = "태그 부여 목록", meta =(EditCondition = "bUseOnAttackHitGrantTag == true", EditConditionHides))
+	FGameplayTagContainer GrantTagContainer;
+
+	UPROPERTY(EditAnywhere, Category = "GAS|GrantTag", DisplayName = "태그 부여 갯수를 설정하는 어빌리티 데이터 값 태그", meta =(EditCondition = "bUseOnAttackHitGrantTag == true", EditConditionHides))
+	FGameplayTag TagGrantNumTag;
+	
+	UPROPERTY(EditAnywhere, Category = "GAS|GrantTag", DisplayName = "태그 증가(true)|감소(false)", meta =(EditCondition = "bUseOnAttackHitGrantTag == true", EditConditionHides))
+	uint8 bAdditiveOrSubtract : 1;
 };

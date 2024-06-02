@@ -90,11 +90,17 @@ void ULLL_MonsterASC::OnMarkTagAdded(const FGameplayTag Tag, int32 count)
 	
 	GetWorld()->GetTimerManager().SetTimer(MarkTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]()
 	{
+		if (!Monster)
+		{
+			return;
+		}
+		
 		SetTagMapCount(TAG_GAS_MARK_STACK,0);
 		if (HasMatchingGameplayTag(TAG_GAS_STATUS_MARKED))
 		{
 			RemoveLooseGameplayTag(TAG_GAS_STATUS_MARKED);
 		}
+		Monster->UpdateMarkVFX(0, AbnormalStatusAttributeSet->GetMaxMarkStack());
 	}), AbnormalStatusAttributeSet->GetMarkStatusDuration(), false);
 }
 
