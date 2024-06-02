@@ -64,6 +64,13 @@ public:
 	UFUNCTION()
 	void ToggleAIHandle(bool value);
 
+public:
+	void UpdateMarkVFX(uint8 NewCount = 0, uint8 MaxCount = 0);
+	
+protected:
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> MarkVFXComponent;
+	
 //gold section
 public:
 	virtual void DropGold(const FGameplayTag tag, int32 data) override;

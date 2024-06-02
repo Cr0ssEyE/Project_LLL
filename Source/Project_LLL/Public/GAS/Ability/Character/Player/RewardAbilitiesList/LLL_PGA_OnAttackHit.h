@@ -32,6 +32,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그")
 	FGameplayTag TriggerRequiredTag;
 
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "액터 상태 요구 태그")
+	FGameplayTag ActorStateRequiredTag;
+	
 	// GE
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "적중시 GE 발생 여부")

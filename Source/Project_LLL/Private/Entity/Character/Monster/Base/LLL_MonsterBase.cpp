@@ -14,6 +14,7 @@
 #include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
@@ -52,6 +53,9 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	MaskMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mask"));
 	MaskMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	MaskMeshComponent->SetupAttachment(RootComponent);
+
+	MarkVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MarkStatusEffect"));
+	MarkVFXComponent->SetupAttachment(RootComponent);
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -79,6 +83,11 @@ void ALLL_MonsterBase::BeginPlay()
 	MaskMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, MonsterBaseDataAsset->MaskAttachSocketName);
 	MaskMeshComponent->SetRelativeTransform(MonsterBaseDataAsset->MaskTransform);
 
+	UNiagaraSystem* MarkCountNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->MarkCountNiagaraSystem;
+	MarkVFXComponent->SetAsset(MarkCountNiagaraSystem);
+	MarkVFXComponent->SetAutoActivate(false);
+	MarkVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -306,6 +315,17 @@ void ALLL_MonsterBase::ToggleAIHandle(bool value)
 			BrainComponent->PauseLogic(TEXT("AI Debug Is Deactivated"));
 		}
 	}
+}
+
+void ALLL_MonsterBase::UpdateMarkVFX(uint8 NewCount, uint8 MaxCount)
+{
+	if (NewCount >= MaxCount)
+	{
+		return;
+	}
+
+	
+	// MarkVFXComponent
 }
 
 void ALLL_MonsterBase::DropGold(const FGameplayTag tag, int32 data)

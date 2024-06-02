@@ -36,6 +36,12 @@ void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}
+
+	if (ActorStateRequiredTag.IsValid() && !GetAbilitySystemComponentFromActorInfo_Checked()->HasMatchingGameplayTag(ActorStateRequiredTag))
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
+	}
 	
 	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(CurrentEventData.TargetData, 0))
 	{
