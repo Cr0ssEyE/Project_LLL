@@ -116,12 +116,6 @@ void ALLL_RewardGimmick::SetRewardButtons()
 		RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
 		return;
 	}
-	
-	//보상쪽 상세 시스템 기획이 나오면 바뀔 부분
-	// do while 종료 조건
-	// bIsImplement == true
-	// !GettenIndexArray.Contains(Index)
-	// !InstanceRewardIndexArray.Contains(Index)
 
 	TArray<TTuple<const FAbilityDataTable*, float>> AbilityDataTables = NormalizedWeightRewardArray;
 	
