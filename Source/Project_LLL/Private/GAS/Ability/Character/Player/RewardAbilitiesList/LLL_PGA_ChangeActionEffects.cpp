@@ -18,7 +18,7 @@ bool ULLL_PGA_ChangeActionEffects::CanActivateAbility(const FGameplayAbilitySpec
 
 	if (bIsGenerated || !TargetAnimMontage)
 	{
-		return false;
+		Result = false;
 	}
 	
 	return Result;

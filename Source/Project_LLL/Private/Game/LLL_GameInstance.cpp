@@ -86,6 +86,16 @@ void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actor
 	}
 }
 
+void ULLL_GameInstance::SetMapSoundManagerBattleParameter(float Value) const
+{
+	if (!IsValid(MapSoundManager))
+	{
+		return;
+	}
+
+	MapSoundManager->SetBattleParameter(Value);
+}
+
 void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation)
 {
 	if (!IsValid(GetWorld()))
@@ -113,11 +123,11 @@ void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Act
 		{
 			FModInterface->GetFModAudioComponent()->SetPitch(CustomTimeDilation);
 		}
+	}
 
-		if (const ALLL_MapSoundManager* MapSoundManager = Cast<ALLL_MapSoundManager>(Actor))
-		{
-			MapSoundManager->SetPitch(CustomTimeDilation);
-		}
+	if (IsValid(MapSoundManager))
+	{
+		MapSoundManager->SetPitch(CustomTimeDilation);
 	}
 
 	for (auto Actor : SucceedActors)

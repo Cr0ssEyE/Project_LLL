@@ -44,7 +44,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitAttributeSet() override;
 	virtual void SetFModParameter(EFModParameter FModParameter) override;
-
+	
 	virtual void Damaged(AActor* Attacker, bool IsDOT = false) override;
 	virtual void Dead() override;
 	
@@ -63,10 +63,12 @@ public:
 	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
+	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
 	
 	FVector CheckMouseLocation();
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
+	void SetAttacker(ALLL_BaseCharacter* Attacker);
 
 protected:
 	void TurnToMouseCursor();
@@ -124,7 +126,7 @@ private:
 	// 상호작용 관련 변수
 private:
 	UPROPERTY()
-	TArray<ALLL_InteractiveObject*> InteractiveObjects;
+	TArray<TObjectPtr<ALLL_InteractiveObject>> InteractiveObjects;
 
 	UPROPERTY()
 	int SelectedInteractiveObjectNum;
@@ -138,13 +140,15 @@ private:
 	float ToCursorRotationMultiplyValue;
 	int32 LastAttackerMonsterId;
 	int32 CurrentCombo;
+	TArray<TObjectPtr<ALLL_BaseCharacter>> Attackers;
 
 	// 상태 관련 함수
 protected:
 	UFUNCTION()
 	void DeadMotionEndedHandle();
 
-	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
+	UFUNCTION()
+	void AttackerDeadHandle(ALLL_BaseCharacter* Character);
 	
 	// 상태 관련 변수
 protected:
@@ -156,6 +160,7 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_ObjectPoolingComponent> ObjectPoolingComponent;
+	
 	//UI 관련
 protected:
 	UPROPERTY(VisibleAnywhere)
