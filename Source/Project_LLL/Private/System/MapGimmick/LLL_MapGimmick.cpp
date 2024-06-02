@@ -38,6 +38,8 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 	FadeInSequence = MapDataAsset->FadeIn;
 	FadeOutSequence = MapDataAsset->FadeOut;
 	LevelSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
+
+	Seed = 0;
 }
 
 void ALLL_MapGimmick::OnConstruction(const FTransform& Transform)
@@ -94,9 +96,9 @@ void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* Overlapped
 
 void ALLL_MapGimmick::CreateMap()
 {
-	StageActor = GetWorld()->SpawnActor<AActor>(Stage, RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
+	RoomActor = GetWorld()->SpawnActor<AActor>(RoomClass, RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
 	
-	for (USceneComponent* ChildComponent : StageActor->GetRootComponent()->GetAttachChildren())
+	for (USceneComponent* ChildComponent : RoomActor->GetRootComponent()->GetAttachChildren())
 	{
 		if (!IsValid(ShoppingMapComponent))
 		{
@@ -118,7 +120,7 @@ void ALLL_MapGimmick::CreateMap()
 		}
 	}
 
-	StageActor->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::ChangeMap);
+	RoomActor->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::ChangeMap);
 	
 	if (IsValid(ShoppingMapComponent))
 	{
@@ -127,8 +129,8 @@ void ALLL_MapGimmick::CreateMap()
 		return;
 	}
 	
-	StageActor->GetAllChildActors(StageChildActors, true);
-	for (AActor* ChildActor : StageChildActors)
+	RoomActor->GetAllChildActors(RoomChildActors, true);
+	for (AActor* ChildActor : RoomChildActors)
 	{
 		if (ALLL_MonsterSpawner* Spawner = Cast<ALLL_MonsterSpawner>(ChildActor))
 		{
@@ -145,8 +147,29 @@ void ALLL_MapGimmick::CreateMap()
 
 void ALLL_MapGimmick::RandomMap()
 {
-	Seed = FMath::RandRange(0, MapDataAsset->MapData.Num() - 1);
-	Stage = MapDataAsset->MapData[Seed];
+	CurrentRoomNumber++;
+	if (CurrentRoomNumber == MapDataAsset->StoreRoom)
+	{
+		RoomClass = MapDataAsset->Store;
+		return;
+	}
+
+	if (CurrentRoomNumber > MapDataAsset->MaximumRoom)
+	{
+		RoomClass = MapDataAsset->Boss;
+		return;
+	}
+	
+	while (true)
+	{
+		uint8 data = Seed;
+		Seed = FMath::RandRange(0, MapDataAsset->Rooms.Num() - 1);
+		if (Seed != data)
+		{
+			break;
+		}
+	}
+	RoomClass = MapDataAsset->Rooms[Seed];
 }
 
 void ALLL_MapGimmick::ChangeMap(AActor* DestroyedActor)
@@ -176,8 +199,8 @@ void ALLL_MapGimmick::AllGatesDestroy()
 void ALLL_MapGimmick::OnInteractionGate(FRewardDataTable* Data)
 {
 	RewardData = Data;
-	StageChildActors.Empty();
-	StageActor->Destroy();
+	RoomChildActors.Empty();
+	RoomActor->Destroy();
 }
 
 void ALLL_MapGimmick::EnableAllGates()

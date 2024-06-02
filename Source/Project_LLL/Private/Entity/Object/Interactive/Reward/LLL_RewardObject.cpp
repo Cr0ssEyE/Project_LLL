@@ -19,7 +19,8 @@ ALLL_RewardObject::ALLL_RewardObject()
 
 	RewardMesh = RewardObjectDataAsset->StaticMesh; 
 	BaseMesh->SetStaticMesh(RewardMesh);
-
+	BaseMesh->SetMaterial(0, RewardObjectDataAsset->MaterialInst);
+	
 	PriceWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("PriceWidgetComponent");
 	PriceWidgetComponent->SetupAttachment(RootComponent);
 	PriceWidget = CreateDefaultSubobject<ULLL_ProductObjectPriceWidget>(TEXT("PriceWidget"));
@@ -56,6 +57,27 @@ void ALLL_RewardObject::ApplyProductEvent()
 void ALLL_RewardObject::SetInformation(FRewardDataTable* Data)
 {
 	RewardData = Data;
+
+	switch (RewardData->ID)
+	{
+			// 능력
+		case 1:
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Green);
+		break;
+			// 재화
+		case 2:
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Yellow);
+		break;
+			// 최대 체력
+		case 3:
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Red);
+		break;
+			// 능력 강화
+		case 4:
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Gray);
+			break;
+	default:;
+	}
 }
 
 void ALLL_RewardObject::InteractiveEvent()
@@ -107,6 +129,15 @@ void ALLL_RewardObject::InteractiveEvent()
 		break;
 		// 능력 강화
 	case 4:
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckObjectActivateDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("player 어빌리티 강화"));
+			}
+		}
+#endif
 		break;
 	default:;
 	}

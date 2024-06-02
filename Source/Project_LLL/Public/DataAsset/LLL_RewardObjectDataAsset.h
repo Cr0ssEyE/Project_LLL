@@ -25,6 +25,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "위젯 크기")
 	FVector2D PriceWidgetSize;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Material", DisplayName = "매쉬 머티리얼")
+	TObjectPtr<UMaterialInstance> MaterialInst;
+
 	UPROPERTY(EditDefaultsOnly, Category = "ProductData", DisplayName = "가격")
 	float Price;
 };

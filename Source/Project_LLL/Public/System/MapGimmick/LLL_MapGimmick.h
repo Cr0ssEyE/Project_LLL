@@ -58,16 +58,16 @@ protected:
 	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
 	
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AActor> Stage;
+	TSubclassOf<AActor> RoomClass;
 
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UBoxComponent> StageTrigger;
+	TObjectPtr<UBoxComponent> RoomTrigger;
 
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<AActor> StageActor;
+	TObjectPtr<AActor> RoomActor;
 
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
-	TArray<AActor*> StageChildActors;
+	TArray<AActor*> RoomChildActors;
 
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_ShoppingMapComponent> ShoppingMapComponent;
@@ -75,7 +75,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_PlayerSpawnPointComponent> PlayerSpawnPointComponent;
 
-	uint32 Seed;
+	uint8 Seed;
 
 	UFUNCTION()
 	void OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -92,6 +92,12 @@ protected:
 private:
 	UPROPERTY()
 	uint8 GateIndex;
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 RoomNumber;
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 CurrentRoomNumber;
 
 // Gate Section
 protected:
