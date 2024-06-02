@@ -32,7 +32,7 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		return;
 	}
 
-	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetCharacter());
+	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetCharacter());
 	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 	const float DetectDistance = MonsterAttributeSet->GetDetectDistance();
 	const float ProximityDetectDistance = MonsterAttributeSet->GetProximityDetectDistance();
@@ -57,7 +57,11 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		DetectPlayer = true;
 	}
 
-	if (DetectPlayer && !Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER)))
+	if (Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER)))
+	{
+		Player->SetAttacker(Monster);
+	}
+	else if (DetectPlayer)
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, Player);
 	}

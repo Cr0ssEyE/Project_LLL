@@ -53,6 +53,15 @@ void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 
 		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
 		Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
+
+		if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
+		{
+			ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+			if (IsValid(Player))
+			{
+				Player->SetAttacker(Monster);
+			}
+		}
 	}
 }
 
