@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BT/Base/LLL_MoveToPlayer_BTTask.h"
+#include "BT/Base/LLL_MoveTo_BTTaskNode.h"
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -10,13 +10,13 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 
-ULLL_MoveToPlayer_BTTask::ULLL_MoveToPlayer_BTTask()
+ULLL_MoveTo_BTTaskNode::ULLL_MoveTo_BTTaskNode()
 {
-	NodeName = TEXT("Move To Player");
+	NodeName = TEXT("LLL Move To");
 	bNotifyTick = true;
 }
 
-EBTNodeResult::Type ULLL_MoveToPlayer_BTTask::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type ULLL_MoveTo_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	const EBTNodeResult::Type NodeResult = Super::ExecuteTask(OwnerComp, NodeMemory);
 
@@ -39,7 +39,7 @@ EBTNodeResult::Type ULLL_MoveToPlayer_BTTask::ExecuteTask(UBehaviorTreeComponent
 	return EBTNodeResult::InProgress;
 }
 
-void ULLL_MoveToPlayer_BTTask::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+void ULLL_MoveTo_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 	

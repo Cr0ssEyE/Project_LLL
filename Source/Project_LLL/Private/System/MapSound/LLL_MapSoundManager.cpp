@@ -44,6 +44,11 @@ void ALLL_MapSoundManager::BeginDestroy()
 {
 	Super::BeginDestroy();
 
+	if (!IsValid(GetWorld()))
+	{
+		return;
+	}
+
 	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
 	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
 	

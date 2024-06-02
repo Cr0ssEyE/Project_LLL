@@ -75,15 +75,9 @@ void ALLL_MonsterSpawner::NotifyActorBeginOverlap(AActor* OtherActor)
 		if (IsValid(Player))
 		{
 			SpawnMonster();
+			StartSpawnDelegate.Broadcast();
 		}
 	}
-}
-
-void ALLL_MonsterSpawner::BeginDestroy()
-{
-	Super::BeginDestroy();
-
-	MonsterSpawnerDestroyDelegate.Broadcast();
 }
 
 void ALLL_MonsterSpawner::SpawnMonster()

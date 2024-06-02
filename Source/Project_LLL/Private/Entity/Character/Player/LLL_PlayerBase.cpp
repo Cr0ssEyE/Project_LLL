@@ -204,17 +204,6 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->PauseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::PauseAction);
 }
 
-void ALLL_PlayerBase::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	APlayerController* PlayerController = Cast<APlayerController>(NewController);
-	if (IsValid(PlayerController))
-	{
-		// PlayerController->SetAudioListenerOverride(SpringArm, FVector::ZeroVector, FRotator::ZeroRotator);
-	}
-}
-
 void ALLL_PlayerBase::InitAttributeSet()
 {
 	Super::InitAttributeSet();
@@ -309,7 +298,7 @@ FVector ALLL_PlayerBase::CheckMouseLocation()
 	PlayerController->DeprojectMousePositionToWorld(MouseWorldLocation, MouseWorldDirection);
 	
 	FHitResult HitResult;
-	FCollisionQueryParams Params(NAME_None, false, this);
+	const FCollisionQueryParams Params(NAME_None, false, this);
 
 	bool bResult = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
@@ -513,24 +502,6 @@ void ALLL_PlayerBase::PlayerRotateToMouseCursor(float RotationMultiplyValue, boo
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
 }
 
-void ALLL_PlayerBase::SetAttacker(ALLL_BaseCharacter* Attacker)
-{
-	if (Attackers.Contains(Attacker))
-	{
-		return;
-	}
-
-	if (Attacker->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_PlayerBase::AttackerDeadHandle))
-	{
-		return;
-	}
-	
-	Attacker->CharacterDeadDelegate.AddDynamic(this, &ALLL_PlayerBase::AttackerDeadHandle);
-	Attackers.Emplace(Attacker);
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	GameInstance->SetMapSoundManagerBattleParameter(1.0f);
-}
-
 void ALLL_PlayerBase::TurnToMouseCursor()
 {
 	if (GetActorRotation() == MouseDirectionRotator || !GetCharacterAnimInstance()->IsSlotActive(ANIM_SLOT_ATTACK))
@@ -554,8 +525,8 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	PlayerController->GetViewportSize(ViewportX, ViewportY);
 	ScreenViewport.X = ViewportX;
 	ScreenViewport.Y = ViewportY;
-	
-	FVector2d MovementDirection = (MouseScreenLocation / ScreenViewport - FVector2d(0.5f, 0.5f)) * FVector2d(1.f, -1.f);
+
+	const FVector2d MovementDirection = (MouseScreenLocation / ScreenViewport - FVector2d(0.5f, 0.5f)) * FVector2d(1.f, -1.f);
 	FVector CameraMoveVector = FVector(MovementDirection.X, MovementDirection.Y, 0.f);
 	CameraMoveVector = SpringArm->GetDesiredRotation().UnrotateVector(CameraMoveVector);
 	
@@ -597,8 +568,8 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PlayLowHPAnimation);
 	}
-	
-	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Attacker);
+
+	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Attacker);
 	if (!IsValid(Monster))
 	{
 		return;
@@ -627,21 +598,10 @@ void ALLL_PlayerBase::DeadMotionEndedHandle()
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }
 
-void ALLL_PlayerBase::AttackerDeadHandle(ALLL_BaseCharacter* Character)
-{
-	Attackers.Remove(Character);
-
-	if (Attackers.Num() == 0)
-	{
-		const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-		GameInstance->SetMapSoundManagerBattleParameter(0.0f);
-	}
-}
-
 void ALLL_PlayerBase::DeactivatePPLowHP()
 {
 	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(GetGameInstance());
-	UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
+	const UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
 	ScalarValue += GetWorld()->GetDeltaSeconds() / 3;
 	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOWHP_RADIUS, ScalarValue);
 	if (ScalarValue <= PlayerDataAsset->HPLowScalarMaxValue)
@@ -653,7 +613,7 @@ void ALLL_PlayerBase::DeactivatePPLowHP()
 void ALLL_PlayerBase::ActivatePPLowHP()
 {
 	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(GetGameInstance());
-	UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
+	const UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
 	ScalarValue = PlayerDataAsset->HPLowScalarLowValue;
 	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOWHP_RADIUS, ScalarValue);
 }
