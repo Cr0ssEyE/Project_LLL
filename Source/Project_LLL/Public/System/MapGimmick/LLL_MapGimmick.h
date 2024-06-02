@@ -160,6 +160,9 @@ protected:
 
 	void RewardSpawn();
 
+	UFUNCTION()
+	void SetRewardWidget();
+
 //Sequence Section
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = Sequence)

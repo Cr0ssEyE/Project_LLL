@@ -103,6 +103,10 @@ void ALLL_MapGimmick::CreateMap()
 		if (!IsValid(ShoppingMapComponent))
 		{
 			ShoppingMapComponent = Cast<ULLL_ShoppingMapComponent>(ChildComponent);
+			if (IsValid(ShoppingMapComponent))
+			{
+				ShoppingMapComponent->ShopingDelegate.AddUObject(this, &ALLL_MapGimmick::SetRewardWidget);
+			}
 		}
 
 		if (!IsValid(PlayerSpawnPointComponent))
@@ -121,12 +125,12 @@ void ALLL_MapGimmick::CreateMap()
 	}
 
 	RoomActor->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::ChangeMap);
+
 	
 	if (IsValid(ShoppingMapComponent))
 	{
 		ShoppingMapComponent->SetProducts();
 		SetState(EStageState::NEXT);
-		return;
 	}
 	
 	RoomActor->GetAllChildActors(RoomChildActors, true);
@@ -137,12 +141,12 @@ void ALLL_MapGimmick::CreateMap()
 			MonsterSpawner = Spawner;
 		}
 	}
-	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
-
 	// TODO: Player loaction change 
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 	SetState(EStageState::READY);
+
+	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
 }
 
 void ALLL_MapGimmick::RandomMap()
@@ -174,10 +178,7 @@ void ALLL_MapGimmick::RandomMap()
 
 void ALLL_MapGimmick::ChangeMap(AActor* DestroyedActor)
 {
-	if(IsValid(ShoppingMapComponent))
-	{
-		ShoppingMapComponent->DeleteProducts();
-	}
+	
 	AllGatesDestroy();
 	RandomMap();
 	CreateMap();
@@ -200,6 +201,12 @@ void ALLL_MapGimmick::OnInteractionGate(FRewardDataTable* Data)
 {
 	RewardData = Data;
 	RoomChildActors.Empty();
+	if(IsValid(ShoppingMapComponent))
+	{
+		ShoppingMapComponent->DeleteProducts();
+	}
+	ShoppingMapComponent = nullptr;
+	PlayerSpawnPointComponent = nullptr;
 	RoomActor->Destroy();
 }
 
@@ -288,4 +295,9 @@ void ALLL_MapGimmick::RewardSpawn()
 		break;
 	default: ;
 	}
+}
+
+void ALLL_MapGimmick::SetRewardWidget()
+{
+	RewardGimmick->SetRewardButtons();
 }

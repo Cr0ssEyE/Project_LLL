@@ -74,7 +74,7 @@ void ALLL_RewardObject::SetInformation(FRewardDataTable* Data)
 		break;
 			// 능력 강화
 		case 4:
-			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Gray);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Black);
 			break;
 	default:;
 	}
@@ -107,6 +107,7 @@ void ALLL_RewardObject::InteractiveEvent()
 	{
 		// 능력
 	case 1:
+		InteractionDelegate.Broadcast();
 		SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 		SelectRewardWidget->SetIsEnabled(true);
 		SelectRewardWidget->FocusToUI();
