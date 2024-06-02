@@ -54,7 +54,7 @@ void ULLL_ShoppingMapComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 void ULLL_ShoppingMapComponent::SetProducts()
 {
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	TArray<FRewardDataTable> RewardData = GameInstance->GetRewardDataTable();
+	TArray<const FRewardDataTable*> RewardData = GameInstance->GetRewardDataTable();
 	for (USceneComponent* ChildComponent : GetOwner()->GetRootComponent()->GetAttachChildren())
 	{
 		ULLL_ProductSpawnPointComponent* SpawnPoint = Cast<ULLL_ProductSpawnPointComponent>(ChildComponent);
@@ -75,9 +75,9 @@ void ULLL_ShoppingMapComponent::SetProducts()
 				break;
 			default: ;
 			}*/
-			FRewardDataTable data = RewardData[FMath::RandRange(0, RewardData.Num() - 1)];
+			const FRewardDataTable* data = RewardData[FMath::RandRange(0, RewardData.Num() - 1)];
 			Product->InteractionDelegate.AddUObject(this, & ULLL_ShoppingMapComponent::SetDelegate);
-			Product->SetInformation(&data);
+			Product->SetInformation(data);
 			Product->ApplyProductEvent();
 			ProductList.Add(Product);
 		}
