@@ -9,7 +9,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_ThrownFeatherDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/LLL_ThrownFeatherAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -58,9 +58,9 @@ void ALLL_ThrownFeather::Tick(float DeltaSeconds)
 	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckPlayerAttackDebug())
+		if (DebugGameInstance->CheckPlayerAttackDebug())
 		{
 			HitCollisionBox->SetHiddenInGame(false);
 		}

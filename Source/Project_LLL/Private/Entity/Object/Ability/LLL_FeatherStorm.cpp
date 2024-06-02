@@ -7,7 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Object/Ability/LLL_FeatherStormAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
@@ -26,9 +26,9 @@ void ALLL_FeatherStorm::BeginPlay()
 	AbilityObjectAttributeSet = FeatherStormAttributeSet;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckPlayerAttackDebug())
+		if (DebugGameInstance->CheckPlayerAttackDebug())
 		{
 			DrawDebugBox(GetWorld(), GetActorLocation(), OverlapCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, AbilityObjectAttributeSet->GetDestroyTimer());
 		}

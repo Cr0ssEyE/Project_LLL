@@ -13,6 +13,7 @@
  * 
  */
 
+class ALLL_MapSoundManager;
 class ULLL_ShareableNiagaraDataAsset;
 
 UCLASS()
@@ -26,6 +27,8 @@ public:
 	virtual void Init() override;
 
 public:
+	FORCEINLINE void SetMapSoundManager(ALLL_MapSoundManager* InMapSoundManager) { MapSoundManager = InMapSoundManager; }
+	
 	// 데이터 테이블 Getter
 	FORCEINLINE TArray<const FAbilityDataTable*> GetAbilityDataTable() const { return AbilityData; }
 	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterData; }
@@ -43,8 +46,10 @@ public:
 	// 데이터 에셋
 public:
 	FORCEINLINE TObjectPtr<const ULLL_ShareableNiagaraDataAsset> GetShareableNiagaraDataAsset() const { return ShareableNiagaraDataAsset; }
+	
 public:
 	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
+	void SetMapSoundManagerBattleParameter(float Value) const;
 
 protected:
 	void SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation);
@@ -90,6 +95,9 @@ protected:
 	TObjectPtr<const UDataTable> StringDataTable;
 
 	TArray<const FStringDataTable*> StringData;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ALLL_MapSoundManager> MapSoundManager;
 	
 protected:
 	UPROPERTY(VisibleAnywhere)
