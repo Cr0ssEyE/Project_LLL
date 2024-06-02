@@ -116,12 +116,6 @@ void ALLL_RewardGimmick::SetRewardButtons()
 		RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
 		return;
 	}
-	
-	//보상쪽 상세 시스템 기획이 나오면 바뀔 부분
-	// do while 종료 조건
-	// bIsImplement == true
-	// !GettenIndexArray.Contains(Index)
-	// !InstanceRewardIndexArray.Contains(Index)
 
 	TArray<TTuple<const FAbilityDataTable*, float>> AbilityDataTables = NormalizedWeightRewardArray;
 	
@@ -151,7 +145,7 @@ void ALLL_RewardGimmick::SetDataTable()
 
 void ALLL_RewardGimmick::SetRewardWeight()
 {
-	for (auto Data : AbilityData)
+	for (const auto Data : AbilityData)
 	{
 		TotalRewardWeight += Data->GetAbilityRate;
 	}
@@ -166,7 +160,7 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 {
 	for (int i = 0; i < 3 - ButtonAbilityDataArray.Num(); ++i)
 	{
-		float WeightPoint = FMath::RandRange(0.f, 1.f);
+		const float WeightPoint = FMath::RandRange(0.f, 1.f);
 		float CurrentWeight = 0.f;
 		for (auto Reward : AbilityDataTable)
 		{
@@ -187,9 +181,9 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 			}
 			else
 			{
-				for (auto GettenReward : GettenAbilityArray)
+				for (const auto GottenReward : GettenAbilityArray)
 				{
-					if (Reward.Key->AbilityName == GettenReward->AbilityName)
+					if (Reward.Key->AbilityName == GottenReward->AbilityName)
 					{
 						IsInValidReward = true;
 						break;
@@ -202,7 +196,7 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 					}
 
 					IsInValidReward = false;
-					if (Reward.Key->RequireCategory == GettenReward->AbilityCategory)
+					if (Reward.Key->RequireCategory == GottenReward->AbilityCategory)
 					{
 						IsInValidReward = true;
 						break;
@@ -218,7 +212,7 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 			
 			if (!ButtonAbilityDataArray.IsEmpty())
 			{
-				for (auto EmplacedReward : ButtonAbilityDataArray)
+				for (const auto EmplacedReward : ButtonAbilityDataArray)
 				{
 					if (Reward.Key->AbilityName == EmplacedReward->AbilityName)
 					{
@@ -394,8 +388,8 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 				}
 			}
 		}
-		
-		FGameplayEventData PayLoadData;
+
+		const FGameplayEventData PayLoadData;
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ABILITY_PART_GRANT, PayLoadData);
 		break;
 	}
