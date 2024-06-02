@@ -27,9 +27,9 @@ void ULLL_AnimNotify_FMod::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	UGameInstance* GameInstance = OwnerActor->GetGameInstance();
-	if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GameInstance))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GameInstance))
 	{
-		if (ProtoGameInstance->CheckSoundMessageDebug())
+		if (DebugGameInstance->CheckSoundMessageDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 액터가 %s 재생"), *OwnerActor->GetName(), *Event->GetName()));
 		}

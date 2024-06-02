@@ -26,9 +26,9 @@ void ALLL_FeatherStorm::BeginPlay()
 	AbilityObjectAttributeSet = FeatherStormAttributeSet;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckPlayerAttackDebug())
+		if (DebugGameInstance->CheckPlayerAttackDebug())
 		{
 			DrawDebugBox(GetWorld(), GetActorLocation(), OverlapCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, AbilityObjectAttributeSet->GetDestroyTimer());
 		}

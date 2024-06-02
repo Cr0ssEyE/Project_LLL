@@ -27,9 +27,9 @@ void ULLL_PGA_ChaseHandRelease::ActivateAbility(const FGameplayAbilitySpecHandle
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandRelease::ReleaseToOwnerLocation);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+		if(DebugGameInstance->CheckPlayerChaseActionDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 회수 시작")));
 		}
@@ -52,9 +52,9 @@ void ULLL_PGA_ChaseHandRelease::EndAbility(const FGameplayAbilitySpecHandle Hand
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+		if(DebugGameInstance->CheckPlayerChaseActionDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 회수 종료")));
 		}

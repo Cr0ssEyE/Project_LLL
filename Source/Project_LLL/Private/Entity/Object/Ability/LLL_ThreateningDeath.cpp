@@ -27,9 +27,9 @@ void ALLL_ThreateningDeath::BeginPlay()
 	AbilityObjectAttributeSet = ThreateningDeathAttributeSet;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckPlayerDashDebug())
+		if (DebugGameInstance->CheckPlayerDashDebug())
 		{
 			DrawDebugBox(GetWorld(), GetActorLocation(), OverlapCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, ThreateningDeathAttributeSet->GetDestroyTimer());
 		}

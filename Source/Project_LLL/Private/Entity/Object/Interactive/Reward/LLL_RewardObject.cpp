@@ -119,9 +119,9 @@ void ALLL_RewardObject::InteractiveEvent()
 		// 최대 체력
 	case 3:
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckObjectActivateDebug())
+			if (DebugGameInstance->CheckObjectActivateDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("player 최대 체력 증가"));
 			}
@@ -131,9 +131,9 @@ void ALLL_RewardObject::InteractiveEvent()
 		// 능력 강화
 	case 4:
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckObjectActivateDebug())
+			if (DebugGameInstance->CheckObjectActivateDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("player 어빌리티 강화"));
 			}

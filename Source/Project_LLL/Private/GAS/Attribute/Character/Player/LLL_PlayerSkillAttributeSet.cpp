@@ -27,9 +27,9 @@ void ULLL_PlayerSkillAttributeSet::PostGameplayEffectExecute(const FGameplayEffe
 		const float NewCurrentSkillGauge = FMath::Clamp(GetCurrentSkillGauge() + Result, 0.f, GetMaxSkillGauge());
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckPlayerSkillDebug())
+			if (DebugGameInstance->CheckPlayerSkillDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("스킬 게이지 증감 작동. %f -> %f. 입력값 %f"), GetCurrentSkillGauge(), NewCurrentSkillGauge, GetAddCurrentSkillGauge()));
 			}

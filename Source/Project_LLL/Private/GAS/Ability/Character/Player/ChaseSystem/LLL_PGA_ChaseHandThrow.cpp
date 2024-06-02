@@ -49,9 +49,9 @@ void ULLL_PGA_ChaseHandThrow::EndAbility(const FGameplayAbilitySpecHandle Handle
 	{
 		// 단, 도달한 위치 주변에 몬스터가 있다면 그랩으로 전환
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+			if(DebugGameInstance->CheckPlayerChaseActionDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 이동 종료. 주변 대상 그랩 시도")));
 			}
@@ -61,9 +61,9 @@ void ULLL_PGA_ChaseHandThrow::EndAbility(const FGameplayAbilitySpecHandle Handle
 		{
 			GetAbilitySystemComponentFromActorInfo_Checked()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_RELEASE));
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+			if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 			{
-				if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+				if(DebugGameInstance->CheckPlayerChaseActionDebug())
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 이동 종료 후 그랩 실패. 회수 시작")));
 				}
@@ -91,9 +91,9 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 		TargetLocation = StartLocation + (TargetLocation - StartLocation).GetSafeNormal2D() * ChaseHandAttributeSet->GetMinimumThrowDistance();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+			if(DebugGameInstance->CheckPlayerChaseActionDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("와이어 투사체 최소거리 보정 동작.")));
 			}
@@ -123,9 +123,9 @@ void ULLL_PGA_ChaseHandThrow::ThrowToCursorLocation()
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandThrow::CheckReached);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+		if(DebugGameInstance->CheckPlayerChaseActionDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 이동 거리 : %f"), FVector::Distance(TargetLocation, StartLocation)));
 		}

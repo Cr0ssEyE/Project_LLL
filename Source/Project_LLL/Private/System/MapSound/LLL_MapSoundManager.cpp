@@ -16,7 +16,7 @@ void ALLL_MapSoundManager::SetPitch(float InPitch) const
 	UFMODBlueprintStatics::EventInstanceSetPitch(AMBWrapper, InPitch);
 }
 
-void ALLL_MapSoundManager::SetBattleParameter(float Value)
+void ALLL_MapSoundManager::SetBattleParameter(float Value) const
 {
 	UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FName(TEXT("Battle")), Value);
 }

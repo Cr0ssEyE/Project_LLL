@@ -46,9 +46,9 @@ void ULLL_PGA_ChangeComboAmplify_ByCombo::ApplySkillGaugeAmplify()
 	if(AmplifyChanged)
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+			if (DebugGameInstance->CheckPlayerAttackDebug() || DebugGameInstance->CheckPlayerSkillDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("현재 콤보에 따른 스킬게이지 증가 배율 레벨 변경. 새로운 레벨: %d"), CurrentComboAmplifyLevel));
 			}

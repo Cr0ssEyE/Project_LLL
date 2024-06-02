@@ -180,9 +180,9 @@ public:
 			);
 			
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(World->GetGameInstance()))
+			if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(World->GetGameInstance()))
 			{
-				if(ProtoGameInstance->CheckPlayerDashDebug())
+				if(DebugGameInstance->CheckPlayerDashDebug())
 				{
 					DrawDebugCapsule(World, LaunchLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Yellow, false, 2.f);
 				}
@@ -209,9 +209,9 @@ public:
 				Params
 				);
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(World->GetGameInstance()))
+			if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(World->GetGameInstance()))
 			{
-				if(ProtoGameInstance->CheckPlayerDashDebug())
+				if(DebugGameInstance->CheckPlayerDashDebug())
 				{
 					DrawDebugCapsule(World, CorrectionLaunchLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Magenta, false, 2.f);
 				}
@@ -254,9 +254,9 @@ public:
 				);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(World->GetGameInstance()))
+			if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(World->GetGameInstance()))
 			{
-				if(ProtoGameInstance->CheckPlayerDashDebug())
+				if(DebugGameInstance->CheckPlayerDashDebug())
 				{
 					DrawDebugCapsule(World, NewLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Cyan, false, 2.f);
 				}
