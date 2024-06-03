@@ -89,6 +89,7 @@ void ULLL_GamePauseWidget::SettingButtonEvent()
 	//TODO: 세팅 UI 만든 뒤에 붙이기
 	SettingWidget->SetRenderScale(FVector2d::One());
 	SettingWidget->SetIsEnabled(true);
+	SettingWidget->ShowMainWidget();
 }
 
 void ULLL_GamePauseWidget::TitleButtonEvent()
