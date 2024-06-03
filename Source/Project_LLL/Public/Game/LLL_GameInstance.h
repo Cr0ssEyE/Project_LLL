@@ -27,6 +27,7 @@ public:
 	virtual void Init() override;
 
 public:
+	FORCEINLINE ALLL_MapSoundManager* GetMapSoundManager() const { return MapSoundManager; }
 	FORCEINLINE void SetMapSoundManager(ALLL_MapSoundManager* InMapSoundManager) { MapSoundManager = InMapSoundManager; }
 	
 	// 데이터 테이블 Getter

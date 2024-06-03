@@ -25,6 +25,7 @@
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/MapGimmick/Components/LLL_SequencerComponent.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
@@ -113,6 +114,11 @@ void ALLL_MapGimmick::CreateMap()
 			}
 		}
 
+		if (!IsValid(SequencerPlayComponent))
+		{
+			SequencerPlayComponent = Cast<ULLL_SequencerComponent>(ChildComponent);
+		}
+		
 		if (!IsValid(PlayerSpawnPointComponent))
 		{
 			PlayerSpawnPointComponent = Cast<ULLL_PlayerSpawnPointComponent>(ChildComponent);
@@ -149,6 +155,11 @@ void ALLL_MapGimmick::CreateMap()
 			}
 		}
 		SetState(EStageState::READY);
+	}
+
+	if (IsValid(SequencerPlayComponent) && FadeInSequencePlayer->IsValid())
+	{
+		FadeInSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::PlaySequenceComponent);
 	}
 	
 	// TODO: Player loaction change 
@@ -215,6 +226,13 @@ void ALLL_MapGimmick::OnInteractionGate(const FRewardDataTable* Data)
 	}
 	ShoppingMapComponent = nullptr;
 	PlayerSpawnPointComponent = nullptr;
+	SequencerPlayComponent = nullptr;
+
+	if (FadeInSequencePlayer->IsValid() && FadeInSequencePlayer->OnFinished.IsAlreadyBound(this, &ALLL_MapGimmick::PlaySequenceComponent))
+	{
+		FadeInSequencePlayer->OnFinished.RemoveDynamic(this, &ALLL_MapGimmick::PlaySequenceComponent);
+	}
+	
 	RoomActor->Destroy();
 }
 
@@ -355,7 +373,7 @@ void ALLL_MapGimmick::PlayerTeleport()
 void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (Player->IsHidden())
+	if (Player->IsHidden() && !IsValid(SequencerPlayComponent))
 	{
 		Player->SetActorHiddenInGame(false);
 		Player->EnableInput(GetWorld()->GetFirstPlayerController());
@@ -367,5 +385,10 @@ void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
 	}
 	FadeInSequencePlayer->RestoreState();
 	FadeOutSequencePlayer->RestoreState();
+}
+
+void ALLL_MapGimmick::PlaySequenceComponent()
+{
+	SequencerPlayComponent->PlayIntroSequence();
 }
 
