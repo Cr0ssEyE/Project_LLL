@@ -25,6 +25,7 @@
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/MapGimmick/Components/LLL_SequencerComponent.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
@@ -113,6 +114,11 @@ void ALLL_MapGimmick::CreateMap()
 			}
 		}
 
+		if (!IsValid(SequencerPlayComponent))
+		{
+			SequencerPlayComponent = Cast<ULLL_SequencerComponent>(ChildComponent);
+		}
+		
 		if (!IsValid(PlayerSpawnPointComponent))
 		{
 			PlayerSpawnPointComponent = Cast<ULLL_PlayerSpawnPointComponent>(ChildComponent);
@@ -149,6 +155,11 @@ void ALLL_MapGimmick::CreateMap()
 			}
 		}
 		SetState(EStageState::READY);
+	}
+
+	if (IsValid(SequencerPlayComponent))
+	{
+		SequencerPlayComponent->PlayIntroSequence();
 	}
 	
 	// TODO: Player loaction change 
@@ -291,6 +302,9 @@ void ALLL_MapGimmick::RewardSpawn()
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	FTransform RewardTransform = Player->GetTransform();
 	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActorDeferred<ALLL_RewardObject>(RewardObjectClass, RewardTransform);
+	FVector Vector = RewardObject->GetActorLocation();
+	Vector.Z += 150;
+	RewardObject->SetActorLocation(Vector);
 	if (IsValid(RewardObject))
 	{
 		RewardObject->SetInformation(RewardData);

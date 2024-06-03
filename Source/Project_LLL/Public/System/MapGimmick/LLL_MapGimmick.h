@@ -9,6 +9,7 @@
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_MapGimmick.generated.h"
 
+class ULLL_SequencerComponent;
 enum class EStageState : uint8;
 class UBoxComponent;
 class ALLL_GateObject;
@@ -74,6 +75,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_PlayerSpawnPointComponent> PlayerSpawnPointComponent;
 
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ULLL_SequencerComponent> SequencerPlayComponent;
+	
 	uint8 Seed;
 
 	UFUNCTION()
