@@ -5,7 +5,7 @@
 
 #include "Constant/LLL_FilePath.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Entity/Object/Interactive/LLL_AbilityRewardObject.h"
+#include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 #include "System/MapGimmick/Components/LLL_GateSpawnPointComponent.h"
 #include "System/MapGimmick/Components/LLL_PlayerSpawnPointComponent.h"
@@ -16,6 +16,7 @@
 #include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDash.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Game/LLL_GameInstance.h"
 
 ALLL_TutorialGimmick::ALLL_TutorialGimmick()
 {
@@ -47,8 +48,12 @@ void ALLL_TutorialGimmick::BeginPlay()
 			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_TutorialGimmick::OnInteractionGate);
 		}
 	}
-	AbilityReward = GetWorld()->SpawnActor<ALLL_AbilityRewardObject>(ALLL_AbilityRewardObject::StaticClass(), GetActorLocation(), GetActorRotation());
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	FVector Vector = GetActorLocation();
+	Vector.Z += 150;
+	AbilityReward = GetWorld()->SpawnActor<ALLL_RewardObject>(ALLL_RewardObject::StaticClass(), Vector, GetActorRotation());
 	AbilityReward->OnDestroyed.AddDynamic(this, &ALLL_TutorialGimmick::RewardDestroyed);
+	AbilityReward->SetInformation(GameInstance->GetRewardDataTable()[0]);
 }
 
 void ALLL_TutorialGimmick::OnInteractionGate(const FRewardDataTable* Data)

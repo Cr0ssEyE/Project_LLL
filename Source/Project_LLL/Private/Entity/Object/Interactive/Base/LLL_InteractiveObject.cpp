@@ -14,7 +14,7 @@ ALLL_InteractiveObject::ALLL_InteractiveObject()
 
 	InteractOnlyCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Ineractive Collision"));
 	InteractOnlyCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	InteractOnlyCollisionBox->SetBoxExtent(FVector(100.0f, 100.0f, 100.0f));
+	InteractOnlyCollisionBox->SetBoxExtent(FVector(200.0f, 200.0f, 200.0f));
 	InteractOnlyCollisionBox->SetCollisionProfileName(CP_INTERACTION);
 	InteractOnlyCollisionBox->SetupAttachment(RootComponent);
 }
