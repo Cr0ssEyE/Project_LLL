@@ -291,6 +291,9 @@ void ALLL_MapGimmick::RewardSpawn()
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	FTransform RewardTransform = Player->GetTransform();
 	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActorDeferred<ALLL_RewardObject>(RewardObjectClass, RewardTransform);
+	FVector Vector = RewardObject->GetActorLocation();
+	Vector.Z += 150;
+	RewardObject->SetActorLocation(Vector);
 	if (IsValid(RewardObject))
 	{
 		RewardObject->SetInformation(RewardData);
