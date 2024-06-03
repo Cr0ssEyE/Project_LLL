@@ -96,6 +96,16 @@ void ULLL_GameInstance::SetMapSoundManagerBattleParameter(float Value) const
 	MapSoundManager->SetBattleParameter(Value);
 }
 
+void ULLL_GameInstance::SetMapSoundManagerPauseParameter(float Value) const
+{
+	if (!IsValid(MapSoundManager))
+	{
+		return;
+	}
+
+	MapSoundManager->SetPauseParameter(Value);
+}
+
 void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation)
 {
 	if (!IsValid(GetWorld()))
