@@ -25,7 +25,7 @@
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
@@ -167,9 +167,9 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 
 	MoveCameraToMouseCursor();
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckPlayerCollisionDebug())
+		if (DebugGameInstance->CheckPlayerCollisionDebug())
 		{
 			GetCapsuleComponent()->SetHiddenInGame(false);
 		}
@@ -202,17 +202,6 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractiveTargetChangeInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractiveTargetChangeAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->PauseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::PauseAction);
-}
-
-void ALLL_PlayerBase::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	APlayerController* PlayerController = Cast<APlayerController>(NewController);
-	if (IsValid(PlayerController))
-	{
-		// PlayerController->SetAudioListenerOverride(SpringArm, FVector::ZeroVector, FRotator::ZeroRotator);
-	}
 }
 
 void ALLL_PlayerBase::InitAttributeSet()
@@ -309,7 +298,7 @@ FVector ALLL_PlayerBase::CheckMouseLocation()
 	PlayerController->DeprojectMousePositionToWorld(MouseWorldLocation, MouseWorldDirection);
 	
 	FHitResult HitResult;
-	FCollisionQueryParams Params(NAME_None, false, this);
+	const FCollisionQueryParams Params(NAME_None, false, this);
 
 	bool bResult = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
@@ -338,9 +327,9 @@ FVector ALLL_PlayerBase::CheckMouseLocation()
 		);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug() || ProtoGameInstance->CheckPlayerChaseActionDebug())
+		if (DebugGameInstance->CheckPlayerAttackDebug() || DebugGameInstance->CheckPlayerSkillDebug() || DebugGameInstance->CheckPlayerChaseActionDebug())
 		{
 			DrawDebugLine(GetWorld(), MouseWorldLocation, MouseWorldLocation + MouseWorldDirection * 10000.f, FColor::Red, false, 3.f);
 			DrawDebugPoint(GetWorld(), LastCheckedMouseLocation, 10.f, FColor::Red, false, 3.f);
@@ -383,9 +372,9 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 		AddMovementInput(MoveDirection, 1.f);
 	}
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerMovementDebug())
+		if(DebugGameInstance->CheckPlayerMovementDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("이동 입력 방향: %f, %f"), MoveDirection.X, MoveDirection.Y));
 		}
@@ -513,24 +502,6 @@ void ALLL_PlayerBase::PlayerRotateToMouseCursor(float RotationMultiplyValue, boo
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
 }
 
-void ALLL_PlayerBase::SetAttacker(ALLL_BaseCharacter* Attacker)
-{
-	if (Attackers.Contains(Attacker))
-	{
-		return;
-	}
-
-	if (Attacker->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_PlayerBase::AttackerDeadHandle))
-	{
-		return;
-	}
-	
-	Attacker->CharacterDeadDelegate.AddDynamic(this, &ALLL_PlayerBase::AttackerDeadHandle);
-	Attackers.Emplace(Attacker);
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	GameInstance->SetMapSoundManagerBattleParameter(1.0f);
-}
-
 void ALLL_PlayerBase::TurnToMouseCursor()
 {
 	if (GetActorRotation() == MouseDirectionRotator || !GetCharacterAnimInstance()->IsSlotActive(ANIM_SLOT_ATTACK))
@@ -554,8 +525,8 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	PlayerController->GetViewportSize(ViewportX, ViewportY);
 	ScreenViewport.X = ViewportX;
 	ScreenViewport.Y = ViewportY;
-	
-	FVector2d MovementDirection = (MouseScreenLocation / ScreenViewport - FVector2d(0.5f, 0.5f)) * FVector2d(1.f, -1.f);
+
+	const FVector2d MovementDirection = (MouseScreenLocation / ScreenViewport - FVector2d(0.5f, 0.5f)) * FVector2d(1.f, -1.f);
 	FVector CameraMoveVector = FVector(MovementDirection.X, MovementDirection.Y, 0.f);
 	CameraMoveVector = SpringArm->GetDesiredRotation().UnrotateVector(CameraMoveVector);
 	
@@ -597,8 +568,8 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PlayLowHPAnimation);
 	}
-	
-	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Attacker);
+
+	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Attacker);
 	if (!IsValid(Monster))
 	{
 		return;
@@ -627,21 +598,10 @@ void ALLL_PlayerBase::DeadMotionEndedHandle()
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }
 
-void ALLL_PlayerBase::AttackerDeadHandle(ALLL_BaseCharacter* Character)
-{
-	Attackers.Remove(Character);
-
-	if (Attackers.Num() == 0)
-	{
-		const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-		GameInstance->SetMapSoundManagerBattleParameter(0.0f);
-	}
-}
-
 void ALLL_PlayerBase::DeactivatePPLowHP()
 {
 	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(GetGameInstance());
-	UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
+	const UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
 	ScalarValue += GetWorld()->GetDeltaSeconds() / 3;
 	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOWHP_RADIUS, ScalarValue);
 	if (ScalarValue <= PlayerDataAsset->HPLowScalarMaxValue)
@@ -653,7 +613,7 @@ void ALLL_PlayerBase::DeactivatePPLowHP()
 void ALLL_PlayerBase::ActivatePPLowHP()
 {
 	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(GetGameInstance());
-	UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
+	const UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
 	ScalarValue = PlayerDataAsset->HPLowScalarLowValue;
 	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOWHP_RADIUS, ScalarValue);
 }

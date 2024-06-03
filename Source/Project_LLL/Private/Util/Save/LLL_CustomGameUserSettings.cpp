@@ -7,15 +7,17 @@
 
 ULLL_CustomGameUserSettings::ULLL_CustomGameUserSettings(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer),
-MasterSoundVolume(100),
-BGMSoundVolume(100),
-SFXSoundVolume(100),
-bUseCameraShake(true),
-bUseTargetingCorrection(true),
-SubtitleSize(static_cast<uint8>(ESubtitleSize::Medium)),
-SubtitleSpeed(static_cast<uint8>(ESubtitleSpeed::Normal))
+	MasterSoundVolume(100),
+	BGMSoundVolume(100),
+	SFXSoundVolume(100),
+	bMasterSoundIgnore(false),
+	bBGMSoundIgnore(false),
+	bSFXSoundIgnore(false),
+	bUseCameraShake(true),
+	bUseTargetingCorrection(true),
+	SubtitleSize(static_cast<uint8>(ESubtitleSize::Medium)),
+	SubtitleSpeed(static_cast<uint8>(ESubtitleSpeed::Normal))
 {
-	
 }
 
 ULLL_CustomGameUserSettings* ULLL_CustomGameUserSettings::GetCustomGameUserSettings()

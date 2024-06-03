@@ -8,7 +8,7 @@
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 
 ULLL_CheckAttackRange_BTService::ULLL_CheckAttackRange_BTService()
@@ -29,9 +29,9 @@ void ULLL_CheckAttackRange_BTService::TickNode(UBehaviorTreeComponent& OwnerComp
 		const float Distance = MonsterBase->GetDistanceTo(PlayerBase);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			if (DebugGameInstance->CheckMonsterAttackDebug())
 			{
 				const FColor DebugColor = OwnerComp.GetBlackboardComponent()->GetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW) ? FColor::Green : FColor::Yellow;
 				DrawDebugLine(GetWorld(), MonsterBase->GetActorLocation(), PlayerBase->GetActorLocation(), DebugColor, false, 0.1f);

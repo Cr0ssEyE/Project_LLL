@@ -25,6 +25,10 @@ protected:
 protected:
     // TODO: 플레이어랑 몬스터 ASC 분리하기
     virtual void OnFallableTagAdded(const FGameplayTag Tag, int32 count);
+	virtual void OnMarkTagAdded(const FGameplayTag Tag, int32 count);
     virtual void CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEffectSpec);
 
+protected:
+	FTimerHandle MarkTimerHandle;
+	
 };

@@ -8,7 +8,7 @@
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 #include "DataTable/LLL_AbilityDataTable.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "AbilitySystemComponent.h"
 #include "Algo/RandomShuffle.h"
 #include "Constant/LLL_AbilityRealNumbers.h"
@@ -293,9 +293,9 @@ void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbility
 	}
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckObjectActivateDebug())
+		if(DebugGameInstance->CheckObjectActivateDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange,
 				FString(TEXT("버튼 : ")).

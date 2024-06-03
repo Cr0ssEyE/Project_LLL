@@ -33,18 +33,6 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	}));
 }
 
-void ALLL_MonsterBaseAIController::StartCoolDown()
-{
-	BlackboardComponent->SetValueAsBool(BBKEY_IS_COOL_DOWN, true);
-
-	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-
-	FTimerHandle CoolDownTimerHandle;
-	GetWorldTimerManager().SetTimer(CoolDownTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
-		BlackboardComponent->SetValueAsBool(BBKEY_IS_COOL_DOWN, false);
-	}), MonsterAttributeSet->GetAttackCoolDown(), false);
-}
-
 void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
@@ -53,15 +41,6 @@ void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 
 		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
 		Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
-
-		if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
-		{
-			ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-			if (IsValid(Player))
-			{
-				Player->SetAttacker(Monster);
-			}
-		}
 	}
 }
 

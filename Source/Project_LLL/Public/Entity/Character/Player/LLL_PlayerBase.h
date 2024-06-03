@@ -41,7 +41,6 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitAttributeSet() override;
 	virtual void SetFModParameter(EFModParameter FModParameter) override;
 	
@@ -68,7 +67,6 @@ public:
 	FVector CheckMouseLocation();
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
-	void SetAttacker(ALLL_BaseCharacter* Attacker);
 
 protected:
 	void TurnToMouseCursor();
@@ -140,15 +138,11 @@ private:
 	float ToCursorRotationMultiplyValue;
 	int32 LastAttackerMonsterId;
 	int32 CurrentCombo;
-	TArray<TObjectPtr<ALLL_BaseCharacter>> Attackers;
 
 	// 상태 관련 함수
 protected:
 	UFUNCTION()
 	void DeadMotionEndedHandle();
-
-	UFUNCTION()
-	void AttackerDeadHandle(ALLL_BaseCharacter* Character);
 	
 	// 상태 관련 변수
 protected:

@@ -20,15 +20,16 @@
 #include "Util/LLL_ConstructorHelper.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
+#include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
 	RootBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
-	RootBox->SetBoxExtent(FVector(5000.0f, 5000.0f, 500.0f));
 	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
-	RootBox->OnComponentBeginOverlap.AddDynamic(this, &ALLL_MapGimmick::OnStageTriggerBeginOverlap);
 	SetRootComponent(RootBox);
 
 	MapDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_MapDataAsset>(PATH_MAP_DATA, EAssertionLevel::Check);
@@ -37,7 +38,7 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 
 	FadeInSequence = MapDataAsset->FadeIn;
 	FadeOutSequence = MapDataAsset->FadeOut;
-	LevelSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
+	FadeInSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
 
 	Seed = 0;
 }
@@ -74,29 +75,32 @@ void ALLL_MapGimmick::BeginPlay()
 	RewardGimmick->InformMapGimmickIsExist();
 	
 	RewardData = RewardGimmick->GetRewardData(0);
-	
-	RandomMap();
-	CreateMap();
-	
+
+	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,MapDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, MapDataAsset->ParticleScale, false, false);
+	PlayerTeleportNiagara->OnSystemFinished.AddDynamic(this, &ALLL_MapGimmick::PlayerSetHidden);
 	//Sequence Section
 	FMovieSceneSequencePlaybackSettings Settings;
 	Settings.bAutoPlay = false;
 	Settings.bPauseAtEnd = true;
 	Settings.bHideHud = true;
-	ALevelSequenceActor* SequenceActorPtr = LevelSequenceActor;
+	ALevelSequenceActor* SequenceActorPtr = FadeInSequenceActor;
+	FadeInSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeInSequence, Settings, SequenceActorPtr);
+	FadeInSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::PlayerTeleport);
 
-	LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
-	LevelSequencePlayer->Play();
-}
-
-void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	SetState(EStageState::FIGHT);
+	SequenceActorPtr = FadeOutSequenceActor;
+	FadeOutSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
+	
+	RandomMap();
+	CreateMap();
 }
 
 void ALLL_MapGimmick::CreateMap()
 {
-	RoomActor = GetWorld()->SpawnActor<AActor>(RoomClass, RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	Player->SetActorEnableCollision(false);
+	Player->SetActorHiddenInGame(true);
+	Player->DisableInput(GetWorld()->GetFirstPlayerController());
+	RoomActor = GetWorld()->SpawnActor<AActor>(RoomClass, RootComponent->GetComponentTransform());
 	
 	for (USceneComponent* ChildComponent : RoomActor->GetRootComponent()->GetAttachChildren())
 	{
@@ -119,34 +123,38 @@ void ALLL_MapGimmick::CreateMap()
 		{
 			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
+			Gate->FadeOutDelegate.AddUObject(this, &ALLL_MapGimmick::PlayerTeleport);
 			RewardGimmick->SetRewardToGate(Gate);
 			Gates.Add(Gate);
 		}
 	}
 
 	RoomActor->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::ChangeMap);
-
 	
 	if (IsValid(ShoppingMapComponent))
 	{
 		ShoppingMapComponent->SetProducts();
 		SetState(EStageState::NEXT);
 	}
-	
-	RoomActor->GetAllChildActors(RoomChildActors, true);
-	for (AActor* ChildActor : RoomChildActors)
+	else
 	{
-		if (ALLL_MonsterSpawner* Spawner = Cast<ALLL_MonsterSpawner>(ChildActor))
+		RoomActor->GetAllChildActors(RoomChildActors, true);
+		for (AActor* ChildActor : RoomChildActors)
 		{
-			MonsterSpawner = Spawner;
+			if (ALLL_MonsterSpawner* Spawner = Cast<ALLL_MonsterSpawner>(ChildActor))
+			{
+				MonsterSpawner = Spawner;
+				MonsterSpawner->StartSpawnDelegate.AddDynamic(this, &ALLL_MapGimmick::OnOpponentSpawn);
+				MonsterSpawner->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::OnOpponentDestroyed);
+			}
 		}
+		SetState(EStageState::READY);
 	}
+	
 	// TODO: Player loaction change 
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
-	SetState(EStageState::READY);
-
-	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
+	Player->SetActorEnableCollision(true);
+	FadeIn();
 }
 
 void ALLL_MapGimmick::RandomMap()
@@ -166,9 +174,9 @@ void ALLL_MapGimmick::RandomMap()
 	
 	while (true)
 	{
-		uint8 data = Seed;
+		const int32 Data = Seed;
 		Seed = FMath::RandRange(0, MapDataAsset->Rooms.Num() - 1);
-		if (Seed != data)
+		if (Seed != Data)
 		{
 			break;
 		}
@@ -178,7 +186,6 @@ void ALLL_MapGimmick::RandomMap()
 
 void ALLL_MapGimmick::ChangeMap(AActor* DestroyedActor)
 {
-	
 	AllGatesDestroy();
 	RandomMap();
 	CreateMap();
@@ -190,6 +197,7 @@ void ALLL_MapGimmick::AllGatesDestroy()
 	{
 		return;
 	}
+	
 	for	(const auto Gate : Gates)
 	{
 		Gate->Destroy();
@@ -235,33 +243,31 @@ void ALLL_MapGimmick::SetReady()
 
 void ALLL_MapGimmick::SetFight()
 {
-	RootBox->SetCollisionProfileName(CP_NO_COLLISION);
-	OnOpponentSpawn();
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SetMapSoundManagerBattleParameter(1.0f);
 }
 
 void ALLL_MapGimmick::SetChooseReward()
 {
-	RootBox->SetCollisionProfileName(CP_NO_COLLISION);
 	RewardSpawn();
+
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SetMapSoundManagerBattleParameter(0.0f);
 }
 
 void ALLL_MapGimmick::SetChooseNext()
 {
-	RootBox->SetCollisionProfileName(CP_NO_COLLISION);
 	EnableAllGates();
+}
+
+void ALLL_MapGimmick::OnOpponentSpawn()
+{
+	SetState(EStageState::FIGHT);
 }
 
 void ALLL_MapGimmick::OnOpponentDestroyed(AActor* DestroyedActor)
 {
 	SetState(EStageState::REWARD);
-}
-
-void ALLL_MapGimmick::OnOpponentSpawn()
-{
-	if (MonsterSpawner)
-	{
-		MonsterSpawner->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::OnOpponentDestroyed);
-	}
 }
 
 void ALLL_MapGimmick::RewardDestroyed(AActor* DestroyedActor)
@@ -318,3 +324,39 @@ void ALLL_MapGimmick::SetRewardWidget()
 {
 	RewardGimmick->SetRewardButtons();
 }
+
+void ALLL_MapGimmick::FadeIn()
+{
+	FadeInSequencePlayer->Play();
+}
+
+void ALLL_MapGimmick::FadeOut()
+{
+	FadeOutSequencePlayer->Play();
+}
+
+void ALLL_MapGimmick::PlayerTeleport()
+{
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	Player->DisableInput(GetWorld()->GetFirstPlayerController());
+	PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
+	PlayerTeleportNiagara->ActivateSystem();
+}
+
+void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
+{
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (Player->IsHidden())
+	{
+		Player->SetActorHiddenInGame(false);
+		Player->EnableInput(GetWorld()->GetFirstPlayerController());
+	}
+	else
+	{
+		Player->SetActorHiddenInGame(true);
+		FadeOut();
+	}
+	FadeInSequencePlayer->RestoreState();
+	FadeOutSequencePlayer->RestoreState();
+}
+

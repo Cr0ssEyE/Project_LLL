@@ -9,7 +9,7 @@
 #include "LevelSequencePlayer.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 #include "Interface/LLL_KnockBackInterface.h"
@@ -45,7 +45,9 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 		}
 
 		TraceBulletTimeEffectedActors();
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_BULLET_TIME, FGameplayEventData());
+		FGameplayEventData EventData;
+		EventData.InstigatorTags.AddTag(TAG_GAS_PLAYER_BULLET_TIME_START);
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_BULLET_TIME_START, EventData);
 		BulletTimeActivateSequenceActor->GetSequencePlayer()->Play();
 
 		GetWorld()->GetTimerManager().SetTimer(AbilityDurationTimerHandle, this, &ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack, SkillDuration, false);
@@ -53,9 +55,9 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 	else
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckPlayerSkillDebug())
+			if (DebugGameInstance->CheckPlayerSkillDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("불릿타임 스킬 발동 취소됨. 시퀀스 또는 어트리뷰트 셋 접근 유효하지 않음")));
 			}
@@ -72,6 +74,10 @@ void ULLL_PGA_Skill_BulletTime::EndAbility(const FGameplayAbilitySpecHandle Hand
 	{
 		BulletTimeEndedCallBack();
 	}
+
+	FGameplayEventData EventData;
+	EventData.InstigatorTags.AddTag(TAG_GAS_PLAYER_BULLET_TIME_END);
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_BULLET_TIME_END, EventData);
 	GetWorld()->RemoveOnActorSpawnedHandler(ActorSpawnedDelegateHandle);
 	ActorSpawnedDelegateHandle.Reset();
 	
@@ -99,9 +105,9 @@ void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 	if (HitResults.IsEmpty())
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckPlayerSkillDebug())
+			if (DebugGameInstance->CheckPlayerSkillDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("불릿타임 스킬에 어떤 액터도 영향받지 않음")));
 			}

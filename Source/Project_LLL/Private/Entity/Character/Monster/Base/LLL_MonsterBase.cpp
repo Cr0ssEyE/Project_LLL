@@ -14,11 +14,14 @@
 #include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_MaterialParameterName.h"
+#include "Constant/LLL_MeshSocketName.h"
+#include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Ability/Character/Monster/Base/LLL_MGA_Charge.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
@@ -52,6 +55,10 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	MaskMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mask"));
 	MaskMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	MaskMeshComponent->SetupAttachment(RootComponent);
+
+	MarkVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MarkStatusEffect"));
+	MarkVFXComponent->SetupAttachment(RootComponent);
+	MarkVFXComponent->SetAutoActivate(false);
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -79,11 +86,18 @@ void ALLL_MonsterBase::BeginPlay()
 	MaskMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, MonsterBaseDataAsset->MaskAttachSocketName);
 	MaskMeshComponent->SetRelativeTransform(MonsterBaseDataAsset->MaskTransform);
 
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	UNiagaraSystem* MarkCountNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->MarkCountNiagaraSystem;
+	if (IsValid(MarkCountNiagaraSystem))
 	{
-		ProtoGameInstance->MonsterToggleAIDelegate.AddDynamic(this, &ALLL_MonsterBase::ToggleAIHandle);
-		ProtoGameInstance->MonsterToggleAIDelegate.Broadcast(ProtoGameInstance->GetMonsterToggleAIDebug());
+		MarkVFXComponent->SetAsset(MarkCountNiagaraSystem);
+		MarkVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_OVERHEAD);
+	}
+	
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		DebugGameInstance->MonsterToggleAIDelegate.AddDynamic(this, &ALLL_MonsterBase::ToggleAIHandle);
+		DebugGameInstance->MonsterToggleAIDelegate.Broadcast(DebugGameInstance->GetMonsterToggleAIDebug());
 	}
 #endif
 }
@@ -93,9 +107,9 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckMonsterCollisionDebug())
+		if (DebugGameInstance->CheckMonsterCollisionDebug())
 		{
 			GetCapsuleComponent()->SetHiddenInGame(false);
 		}
@@ -120,9 +134,9 @@ void ALLL_MonsterBase::Attack() const
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK)))
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			if (DebugGameInstance->CheckMonsterAttackDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
 			}
@@ -136,9 +150,9 @@ void ALLL_MonsterBase::Charge() const
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE)))
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			if (DebugGameInstance->CheckMonsterAttackDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
 			}
@@ -178,9 +192,9 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckMonsterCollisionDebug())
+		if (DebugGameInstance->CheckMonsterCollisionDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 경직"), *GetName()));
 		}
@@ -308,6 +322,32 @@ void ALLL_MonsterBase::ToggleAIHandle(bool value)
 	}
 }
 
+void ALLL_MonsterBase::UpdateMarkVFX(uint8 NewCount, uint8 MaxCount)
+{
+	if (NewCount > MaxCount)
+	{
+		return;
+	}
+
+	UNiagaraParameterCollection* MarkParam = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->MarkCountNiagaraParameterCollection;
+	if (!IsValid(MarkParam))
+	{
+		return;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("표식 값 갱신: %d"), NewCount));
+	MarkVFXComponent->SetFloatParameter(NS_MARK_COUNT, NewCount - 1.f);
+	
+	if (NewCount > 0)
+	{
+		MarkVFXComponent->ActivateSystem();
+	}
+	else
+	{
+		MarkVFXComponent->Deactivate();
+	}
+}
+
 void ALLL_MonsterBase::DropGold(const FGameplayTag tag, int32 data)
 {
 	const float GoldData = DropGoldAttributeSet->GetDropGoldStat();
@@ -320,9 +360,9 @@ void ALLL_MonsterBase::DropGold(const FGameplayTag tag, int32 data)
 		{
 			GoldComponent->IncreaseMoney(GoldData);
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+			if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 			{
-				if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+				if (DebugGameInstance->CheckPlayerAttackDebug() || DebugGameInstance->CheckPlayerSkillDebug())
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("PlayerGold %f"), GoldComponent->GetMoney()));
 				}
