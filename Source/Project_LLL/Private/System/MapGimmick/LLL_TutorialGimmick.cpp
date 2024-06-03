@@ -27,7 +27,7 @@ ALLL_TutorialGimmick::ALLL_TutorialGimmick()
 void ALLL_TutorialGimmick::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MapDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, MapDataAsset->ParticleScale, false, false);
+	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MapDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, MapDataAsset->ParticleScale, true, false);
 	PlayerTeleportNiagara->OnSystemFinished.AddDynamic(this, &ALLL_TutorialGimmick::LoadLevel);
 
 	StageActor = GetWorld()->SpawnActor<AActor>(StageBP, RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
