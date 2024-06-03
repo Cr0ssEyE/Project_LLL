@@ -7,6 +7,7 @@
 #include "GameplayEffectTypes.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Components/WidgetComponent.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "DataTable/LLL_RewardDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
@@ -19,9 +20,10 @@ ALLL_RewardObject::ALLL_RewardObject()
 {
 	RewardObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_RewardObjectDataAsset>(PATH_REWARD_OBJECT_TEST_DATA, EAssertionLevel::Check);
 
-	RewardMesh = RewardObjectDataAsset->StaticMesh; 
+	RewardMesh = RewardObjectDataAsset->StaticMesh;
 	BaseMesh->SetStaticMesh(RewardMesh);
 	BaseMesh->SetMaterial(0, RewardObjectDataAsset->MaterialInst);
+	BaseMesh->SetCollisionProfileName(CP_OVERLAP_ALL);
 	
 	PriceWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("PriceWidgetComponent");
 	PriceWidgetComponent->SetupAttachment(RootComponent);
@@ -64,19 +66,19 @@ void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data)
 	{
 			// 능력
 		case 1:
-			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Green);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->AbilityTexture);
 		break;
 			// 재화
 		case 2:
-			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Yellow);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->GoldTexture);
 		break;
 			// 최대 체력
 		case 3:
-			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Red);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->MaxHPTexture);
 		break;
 			// 능력 강화
 		case 4:
-			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Black);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->EnhanceTexture);
 			break;
 	default:;
 	}

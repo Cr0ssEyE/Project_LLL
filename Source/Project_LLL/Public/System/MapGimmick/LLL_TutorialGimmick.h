@@ -9,7 +9,7 @@
 
 class ALLL_GateObject;
 class UStaticMeshComponent;
-class ALLL_AbilityRewardObject;
+class ALLL_RewardObject;
 class ULLL_GateSpawnPointComponent;
 class ULLL_PlayerSpawnPointComponent;
 class AActor;
@@ -40,7 +40,7 @@ protected:
 	TObjectPtr<ALLL_GateObject> Gate;
 	
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ALLL_AbilityRewardObject> AbilityReward;
+	TObjectPtr<ALLL_RewardObject> AbilityReward;
 	
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_PlayerSpawnPointComponent> PlayerSpawnPointComponent;
