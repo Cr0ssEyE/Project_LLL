@@ -21,11 +21,15 @@ struct FAbilityDataTable : public FTableRowBase
 	AbilityType(EAbilityType::None),
 	AbilityPart(EAbilityPart::Common),
 	AbilityRank(EAbilityRank::Normal),
-	AbilityCategory(EAbilityCategory::Null), AbilityValueType(),
+	AbilityCategory(EAbilityCategory::Null),
+	bIsImplement(false),
+	AbilityValueType(),
 	AbilityValue(0.f),
 	ChangeValue(0.f), UnchangeableValue(0),
-	RequireCategory(EAbilityCategory::Null)
+	RequireCategory(EAbilityCategory::Null),
+	GetAbilityRate(0.f)
 	{
+		
 	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
@@ -44,11 +48,14 @@ struct FAbilityDataTable : public FTableRowBase
 	EAbilityCategory AbilityCategory;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 이름")
-	FName AbilityName;
+	FString AbilityName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 정보")
 	FString AbilityInformation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 구현 여부")
+	uint8 bIsImplement : 1;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "수치 적용 유형")
 	EAbilityValueType AbilityValueType;
 	

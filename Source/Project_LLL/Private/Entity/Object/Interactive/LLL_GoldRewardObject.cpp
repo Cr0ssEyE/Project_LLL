@@ -6,7 +6,7 @@
 #include "DataTable/LLL_RewardDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 
-void ALLL_GoldRewardObject::SetInformation(FRewardDataTable* Data)
+void ALLL_GoldRewardObject::SetInformation(const FRewardDataTable* Data)
 {
 	Super::SetInformation(Data);
 

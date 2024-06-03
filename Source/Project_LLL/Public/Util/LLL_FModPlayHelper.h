@@ -4,20 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "FMODAudioComponent.h"
+#include "Util/LLL_FModInfoStruct.h"
 #include "Entity/Object/Base/LLL_BaseObject.h"
 
 class PROJECT_LLL_API FLLL_FModPlayHelper
 {
 public:
-	static void PlayFModEvent(const AActor* SourceActor, UFMODEvent* FModEvent)
+	static void PlayFModEvent(AActor* SourceActor, const FFModInfo& FModInfo)
 	{
-		if (const ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(SourceActor))
+		if (ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(SourceActor))
 		{
 			UFMODAudioComponent* FModAudioComponent = FModInterface->GetFModAudioComponent();
 			FModAudioComponent->Release();
-			FModAudioComponent->SetEvent(FModEvent);
+			FModAudioComponent->AttachToComponent(SourceActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform, FModInfo.SocketName);
+			FModAudioComponent->SetEvent(FModInfo.FModEvent);
 			FModAudioComponent->SetPitch(SourceActor->CustomTimeDilation);
 			FModAudioComponent->Play();
+			FModInterface->SetFModParameter(FModInfo.FModParameter);
 		}
 		else
 		{

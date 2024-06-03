@@ -49,10 +49,10 @@ void ULLL_BaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void ULLL_BaseCharacterAnimInstance::AnimNotify_LeftStep()
 {
-	FLLL_FModPlayHelper::PlayFModEvent(Character, CharacterDataAsset->StepFModEvent);
+	
 }
 
 void ULLL_BaseCharacterAnimInstance::AnimNotify_RightStep()
 {
-	FLLL_FModPlayHelper::PlayFModEvent(Character, CharacterDataAsset->StepFModEvent);
+	
 }

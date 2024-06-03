@@ -1,4 +1,5 @@
-﻿
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -35,11 +36,15 @@ enum class ERewardCategory : uint8
 UENUM(BlueprintType)
 enum class EFModParameter : uint8
 {
-	None UMETA(Hidden),
+	None,
 	PlayerWalkMaterialParameter,
 	PlayerAttackCountParameter,
 	PlayerAttackHitCountParameter,
-	PlayerDamagedTypeParameter
+	PlayerDamagedTypeParameter,
+	BGM_BulletTimeParameter,
+	BGM_BattleParameter,
+	BGM_PauseParameter,
+	AMB_BulletTimeParameter
 };
 
 UENUM(BlueprintType)

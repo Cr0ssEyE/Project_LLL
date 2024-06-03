@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "FMODAudioComponent.h"
+#include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
@@ -44,26 +45,38 @@ void ALLL_ThrownObject::BeginPlay()
 void ALLL_ThrownObject::Activate()
 {
 	bIsActivated = true;
-	
+
+	SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ProjectileMovementComponent->Activate();
 	SetActorHiddenInGame(false);
-	UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+	SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
 }
 
 void ALLL_ThrownObject::Deactivate()
 {
 	bIsActivated = false;
-
+	
 	FModAudioComponent->Stop();
 	FModAudioComponent->Release();
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
+	{
+		if (!IsValid(TempNiagaraComponent))
+		{
+			continue;
+		}
+		
+		TempNiagaraComponent->DestroyComponent();
+		NiagaraComponents.Remove(TempNiagaraComponent);
+	}
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProjectileMovementComponent->Deactivate();
 	SetActorHiddenInGame(true);
 	GetWorldTimerManager().ClearTimer(HideTimerHandle);
 }
 
-void ALLL_ThrownObject::Throw(AActor* NewOwner, const AActor* NewTarget, float InSpeed)
+void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed)
 {
 	SetOwner(NewOwner);
 	Target = NewTarget;
@@ -96,7 +109,7 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	{
 		OffencePower = (AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel) / static_cast<uint32>(AbilityData->AbilityValueType);
 	}
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, OffencePower);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
 	
 	if(EffectSpecHandle.IsValid())
 	{

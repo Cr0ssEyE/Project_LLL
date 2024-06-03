@@ -42,12 +42,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<UGameplayEffect> GiveTagEffect;
 
-	UPROPERTY(EditAnywhere, DisplayName = "공격 충돌 FMod 이벤트")
-	TObjectPtr<UFMODEvent> HitFModEvent;
-
-	UPROPERTY(EditAnywhere, DisplayName = "공격 충돌 FMod 이벤트 파라미터 값")
-	float PlayerAttackHitCountParameterValue;
-
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<ALLL_TA_TraceBase> TargetActorClass;

@@ -11,6 +11,7 @@
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ULLL_GameInstance;
 class ULLL_AbnormalStatusAttributeSet;
 class ULLL_PlayerSkillAttributeSet;
 class ULLL_ObjectPoolingComponent;
@@ -40,9 +41,9 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitAttributeSet() override;
-
+	virtual void SetFModParameter(EFModParameter FModParameter) override;
+	
 	virtual void Damaged(AActor* Attacker, bool IsDOT = false) override;
 	virtual void Dead() override;
 	
@@ -59,6 +60,9 @@ public:
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
+
+	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
+	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
 	
 	FVector CheckMouseLocation();
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
@@ -67,6 +71,7 @@ public:
 protected:
 	void TurnToMouseCursor();
 	void MoveCameraToMouseCursor();
+	void SetParameter(EFModParameter FModParameter, float value) const;
 	
 	// 카메라
 private:
@@ -119,7 +124,7 @@ private:
 	// 상호작용 관련 변수
 private:
 	UPROPERTY()
-	TArray<ALLL_InteractiveObject*> InteractiveObjects;
+	TArray<TObjectPtr<ALLL_InteractiveObject>> InteractiveObjects;
 
 	UPROPERTY()
 	int SelectedInteractiveObjectNum;
@@ -129,30 +134,51 @@ private:
 
 private:
 	FVector LastCheckedMouseLocation;
-	
 	FRotator MouseDirectionRotator;
-	
 	float ToCursorRotationMultiplyValue;
+	int32 LastAttackerMonsterId;
+	int32 CurrentCombo;
 
 	// 상태 관련 함수
 protected:
+	void DropDissolveActor();
+	
 	UFUNCTION()
 	void DeadMotionEndedHandle();
-
-	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
 	
 	// 상태 관련 변수
 protected:
 	uint8 bIsMoveInputPressed : 1;
 
+	UPROPERTY()
+	TObjectPtr<AActor> DeadSequenceDissolveActor;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerGoldComponent> GoldComponent;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_ObjectPoolingComponent> ObjectPoolingComponent;
+	
 	//UI 관련
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> ChaseActionGaugeWidgetComponent;
+
+	// MPC 관련
+protected:
+	UFUNCTION()
+	void DeactivatePPLowHP();
+
+	UFUNCTION()
+	void ActivatePPLowHP();
+
+	UFUNCTION()
+	void PlayLowHPAnimation();
+
+	UPROPERTY(EditAnywhere)
+	uint8 bIsLowHP : 1;
+
+	UPROPERTY(EditDefaultsOnly)
+	float ScalarValue;
 };
