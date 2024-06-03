@@ -22,6 +22,7 @@ class PROJECT_LLL_API ALLL_MapSoundManager : public ALLL_SystemBase
 public:
 	void SetPitch(float InPitch) const;
 	void SetBattleParameter(float Value) const;
+	void SetPauseParameter(float Value) const;
 	
 protected:
 	virtual void BeginPlay() override;

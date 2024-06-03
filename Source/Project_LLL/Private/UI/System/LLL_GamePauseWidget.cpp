@@ -9,6 +9,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "Game/LLL_GameInstance.h"
 #include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/System/Setting/LLL_SettingWidget.h"
@@ -54,6 +55,9 @@ void ULLL_GamePauseWidget::SetupPauseState()
 	SetKeyboardFocus();
 	GetOwningPlayer()->DisableInput(GetOwningPlayer());
 	Cast<ALLL_PlayerController>(GetOwningPlayer())->SetUIInputMode(GetCachedWidget());
+	
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SetMapSoundManagerPauseParameter(1.0f);
 }
 
 void ULLL_GamePauseWidget::RestorePauseState()
@@ -63,6 +67,9 @@ void ULLL_GamePauseWidget::RestorePauseState()
 	SetIsEnabled(false);
 	GetOwningPlayer()->EnableInput(GetOwningPlayer());
 	Cast<ALLL_PlayerController>(GetOwningPlayer())->SetGameInputMode();
+	
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SetMapSoundManagerPauseParameter(0.0f);
 }
 
 void ULLL_GamePauseWidget::SetupDeadStateLayout() const
