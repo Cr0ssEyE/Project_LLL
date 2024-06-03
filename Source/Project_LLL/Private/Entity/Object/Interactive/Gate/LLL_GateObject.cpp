@@ -9,6 +9,7 @@
 #include "DataAsset/LLL_GateDataAsset.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Util/LLL_ConstructorHelper.h"
+#include "Util/LLL_FModPlayHelper.h"
 
 ALLL_GateObject::ALLL_GateObject()
 {
@@ -50,6 +51,7 @@ void ALLL_GateObject::SetGateInformation(const FRewardDataTable* Data)
 void ALLL_GateObject::SetActivate()
 {
 	bIsGateEnabled = true;
+	
 	if (IsValid(GateDataAsset->Particle))
 	{
 		SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
@@ -71,19 +73,19 @@ void ALLL_GateObject::InteractiveEvent()
 void ALLL_GateObject::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	InteractOnlyCollisionBox->SetBoxExtent(FVector(200.0f, 200.0f, 300.f));
 	InteractOnlyCollisionBox->SetRelativeLocation(FVector(0, 0, 300.f));
 }
 
 void ALLL_GateObject::OpenGate()
 {
-	//문 오픈 애니 및 이펙
-	FTimerHandle StageDestroyTimerHandle;
+	FFModInfo FModInfo;
+	FModInfo.FModEvent = GateDataAsset->ActivateEvent;
+	FLLL_FModPlayHelper::PlayFModEvent(this, FModInfo);
 	
-	GetWorld()->GetTimerManager().SetTimer(StageDestroyTimerHandle, this, &ALLL_GateObject::StartDestroy, 0.1f, false, 0.5f);
-}
-
-void ALLL_GateObject::StartDestroy()
-{
-	GateInteractionDelegate.Broadcast(RewardData);
+	FTimerHandle StageDestroyTimerHandle;
+	GetWorldTimerManager().SetTimer(StageDestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		GateInteractionDelegate.Broadcast(RewardData);
+	}), 1.0f, false);
 }

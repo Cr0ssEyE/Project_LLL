@@ -12,13 +12,33 @@
 
 void ALLL_MapSoundManager::SetPitch(float InPitch) const
 {
-	UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FName(TEXT("Bullettime")), InPitch != 1.0f ? 1.0f : 0.0f);
-	UFMODBlueprintStatics::EventInstanceSetPitch(AMBWrapper, InPitch);
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	{
+		if (FModParameterData.Parameter == EFModParameter::BGM_BulletTimeParameter)
+		{
+			UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FModParameterData.Name, InPitch != 1.0f ? 1.0f : 0.0f);
+		}
+
+		if (FModParameterData.Parameter == EFModParameter::AMB_BulletTimeParameter)
+		{
+			UFMODBlueprintStatics::EventInstanceSetParameter(AMBWrapper, FModParameterData.Name, InPitch != 1.0f ? 1.0f : 0.0f);
+		}
+	}
 }
 
 void ALLL_MapSoundManager::SetBattleParameter(float Value) const
 {
-	UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FName(TEXT("Battle")), Value);
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	{
+		if (FModParameterData.Parameter != EFModParameter::BGM_BattleParameter)
+		{
+			continue;
+		}
+
+		UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FModParameterData.Name, Value);
+	}
 }
 
 void ALLL_MapSoundManager::BeginPlay()
