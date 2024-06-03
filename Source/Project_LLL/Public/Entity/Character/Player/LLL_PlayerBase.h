@@ -141,6 +141,8 @@ private:
 
 	// 상태 관련 함수
 protected:
+	void DropDissolveActor();
+	
 	UFUNCTION()
 	void DeadMotionEndedHandle();
 	
@@ -148,6 +150,9 @@ protected:
 protected:
 	uint8 bIsMoveInputPressed : 1;
 
+	UPROPERTY()
+	TObjectPtr<AActor> DeadSequenceDissolveActor;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerGoldComponent> GoldComponent;

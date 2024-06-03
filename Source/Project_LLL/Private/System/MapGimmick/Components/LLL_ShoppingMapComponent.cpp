@@ -61,7 +61,9 @@ void ULLL_ShoppingMapComponent::SetProducts()
 		if (IsValid(SpawnPoint))
 		{
 			ALLL_RewardObject* Product = GetWorld()->SpawnActor<ALLL_RewardObject>(ALLL_RewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
-			
+			FVector Vector = Product->GetActorLocation();
+			Vector.Z += 150;
+			Product->SetActorLocation(Vector);
 			/*switch (static_cast<ERewardCategory>(FMath::RandRange(2, 4)))
 			{
 			case ERewardCategory::Ability:

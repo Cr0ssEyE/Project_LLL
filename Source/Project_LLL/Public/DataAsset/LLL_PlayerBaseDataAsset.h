@@ -6,6 +6,7 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+class ULevelSequence;
 enum class EPlayerDamagedTypeParameter : uint8;
 enum class EMonsterId : uint8;
 class ULLL_MainEruriaInfoWidget;
@@ -22,6 +23,7 @@ class ULLL_PlayerAnimInstance;
 class ULLL_SelectRewardWidget;
 class UInputAction;
 class UInputMappingContext;
+class UNiagaraSystem;
 class ULLL_PlayerChaseActionWidget;
 class ULLL_PlayerComboWidget;
 
@@ -67,6 +69,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
 	TObjectPtr<UAnimMontage> DeadAnimMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 연출 시퀀서")
+	TObjectPtr<ULevelSequence> DeadSequencer;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 연출용 디졸브 액터")
+	TSubclassOf<AActor> DeadSequenceDissolveActor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "디졸브 액터 낙하 속도")
+	float DissolveActorFallSpeed;
+	
 	// 입력 이벤트 관련
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "입력 어빌리티")
