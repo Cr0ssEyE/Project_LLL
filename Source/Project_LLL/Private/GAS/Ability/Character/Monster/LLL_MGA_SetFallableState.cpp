@@ -4,8 +4,6 @@
 #include "GAS/Ability/Character/Monster/LLL_MGA_SetFallableState.h"
 
 #include "AbilitySystemComponent.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
-#include "Abilities/Tasks/AbilityTask_WaitOverlap.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -18,7 +16,6 @@ void ULLL_MGA_SetFallableState::ActivateAbility(const FGameplayAbilitySpecHandle
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 		
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
-	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
 	const float KnockBackTime = FLLL_MathHelper::CalculatePlayerKnockBackCollisionCheckEndApproximation(Monster->GetKnockBackedPower());
 	
 	FTimerHandle CollisionRestoreHandle;
@@ -30,10 +27,27 @@ void ULLL_MGA_SetFallableState::ActivateAbility(const FGameplayAbilitySpecHandle
 		}
 	}), KnockBackTime, false);
 
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (Monster->GetCapsuleComponent()->GetCollisionProfileName() == CP_MONSTER_FALLABLE)
 	{
-		if (ProtoGameInstance->CheckMonsterCollisionDebug())
+		CollisionRestoreHandle.Invalidate();
+		GetWorld()->GetTimerManager().SetTimer(CollisionRestoreHandle, FTimerDelegate::CreateWeakLambda(this, [&]()
+		{
+			if (IsValid(GetAvatarActorFromActorInfo()) && IsValid(this))
+			{
+				Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_OVERLAP_ALL);
+				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+			}
+		}), KnockBackTime, false);
+	}
+	else
+	{
+		Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_FALLABLE);
+	}
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (DebugGameInstance->CheckMonsterCollisionDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("낙하 상태 어빌리티 발동 %s"), *CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo())->GetCapsuleComponent()->GetCollisionProfileName().ToString()));
 		}
@@ -47,9 +61,9 @@ void ULLL_MGA_SetFallableState::ActivateAbility(const FGameplayAbilitySpecHandle
 void ULLL_MGA_SetFallableState::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckMonsterCollisionDebug())
+		if (DebugGameInstance->CheckMonsterCollisionDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("낙하 상태 어빌리티 종료")));
 			ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());

@@ -9,6 +9,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "Game/LLL_GameInstance.h"
 #include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/System/Setting/LLL_SettingWidget.h"
@@ -38,9 +39,16 @@ void ULLL_GamePauseWidget::NativeConstruct()
 
 FReply ULLL_GamePauseWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
-	if (InKeyEvent.GetKey() == EKeys::Escape || InKeyEvent.GetKey() == EKeys::BackSpace)
+	if ((InKeyEvent.GetKey() == EKeys::Escape || InKeyEvent.GetKey() == EKeys::BackSpace) && ResumeButton->GetIsEnabled())
 	{
-		Cast<ALLL_PlayerBase>(GetOwningPlayerPawn())->GetPlayerUIManager()->TogglePauseWidget(false);
+		if (SettingWidget->GetIsEnabled())
+		{
+			SettingWidget->CloseSettingWidget();
+		}
+		else
+		{
+			Cast<ALLL_PlayerBase>(GetOwningPlayerPawn())->GetPlayerUIManager()->TogglePauseWidget(false);
+		}
 		return FReply::Handled();
 	}
 	
@@ -54,6 +62,9 @@ void ULLL_GamePauseWidget::SetupPauseState()
 	SetKeyboardFocus();
 	GetOwningPlayer()->DisableInput(GetOwningPlayer());
 	Cast<ALLL_PlayerController>(GetOwningPlayer())->SetUIInputMode(GetCachedWidget());
+	
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SetMapSoundManagerPauseParameter(1.0f);
 }
 
 void ULLL_GamePauseWidget::RestorePauseState()
@@ -63,6 +74,13 @@ void ULLL_GamePauseWidget::RestorePauseState()
 	SetIsEnabled(false);
 	GetOwningPlayer()->EnableInput(GetOwningPlayer());
 	Cast<ALLL_PlayerController>(GetOwningPlayer())->SetGameInputMode();
+
+	if (SettingWidget->GetIsEnabled())
+	{
+		SettingWidget->HideMainWidget();
+	}
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SetMapSoundManagerPauseParameter(0.0f);
 }
 
 void ULLL_GamePauseWidget::SetupDeadStateLayout() const
@@ -82,6 +100,7 @@ void ULLL_GamePauseWidget::SettingButtonEvent()
 	//TODO: 세팅 UI 만든 뒤에 붙이기
 	SettingWidget->SetRenderScale(FVector2d::One());
 	SettingWidget->SetIsEnabled(true);
+	SettingWidget->ShowMainWidget();
 }
 
 void ULLL_GamePauseWidget::TitleButtonEvent()

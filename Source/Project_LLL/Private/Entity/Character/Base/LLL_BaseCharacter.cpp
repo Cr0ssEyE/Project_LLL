@@ -157,11 +157,6 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	}
 }
 
-void ALLL_BaseCharacter::Damaged(AActor* Attacker, bool IsDOT)
-{
-	
-}
-
 void ALLL_BaseCharacter::Dead()
 {
 	if (bIsDead)

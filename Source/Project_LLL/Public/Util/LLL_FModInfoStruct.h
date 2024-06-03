@@ -6,6 +6,8 @@
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "LLL_FModInfoStruct.generated.h"
 
+class UFMODEvent;
+
 USTRUCT(BlueprintType)
 struct FFModInfo
 {

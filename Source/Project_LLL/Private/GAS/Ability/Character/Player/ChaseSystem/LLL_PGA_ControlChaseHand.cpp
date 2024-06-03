@@ -11,7 +11,7 @@
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 
 ULLL_PGA_ControlChaseHand::ULLL_PGA_ControlChaseHand()
@@ -68,9 +68,9 @@ void ULLL_PGA_ControlChaseHand::ThrowHand(const FGameplayEventData EventData)
 	if(bIsAlreadyThrown)
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+			if(DebugGameInstance->CheckPlayerChaseActionDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 와이어 투척이 이미 발동된 상태")));
 			}
@@ -80,9 +80,9 @@ void ULLL_PGA_ControlChaseHand::ThrowHand(const FGameplayEventData EventData)
 	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+		if(DebugGameInstance->CheckPlayerChaseActionDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("플레이어 와이어 투척 어빌리티 발동")));
 		}
