@@ -12,13 +12,13 @@
 
 void ALLL_MapSoundManager::SetPitch(float InPitch) const
 {
-	UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FName(TEXT("Bullettime")), InPitch != 1.0f ? 1.0f : 0.0f);
-	UFMODBlueprintStatics::EventInstanceSetPitch(AMBWrapper, InPitch);
+	UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FName(TEXT("BGM_Bullettime")), InPitch != 1.0f ? 1.0f : 0.0f);
+	UFMODBlueprintStatics::EventInstanceSetParameter(AMBWrapper, FName(TEXT("BGM_Bullettime")), InPitch != 1.0f ? 1.0f : 0.0f);
 }
 
 void ALLL_MapSoundManager::SetBattleParameter(float Value) const
 {
-	UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FName(TEXT("Battle")), Value);
+	UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FName(TEXT("BGM_Battle")), Value);
 }
 
 void ALLL_MapSoundManager::BeginPlay()
