@@ -125,8 +125,11 @@ void ULLL_PGA_ChaseHandLockTarget::GrabTargetEntity()
 	HandCollision->SetCollisionProfileName(CP_NO_COLLISION);
 	PlayerChaseHand->AttachToActor(PlayerChaseHand->GetGrabbedActor(), FAttachmentTransformRules::KeepWorldTransform);
 	PlayerChaseHand->SetActorLocation(PlayerChaseHand->GetGrabbedActor()->GetActorLocation());
-	
-	BP_ApplyGameplayEffectToTarget(UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(PlayerChaseHand->GetGrabbedActor()), GrabTargetApplyEffect);
+
+	if (IsValid(GrabTargetApplyEffect))
+	{
+		BP_ApplyGameplayEffectToTarget(UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(PlayerChaseHand->GetGrabbedActor()), GrabTargetApplyEffect);
+	}
 	
 	UProjectileMovementComponent* HandProjectile = PlayerChaseHand->GetProjectileMovementComponent();
 	HandProjectile->Velocity = FVector::Zero();
