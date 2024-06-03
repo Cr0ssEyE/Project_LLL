@@ -238,17 +238,21 @@ void ALLL_MapGimmick::SetState(EStageState InNewState)
 
 void ALLL_MapGimmick::SetReady()
 {
-	
+	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
 }
 
 void ALLL_MapGimmick::SetFight()
 {
+	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
+	
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
 	GameInstance->SetMapSoundManagerBattleParameter(1.0f);
 }
 
 void ALLL_MapGimmick::SetChooseReward()
 {
+	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
+	
 	RewardSpawn();
 
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
@@ -257,6 +261,8 @@ void ALLL_MapGimmick::SetChooseReward()
 
 void ALLL_MapGimmick::SetChooseNext()
 {
+	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
+	
 	EnableAllGates();
 }
 
