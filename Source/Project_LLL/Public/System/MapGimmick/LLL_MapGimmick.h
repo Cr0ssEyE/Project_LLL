@@ -79,9 +79,6 @@ protected:
 	uint8 Seed;
 
 	UFUNCTION()
-	void OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
 	void CreateMap();
 
 	UFUNCTION()
@@ -111,7 +108,7 @@ protected:
 	UFUNCTION()
 	void AllGatesDestroy();
 	
-	void OnInteractionGate(FRewardDataTable* Data);
+	void OnInteractionGate(const FRewardDataTable* Data);
 	
 	void EnableAllGates();
 
@@ -142,9 +139,10 @@ protected:
 	float OpponentSpawnTime;
 
 	UFUNCTION()
-	void OnOpponentDestroyed(AActor* DestroyedActor);
-	
 	void OnOpponentSpawn();
+	
+	UFUNCTION()
+	void OnOpponentDestroyed(AActor* DestroyedActor);
 
 // Reward Section
 protected:
@@ -154,7 +152,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ALLL_RewardGimmick> RewardGimmick;
 	
-	FRewardDataTable* RewardData;
+	const FRewardDataTable* RewardData;
 
 	UFUNCTION()
 	void RewardDestroyed(AActor* DestroyedActor);

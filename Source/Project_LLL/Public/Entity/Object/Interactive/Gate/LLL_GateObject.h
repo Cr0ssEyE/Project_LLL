@@ -8,6 +8,7 @@
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "LLL_GateObject.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateInteractionDelegate, const FRewardDataTable*);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateInteractionDelegate, FRewardDataTable*);
 DECLARE_MULTICAST_DELEGATE(FOnFadeOutDelegate);
 
@@ -22,17 +23,16 @@ class PROJECT_LLL_API ALLL_GateObject : public ALLL_InteractiveObject
 public:
 	ALLL_GateObject();
 	
-	FORCEINLINE FRewardDataTable* GetRewardData() const { return RewardData; }
+	FORCEINLINE const FRewardDataTable* GetRewardData() const { return RewardData; }
 	
 	FOnGateInteractionDelegate GateInteractionDelegate;
 	FOnFadeOutDelegate FadeOutDelegate;
 
-	void SetGateInformation(FRewardDataTable* Data);
-
+	void SetGateInformation(const FRewardDataTable* Data);
 	void SetActivate();
+	
 protected:
 	virtual void InteractiveEvent() override;
-
 	virtual void BeginPlay() override;
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -44,7 +44,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsGateEnabled : 1;
 	
-	FRewardDataTable* RewardData;
+	const FRewardDataTable* RewardData;
 
 	EAbilityType AbilityType;
 	

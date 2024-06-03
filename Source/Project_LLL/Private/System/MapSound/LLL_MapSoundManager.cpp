@@ -7,19 +7,38 @@
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
-
-ALLL_MapSoundManager::ALLL_MapSoundManager()
-{
-	CollisionBoxForBulletTime = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision For Bullet Time"));
-	CollisionBoxForBulletTime->SetCollisionProfileName(CP_MAP_SOUND_MANAGER);
-	SetRootComponent(CollisionBoxForBulletTime);
-}
 
 void ALLL_MapSoundManager::SetPitch(float InPitch) const
 {
-	UFMODBlueprintStatics::EventInstanceSetPitch(BGMWrapper, InPitch);
-	UFMODBlueprintStatics::EventInstanceSetPitch(AMBWrapper, InPitch);
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	{
+		if (FModParameterData.Parameter == EFModParameter::BGM_BulletTimeParameter)
+		{
+			UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FModParameterData.Name, InPitch != 1.0f ? 1.0f : 0.0f);
+		}
+
+		if (FModParameterData.Parameter == EFModParameter::AMB_BulletTimeParameter)
+		{
+			UFMODBlueprintStatics::EventInstanceSetParameter(AMBWrapper, FModParameterData.Name, InPitch != 1.0f ? 1.0f : 0.0f);
+		}
+	}
+}
+
+void ALLL_MapSoundManager::SetBattleParameter(float Value) const
+{
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	{
+		if (FModParameterData.Parameter != EFModParameter::BGM_BattleParameter)
+		{
+			continue;
+		}
+
+		UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FModParameterData.Name, Value);
+	}
 }
 
 void ALLL_MapSoundManager::BeginPlay()
@@ -37,14 +56,28 @@ void ALLL_MapSoundManager::BeginPlay()
 	BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), BGM, true);
 	AMBWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), AMB, true);
 
-	CollisionBoxForBulletTime->SetBoxExtent(FVector::OneVector);
+	ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SetMapSoundManager(this);
+}
+
+void ALLL_MapSoundManager::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	if (!IsValid(GetWorld()))
+	{
+		return;
+	}
+
+	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
+	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
+	
+	UFMODBlueprintStatics::EventInstanceStop(AMBWrapper);
+	UFMODBlueprintStatics::EventInstanceRelease(AMBWrapper);
 }
 
 void ALLL_MapSoundManager::PlayerDeadHandle(ALLL_BaseCharacter* Character)
 {
-	BGMWrapper.Instance->stop(FMOD_STUDIO_STOP_IMMEDIATE);
-	BGMWrapper.Instance->release();
-	
-	AMBWrapper.Instance->stop(FMOD_STUDIO_STOP_IMMEDIATE);
-	AMBWrapper.Instance->release();
+	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
+	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
 }

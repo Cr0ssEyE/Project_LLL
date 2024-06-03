@@ -6,7 +6,7 @@
 #include "FMODEvent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/Character.h"
 #include "Util/LLL_FModPlayHelper.h"
 #include "Util/LLL_NiagaraInfoStruct.h"
@@ -19,9 +19,9 @@ bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCue
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		UGameInstance* GameInstance = MyTarget->GetGameInstance();
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GameInstance))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GameInstance))
 		{
-			if (ProtoGameInstance->CheckSoundMessageDebug())
+			if (DebugGameInstance->CheckSoundMessageDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 액터가 %s 재생"), *MyTarget->GetName(), *FModInfo.FModEvent->GetName()));
 			}
@@ -88,7 +88,7 @@ void ULLL_GC_Base::ReceiveSpawnResult(AActor* Target, const FGameplayCueNotify_S
 
 	for (auto SpawnComponent : SpawnResult.FxSystemComponents)
 	{
-		UNiagaraComponent* Component = Cast<UNiagaraComponent>(SpawnComponent);
+		const UNiagaraComponent* Component = Cast<UNiagaraComponent>(SpawnComponent);
 		if (!IsValid(Component))
 		{
 			continue;

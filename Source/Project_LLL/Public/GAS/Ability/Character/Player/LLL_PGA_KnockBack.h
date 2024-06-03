@@ -31,4 +31,5 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName ="커브 테이블 내 액션 넉백 배율 변화값 행")
 	FCurveTableRowHandle KnockBackAmplifyChangeSection;
+	
 };

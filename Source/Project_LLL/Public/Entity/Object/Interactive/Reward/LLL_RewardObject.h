@@ -29,7 +29,7 @@ public:
 
 	virtual void ApplyProductEvent() override;
 
-	virtual void SetInformation(FRewardDataTable* Data);
+	virtual void SetInformation(const FRewardDataTable* Data);
 
 	FOnInteractionDelegate InteractionDelegate;
 
@@ -56,5 +56,5 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_ProductObjectPriceWidget> PriceWidget;
 	
-	FRewardDataTable* RewardData;
+	const FRewardDataTable* RewardData;
 };

@@ -6,7 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "Util/LLL_DebugDrawHelper.h"
 #include "Util/LLL_MathHelper.h"
 
@@ -65,15 +65,15 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		bool Debug = false;
 		
-		if (Cast<ALLL_PlayerBase>(SourceActor) && ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+		if (Cast<ALLL_PlayerBase>(SourceActor) && DebugGameInstance->CheckPlayerAttackDebug() || DebugGameInstance->CheckPlayerSkillDebug())
 		{
 			Debug = true;
 		}
-		else if (Cast<ALLL_MonsterBase>(SourceActor) && ProtoGameInstance->CheckMonsterAttackDebug())
+		else if (Cast<ALLL_MonsterBase>(SourceActor) && DebugGameInstance->CheckMonsterAttackDebug())
 		{
 			Debug = true;
 		}
