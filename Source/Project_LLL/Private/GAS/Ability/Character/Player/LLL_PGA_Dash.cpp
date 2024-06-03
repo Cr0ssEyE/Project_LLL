@@ -78,6 +78,12 @@ void ULLL_PGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	{
 		DashTask->EndTask();
 	}
+
+	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
+	if (GetAbilitySystemComponentFromActorInfo_Checked()->HasMatchingGameplayTag(TAG_GAS_PLAYER_STATE_CHASE_PROGRESS))
+	{
+		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER_EVADE);
+	}
 	
 	ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(PlayerCharacter->GetCharacterAnimInstance());
 	PlayerAnimInstance->SetDash(false);
