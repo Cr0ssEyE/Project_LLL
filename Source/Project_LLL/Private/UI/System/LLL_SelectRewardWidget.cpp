@@ -55,7 +55,7 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<const FAbilityDataTable*> Abi
 	const UDataTable* StringDataTable = GetGameInstance<ULLL_GameInstance>()->GetStringDataTable();
 
 	TArray<TTuple<FString, FString>> WidgetInfoTexts;
-	for (auto AbilityData : AbilityDataArray)
+	for (const auto AbilityData : AbilityDataArray)
 	{
 		FString AbilityName = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityName, TEXT("Failed To Load Ability Name"))->Korean;
 		FString AbilityInformation = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityInformation, TEXT("Failed To Load Ability Information"))->Korean;
@@ -65,6 +65,7 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<const FAbilityDataTable*> Abi
 		AbilityInformation = AbilityInformation.Replace(TEXT("[UV]"), *FString::SanitizeFloat(AbilityData->UnchangeableValue));
 		WidgetInfoTexts.Emplace(TTuple<FString, FString>(AbilityName, AbilityInformation));
 	}
+	
 	RewardNameText1->SetText(FText::FromString(WidgetInfoTexts[0].Key));
 	RewardInfoText1->SetText(FText::FromString(WidgetInfoTexts[0].Value));
 	RewardNameText1->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[0]->AbilityRank)]);
