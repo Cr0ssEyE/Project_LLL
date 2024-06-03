@@ -29,7 +29,7 @@ EBTNodeResult::Type ULLL_TurnToPlayer_BTTaskNode::ExecuteTask(UBehaviorTreeCompo
 
 	const FVector Direction = PlayerBase->GetActorLocation() - MonsterBase->GetActorLocation();
 	const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-	const float TurnSpeed = MonsterBase->GetCharacterMovement()->RotationRate.Yaw;
+	const float TurnSpeed = MonsterBase->GetCharacterMovement()->RotationRate.Yaw / 36.0f;
 	MonsterBase->SetActorRotation(FMath::RInterpTo(MonsterBase->GetActorRotation(), Rotation, GetWorld()->GetDeltaSeconds(), TurnSpeed));
 
 	return EBTNodeResult::Succeeded;

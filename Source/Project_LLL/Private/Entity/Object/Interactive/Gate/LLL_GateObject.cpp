@@ -3,11 +3,14 @@
 
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 
+#include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_GateDataAsset.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
+#include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Util/LLL_FModPlayHelper.h"
 
@@ -83,9 +86,10 @@ void ALLL_GateObject::OpenGate()
 	FFModInfo FModInfo;
 	FModInfo.FModEvent = GateDataAsset->ActivateEvent;
 	FLLL_FModPlayHelper::PlayFModEvent(this, FModInfo);
-	
+	FadeOutDelegate.Broadcast();
 	FTimerHandle StageDestroyTimerHandle;
 	GetWorldTimerManager().SetTimer(StageDestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		GateInteractionDelegate.Broadcast(RewardData);
-	}), 1.0f, false);
+	}), 5.0f, false);
+	//문 오픈 애니 및 이펙
 }
