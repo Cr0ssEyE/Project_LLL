@@ -15,9 +15,6 @@ class PROJECT_LLL_API ULLL_SequencerComponent : public USceneComponent
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
-	ULLL_SequencerComponent();
-
 	void PlayIntroSequence();
 
 protected:
@@ -30,8 +27,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, DisplayName = "레벨 이동 여부")
 	uint8 bLoadToOtherLevel : 1;
-
-	UPROPERTY(EditAnywhere, DisplayName = "레벨")
-	TObjectPtr<UWorld> LoadLevel;
-	
 };

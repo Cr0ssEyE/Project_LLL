@@ -5,23 +5,13 @@
 
 #include "LevelSequenceActor.h"
 #include "MovieSceneSequencePlaybackSettings.h"
+#include "Constant/LLL_LevelNames.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/MapSound/LLL_MapSoundManager.h"
-
-
-// Sets default values for this component's properties
-ULLL_SequencerComponent::ULLL_SequencerComponent()
-{
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
-}
 
 void ULLL_SequencerComponent::PlayIntroSequence()
 {
@@ -68,7 +58,7 @@ void ULLL_SequencerComponent::OnSequencerEndedCallBack(AActor* Actor, EEndPlayRe
 	
 	if (bLoadToOtherLevel)
 	{
-		UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), LoadLevel);
+		UGameplayStatics::OpenLevel(GetWorld(), LEVEL_CREDIT);
 	}
 }
 

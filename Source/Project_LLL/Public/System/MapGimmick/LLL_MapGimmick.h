@@ -79,7 +79,7 @@ protected:
 	TObjectPtr<ULLL_SequencerComponent> SequencerPlayComponent;
 	
 	uint8 Seed;
-
+	
 	UFUNCTION()
 	void CreateMap();
 
@@ -197,4 +197,7 @@ protected:
 	
 	UFUNCTION()
 	void PlayerSetHidden(UNiagaraComponent* InNiagaraComponent);
+
+	UFUNCTION()
+	void PlaySequenceComponent();
 };

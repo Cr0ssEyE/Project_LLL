@@ -157,9 +157,9 @@ void ALLL_MapGimmick::CreateMap()
 		SetState(EStageState::READY);
 	}
 
-	if (IsValid(SequencerPlayComponent))
+	if (IsValid(SequencerPlayComponent) && FadeInSequencePlayer->IsValid())
 	{
-		SequencerPlayComponent->PlayIntroSequence();
+		FadeInSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::PlaySequenceComponent);
 	}
 	
 	// TODO: Player loaction change 
@@ -226,6 +226,13 @@ void ALLL_MapGimmick::OnInteractionGate(const FRewardDataTable* Data)
 	}
 	ShoppingMapComponent = nullptr;
 	PlayerSpawnPointComponent = nullptr;
+	SequencerPlayComponent = nullptr;
+
+	if (FadeInSequencePlayer->IsValid() && FadeInSequencePlayer->OnFinished.IsAlreadyBound(this, &ALLL_MapGimmick::PlaySequenceComponent))
+	{
+		FadeInSequencePlayer->OnFinished.RemoveDynamic(this, &ALLL_MapGimmick::PlaySequenceComponent);
+	}
+	
 	RoomActor->Destroy();
 }
 
@@ -378,5 +385,10 @@ void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
 	}
 	FadeInSequencePlayer->RestoreState();
 	FadeOutSequencePlayer->RestoreState();
+}
+
+void ALLL_MapGimmick::PlaySequenceComponent()
+{
+	SequencerPlayComponent->PlayIntroSequence();
 }
 
