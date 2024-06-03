@@ -26,6 +26,11 @@ void ALLL_ThreateningDeath::BeginPlay()
 	ThreateningDeathDataAsset = Cast<ULLL_ThreateningDeathDataAsset>(AbilityObjectDataAsset);
 	AbilityObjectAttributeSet = ThreateningDeathAttributeSet;
 
+	FTimerHandle ActivateKnockBackTimer;
+	GetWorldTimerManager().SetTimer(ActivateKnockBackTimer, FTimerDelegate::CreateWeakLambda(this, [&]{
+		SetActorEnableCollision(false);
+	}), 0.01f, false);
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
