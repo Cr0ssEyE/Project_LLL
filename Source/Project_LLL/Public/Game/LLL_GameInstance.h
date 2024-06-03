@@ -50,6 +50,7 @@ public:
 public:
 	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
 	void SetMapSoundManagerBattleParameter(float Value) const;
+	void SetMapSoundManagerPauseParameter(float Value) const;
 
 protected:
 	void SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation);
