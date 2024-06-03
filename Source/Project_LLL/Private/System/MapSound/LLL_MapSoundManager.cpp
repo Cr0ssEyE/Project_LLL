@@ -94,4 +94,7 @@ void ALLL_MapSoundManager::PlayerDeadHandle(ALLL_BaseCharacter* Character)
 {
 	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
 	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
+
+	UFMODBlueprintStatics::EventInstanceStop(AMBWrapper);
+	UFMODBlueprintStatics::EventInstanceRelease(AMBWrapper);
 }
