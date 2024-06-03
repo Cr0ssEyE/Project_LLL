@@ -7,7 +7,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_AbilityObjectDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Object/Ability/LLL_ThreateningDeathAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Util/LLL_MathHelper.h"
@@ -27,9 +27,9 @@ void ALLL_ThreateningDeath::BeginPlay()
 	AbilityObjectAttributeSet = ThreateningDeathAttributeSet;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckPlayerDashDebug())
+		if (DebugGameInstance->CheckPlayerDashDebug())
 		{
 			DrawDebugBox(GetWorld(), GetActorLocation(), OverlapCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, ThreateningDeathAttributeSet->GetDestroyTimer());
 		}

@@ -12,6 +12,7 @@
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
+#include "Util/LLL_FModPlayHelper.h"
 
 ALLL_GateObject::ALLL_GateObject()
 {
@@ -21,7 +22,7 @@ ALLL_GateObject::ALLL_GateObject()
 	bIsGateEnabled = false;
 }
 
-void ALLL_GateObject::SetGateInformation(FRewardDataTable* Data)
+void ALLL_GateObject::SetGateInformation(const FRewardDataTable* Data)
 {
 	RewardData = Data;
 	
@@ -53,9 +54,10 @@ void ALLL_GateObject::SetGateInformation(FRewardDataTable* Data)
 void ALLL_GateObject::SetActivate()
 {
 	bIsGateEnabled = true;
+	
 	if (IsValid(GateDataAsset->Particle))
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+		SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
 	}
 }
 
@@ -74,12 +76,21 @@ void ALLL_GateObject::InteractiveEvent()
 void ALLL_GateObject::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	InteractOnlyCollisionBox->SetBoxExtent(FVector(200.0f, 200.0f, 300.f));
 	InteractOnlyCollisionBox->SetRelativeLocation(FVector(0, 0, 300.f));
 }
 
 void ALLL_GateObject::OpenGate()
 {
+	FFModInfo FModInfo;
+	FModInfo.FModEvent = GateDataAsset->ActivateEvent;
+	FLLL_FModPlayHelper::PlayFModEvent(this, FModInfo);
+	
+	FTimerHandle StageDestroyTimerHandle;
+	GetWorldTimerManager().SetTimer(StageDestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		GateInteractionDelegate.Broadcast(RewardData);
+	}), 1.0f, false);
 	//문 오픈 애니 및 이펙
 	FTimerHandle StageDestroyTimerHandle;
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));

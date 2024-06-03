@@ -29,7 +29,7 @@ public:
 	FORCEINLINE UButton* GetThirdButton() const { return RewardButton3; }
 
 public:
-	void SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDataArray);
+	void SetWidgetInfo(TArray<const FAbilityDataTable*> AbilityDataArray);
 	void FocusToUI();
 	virtual void OnAnimationFinished_Implementation(const UWidgetAnimation* Animation) override;
 	

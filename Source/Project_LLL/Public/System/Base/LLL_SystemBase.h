@@ -19,15 +19,15 @@ public:
 	ALLL_SystemBase();
 	
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
-	FORCEINLINE virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override { NiagaraComponent = InNiagaraComponent; }
 
 protected:
 	virtual void SetFModParameter(EFModParameter FModParameter) override {}
+	virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
 
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UNiagaraComponent> NiagaraComponent;
+	TArray<TObjectPtr<UNiagaraComponent>> NiagaraComponents;
 };
