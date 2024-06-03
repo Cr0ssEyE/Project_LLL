@@ -144,8 +144,8 @@ void ALLL_MapGimmick::CreateMap()
 	}
 	
 	// TODO: Player loaction change 
-	Player->SetActorEnableCollision(true);
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
+	Player->SetActorEnableCollision(true);
 }
 
 void ALLL_MapGimmick::RandomMap()

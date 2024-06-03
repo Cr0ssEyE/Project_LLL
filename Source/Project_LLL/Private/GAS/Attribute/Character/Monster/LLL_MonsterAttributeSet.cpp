@@ -23,6 +23,14 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		
 		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
+
+		FGameplayTagContainer TagContainer(TAG_GAS_STATUS_MARKED);
+		TagContainer.AddTag(TAG_GAS_STATUS_TARGETED);
+		TagContainer.AddTag(TAG_GAS_STATUS_BLEEDING);
+		if (GetOwningAbilitySystemComponentChecked()->HasAnyMatchingGameplayTags(TagContainer))
+		{
+			CheckAbnormalStatus(Data);
+		}
 		
 		if (GetCurrentShield() > 0)
 		{
@@ -43,14 +51,6 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 				Monster->Damaged(Attacker, DOT);
 			}
 		}
-		
-		FGameplayTagContainer TagContainer(TAG_GAS_STATUS_MARKED);
-		TagContainer.AddTag(TAG_GAS_STATUS_TARGETED);
-		TagContainer.AddTag(TAG_GAS_STATUS_BLEEDING);
-		if (GetOwningAbilitySystemComponentChecked()->HasAnyMatchingGameplayTags(TagContainer))
-		{
-			CheckAbnormalStatus(Data);
-		}
 	}
 	
 	Super::PostGameplayEffectExecute(Data);
@@ -70,6 +70,7 @@ void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallb
 	{
 		const int32 MarkCount = GetOwningAbilitySystemComponentChecked()->GetGameplayTagCount(TAG_GAS_MARK_STACK);
 		Damage *= 1.f + AbnormalStatusAttributeSet->GetMarkStatusDamageAmplifyPerStack() * MarkCount;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("표식 대미지 배율 적용. 카운트: %d | 최종값: %f"), MarkCount, Damage));
 	}
 
 	if (Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration)
@@ -83,6 +84,7 @@ void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallb
 		// TODO: 태그, 인터페이스, 클래스 등등 암튼 뭔가 써서 보스 유무에 따라 배율 변경하기
 		Damage *= AbnormalStatusAttributeSet->GetTargetingStatusDamageAmplifyByNormal();
 		// Damage *= AbnormalStatusAttributeSet->GetTargetingStatusDamageAmplifyByBoss();
+		GetOwningAbilitySystemComponentChecked()->RemoveLooseGameplayTag(TAG_GAS_STATUS_TARGETED);
 	}
 	
 	SetReceiveDamage(Damage);

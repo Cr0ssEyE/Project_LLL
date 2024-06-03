@@ -72,9 +72,8 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	if (RewardData.IsEmpty() || AbilityData.IsEmpty())
 	{
 		SetDataTable();
-		SetRewardWeight();
 	}
-	
+	SetRewardWeight();
 	Algo::RandomShuffle(NormalizedWeightRewardArray);
 	
 	if (bIsButtonEventSetup && !IsValid(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
@@ -145,7 +144,8 @@ void ALLL_RewardGimmick::SetDataTable()
 
 void ALLL_RewardGimmick::SetRewardWeight()
 {
-	for (const auto Data : AbilityData)
+	NormalizedWeightRewardArray.Empty();
+	for (auto Data : AbilityData)
 	{
 		TotalRewardWeight += Data->GetAbilityRate;
 	}

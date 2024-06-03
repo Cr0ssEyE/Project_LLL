@@ -27,7 +27,8 @@
 // 플레이어 행동 관련 게임플레이 태그
 #define TAG_GAS_PLAYER_DASH_START FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash.Start"))
 #define TAG_GAS_PLAYER_DASH_END FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash.End"))
-#define TAG_GAS_PLAYER_BULLET_TIME FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Skill.ActivateBulletTime"))
+#define TAG_GAS_PLAYER_BULLET_TIME_START FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Skill.ActivateBulletTime"))
+#define TAG_GAS_PLAYER_BULLET_TIME_END FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Skill.DeactivateBulletTime"))
 #define TAG_GAS_PLAYER_CHASE_THROW FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Throw"))
 #define TAG_GAS_PLAYER_CHASE_RUSH FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Rush"))
 #define TAG_GAS_PLAYER_CHASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Chase.Attack"))
@@ -38,6 +39,7 @@
 #define TAG_GAS_PLAYER_STATE_CHASE_COOLDOWN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserCoolDown"))
 #define TAG_GAS_PLAYER_STATE_CHASE_THREW FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserThrew"))
 #define TAG_GAS_PLAYER_STATE_CHASE_RETURN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserReturned"))
+#define TAG_GAS_PLAYER_STATE_CHASE_PROGRESS FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaseAttackOnGoing"))
 #define TAG_GAS_PLAYER_STATE_INPUT_CHECK_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.State.InputCheck.BaseAttack"))
 #define TAG_GAS_PLAYER_STATE_INPUT_CHECK_DASH FGameplayTag::RequestGameplayTag(FName("Character.Player.State.InputCheck.Dash"))
 
