@@ -16,4 +16,7 @@ class PROJECT_LLL_API ULLL_GateDataAsset : public ULLL_InteractiveObjectDataAsse
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "파티클 위치")
 	FVector ParticleLocation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "텔레포트 파티클")
+	TObjectPtr<UNiagaraSystem> TeleportParticle;
 };

@@ -9,6 +9,7 @@
 #include "LLL_GateObject.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateInteractionDelegate, FRewardDataTable*);
+DECLARE_MULTICAST_DELEGATE(FOnFadeOutDelegate);
 
 struct FRewardDataTable;
 class ULLL_RewardDataTable;
@@ -24,6 +25,7 @@ public:
 	FORCEINLINE FRewardDataTable* GetRewardData() const { return RewardData; }
 	
 	FOnGateInteractionDelegate GateInteractionDelegate;
+	FOnFadeOutDelegate FadeOutDelegate;
 
 	void SetGateInformation(FRewardDataTable* Data);
 
@@ -51,5 +53,5 @@ protected:
 	void StartDestroy();
 
 	UFUNCTION()
-	void PlayerTeleport(UNiagaraComponent* NiagaraComponent);
+	void PlayerTeleport(UNiagaraComponent* InNiagaraComponent);
 };

@@ -41,9 +41,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Reward", DisplayName = "보상 오브젝트")
 	TSubclassOf<ALLL_RewardObject> RewardObjectClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Fade", DisplayName = "페이드 인 시퀀스")
+	UPROPERTY(EditDefaultsOnly, Category = "Sequence", DisplayName = "페이드 인 시퀀스")
 	TObjectPtr<ULevelSequence> FadeIn;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Fade", DisplayName = "페이드 아웃 시퀀스")
+	UPROPERTY(EditDefaultsOnly, Category = "Sequence", DisplayName = "페이드 아웃 시퀀스")
 	TObjectPtr<ULevelSequence> FadeOut;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "텔레포트 파티클")
+	TObjectPtr<UNiagaraSystem> TeleportParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "파티클 사이즈", meta=(DisplayPriority=1))
+	FVector ParticleScale = FVector::OneVector;
 };

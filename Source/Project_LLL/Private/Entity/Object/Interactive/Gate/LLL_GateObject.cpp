@@ -55,7 +55,7 @@ void ALLL_GateObject::SetActivate()
 	bIsGateEnabled = true;
 	if (IsValid(GateDataAsset->Particle))
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+		NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
 	}
 }
 
@@ -81,15 +81,9 @@ void ALLL_GateObject::BeginPlay()
 void ALLL_GateObject::OpenGate()
 {
 	//문 오픈 애니 및 이펙
-	FTimerHandle StageDestroyTimerHandle;
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	/*UNiagaraComponent* NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("PlayerTeleportEffect"));
-	NiagaraComponent->SetAsset(GateDataAsset->Particle);
-	NiagaraComponent->SetWorldLocation(Player->GetActorLocation());
-	NiagaraComponent->OnSystemFinished.AddDynamic(this, &ALLL_GateObject::PlayerTeleport);*/
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,GateDataAsset->Particle, Player->GetActorLocation(), FRotator::ZeroRotator, GateDataAsset->ParticleScale);
-	
-	GetWorld()->GetTimerManager().SetTimer(StageDestroyTimerHandle, this, &ALLL_GateObject::StartDestroy, 0.1f, false, 3.0f);
+	UNiagaraComponent* PlayerTP = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,GateDataAsset->TeleportParticle, Player->GetActorLocation(), FRotator::ZeroRotator, GateDataAsset->ParticleScale);
+	PlayerTP->OnSystemFinished.AddDynamic(this, &ALLL_GateObject::PlayerTeleport);
 }
 
 void ALLL_GateObject::StartDestroy()
@@ -97,8 +91,11 @@ void ALLL_GateObject::StartDestroy()
 	GateInteractionDelegate.Broadcast(RewardData);
 }
 
-void ALLL_GateObject::PlayerTeleport(UNiagaraComponent* NiagaraComponent)
+void ALLL_GateObject::PlayerTeleport(UNiagaraComponent* InNiagaraComponent)
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorHiddenInGame(true);
+	FadeOutDelegate.Broadcast();
+	FTimerHandle StageDestroyTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(StageDestroyTimerHandle, this, &ALLL_GateObject::StartDestroy, 0.1f, false, 2.0f);
 }

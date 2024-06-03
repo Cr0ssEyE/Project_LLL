@@ -20,6 +20,8 @@
 #include "Util/LLL_ConstructorHelper.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -84,9 +86,9 @@ void ALLL_MapGimmick::BeginPlay()
 	Settings.bPauseAtEnd = true;
 	Settings.bHideHud = true;
 	ALevelSequenceActor* SequenceActorPtr = LevelSequenceActor;
-
-	LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
-	LevelSequencePlayer->Play();
+	LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), nullptr, Settings, SequenceActorPtr);
+	LevelSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::PlayerTeleport);
+	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,MapDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, MapDataAsset->ParticleScale, false, false);
 }
 
 void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -119,6 +121,7 @@ void ALLL_MapGimmick::CreateMap()
 		{
 			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
+			Gate->FadeOutDelegate.AddUObject(this, &ALLL_MapGimmick::FadeOut);
 			RewardGimmick->SetRewardToGate(Gate);
 			Gates.Add(Gate);
 		}
@@ -141,9 +144,11 @@ void ALLL_MapGimmick::CreateMap()
 			MonsterSpawner = Spawner;
 		}
 	}
-	// TODO: Player loaction change 
+	// TODO: Player loaction change
+	
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
+	FadeIn();
 	SetState(EStageState::READY);
 
 	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
@@ -300,4 +305,22 @@ void ALLL_MapGimmick::RewardSpawn()
 void ALLL_MapGimmick::SetRewardWidget()
 {
 	RewardGimmick->SetRewardButtons();
+}
+
+void ALLL_MapGimmick::FadeIn()
+{
+	LevelSequenceActor->SetSequence(FadeInSequence);
+	LevelSequencePlayer->Play();
+}
+
+void ALLL_MapGimmick::FadeOut()
+{
+	LevelSequenceActor->SetSequence(FadeOutSequence);
+	LevelSequencePlayer->Play();
+}
+
+void ALLL_MapGimmick::PlayerTeleport()
+{
+	PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
+	PlayerTeleportNiagara->ActivateSystem();
 }
