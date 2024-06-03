@@ -21,6 +21,7 @@ class ULLL_ShoppingMapComponent;
 class ULLL_RewardDataTable;
 class ALLL_RewardGimmick;
 class ULLL_PlayerSpawnPointComponent;
+class UNiagaraComponent;
 
 DECLARE_DELEGATE(FOnStageChangedDelegate);
 
@@ -96,10 +97,10 @@ private:
 
 // Gate Section
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "Gate", Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<ALLL_GateObject> GateClass;
 
-	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "Gate", Meta = (AllowPrivateAccess = "true"))
 	TArray<TWeakObjectPtr<ALLL_GateObject>> Gates;
 	
 	UFUNCTION()
@@ -110,7 +111,7 @@ protected:
 
 // State Section
 protected:
-	UPROPERTY(EditAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Stage", Meta = (AllowPrivateAccess = "true"))
 	EStageState CurrentState;
 
 	void SetState(EStageState InNewState);
@@ -125,13 +126,13 @@ protected:
 
 // Fight Section
 protected:
-	UPROPERTY(EditAnywhere, Category = Fight, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Fight", Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<ALLL_MonsterSpawner> MonsterSpawnerClass;
 	
-	UPROPERTY(EditAnywhere, Category = Fight, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Fight", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ALLL_MonsterSpawner> MonsterSpawner;
 	
-	UPROPERTY(EditAnywhere, Category = Fight, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Fight", Meta = (AllowPrivateAccess = "true"))
 	float OpponentSpawnTime;
 
 	UFUNCTION()
@@ -142,10 +143,10 @@ protected:
 
 // Reward Section
 protected:
-	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<ALLL_RewardObject> RewardObjectClass;
 
-	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ALLL_RewardGimmick> RewardGimmick;
 	
 	const FRewardDataTable* RewardData;
@@ -160,15 +161,36 @@ protected:
 
 //Sequence Section
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = Sequence)
-	TObjectPtr<ULevelSequencePlayer> LevelSequencePlayer;
+	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
+	TObjectPtr<ULevelSequencePlayer> FadeInSequencePlayer;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
+	TObjectPtr<ULevelSequencePlayer> FadeOutSequencePlayer;
 
-	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
 	TObjectPtr<ULevelSequence> FadeInSequence;
 
-	UPROPERTY(EditDefaultsOnly, Category = Sequence)
+	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
 	TObjectPtr<ULevelSequence> FadeOutSequence;
 
-	UPROPERTY(EditDefaultsOnly, Category = Sequence)
-	TObjectPtr<ALevelSequenceActor> LevelSequenceActor;
+	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
+	TObjectPtr<ALevelSequenceActor> FadeInSequenceActor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
+	TObjectPtr<ALevelSequenceActor> FadeOutSequenceActor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
+	TObjectPtr<UNiagaraComponent> PlayerTeleportNiagara;
+	
+	UFUNCTION()
+	void FadeIn();
+
+	UFUNCTION()
+	void FadeOut();
+
+	UFUNCTION()
+	void PlayerTeleport();
+	
+	UFUNCTION()
+	void PlayerSetHidden(UNiagaraComponent* InNiagaraComponent);
 };
