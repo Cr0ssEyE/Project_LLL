@@ -373,7 +373,7 @@ void ALLL_MapGimmick::PlayerTeleport()
 void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (Player->IsHidden())
+	if (Player->IsHidden() && !IsValid(SequencerPlayComponent))
 	{
 		Player->SetActorHiddenInGame(false);
 		Player->EnableInput(GetWorld()->GetFirstPlayerController());

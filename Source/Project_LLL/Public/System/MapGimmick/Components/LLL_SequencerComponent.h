@@ -19,7 +19,7 @@ public:
 
 protected:
 	UFUNCTION()
-	void OnSequencerEndedCallBack(AActor* Actor, EEndPlayReason::Type EndPlayReason);
+	void OnSequencerEndedCallBack();
 	
 protected:
 	UPROPERTY(EditAnywhere, DisplayName = "입장 인트로 재생 시퀀서")

@@ -6,7 +6,6 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "BrainComponent.h"
-#include "FMODAudioComponent.h"
 #include "GameplayAbilitiesModule.h"
 #include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -59,6 +58,10 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	MarkVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MarkStatusEffect"));
 	MarkVFXComponent->SetupAttachment(RootComponent);
 	MarkVFXComponent->SetAutoActivate(false);
+
+	BleedingVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BleedingStatusEffect"));
+	BleedingVFXComponent->SetupAttachment(RootComponent);
+	BleedingVFXComponent->SetAutoActivate(false);
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -91,6 +94,13 @@ void ALLL_MonsterBase::BeginPlay()
 	{
 		MarkVFXComponent->SetAsset(MarkCountNiagaraSystem);
 		MarkVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_OVERHEAD);
+	}
+
+	UNiagaraSystem* BleedingNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->BleedingNiagaraSystem;
+	if (IsValid(BleedingNiagaraSystem))
+	{
+		BleedingVFXComponent->SetAsset(BleedingNiagaraSystem);
+		BleedingVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
 	}
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -336,7 +346,7 @@ void ALLL_MonsterBase::UpdateMarkVFX(uint8 NewCount, uint8 MaxCount)
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("표식 값 갱신: %d"), NewCount));
-	MarkVFXComponent->SetFloatParameter(NS_MARK_COUNT, NewCount - 1.f);
+	MarkVFXComponent->SetFloatParameter(NS_MARK_COUNT, FMath::Max(NewCount - 1.f, 0.f));
 	
 	if (NewCount > 0)
 	{
@@ -345,6 +355,22 @@ void ALLL_MonsterBase::UpdateMarkVFX(uint8 NewCount, uint8 MaxCount)
 	else
 	{
 		MarkVFXComponent->Deactivate();
+	}
+}
+
+void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)
+{
+	if (ActiveState)
+	{
+		BleedingVFXComponent->ActivateSystem();
+	}
+	else
+	{
+		if (GetAbilitySystemComponent()->HasAnyMatchingGameplayTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING)))
+		{
+			return;
+		}
+		BleedingVFXComponent->Deactivate();
 	}
 }
 

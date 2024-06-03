@@ -4,6 +4,7 @@
 #include "System/MapGimmick/Components/LLL_SequencerComponent.h"
 
 #include "LevelSequenceActor.h"
+#include "LevelSequencePlayer.h"
 #include "MovieSceneSequencePlaybackSettings.h"
 #include "Constant/LLL_LevelNames.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
@@ -26,7 +27,7 @@ void ULLL_SequencerComponent::PlayIntroSequence()
 	Settings.bHideHud = false;
 	Settings.FinishCompletionStateOverride = EMovieSceneCompletionModeOverride::ForceRestoreState;
 	
-	if (!IsValid(IntroSequenceActor))
+	if (!IsValid(IntroSequenceActor) || !IsValid(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
 		return;
 	}
@@ -34,8 +35,7 @@ void ULLL_SequencerComponent::PlayIntroSequence()
 	IntroSequenceActor->PlaybackSettings = Settings;
 	IntroSequenceActor->SetSequence(IntroSequencer);
 	IntroSequenceActor->InitializePlayer();
-	IntroSequenceActor->OnEndPlay.AddDynamic(this, &ULLL_SequencerComponent::OnSequencerEndedCallBack);
-	
+	IntroSequenceActor->GetSequencePlayer()->OnFinished.AddDynamic(this, &ULLL_SequencerComponent::OnSequencerEndedCallBack);
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	PlayerCharacter->SetHidden(true);
 	PlayerCharacter->GetPlayerUIManager()->SetAllWidgetVisibility(false);
@@ -49,8 +49,13 @@ void ULLL_SequencerComponent::PlayIntroSequence()
 	IntroSequenceActor->FinishSpawning(FTransform::Identity);
 }
 
-void ULLL_SequencerComponent::OnSequencerEndedCallBack(AActor* Actor, EEndPlayReason::Type EndPlayReason)
+void ULLL_SequencerComponent::OnSequencerEndedCallBack()
 {
+	if (!UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	{
+		return;
+	}
+	
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	PlayerCharacter->SetHidden(false);
 	PlayerCharacter->GetPlayerUIManager()->SetAllWidgetVisibility(true);
