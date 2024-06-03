@@ -27,7 +27,7 @@ ALLL_TutorialGimmick::ALLL_TutorialGimmick()
 void ALLL_TutorialGimmick::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MapDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, MapDataAsset->ParticleScale, true, false);
+	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MapDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, MapDataAsset->ParticleScale, false, false);
 	PlayerTeleportNiagara->OnSystemFinished.AddDynamic(this, &ALLL_TutorialGimmick::LoadLevel);
 
 	StageActor = GetWorld()->SpawnActor<AActor>(StageBP, RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
@@ -67,13 +67,13 @@ void ALLL_TutorialGimmick::RewardDestroyed(AActor* DestroyedActor)
 
 void ALLL_TutorialGimmick::MonsterDestroyed(AActor* DestroyedActor)
 {
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	Player->SetActorHiddenInGame(true);
 	Gate->SetActivate();
 }
 
 void ALLL_TutorialGimmick::LoadLevel(UNiagaraComponent* InNiagaraComponent)
 {
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	Player->SetActorHiddenInGame(true);
 	UGameplayStatics::OpenLevel(this, LEVEL_TEST);
 }
 
