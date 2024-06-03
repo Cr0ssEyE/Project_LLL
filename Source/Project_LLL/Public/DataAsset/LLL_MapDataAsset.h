@@ -10,6 +10,7 @@ class ULevelSequence;
 class ALLL_RewardObject;
 class ALLL_MonsterSpawner;
 class ALLL_RewardGimmick;
+class UNiagaraSystem;
 
 /**
  * 

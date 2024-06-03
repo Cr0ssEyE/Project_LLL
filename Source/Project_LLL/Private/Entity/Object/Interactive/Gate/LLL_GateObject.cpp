@@ -86,27 +86,10 @@ void ALLL_GateObject::OpenGate()
 	FFModInfo FModInfo;
 	FModInfo.FModEvent = GateDataAsset->ActivateEvent;
 	FLLL_FModPlayHelper::PlayFModEvent(this, FModInfo);
-	
+	FadeOutDelegate.Broadcast();
 	FTimerHandle StageDestroyTimerHandle;
 	GetWorldTimerManager().SetTimer(StageDestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		GateInteractionDelegate.Broadcast(RewardData);
-	}), 1.0f, false);
+	}), 5.0f, false);
 	//문 오픈 애니 및 이펙
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	UNiagaraComponent* PlayerTP = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,GateDataAsset->TeleportParticle, Player->GetActorLocation(), FRotator::ZeroRotator, GateDataAsset->ParticleScale);
-	PlayerTP->OnSystemFinished.AddDynamic(this, &ALLL_GateObject::PlayerTeleport);
-}
-
-void ALLL_GateObject::StartDestroy()
-{
-	GateInteractionDelegate.Broadcast(RewardData);
-}
-
-void ALLL_GateObject::PlayerTeleport(UNiagaraComponent* InNiagaraComponent)
-{
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	Player->SetActorHiddenInGame(true);
-	FadeOutDelegate.Broadcast();
-	FTimerHandle StageDestroyTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(StageDestroyTimerHandle, this, &ALLL_GateObject::StartDestroy, 0.1f, false, 2.0f);
 }

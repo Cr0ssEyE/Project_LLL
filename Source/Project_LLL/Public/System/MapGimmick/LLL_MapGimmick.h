@@ -165,7 +165,10 @@ protected:
 //Sequence Section
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
-	TObjectPtr<ULevelSequencePlayer> LevelSequencePlayer;
+	TObjectPtr<ULevelSequencePlayer> FadeInSequencePlayer;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
+	TObjectPtr<ULevelSequencePlayer> FadeOutSequencePlayer;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
 	TObjectPtr<ULevelSequence> FadeInSequence;
@@ -174,7 +177,10 @@ protected:
 	TObjectPtr<ULevelSequence> FadeOutSequence;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
-	TObjectPtr<ALevelSequenceActor> LevelSequenceActor;
+	TObjectPtr<ALevelSequenceActor> FadeInSequenceActor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
+	TObjectPtr<ALevelSequenceActor> FadeOutSequenceActor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
 	TObjectPtr<UNiagaraComponent> PlayerTeleportNiagara;
@@ -187,4 +193,7 @@ protected:
 
 	UFUNCTION()
 	void PlayerTeleport();
+	
+	UFUNCTION()
+	void PlayerSetHidden(UNiagaraComponent* InNiagaraComponent);
 };

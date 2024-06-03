@@ -9,7 +9,6 @@
 #include "LLL_GateObject.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateInteractionDelegate, const FRewardDataTable*);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateInteractionDelegate, FRewardDataTable*);
 DECLARE_MULTICAST_DELEGATE(FOnFadeOutDelegate);
 
 struct FRewardDataTable;
@@ -49,9 +48,4 @@ protected:
 	EAbilityType AbilityType;
 	
 	void OpenGate();
-
-	void StartDestroy();
-
-	UFUNCTION()
-	void PlayerTeleport(UNiagaraComponent* InNiagaraComponent);
 };

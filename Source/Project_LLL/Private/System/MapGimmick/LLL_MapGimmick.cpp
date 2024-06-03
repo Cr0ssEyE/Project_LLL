@@ -38,7 +38,7 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 
 	FadeInSequence = MapDataAsset->FadeIn;
 	FadeOutSequence = MapDataAsset->FadeOut;
-	LevelSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
+	FadeInSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
 
 	Seed = 0;
 }
@@ -75,26 +75,31 @@ void ALLL_MapGimmick::BeginPlay()
 	RewardGimmick->InformMapGimmickIsExist();
 	
 	RewardData = RewardGimmick->GetRewardData(0);
-	
-	RandomMap();
-	CreateMap();
-	
+
+	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,MapDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, MapDataAsset->ParticleScale, false, false);
+	PlayerTeleportNiagara->OnSystemFinished.AddDynamic(this, &ALLL_MapGimmick::PlayerSetHidden);
 	//Sequence Section
 	FMovieSceneSequencePlaybackSettings Settings;
 	Settings.bAutoPlay = false;
 	Settings.bPauseAtEnd = true;
 	Settings.bHideHud = true;
-	ALevelSequenceActor* SequenceActorPtr = LevelSequenceActor;
-	LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), nullptr, Settings, SequenceActorPtr);
-	LevelSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::PlayerTeleport);
-	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,MapDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, MapDataAsset->ParticleScale, false, false);
+	ALevelSequenceActor* SequenceActorPtr = FadeInSequenceActor;
+	FadeInSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeInSequence, Settings, SequenceActorPtr);
+	FadeInSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::PlayerTeleport);
+
+	SequenceActorPtr = FadeOutSequenceActor;
+	FadeOutSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
+	
+	RandomMap();
+	CreateMap();
 }
 
 void ALLL_MapGimmick::CreateMap()
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorEnableCollision(false);
-	
+	Player->SetActorHiddenInGame(true);
+	Player->DisableInput(GetWorld()->GetFirstPlayerController());
 	RoomActor = GetWorld()->SpawnActor<AActor>(RoomClass, RootComponent->GetComponentTransform());
 	
 	for (USceneComponent* ChildComponent : RoomActor->GetRootComponent()->GetAttachChildren())
@@ -118,7 +123,7 @@ void ALLL_MapGimmick::CreateMap()
 		{
 			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
-			Gate->FadeOutDelegate.AddUObject(this, &ALLL_MapGimmick::FadeOut);
+			Gate->FadeOutDelegate.AddUObject(this, &ALLL_MapGimmick::PlayerTeleport);
 			RewardGimmick->SetRewardToGate(Gate);
 			Gates.Add(Gate);
 		}
@@ -149,6 +154,7 @@ void ALLL_MapGimmick::CreateMap()
 	// TODO: Player loaction change 
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 	Player->SetActorEnableCollision(true);
+	FadeIn();
 }
 
 void ALLL_MapGimmick::RandomMap()
@@ -321,18 +327,36 @@ void ALLL_MapGimmick::SetRewardWidget()
 
 void ALLL_MapGimmick::FadeIn()
 {
-	LevelSequenceActor->SetSequence(FadeInSequence);
-	LevelSequencePlayer->Play();
+	FadeInSequencePlayer->Play();
 }
 
 void ALLL_MapGimmick::FadeOut()
 {
-	LevelSequenceActor->SetSequence(FadeOutSequence);
-	LevelSequencePlayer->Play();
+	FadeOutSequencePlayer->Play();
 }
 
 void ALLL_MapGimmick::PlayerTeleport()
 {
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	Player->DisableInput(GetWorld()->GetFirstPlayerController());
 	PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
 	PlayerTeleportNiagara->ActivateSystem();
 }
+
+void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
+{
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (Player->IsHidden())
+	{
+		Player->SetActorHiddenInGame(false);
+		Player->EnableInput(GetWorld()->GetFirstPlayerController());
+	}
+	else
+	{
+		Player->SetActorHiddenInGame(true);
+		FadeOut();
+	}
+	FadeInSequencePlayer->RestoreState();
+	FadeOutSequencePlayer->RestoreState();
+}
+
