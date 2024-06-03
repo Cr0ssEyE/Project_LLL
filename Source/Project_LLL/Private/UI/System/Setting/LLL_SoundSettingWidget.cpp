@@ -43,8 +43,17 @@ void ULLL_SoundSettingWidget::NativeConstruct()
 void ULLL_SoundSettingWidget::ApplyMasterSliderValue(const float Value)
 {
 	// MasterSoundClass->Properties.Volume = Value;
+	if (!IFMODStudioModule::IsAvailable())
+	{
+		return;
+	}
+
 	MasterVolumeProgressBar->SetPercent(Value);
-	UFMODBlueprintStatics::BusSetVolume(MasterBus, Value);
+	FMOD::Studio::System* StudioSystem = IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime);
+	FMOD::Studio::Bus* MasterBus;
+	StudioSystem->getBus("bus:/", &MasterBus);
+	MasterBus->setVolume(Value);
+	
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetMasterSoundVolume(Value);
 }
 
@@ -73,7 +82,10 @@ void ULLL_SoundSettingWidget::ApplyMasterVolumeIgnoreState(bool Value)
 		return;
 	}
 	
-	UFMODBlueprintStatics::BusSetVolume(MasterBus, 0.f);
+	FMOD::Studio::System* StudioSystem = IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime);
+	FMOD::Studio::Bus* MasterBus;
+	StudioSystem->getBus("bus:/", &MasterBus);
+	MasterBus->setVolume(Value);
 }
 
 void ULLL_SoundSettingWidget::ApplyBGMVolumeIgnoreState(bool Value)

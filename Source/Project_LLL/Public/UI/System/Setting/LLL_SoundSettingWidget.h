@@ -71,9 +71,6 @@ protected:
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
-	TObjectPtr<UFMODBus> MasterBus;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
 	TObjectPtr<UFMODBus> AmbienceBus;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
