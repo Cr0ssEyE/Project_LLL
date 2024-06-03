@@ -33,18 +33,6 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	}));
 }
 
-void ALLL_MonsterBaseAIController::StartCoolDown()
-{
-	BlackboardComponent->SetValueAsBool(BBKEY_IS_COOL_DOWN, true);
-
-	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-
-	FTimerHandle CoolDownTimerHandle;
-	GetWorldTimerManager().SetTimer(CoolDownTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
-		BlackboardComponent->SetValueAsBool(BBKEY_IS_COOL_DOWN, false);
-	}), MonsterAttributeSet->GetAttackCoolDown(), false);
-}
-
 void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)

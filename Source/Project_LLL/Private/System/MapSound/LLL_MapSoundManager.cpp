@@ -41,6 +41,20 @@ void ALLL_MapSoundManager::SetBattleParameter(float Value) const
 	}
 }
 
+void ALLL_MapSoundManager::SetPauseParameter(float Value) const
+{
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	{
+		if (FModParameterData.Parameter != EFModParameter::BGM_PauseParameter)
+		{
+			continue;
+		}
+
+		UFMODBlueprintStatics::EventInstanceSetParameter(BGMWrapper, FModParameterData.Name, Value);
+	}
+}
+
 void ALLL_MapSoundManager::BeginPlay()
 {
 	Super::BeginPlay();
@@ -80,4 +94,7 @@ void ALLL_MapSoundManager::PlayerDeadHandle(ALLL_BaseCharacter* Character)
 {
 	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
 	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
+
+	UFMODBlueprintStatics::EventInstanceStop(AMBWrapper);
+	UFMODBlueprintStatics::EventInstanceRelease(AMBWrapper);
 }
