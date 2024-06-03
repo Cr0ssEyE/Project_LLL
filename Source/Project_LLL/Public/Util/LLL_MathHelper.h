@@ -7,7 +7,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/Character.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -180,9 +180,9 @@ public:
 			);
 			
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+			if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(World->GetGameInstance()))
 			{
-				if(ProtoGameInstance->CheckPlayerDashDebug())
+				if(DebugGameInstance->CheckPlayerDashDebug())
 				{
 					DrawDebugCapsule(World, LaunchLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Yellow, false, 2.f);
 				}
@@ -209,9 +209,9 @@ public:
 				Params
 				);
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+			if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(World->GetGameInstance()))
 			{
-				if(ProtoGameInstance->CheckPlayerDashDebug())
+				if(DebugGameInstance->CheckPlayerDashDebug())
 				{
 					DrawDebugCapsule(World, CorrectionLaunchLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Magenta, false, 2.f);
 				}
@@ -254,9 +254,9 @@ public:
 				);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(World->GetGameInstance()))
+			if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(World->GetGameInstance()))
 			{
-				if(ProtoGameInstance->CheckPlayerDashDebug())
+				if(DebugGameInstance->CheckPlayerDashDebug())
 				{
 					DrawDebugCapsule(World, NewLocation, CapsuleExtent.Y, CapsuleExtent.X, FQuat::Identity, FColor::Cyan, false, 2.f);
 				}

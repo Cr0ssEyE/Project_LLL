@@ -6,6 +6,8 @@
 #include "Components/SceneComponent.h"
 #include "LLL_ShoppingMapComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnShopingDelegate);
+
 class ALLL_RewardObject;
 //class ULLL_TestShopDataTable;
 //struct FTestShopDataTable;
@@ -22,6 +24,8 @@ public:
 	UFUNCTION()
 	void DeleteProducts();
 
+	FOnShopingDelegate ShopingDelegate;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -32,8 +36,11 @@ public:
 
 	UFUNCTION()
 	void SetProducts();
+	
 	virtual void BeginDestroy() override;
 
+	UFUNCTION()
+	void SetDelegate();
 protected:
 	UPROPERTY(EditAnywhere, Category = Product, Meta = (AllowPrivateAccess = "true"))
 	TArray<TObjectPtr<ALLL_RewardObject>> ProductList;

@@ -7,7 +7,7 @@
 #include "Components/Button.h"
 #include "Components/CheckBox.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 void UPlayerDebugWidget::NativeConstruct()
@@ -25,37 +25,37 @@ void UPlayerDebugWidget::NativeConstruct()
 
 void UPlayerDebugWidget::PlayerMovementCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerMovementDebug(PlayerMovementCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerMovementDebug(PlayerMovementCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerDashCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerDashDebug(PlayerDashCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerDashDebug(PlayerDashCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerChaseActionDebug(PlayerChaseActionCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerChaseActionDebug(PlayerChaseActionCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerSkillCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerSkillDebug(PlayerSkillCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerSkillDebug(PlayerSkillCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::CharacterHitCheckCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerHitCheckDebug(CharacterHitCheckCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerHitCheckDebug(CharacterHitCheckCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::CharacterAttackCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerAttackDebug(CharacterAttackCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerAttackDebug(CharacterAttackCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::CharacterCollisionCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerCollisionDebug(CharacterCollisionCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerCollisionDebug(CharacterCollisionCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerFillHealthButtonEvent()
@@ -84,5 +84,5 @@ void UPlayerDebugWidget::PlayerFillHealthButtonEvent()
 
 void UPlayerDebugWidget::PlayerInvincibleCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerInvincibleMode(PlayerInvincibleCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerInvincibleMode(PlayerInvincibleCheckBox->IsChecked());
 }

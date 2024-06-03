@@ -35,7 +35,7 @@ public:
 	virtual void Activate() override;
 	virtual void Deactivate() override;
 	
-	virtual void Throw(AActor* NewOwner, const AActor* NewTarget, float InSpeed);
+	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed);
 
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -50,7 +50,7 @@ protected:
 	TObjectPtr<const ULLL_ThrownObjectDataAsset> ThrownObjectDataAsset;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<const AActor> Target;
+	TObjectPtr<AActor> Target;
 
 	uint8 bIsActivated : 1;
 	

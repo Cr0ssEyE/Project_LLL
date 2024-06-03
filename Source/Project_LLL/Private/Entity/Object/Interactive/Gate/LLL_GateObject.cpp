@@ -18,7 +18,7 @@ ALLL_GateObject::ALLL_GateObject()
 	bIsGateEnabled = false;
 }
 
-void ALLL_GateObject::SetGateInformation(FRewardDataTable* Data)
+void ALLL_GateObject::SetGateInformation(const FRewardDataTable* Data)
 {
 	RewardData = Data;
 	
@@ -52,7 +52,7 @@ void ALLL_GateObject::SetActivate()
 	bIsGateEnabled = true;
 	if (IsValid(GateDataAsset->Particle))
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+		SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
 	}
 }
 

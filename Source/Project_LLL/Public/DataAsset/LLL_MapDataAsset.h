@@ -20,8 +20,14 @@ class PROJECT_LLL_API ULLL_MapDataAsset : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Map", DisplayName = "맵 블루프린트")
-	TArray<TSubclassOf<AActor>> MapData;
+	UPROPERTY(EditDefaultsOnly, Category = "Map", DisplayName = "룸 블루프린트")
+	TArray<TSubclassOf<AActor>> Rooms;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Map", DisplayName = "상점 룸 블루프린트")
+	TSubclassOf<AActor> Store;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Map", DisplayName = "보스 룸 블루프린트")
+	TSubclassOf<AActor> Boss;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Map", DisplayName = "최대 룸 개수")
 	uint8 MaximumRoom;
