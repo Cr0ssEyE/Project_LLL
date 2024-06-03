@@ -40,7 +40,10 @@ enum class EFModParameter : uint8
 	PlayerWalkMaterialParameter,
 	PlayerAttackCountParameter,
 	PlayerAttackHitCountParameter,
-	PlayerDamagedTypeParameter
+	PlayerDamagedTypeParameter,
+	BGM_BulletTimeParameter,
+	AMB_BulletTimeParameter,
+	BGM_BattleParameter
 };
 
 UENUM(BlueprintType)
