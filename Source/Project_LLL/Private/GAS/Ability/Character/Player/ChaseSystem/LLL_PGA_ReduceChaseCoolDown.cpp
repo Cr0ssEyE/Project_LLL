@@ -16,14 +16,13 @@ void ULLL_PGA_ReduceChaseCoolDown::ActivateAbility(const FGameplayAbilitySpecHan
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	ULLL_AT_WaitTargetData* TargetDataTask = ULLL_AT_WaitTargetData::CreateTask(this, ALLL_MonsterBase::StaticClass(), false, true);
-	TargetDataTask->TargetDataReceivedDelegate.AddDynamic(this, &ULLL_PGA_ReduceChaseCoolDown::OnTraceResultCallBack);
-	TargetDataTask->ReadyForActivation();
-}
-
-void ULLL_PGA_ReduceChaseCoolDown::OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
-{
-	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
+	if (TriggerRequiredTag.IsValid() && !TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag))
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
+	}
+	
+	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(CurrentEventData.TargetData, 0))
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;

@@ -19,6 +19,7 @@ class PROJECT_LLL_API ULLL_PlayerStatusWidget : public ULLL_CharacterStatusWidge
 public:
 	virtual void UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) override;
 	void UpdateWidgetView(const UAbilitySystemComponent* CharacterASC) const;
+	FORCEINLINE void PlayLowHPAnimation() { PlayAnimation(LowHpAnimation); }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
@@ -29,4 +30,7 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UTextBlock> SkillTextBlock;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> LowHpAnimation;
 };

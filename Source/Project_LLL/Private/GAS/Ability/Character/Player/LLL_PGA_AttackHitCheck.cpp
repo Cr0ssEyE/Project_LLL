@@ -85,8 +85,16 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	
 	FGameplayEventData PayloadData;
-	// 아래와 같이 복수의 데이터 전달 가능
+	FGameplayTagContainer TriggerTags;
+	for (auto Trigger : AbilityTriggers)
+	{
+		TriggerTags.AddTag(Trigger.TriggerTag);
+	}
+	PayloadData.Instigator = GetAvatarActorFromActorInfo();
+	PayloadData.InstigatorTags.AppendTags(GetAbilitySystemComponentFromActorInfo_Checked()->GetOwnedGameplayTags());
+	PayloadData.InstigatorTags.AppendTags(TriggerTags);
 	PayloadData.TargetData = TargetDataHandle;
+	PayloadData.EventMagnitude = CurrentEventData.EventMagnitude;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
 }
 

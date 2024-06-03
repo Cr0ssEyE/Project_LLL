@@ -20,12 +20,12 @@ class PROJECT_LLL_API ALLL_MapSoundManager : public ALLL_SystemBase
 	GENERATED_BODY()
 
 public:
-	ALLL_MapSoundManager();
-
 	void SetPitch(float InPitch) const;
+	void SetBattleParameter(float Value) const;
 	
 protected:
 	virtual void BeginPlay() override;
+	virtual void BeginDestroy() override;
 	
 	UFUNCTION()
 	void PlayerDeadHandle(ALLL_BaseCharacter* Character);
@@ -35,9 +35,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "FMod", DisplayName = "환경음")
 	TObjectPtr<UFMODEvent> AMB;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<UBoxComponent> CollisionBoxForBulletTime;
 
 	FFMODEventInstance BGMWrapper;
 	FFMODEventInstance AMBWrapper;

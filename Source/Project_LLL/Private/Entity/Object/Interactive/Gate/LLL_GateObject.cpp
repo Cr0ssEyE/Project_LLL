@@ -3,18 +3,22 @@
 
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 
+#include "NiagaraFunctionLibrary.h"
+#include "Components/BoxComponent.h"
 #include "Constant/LLL_FilePath.h"
+#include "DataAsset/LLL_GateDataAsset.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_GateObject::ALLL_GateObject()
 {
-	GateMesh = FLLL_ConstructorHelper::FindAndGetObject<UStaticMesh>(PATH_GATE_OBJECT_TEST_MESH, EAssertionLevel::Check);
+	GateDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_GateDataAsset>(PATH_GATE_DATA, EAssertionLevel::Check);
+	GateMesh = GateDataAsset->StaticMesh;
 	BaseMesh->SetStaticMesh(GateMesh);
 	bIsGateEnabled = false;
 }
 
-void ALLL_GateObject::SetGateInformation(FRewardDataTable* Data)
+void ALLL_GateObject::SetGateInformation(const FRewardDataTable* Data)
 {
 	RewardData = Data;
 	
@@ -43,6 +47,15 @@ void ALLL_GateObject::SetGateInformation(FRewardDataTable* Data)
 	}
 }
 
+void ALLL_GateObject::SetActivate()
+{
+	bIsGateEnabled = true;
+	if (IsValid(GateDataAsset->Particle))
+	{
+		SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
+	}
+}
+
 void ALLL_GateObject::InteractiveEvent()
 {
 	if(!bIsGateEnabled)
@@ -55,11 +68,16 @@ void ALLL_GateObject::InteractiveEvent()
 	OpenGate();
 }
 
+void ALLL_GateObject::BeginPlay()
+{
+	Super::BeginPlay();
+	InteractOnlyCollisionBox->SetBoxExtent(FVector(200.0f, 200.0f, 300.f));
+	InteractOnlyCollisionBox->SetRelativeLocation(FVector(0, 0, 300.f));
+}
+
 void ALLL_GateObject::OpenGate()
 {
-	//문 오픈 애니 및 이펙트
-	AddActorLocalRotation(FRotator(0.0f, -90.0f, 0.0f));
-
+	//문 오픈 애니 및 이펙
 	FTimerHandle StageDestroyTimerHandle;
 	
 	GetWorld()->GetTimerManager().SetTimer(StageDestroyTimerHandle, this, &ALLL_GateObject::StartDestroy, 0.1f, false, 0.5f);

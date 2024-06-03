@@ -16,8 +16,8 @@ void ULLL_PGA_RewardAbilityBase::PreActivate(const FGameplayAbilitySpecHandle Ha
 		if (IsValid(Effect) && ActivateEffect.Value == EEffectApplyTarget::Self)
 		{
 			const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(Effect->GetClass(), GetAbilityLevel());
-			const float MagnitudeValue = AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel();
-			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, MagnitudeValue);
+			const float MagnitudeValue = AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel() / static_cast<uint32>(AbilityData->AbilityValueType);
+			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, MagnitudeValue);
 
  			K2_ApplyGameplayEffectSpecToOwner(EffectHandle);
 		}

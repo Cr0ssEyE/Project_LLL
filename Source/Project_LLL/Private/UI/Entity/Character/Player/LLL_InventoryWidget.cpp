@@ -29,7 +29,7 @@ void ULLL_InventoryWidget::NativeConstruct()
 
 void ULLL_InventoryWidget::SetEruriaInfo(const FAbilityDataTable* AbilityData)
 {
-	if(SetEruriaImage(CommonEruriaImages[CurrentEmptyEruriaSlotIndex], CommonEruriaLevelTexts[CurrentEmptyEruriaSlotIndex], AbilityData))
+	if (SetEruriaImage(CommonEruriaImages[CurrentEmptyEruriaSlotIndex], CommonEruriaLevelTexts[CurrentEmptyEruriaSlotIndex], AbilityData))
 	{
 		CurrentEmptyEruriaSlotIndex++;
 	}
@@ -73,21 +73,21 @@ void ULLL_InventoryWidget::RegisterInventoryLayout(const UVerticalBox* VerticalB
 
 bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, const FAbilityDataTable* AbilityData)
 {
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningPlayer()->GetCharacter());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningPlayer()->GetCharacter());
 	TArray<FGameplayAbilitySpecHandle> SpecHandles;
 	Player->GetAbilitySystemComponent()->FindAllAbilitiesWithTags(SpecHandles, FGameplayTagContainer(TAG_GAS_ABILITY_PART_COMMON));
 	
 	if (SpecHandles.IsEmpty())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("스펙 찾기 실패")));
-		ensure(false);
+		//ensure(false);
 		return false;
 	}
 	
 	float AbilityLevel = 0.f;
-	for (auto AbilitySpec : SpecHandles)
+	for (const auto AbilitySpec : SpecHandles)
 	{
-		ULLL_PGA_RewardAbilityBase* RewardAbility = Cast<ULLL_PGA_RewardAbilityBase>(Player->GetAbilitySystemComponent()->FindAbilitySpecFromHandle(AbilitySpec)->GetPrimaryInstance());
+		const ULLL_PGA_RewardAbilityBase* RewardAbility = Cast<ULLL_PGA_RewardAbilityBase>(Player->GetAbilitySystemComponent()->FindAbilitySpecFromHandle(AbilitySpec)->GetPrimaryInstance());
 		if (!RewardAbility)
 		{
 			continue;
@@ -104,7 +104,7 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 	if (AbilityLevel == 0.f)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("스펙은 찾았는데 리워드 어빌리티 아님")));
-		ensure(false);
+		//ensure(false);
 		return false;
 	}
 

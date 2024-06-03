@@ -12,22 +12,22 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
-#include "System/MapGimmick/LLL_GateSpawnPointComponent.h"
-#include "System/MapGimmick/LLL_ShoppingMapComponent.h"
-#include "System/MapGimmick/LLL_PlayerSpawnPointComponent.h"
+#include "System/MapGimmick/Components/LLL_GateSpawnPointComponent.h"
+#include "System/MapGimmick/Components/LLL_ShoppingMapComponent.h"
+#include "System/MapGimmick/Components/LLL_PlayerSpawnPointComponent.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawner.h"
 #include "System/Reward/LLL_RewardGimmick.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
+#include "Game/LLL_GameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
 	RootBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
-	RootBox->SetBoxExtent(FVector(5000.0f, 5000.0f, 500.0f));
 	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
-	RootBox->OnComponentBeginOverlap.AddDynamic(this, &ALLL_MapGimmick::OnStageTriggerBeginOverlap);
 	SetRootComponent(RootBox);
 
 	MapDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_MapDataAsset>(PATH_MAP_DATA, EAssertionLevel::Check);
@@ -37,6 +37,8 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 	FadeInSequence = MapDataAsset->FadeIn;
 	FadeOutSequence = MapDataAsset->FadeOut;
 	LevelSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
+
+	Seed = 0;
 }
 
 void ALLL_MapGimmick::OnConstruction(const FTransform& Transform)
@@ -86,20 +88,22 @@ void ALLL_MapGimmick::BeginPlay()
 	LevelSequencePlayer->Play();
 }
 
-void ALLL_MapGimmick::OnStageTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	SetState(EStageState::FIGHT);
-}
-
 void ALLL_MapGimmick::CreateMap()
 {
-	StageActor = GetWorld()->SpawnActor<AActor>(Stage, RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	Player->SetActorEnableCollision(false);
 	
-	for (USceneComponent* ChildComponent : StageActor->GetRootComponent()->GetAttachChildren())
+	RoomActor = GetWorld()->SpawnActor<AActor>(RoomClass, RootComponent->GetComponentTransform());
+	
+	for (USceneComponent* ChildComponent : RoomActor->GetRootComponent()->GetAttachChildren())
 	{
 		if (!IsValid(ShoppingMapComponent))
 		{
 			ShoppingMapComponent = Cast<ULLL_ShoppingMapComponent>(ChildComponent);
+			if (IsValid(ShoppingMapComponent))
+			{
+				ShoppingMapComponent->ShopingDelegate.AddUObject(this, &ALLL_MapGimmick::SetRewardWidget);
+			}
 		}
 
 		if (!IsValid(PlayerSpawnPointComponent))
@@ -117,40 +121,62 @@ void ALLL_MapGimmick::CreateMap()
 		}
 	}
 
-	StageActor->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::ChangeMap);
+	RoomActor->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::ChangeMap);
 	
 	if (IsValid(ShoppingMapComponent))
 	{
 		ShoppingMapComponent->SetProducts();
 		SetState(EStageState::NEXT);
-		return;
+	}
+	else
+	{
+		RoomActor->GetAllChildActors(RoomChildActors, true);
+		for (AActor* ChildActor : RoomChildActors)
+		{
+			if (ALLL_MonsterSpawner* Spawner = Cast<ALLL_MonsterSpawner>(ChildActor))
+			{
+				MonsterSpawner = Spawner;
+				MonsterSpawner->StartSpawnDelegate.AddDynamic(this, &ALLL_MapGimmick::OnOpponentSpawn);
+				MonsterSpawner->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::OnOpponentDestroyed);
+			}
+		}
+		SetState(EStageState::READY);
 	}
 	
-	StageActor->GetAllChildActors(StageChildActors, true);
-	for (AActor* ChildActor : StageChildActors)
-	{
-		MonsterSpawner = CastChecked<ALLL_MonsterSpawner>(ChildActor);
-	}
-	RootBox->SetCollisionProfileName(CP_OVERLAP_ALL);
-
 	// TODO: Player loaction change 
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	Player->SetActorEnableCollision(true);
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
-	SetState(EStageState::READY);
 }
 
 void ALLL_MapGimmick::RandomMap()
 {
-	Seed = FMath::RandRange(0, MapDataAsset->MapData.Num() - 1);
-	Stage = MapDataAsset->MapData[Seed];
+	CurrentRoomNumber++;
+	if (CurrentRoomNumber == MapDataAsset->StoreRoom)
+	{
+		RoomClass = MapDataAsset->Store;
+		return;
+	}
+
+	if (CurrentRoomNumber > MapDataAsset->MaximumRoom)
+	{
+		RoomClass = MapDataAsset->Boss;
+		return;
+	}
+	
+	while (true)
+	{
+		const int32 Data = Seed;
+		Seed = FMath::RandRange(0, MapDataAsset->Rooms.Num() - 1);
+		if (Seed != Data)
+		{
+			break;
+		}
+	}
+	RoomClass = MapDataAsset->Rooms[Seed];
 }
 
 void ALLL_MapGimmick::ChangeMap(AActor* DestroyedActor)
 {
-	if(IsValid(ShoppingMapComponent))
-	{
-		ShoppingMapComponent->DeleteProducts();
-	}
 	AllGatesDestroy();
 	RandomMap();
 	CreateMap();
@@ -162,6 +188,7 @@ void ALLL_MapGimmick::AllGatesDestroy()
 	{
 		return;
 	}
+	
 	for	(const auto Gate : Gates)
 	{
 		Gate->Destroy();
@@ -169,18 +196,24 @@ void ALLL_MapGimmick::AllGatesDestroy()
 	Gates.Empty();
 }
 
-void ALLL_MapGimmick::OnInteractionGate(FRewardDataTable* Data)
+void ALLL_MapGimmick::OnInteractionGate(const FRewardDataTable* Data)
 {
 	RewardData = Data;
-	StageChildActors.Empty();
-	StageActor->Destroy();
+	RoomChildActors.Empty();
+	if(IsValid(ShoppingMapComponent))
+	{
+		ShoppingMapComponent->DeleteProducts();
+	}
+	ShoppingMapComponent = nullptr;
+	PlayerSpawnPointComponent = nullptr;
+	RoomActor->Destroy();
 }
 
 void ALLL_MapGimmick::EnableAllGates()
 {
 	for (const auto Gate:Gates)
 	{
-		Gate->GateEnable();
+		Gate->SetActivate();
 	}
 }
 
@@ -201,33 +234,31 @@ void ALLL_MapGimmick::SetReady()
 
 void ALLL_MapGimmick::SetFight()
 {
-	RootBox->SetCollisionProfileName(CP_NO_COLLISION);
-	OnOpponentSpawn();
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SetMapSoundManagerBattleParameter(1.0f);
 }
 
 void ALLL_MapGimmick::SetChooseReward()
 {
-	RootBox->SetCollisionProfileName(CP_NO_COLLISION);
 	RewardSpawn();
+
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SetMapSoundManagerBattleParameter(0.0f);
 }
 
 void ALLL_MapGimmick::SetChooseNext()
 {
-	RootBox->SetCollisionProfileName(CP_NO_COLLISION);
 	EnableAllGates();
+}
+
+void ALLL_MapGimmick::OnOpponentSpawn()
+{
+	SetState(EStageState::FIGHT);
 }
 
 void ALLL_MapGimmick::OnOpponentDestroyed(AActor* DestroyedActor)
 {
 	SetState(EStageState::REWARD);
-}
-
-void ALLL_MapGimmick::OnOpponentSpawn()
-{
-	if (MonsterSpawner)
-	{
-		MonsterSpawner->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::OnOpponentDestroyed);
-	}
 }
 
 void ALLL_MapGimmick::RewardDestroyed(AActor* DestroyedActor)
@@ -237,13 +268,14 @@ void ALLL_MapGimmick::RewardDestroyed(AActor* DestroyedActor)
 
 void ALLL_MapGimmick::RewardSpawn()
 {
-	if (!GetWorld()->GetFirstPlayerController())
+	if (!UGameplayStatics::GetPlayerController(GetWorld(), 0))
 	{
 		return;
 	}
 	RewardGimmick->SetRewardButtons();
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActor<ALLL_RewardObject>(RewardObjectClass, Player->GetActorLocation(), Player->GetActorRotation());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	FTransform RewardTransform = Player->GetTransform();
+	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActorDeferred<ALLL_RewardObject>(RewardObjectClass, RewardTransform);
 	if (IsValid(RewardObject))
 	{
 		RewardObject->SetInformation(RewardData);
@@ -261,4 +293,25 @@ void ALLL_MapGimmick::RewardSpawn()
 		break;
 	default: ;
 	}
+	
+	FHitResult Result;
+	GetWorld()->SweepSingleByChannel
+	(Result,
+	Player->GetActorLocation(),
+	Player->GetActorLocation(),
+	FQuat::Identity,
+	ECC_TRACE_FIELD,
+	FCollisionShape::MakeBox(FVector(10.f, 10.f, 200.f))
+	);
+	
+	if (!Result.GetActor())
+	{
+		RewardTransform.SetLocation(FVector::Zero() + FVector(0.f, 0.f, 300.f));
+	}
+	RewardObject->FinishSpawning(RewardTransform);
+}
+
+void ALLL_MapGimmick::SetRewardWidget()
+{
+	RewardGimmick->SetRewardButtons();
 }
