@@ -39,6 +39,7 @@
 #define TAG_GAS_PLAYER_STATE_CHASE_COOLDOWN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserCoolDown"))
 #define TAG_GAS_PLAYER_STATE_CHASE_THREW FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserThrew"))
 #define TAG_GAS_PLAYER_STATE_CHASE_RETURN FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaserReturned"))
+#define TAG_GAS_PLAYER_STATE_CHASE_PROGRESS FGameplayTag::RequestGameplayTag(FName("Character.Player.State.ChaseAttackOnGoing"))
 #define TAG_GAS_PLAYER_STATE_INPUT_CHECK_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Player.State.InputCheck.BaseAttack"))
 #define TAG_GAS_PLAYER_STATE_INPUT_CHECK_DASH FGameplayTag::RequestGameplayTag(FName("Character.Player.State.InputCheck.Dash"))
 
