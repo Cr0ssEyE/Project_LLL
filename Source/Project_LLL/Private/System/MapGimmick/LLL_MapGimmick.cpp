@@ -20,6 +20,8 @@
 #include "Util/LLL_ConstructorHelper.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
@@ -36,7 +38,7 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 
 	FadeInSequence = MapDataAsset->FadeIn;
 	FadeOutSequence = MapDataAsset->FadeOut;
-	LevelSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
+	FadeInSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
 
 	Seed = 0;
 }
@@ -73,26 +75,31 @@ void ALLL_MapGimmick::BeginPlay()
 	RewardGimmick->InformMapGimmickIsExist();
 	
 	RewardData = RewardGimmick->GetRewardData(0);
-	
-	RandomMap();
-	CreateMap();
-	
+
+	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,MapDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, MapDataAsset->ParticleScale, false, false);
+	PlayerTeleportNiagara->OnSystemFinished.AddDynamic(this, &ALLL_MapGimmick::PlayerSetHidden);
 	//Sequence Section
 	FMovieSceneSequencePlaybackSettings Settings;
 	Settings.bAutoPlay = false;
 	Settings.bPauseAtEnd = true;
 	Settings.bHideHud = true;
-	ALevelSequenceActor* SequenceActorPtr = LevelSequenceActor;
+	ALevelSequenceActor* SequenceActorPtr = FadeInSequenceActor;
+	FadeInSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeInSequence, Settings, SequenceActorPtr);
+	FadeInSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::PlayerTeleport);
 
-	LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
-	LevelSequencePlayer->Play();
+	SequenceActorPtr = FadeOutSequenceActor;
+	FadeOutSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
+	
+	RandomMap();
+	CreateMap();
 }
 
 void ALLL_MapGimmick::CreateMap()
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorEnableCollision(false);
-	
+	Player->SetActorHiddenInGame(true);
+	Player->DisableInput(GetWorld()->GetFirstPlayerController());
 	RoomActor = GetWorld()->SpawnActor<AActor>(RoomClass, RootComponent->GetComponentTransform());
 	
 	for (USceneComponent* ChildComponent : RoomActor->GetRootComponent()->GetAttachChildren())
@@ -116,6 +123,7 @@ void ALLL_MapGimmick::CreateMap()
 		{
 			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
+			Gate->FadeOutDelegate.AddUObject(this, &ALLL_MapGimmick::PlayerTeleport);
 			RewardGimmick->SetRewardToGate(Gate);
 			Gates.Add(Gate);
 		}
@@ -146,6 +154,7 @@ void ALLL_MapGimmick::CreateMap()
 	// TODO: Player loaction change 
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 	Player->SetActorEnableCollision(true);
+	FadeIn();
 }
 
 void ALLL_MapGimmick::RandomMap()
@@ -229,17 +238,21 @@ void ALLL_MapGimmick::SetState(EStageState InNewState)
 
 void ALLL_MapGimmick::SetReady()
 {
-	
+	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
 }
 
 void ALLL_MapGimmick::SetFight()
 {
+	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
+	
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
 	GameInstance->SetMapSoundManagerBattleParameter(1.0f);
 }
 
 void ALLL_MapGimmick::SetChooseReward()
 {
+	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
+	
 	RewardSpawn();
 
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
@@ -248,6 +261,8 @@ void ALLL_MapGimmick::SetChooseReward()
 
 void ALLL_MapGimmick::SetChooseNext()
 {
+	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
+	
 	EnableAllGates();
 }
 
@@ -276,6 +291,9 @@ void ALLL_MapGimmick::RewardSpawn()
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	FTransform RewardTransform = Player->GetTransform();
 	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActorDeferred<ALLL_RewardObject>(RewardObjectClass, RewardTransform);
+	FVector Vector = RewardObject->GetActorLocation();
+	Vector.Z += 150;
+	RewardObject->SetActorLocation(Vector);
 	if (IsValid(RewardObject))
 	{
 		RewardObject->SetInformation(RewardData);
@@ -315,3 +333,39 @@ void ALLL_MapGimmick::SetRewardWidget()
 {
 	RewardGimmick->SetRewardButtons();
 }
+
+void ALLL_MapGimmick::FadeIn()
+{
+	FadeInSequencePlayer->Play();
+}
+
+void ALLL_MapGimmick::FadeOut()
+{
+	FadeOutSequencePlayer->Play();
+}
+
+void ALLL_MapGimmick::PlayerTeleport()
+{
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	Player->DisableInput(GetWorld()->GetFirstPlayerController());
+	PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
+	PlayerTeleportNiagara->ActivateSystem();
+}
+
+void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
+{
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (Player->IsHidden())
+	{
+		Player->SetActorHiddenInGame(false);
+		Player->EnableInput(GetWorld()->GetFirstPlayerController());
+	}
+	else
+	{
+		Player->SetActorHiddenInGame(true);
+		FadeOut();
+	}
+	FadeInSequencePlayer->RestoreState();
+	FadeOutSequencePlayer->RestoreState();
+}
+

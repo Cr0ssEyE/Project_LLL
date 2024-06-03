@@ -63,7 +63,7 @@ protected:
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Damaged(AActor* Attacker, bool IsDOT = false);
+	virtual void Damaged(AActor* Attacker, bool IsDOT = false) {}
 	virtual void Dead();
 
 	// 상태 체크용 변수

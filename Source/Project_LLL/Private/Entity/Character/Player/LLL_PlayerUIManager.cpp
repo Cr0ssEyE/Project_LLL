@@ -156,23 +156,31 @@ void ULLL_PlayerUIManager::DisableInteractionWidget() const
 
 void ULLL_PlayerUIManager::UpdateInteractionWidget(const ALLL_InteractiveObject* CurrentObject, int Num) const
 {
-	InteractionWidget->RenderNextInteractionPanel(static_cast<bool>(Num));
+	// InteractionWidget->RenderNextInteractionPanel(static_cast<bool>(Num));
 	InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
 }
 
 void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
 {
-	if(Visible)
+	if(!Visible)
 	{
 		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
 		InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
 		CharacterStatusWidget->SetVisibility(ESlateVisibility::Hidden);
+		InteractionWidget->SetVisibility(ESlateVisibility::Hidden);
+		MainEruriaInfoWidget->SetVisibility(ESlateVisibility::Hidden);
+		ComboWidget->SetVisibility(ESlateVisibility::Hidden);
+		ChaseActionWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
 		GamePauseWidget->SetVisibility(ESlateVisibility::Visible);
 		InventoryWidget->SetVisibility(ESlateVisibility::Visible);
 		CharacterStatusWidget->SetVisibility(ESlateVisibility::Visible);
+		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		MainEruriaInfoWidget->SetVisibility(ESlateVisibility::Visible);
+		ComboWidget->SetVisibility(ESlateVisibility::Visible);
+		ChaseActionWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 

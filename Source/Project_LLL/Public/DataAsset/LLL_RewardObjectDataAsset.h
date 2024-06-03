@@ -30,4 +30,19 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "ProductData", DisplayName = "가격")
 	float Price;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "플레이어 최대 체력 증가 이펙트")
+	TSubclassOf<UGameplayEffect> MaxHPEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Texture", DisplayName = "골드 보상 텍스쳐")
+	TObjectPtr<UTexture> GoldTexture;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Texture", DisplayName = "능력 보상 텍스쳐")
+	TObjectPtr<UTexture> AbilityTexture;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Texture", DisplayName = "최대 체력 보상 텍스쳐")
+	TObjectPtr<UTexture> MaxHPTexture;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Texture", DisplayName = "강화 보상 텍스쳐")
+	TObjectPtr<UTexture> EnhanceTexture;
 };

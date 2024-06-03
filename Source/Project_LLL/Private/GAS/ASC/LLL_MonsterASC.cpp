@@ -39,6 +39,12 @@ void ULLL_MonsterASC::BeginPlay()
 	RegisterGameplayTagEvent(TAG_GAS_MARK_STACK, EGameplayTagEventType::AnyCountChange).AddUObject(this, &ULLL_MonsterASC::OnMarkTagAdded);
 }
 
+void ULLL_MonsterASC::BeginDestroy()
+{
+	MarkTimerHandle.Invalidate();
+	Super::BeginDestroy();
+}
+
 void ULLL_MonsterASC::OnFallableTagAdded(const FGameplayTag Tag, int32 count)
 {
 	if (Tag == TAG_GAS_MONSTER_FALLABLE && count > 0 && Cast<ILLL_KnockBackInterface>(GetAvatarActor()))
@@ -90,7 +96,7 @@ void ULLL_MonsterASC::OnMarkTagAdded(const FGameplayTag Tag, int32 count)
 	
 	GetWorld()->GetTimerManager().SetTimer(MarkTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]()
 	{
-		if (!Monster)
+		if (!Monster || !IsValid(this) || !GetWorld())
 		{
 			return;
 		}

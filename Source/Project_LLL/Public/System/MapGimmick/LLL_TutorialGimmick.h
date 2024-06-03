@@ -9,10 +9,12 @@
 
 class ALLL_GateObject;
 class UStaticMeshComponent;
-class ALLL_AbilityRewardObject;
+class ALLL_RewardObject;
 class ULLL_GateSpawnPointComponent;
 class ULLL_PlayerSpawnPointComponent;
 class AActor;
+class ULLL_MapDataAsset;
+class UNiagaraComponent;
 /**
  * 
  */
@@ -38,13 +40,19 @@ protected:
 	TObjectPtr<ALLL_GateObject> Gate;
 	
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ALLL_AbilityRewardObject> AbilityReward;
+	TObjectPtr<ALLL_RewardObject> AbilityReward;
 	
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_PlayerSpawnPointComponent> PlayerSpawnPointComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_GateSpawnPointComponent> GateSpawnPointComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
+	TObjectPtr<UNiagaraComponent> PlayerTeleportNiagara;
+
+	UPROPERTY(VisibleAnywhere, Category = "stage")
+	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
 
 	void OnInteractionGate(const FRewardDataTable* Data);
 
@@ -55,6 +63,6 @@ protected:
 	void MonsterDestroyed(AActor* DestroyedActor);
 
 	UFUNCTION()
-	void LoadLevel();
+	void LoadLevel(UNiagaraComponent* InNiagaraComponent);
 };
 

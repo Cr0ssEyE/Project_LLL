@@ -5,13 +5,18 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "AIController.h"
 #include "AnimNotifyState_TimedNiagaraEffect.h"
+#include "BrainComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "FMODAudioComponent.h"
 #include "FMODEvent.h"
 #include "GameplayAbilitiesModule.h"
 #include "GameplayAbilitySpec.h"
+#include "LevelSequenceActor.h"
+#include "MovieSceneSequencePlaybackSettings.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_AnimMontageSlotName.h"
@@ -20,6 +25,7 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_MaterialParameterName.h"
+#include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -591,10 +597,70 @@ void ALLL_PlayerBase::Dead()
 	{
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DeadAnimMontage);
 	}
+
+	ALevelSequenceActor* DeadSequenceActor = GetWorld()->SpawnActorDeferred<ALevelSequenceActor>(ALevelSequenceActor::StaticClass(), FTransform::Identity);
+	FMovieSceneSequencePlaybackSettings Settings;
+	Settings.bAutoPlay = true;
+	Settings.bHideHud = false;
+	Settings.FinishCompletionStateOverride = EMovieSceneCompletionModeOverride::ForceRestoreState;
+	if (!IsValid(DeadSequenceActor) || !PlayerDataAsset->DeadSequencer)
+	{
+		return;
+	}
+	GoldComponent->SetGoldWidgetVisibility(false);
+	PlayerUIManager->SetAllWidgetVisibility(false);
+	Camera->SetUpdateOrthoPlanes(true);
+	DeadSequenceActor->PlaybackSettings = Settings;
+	DeadSequenceActor->SetSequence(PlayerDataAsset->DeadSequencer);
+	DeadSequenceActor->InitializePlayer();
+
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams Params;
+	
+	GetWorld()->SweepMultiByProfile(
+		HitResults,
+		GetActorLocation(),
+		GetActorLocation(),
+		FQuat::Identity,
+		CP_BULLET_TIME_INFLUENCED,
+		FCollisionShape::MakeBox(FVector(10000.f, 10000.f, 1000.f)),
+		Params
+		);
+
+	if (!HitResults.IsEmpty())
+	{
+		for (auto HitResult : HitResults)
+		{
+			if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitResult.GetActor()))
+			{
+				Cast<AAIController>(Monster->GetController())->GetBrainComponent()->StopLogic(TEXT("PlayerDead"));
+				Monster->StopAnimMontage();
+			}
+			HitResult.GetActor()->CustomTimeDilation = 0.01f;
+			HitResult.GetActor()->SetHidden(true);
+		}
+	}
+	
+	FTransform DissolveStartTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
+	DeadSequenceDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->DeadSequenceDissolveActor, DissolveStartTransform);
+	DeadSequenceActor->FinishSpawning(FTransform::Identity);
+
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
+}
+
+void ALLL_PlayerBase::DropDissolveActor()
+{
+	if (DeadSequenceDissolveActor->GetActorLocation().Z < GetMesh()->GetComponentLocation().Z - 100.f)
+	{
+		return;
+	}
+	DeadSequenceDissolveActor->SetActorLocation(DeadSequenceDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
 }
 
 void ALLL_PlayerBase::DeadMotionEndedHandle()
 {
+	PlayerUIManager->SetAllWidgetVisibility(true);
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }
 
