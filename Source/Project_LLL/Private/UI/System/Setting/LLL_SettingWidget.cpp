@@ -27,6 +27,12 @@ void ULLL_SettingWidget::NativeConstruct()
 
 void ULLL_SettingWidget::CloseSettingWidget()
 {
+	if (MainCanvasPanel->GetVisibility() == ESlateVisibility::Hidden)
+	{
+		ShowMainWidget();
+		return;
+	}
+	
 	SettingWidgetSwitcher->SetVisibility(ESlateVisibility::Hidden);
 	SwitchDisplaySettingWidget();
 	SetRenderScale(FVector2d::Zero());
