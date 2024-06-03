@@ -8,7 +8,9 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/MapSound/LLL_MapSoundManager.h"
 
 
 // Sets default values for this component's properties
@@ -48,7 +50,12 @@ void ULLL_SequencerComponent::PlayIntroSequence()
 	PlayerCharacter->SetHidden(true);
 	PlayerCharacter->GetPlayerUIManager()->SetAllWidgetVisibility(false);
 	Cast<ALLL_PlayerController>(PlayerCharacter->GetController())->SetUIInputMode();
-	
+
+	//TODO: 나중에 매니저 관련 제대로 픽스하기
+	if(ALLL_MapSoundManager* Manager = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetMapSoundManager())
+	{
+		Manager->Destroy();
+	}
 	IntroSequenceActor->FinishSpawning(FTransform::Identity);
 }
 
