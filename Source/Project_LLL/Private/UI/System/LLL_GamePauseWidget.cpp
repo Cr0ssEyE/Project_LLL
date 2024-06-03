@@ -41,7 +41,14 @@ FReply ULLL_GamePauseWidget::NativeOnKeyDown(const FGeometry& InGeometry, const 
 {
 	if ((InKeyEvent.GetKey() == EKeys::Escape || InKeyEvent.GetKey() == EKeys::BackSpace) && ResumeButton->GetIsEnabled())
 	{
-		Cast<ALLL_PlayerBase>(GetOwningPlayerPawn())->GetPlayerUIManager()->TogglePauseWidget(false);
+		if (SettingWidget->GetIsEnabled())
+		{
+			SettingWidget->CloseSettingWidget();
+		}
+		else
+		{
+			Cast<ALLL_PlayerBase>(GetOwningPlayerPawn())->GetPlayerUIManager()->TogglePauseWidget(false);
+		}
 		return FReply::Handled();
 	}
 	
@@ -67,7 +74,11 @@ void ULLL_GamePauseWidget::RestorePauseState()
 	SetIsEnabled(false);
 	GetOwningPlayer()->EnableInput(GetOwningPlayer());
 	Cast<ALLL_PlayerController>(GetOwningPlayer())->SetGameInputMode();
-	
+
+	if (SettingWidget->GetIsEnabled())
+	{
+		SettingWidget->HideMainWidget();
+	}
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
 	GameInstance->SetMapSoundManagerPauseParameter(0.0f);
 }

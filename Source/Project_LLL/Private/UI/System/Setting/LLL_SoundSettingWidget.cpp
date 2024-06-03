@@ -20,14 +20,20 @@ void ULLL_SoundSettingWidget::NativeConstruct()
 	MasterSoundVolumeIgnoreCheckBox->OnCheckStateChanged.AddDynamic(this, &ULLL_SoundSettingWidget::ApplyMasterVolumeIgnoreState);
 	BGMSoundVolumeIgnoreCheckBox->OnCheckStateChanged.AddDynamic(this, &ULLL_SoundSettingWidget::ApplyBGMVolumeIgnoreState);
 	SFXSoundVolumeIgnoreCheckBox->OnCheckStateChanged.AddDynamic(this, &ULLL_SoundSettingWidget::ApplySFXVolumeIgnoreState);
-	
-	MasterSoundVolumeSlider->SetValue(ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->GetMasterSoundVolume());
+
+	float MasterVolume = ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->GetMasterSoundVolume();
+	MasterVolume = FMath::Clamp(MasterVolume, 0.f, 1.f);
+	MasterSoundVolumeSlider->SetValue(MasterVolume);
 	MasterSoundVolumeSlider->OnValueChanged.Broadcast(MasterSoundVolumeSlider->GetValue());
 
-	BGMSoundVolumeSlider->SetValue(ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->GetBGMSoundVolume());
+	float BGMVolume = ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->GetBGMSoundVolume();
+	BGMVolume = FMath::Clamp(BGMVolume, 0.f, 1.f);
+	BGMSoundVolumeSlider->SetValue(BGMVolume);
 	BGMSoundVolumeSlider->OnValueChanged.Broadcast(BGMSoundVolumeSlider->GetValue());
 
-	SFXSoundVolumeSlider->SetValue(ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->GetSFXSoundVolume());
+	float SFXVolume = ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->GetSFXSoundVolume();
+	SFXVolume = FMath::Clamp(SFXVolume, 0.f, 1.f);
+	SFXSoundVolumeSlider->SetValue(SFXVolume);
 	SFXSoundVolumeSlider->OnValueChanged.Broadcast(SFXSoundVolumeSlider->GetValue());
 
 	MasterSoundVolumeIgnoreCheckBox->SetIsChecked(ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->GetMasterSoundIgnored());
@@ -85,7 +91,7 @@ void ULLL_SoundSettingWidget::ApplyMasterVolumeIgnoreState(bool Value)
 	FMOD::Studio::System* StudioSystem = IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime);
 	FMOD::Studio::Bus* MasterBus;
 	StudioSystem->getBus("bus:/", &MasterBus);
-	MasterBus->setVolume(Value);
+	MasterBus->setVolume(0.f);
 }
 
 void ULLL_SoundSettingWidget::ApplyBGMVolumeIgnoreState(bool Value)
