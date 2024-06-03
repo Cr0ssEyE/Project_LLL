@@ -34,7 +34,6 @@ void ULLL_Attack_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!Monster->IsAttacking())
 	{
-		CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController())->StartCoolDown();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 }
