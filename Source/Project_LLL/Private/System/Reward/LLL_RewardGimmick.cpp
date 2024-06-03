@@ -145,7 +145,7 @@ void ALLL_RewardGimmick::SetDataTable()
 void ALLL_RewardGimmick::SetRewardWeight()
 {
 	NormalizedWeightRewardArray.Empty();
-	for (auto Data : AbilityData)
+	for (const auto Data : AbilityData)
 	{
 		TotalRewardWeight += Data->GetAbilityRate;
 	}
