@@ -14,6 +14,9 @@
 #include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_MaterialParameterName.h"
+#include "Constant/LLL_MeshSocketName.h"
+#include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
@@ -52,6 +55,10 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	MaskMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mask"));
 	MaskMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	MaskMeshComponent->SetupAttachment(RootComponent);
+
+	MarkVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MarkStatusEffect"));
+	MarkVFXComponent->SetupAttachment(RootComponent);
+	MarkVFXComponent->SetAutoActivate(false);
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -79,6 +86,13 @@ void ALLL_MonsterBase::BeginPlay()
 	MaskMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, MonsterBaseDataAsset->MaskAttachSocketName);
 	MaskMeshComponent->SetRelativeTransform(MonsterBaseDataAsset->MaskTransform);
 
+	UNiagaraSystem* MarkCountNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->MarkCountNiagaraSystem;
+	if (IsValid(MarkCountNiagaraSystem))
+	{
+		MarkVFXComponent->SetAsset(MarkCountNiagaraSystem);
+		MarkVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_OVERHEAD);
+	}
+	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -305,6 +319,32 @@ void ALLL_MonsterBase::ToggleAIHandle(bool value)
 		{
 			BrainComponent->PauseLogic(TEXT("AI Debug Is Deactivated"));
 		}
+	}
+}
+
+void ALLL_MonsterBase::UpdateMarkVFX(uint8 NewCount, uint8 MaxCount)
+{
+	if (NewCount > MaxCount)
+	{
+		return;
+	}
+
+	UNiagaraParameterCollection* MarkParam = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->MarkCountNiagaraParameterCollection;
+	if (!IsValid(MarkParam))
+	{
+		return;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("표식 값 갱신: %d"), NewCount));
+	MarkVFXComponent->SetFloatParameter(NS_MARK_COUNT, NewCount - 1.f);
+	
+	if (NewCount > 0)
+	{
+		MarkVFXComponent->ActivateSystem();
+	}
+	else
+	{
+		MarkVFXComponent->Deactivate();
 	}
 }
 

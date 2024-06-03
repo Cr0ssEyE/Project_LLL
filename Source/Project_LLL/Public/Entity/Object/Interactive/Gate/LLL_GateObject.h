@@ -26,11 +26,10 @@ public:
 	FOnGateInteractionDelegate GateInteractionDelegate;
 
 	void SetGateInformation(const FRewardDataTable* Data);
-
 	void SetActivate();
+	
 protected:
 	virtual void InteractiveEvent() override;
-
 	virtual void BeginPlay() override;
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -47,6 +46,4 @@ protected:
 	EAbilityType AbilityType;
 	
 	void OpenGate();
-
-	void StartDestroy();
 };

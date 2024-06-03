@@ -9,3 +9,6 @@
 #define UI_ERURIA_ICON TEXT("EruriaIcon")
 
 #define PP_PLAYER_LOWHP_RADIUS TEXT("PP_PlayerLowHP_Radius")
+
+// 나이아가라 파라미터 이름
+#define NS_MARK_COUNT TEXT("MarkCount")

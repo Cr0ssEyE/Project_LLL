@@ -57,11 +57,7 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		DetectPlayer = true;
 	}
 
-	if (Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER)))
-	{
-		Player->SetAttacker(Monster);
-	}
-	else if (DetectPlayer)
+	if (DetectPlayer && !Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER)))
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, Player);
 	}

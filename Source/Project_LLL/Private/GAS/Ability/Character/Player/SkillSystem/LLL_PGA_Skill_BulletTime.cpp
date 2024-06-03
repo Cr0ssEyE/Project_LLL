@@ -45,7 +45,9 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 		}
 
 		TraceBulletTimeEffectedActors();
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_BULLET_TIME, FGameplayEventData());
+		FGameplayEventData EventData;
+		EventData.InstigatorTags.AddTag(TAG_GAS_PLAYER_BULLET_TIME_START);
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_BULLET_TIME_START, EventData);
 		BulletTimeActivateSequenceActor->GetSequencePlayer()->Play();
 
 		GetWorld()->GetTimerManager().SetTimer(AbilityDurationTimerHandle, this, &ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack, SkillDuration, false);
@@ -72,6 +74,10 @@ void ULLL_PGA_Skill_BulletTime::EndAbility(const FGameplayAbilitySpecHandle Hand
 	{
 		BulletTimeEndedCallBack();
 	}
+
+	FGameplayEventData EventData;
+	EventData.InstigatorTags.AddTag(TAG_GAS_PLAYER_BULLET_TIME_END);
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_BULLET_TIME_END, EventData);
 	GetWorld()->RemoveOnActorSpawnedHandler(ActorSpawnedDelegateHandle);
 	ActorSpawnedDelegateHandle.Reset();
 	
