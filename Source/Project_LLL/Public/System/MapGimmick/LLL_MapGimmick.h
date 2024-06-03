@@ -44,9 +44,7 @@ public:
 
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
-
 	virtual void PostInitializeComponents() override;
-
 	virtual void BeginPlay() override;
 	
 	UPROPERTY(VisibleDefaultsOnly)
@@ -108,7 +106,6 @@ protected:
 	void AllGatesDestroy();
 	
 	void OnInteractionGate(const FRewardDataTable* Data);
-	
 	void EnableAllGates();
 
 // State Section
