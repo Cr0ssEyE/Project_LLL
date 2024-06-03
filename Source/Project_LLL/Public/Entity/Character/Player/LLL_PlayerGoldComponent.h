@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "UI/Entity/Character/Player/LLL_PlayerGoldWidget.h"
 #include "LLL_PlayerGoldComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerMoneyChangedDelegate, float);
@@ -23,6 +24,7 @@ public:
 	void IncreaseMoney(const float InMoney);
 	void DecreaseMoney(const float OutMoney);
 	FORCEINLINE const float GetMoney() { return Money; }
+	void SetGoldWidgetVisibility(bool Value);
 
 protected:
 	// Called when the game starts
