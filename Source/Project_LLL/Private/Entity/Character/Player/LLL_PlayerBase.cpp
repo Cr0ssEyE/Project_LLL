@@ -5,7 +5,9 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "AIController.h"
 #include "AnimNotifyState_TimedNiagaraEffect.h"
+#include "BrainComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "FMODAudioComponent.h"
@@ -631,8 +633,10 @@ void ALLL_PlayerBase::Dead()
 		{
 			if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitResult.GetActor()))
 			{
-				Monster->Dead();
+				Cast<AAIController>(Monster->GetController())->GetBrainComponent()->StopLogic(TEXT("PlayerDead"));
+				Monster->StopAnimMontage();
 			}
+			HitResult.GetActor()->CustomTimeDilation = 0.01f;
 			HitResult.GetActor()->SetHidden(true);
 		}
 	}
