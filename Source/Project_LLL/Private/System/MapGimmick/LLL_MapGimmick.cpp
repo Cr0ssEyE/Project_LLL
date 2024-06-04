@@ -97,6 +97,11 @@ void ALLL_MapGimmick::BeginPlay()
 
 void ALLL_MapGimmick::CreateMap()
 {
+	if (!IsValid(GetWorld()) || !IsValid(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		return;
+	}
+	
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorEnableCollision(false);
 	Player->SetActorHiddenInGame(true);
@@ -155,11 +160,6 @@ void ALLL_MapGimmick::CreateMap()
 			}
 		}
 		SetState(EStageState::READY);
-	}
-
-	if (IsValid(SequencerPlayComponent) && FadeInSequencePlayer->IsValid())
-	{
-		FadeInSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::PlaySequenceComponent);
 	}
 	
 	// TODO: Player loaction change 
@@ -228,10 +228,6 @@ void ALLL_MapGimmick::OnInteractionGate(const FRewardDataTable* Data)
 	PlayerSpawnPointComponent = nullptr;
 	SequencerPlayComponent = nullptr;
 
-	if (FadeInSequencePlayer->IsValid() && FadeInSequencePlayer->OnFinished.IsAlreadyBound(this, &ALLL_MapGimmick::PlaySequenceComponent))
-	{
-		FadeInSequencePlayer->OnFinished.RemoveDynamic(this, &ALLL_MapGimmick::PlaySequenceComponent);
-	}
 	
 	RoomActor->Destroy();
 }
@@ -364,6 +360,17 @@ void ALLL_MapGimmick::FadeOut()
 
 void ALLL_MapGimmick::PlayerTeleport()
 {
+	if (!IsValid(GetWorld()) || !IsValid(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		return;
+	}
+
+	if (IsValid(SequencerPlayComponent))
+	{
+		PlaySequenceComponent();
+		return;
+	}
+	
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->DisableInput(GetWorld()->GetFirstPlayerController());
 	PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
@@ -372,9 +379,15 @@ void ALLL_MapGimmick::PlayerTeleport()
 
 void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
 {
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (Player->IsHidden() && !IsValid(SequencerPlayComponent))
+	if (!IsValid(GetWorld()) || !IsValid(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
+		return;
+	}
+	
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (Player->IsHidden())
+	{
+		
 		Player->SetActorHiddenInGame(false);
 		Player->EnableInput(GetWorld()->GetFirstPlayerController());
 	}
@@ -389,6 +402,7 @@ void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
 
 void ALLL_MapGimmick::PlaySequenceComponent()
 {
-	SequencerPlayComponent->PlayIntroSequence();
+	GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->EncountedDelegate.Broadcast();
 }
+
 

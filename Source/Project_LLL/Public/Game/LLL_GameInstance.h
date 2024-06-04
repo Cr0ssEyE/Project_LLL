@@ -13,6 +13,8 @@
  * 
  */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStageEncountedDelegate);
+
 class ALLL_MapSoundManager;
 class ULLL_ShareableNiagaraDataAsset;
 
@@ -26,6 +28,8 @@ public:
 
 	virtual void Init() override;
 
+	FStageEncountedDelegate EncountedDelegate;
+	
 public:
 	FORCEINLINE ALLL_MapSoundManager* GetMapSoundManager() const { return MapSoundManager; }
 	FORCEINLINE void SetMapSoundManager(ALLL_MapSoundManager* InMapSoundManager) { MapSoundManager = InMapSoundManager; }
