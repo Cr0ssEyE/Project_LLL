@@ -20,18 +20,18 @@ EBTNodeResult::Type ULLL_MoveTo_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 {
 	const EBTNodeResult::Type NodeResult = Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	const ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(MonsterBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 
-	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
-	if (!IsValid(PlayerBase))
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
+	if (!IsValid(Player))
 	{
 		return NodeResult;
 	}
 
-	const FVector Direction = PlayerBase->GetActorLocation() - MonsterBase->GetActorLocation();
+	const FVector Direction = Player->GetActorLocation() - Monster->GetActorLocation();
 	const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-	if (MonsterBase->GetActorRotation().Equals(Rotation, MonsterAttributeSet->GetFieldOfView() / 2.0f))
+	if (Monster->GetActorRotation().Equals(Rotation, MonsterAttributeSet->GetFieldOfView() / 2.0f))
 	{
 		return NodeResult;
 	}
