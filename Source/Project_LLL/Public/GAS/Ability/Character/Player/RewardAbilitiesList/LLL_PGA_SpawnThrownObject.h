@@ -24,7 +24,7 @@ protected:
 	UPROPERTY(EditAnywhere, DisplayName = "속도")
 	float Speed;
 
-	UPROPERTY(EditAnywhere, DisplayName = "Instigator에게 공격")
+	UPROPERTY(EditAnywhere, DisplayName = "플레이어가 피격됐을 때 발동")
 	uint8 bTargetIsInstigator : 1;
 
 	UPROPERTY(EditAnywhere, DisplayName = "스폰 간격 시간")
