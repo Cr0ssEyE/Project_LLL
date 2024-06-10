@@ -220,6 +220,7 @@ void ALLL_MonsterBase::Dead()
 
 	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
 	GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
+	GetMesh()->SetCustomDepthStencilValue(0);
 	
 	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
 
@@ -339,23 +340,21 @@ void ALLL_MonsterBase::UpdateMarkVFX(uint8 NewCount, uint8 MaxCount)
 		return;
 	}
 
-	UNiagaraParameterCollection* MarkParam = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->MarkCountNiagaraParameterCollection;
-	if (!IsValid(MarkParam))
-	{
-		return;
-	}
-
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("표식 값 갱신: %d"), NewCount));
+
 	MarkVFXComponent->SetFloatParameter(NS_MARK_COUNT, FMath::Max(NewCount - 1.f, 0.f));
 	
 	if (NewCount > 0)
 	{
 		MarkVFXComponent->ActivateSystem();
+		MarkVFXComponent->SetVisibility(true);
 	}
 	else
 	{
 		MarkVFXComponent->Deactivate();
+		MarkVFXComponent->SetVisibility(false);
 	}
+	
 }
 
 void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)

@@ -24,6 +24,7 @@
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MaterialParameterName.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
@@ -373,10 +374,14 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	CameraRotation.Pitch = CameraRotation.Roll = 0.f;
 	MoveDirection = CameraRotation.RotateVector(FVector(MoveInputValue.X, MoveInputValue.Y, 0.f));
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
-	if (GetCharacterMovement()->IsWalking())
+	
+	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_PLAYER_STATE_CHASE_PROGRESS))
 	{
-		AddMovementInput(MoveDirection, 1.f);
+		return;
 	}
+
+	AddMovementInput(MoveDirection, 1.f);
+	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
