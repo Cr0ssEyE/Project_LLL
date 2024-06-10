@@ -24,4 +24,7 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	TObjectPtr<UAnimMontage> AbilityActionMontage;
+
+	UPROPERTY(EditDefaultsOnly, DisplayName = "공격시 이동거리")
+	float MoveDistance;
 };
