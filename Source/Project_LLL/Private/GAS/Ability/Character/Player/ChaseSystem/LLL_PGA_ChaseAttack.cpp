@@ -3,7 +3,10 @@
 
 #include "GAS/Ability/Character/Player/ChaseSystem/LLL_PGA_ChaseAttack.h"
 
+#include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Components/CapsuleComponent.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_MonatgeSectionName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
@@ -14,6 +17,7 @@
 ULLL_PGA_ChaseAttack::ULLL_PGA_ChaseAttack()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	MoveDistance = 100.f;
 }
 
 void ULLL_PGA_ChaseAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -49,6 +53,12 @@ void ULLL_PGA_ChaseAttack::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_ChaseAttack::OnCompleteCallBack);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_ChaseAttack::OnInterruptedCallBack);
 
+	float MovementTime = AbilityActionMontage->GetSectionLength(AbilityActionMontage->GetSectionIndex(SECTION_ATTACK));
+	FVector MoveLocation = PlayerCharacter->GetActorLocation() + PlayerCharacter->GetActorForwardVector() * MoveDistance;
+	
+	UAbilityTask_MoveToLocation* MoveTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), MoveLocation, MovementTime / 2, nullptr, nullptr);
+
+	MoveTask->ReadyForActivation();
 	PlayMontageTask->ReadyForActivation();
 }
 
@@ -75,6 +85,7 @@ void ULLL_PGA_ChaseAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, c
 	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 	}
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
