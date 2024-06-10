@@ -88,7 +88,6 @@ void ULLL_PGA_Skill_BulletTime::EndAbility(const FGameplayAbilitySpecHandle Hand
 void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 {
 	TArray<FHitResult> HitResults;
-	const FCollisionQueryParams Params;
 	const FVector SweepLocation = GetCurrentActorInfo()->AvatarActor->GetActorLocation();
 
 	// 귀찮아서 매직넘버 처리.
@@ -98,8 +97,7 @@ void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 		SweepLocation,
 		FQuat::Identity,
 		CP_BULLET_TIME_INFLUENCED,
-		FCollisionShape::MakeBox(FVector(10000.f, 10000.f, 1000.f)),
-		Params
+		FCollisionShape::MakeBox(FVector(10000.f, 10000.f, 1000.f))
 		);
 
 	if (HitResults.IsEmpty())

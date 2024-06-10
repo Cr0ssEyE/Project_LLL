@@ -23,19 +23,19 @@ void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 
 	ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(RangedMonster->GetObjectPoolingComponent()->GetActor(RangedMonsterDataAsset->ThrownObjectClass));
 
-	ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
-	if (IsValid(PlayerBase))
+	if (IsValid(Player))
 	{
-		const FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(RangedMonster, PlayerBase, PlayerAttributeSet->GetMoveSpeed(), MonsterAttributeSet->GetMonsterData2());
+		const FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(RangedMonster, Player, PlayerAttributeSet->GetMoveSpeed(), MonsterAttributeSet->GetMonsterData2());
 		const FVector StartLocation = RangedMonster->GetActorLocation();
 		const FVector PredictedDirection = (PredictedLocation - StartLocation).GetSafeNormal();
 		const FRotator PredictedRotation = FRotationMatrix::MakeFromX(PredictedDirection).Rotator();
 	
 		ThrownObject->SetActorLocationAndRotation(StartLocation, PredictedRotation);
 		ThrownObject->CustomTimeDilation = RangedMonster->CustomTimeDilation;
-		ThrownObject->Throw(RangedMonster, PlayerBase, MonsterAttributeSet->GetMonsterData1());
+		ThrownObject->Throw(RangedMonster, Player, MonsterAttributeSet->GetMonsterData1());
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))

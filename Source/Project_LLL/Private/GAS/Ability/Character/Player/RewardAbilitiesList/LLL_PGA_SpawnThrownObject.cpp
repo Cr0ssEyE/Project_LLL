@@ -46,7 +46,7 @@ void ULLL_PGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 		FTimerHandle SpawnTimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, Player, Target, i, SpawnCount]{
 			FVector Location = Player->GetActorLocation();
-			FRotator Rotator = FRotationMatrix::MakeFromX(Target->GetActorLocation() - Player->GetActorLocation()).Rotator();
+			FRotator Rotator = FRotationMatrix::MakeFromX((Target->GetActorLocation() - Player->GetActorLocation()).GetSafeNormal()).Rotator();
 
 			if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
 			{

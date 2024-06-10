@@ -27,6 +27,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FieldOfView);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FindPatrolPosRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, DestroyTimer);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, ClusterRecognizeRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData1);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData2);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData3);
@@ -66,6 +67,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DestroyTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ClusterRecognizeRadius;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MonsterData1;

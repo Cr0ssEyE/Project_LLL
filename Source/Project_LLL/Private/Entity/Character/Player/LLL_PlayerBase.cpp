@@ -621,6 +621,7 @@ void ALLL_PlayerBase::Dead()
 
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
 	
 	GetWorld()->SweepMultiByProfile(
 		HitResults,
@@ -645,8 +646,8 @@ void ALLL_PlayerBase::Dead()
 			HitResult.GetActor()->SetHidden(true);
 		}
 	}
-	
-	FTransform DissolveStartTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
+
+	const FTransform DissolveStartTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
 	DeadSequenceDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->DeadSequenceDissolveActor, DissolveStartTransform);
 	DeadSequenceActor->FinishSpawning(FTransform::Identity);
 
