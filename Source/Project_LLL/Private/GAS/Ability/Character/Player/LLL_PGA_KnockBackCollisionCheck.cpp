@@ -33,7 +33,7 @@ void ULLL_PGA_KnockBackCollisionCheck::EndAbility(const FGameplayAbilitySpecHand
 	{
 		for (auto Character : KnockBackedCharacters)
 		{
-			if (IsValid(Character))
+			if (IsValid(Character) && Character->OtherActorCollidedDelegate.IsAlreadyBound(this, &ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack))
 			{
 				Character->OtherActorCollidedDelegate.RemoveDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack);
 			}

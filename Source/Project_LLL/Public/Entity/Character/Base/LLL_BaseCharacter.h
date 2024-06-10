@@ -44,8 +44,8 @@ public:
 	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
 	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
 	FORCEINLINE float GetCharacterLevel() const { return Level; }
-
-	// 플레이어
+	FORCEINLINE FVector GetLastCollideLocation() const { return LastCollideLocation; }
+	
 protected:
 	virtual void PostLoad() override;
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -101,6 +101,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	FVector MoveDirection;
 
+	UPROPERTY(VisibleAnywhere)
+	FVector LastCollideLocation;
+	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BaseCharacterDataAsset> CharacterDataAsset;

@@ -142,18 +142,25 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	if (HitLocation.Z >= GetActorLocation().Z)
+	if (HitLocation.Z < GetActorLocation().Z)
 	{
-		OtherActorCollidedDelegate.Broadcast(this, Other);
+		return;
+	}
 
-		const ECollisionResponse WallResponse = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
-		const ECollisionResponse FieldResponse = Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD);
+	LastCollideLocation = HitLocation;
+	LastCollideLocation.Z = GetActorLocation().Z;
 	
-		if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
-		{
-			const FGameplayEventData PayloadData;
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
-		}
+	OtherActorCollidedDelegate.Broadcast(this, Other);
+
+	const ECollisionResponse WallResponse = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
+	const ECollisionResponse FieldResponse = Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD);
+	
+	if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
+	{
+		FGameplayEventData PayloadData;
+		PayloadData.Instigator = Other;
+		
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
 	}
 }
 

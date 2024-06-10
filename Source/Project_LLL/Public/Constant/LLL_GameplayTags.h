@@ -15,6 +15,7 @@
 #define TAG_GAS_STATUS_BLEEDING_DASH_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding.FromDash"))
 #define TAG_GAS_STATUS_MARKED FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Marked"))
 #define TAG_GAS_STATUS_TARGETED FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Targeted"))
+#define TAG_GAS_STATE_KNOCKBACKED FGameplayTag::RequestGameplayTag(FName("Character.State.IsKnockBacked"))
 
 // 플레이어 이벤트 게임플레이 태그
 #define TAG_GAS_COMBO_MANAGEMENT FGameplayTag::RequestGameplayTag(FName("Character.Player.Event.FirstComboStacked"))
