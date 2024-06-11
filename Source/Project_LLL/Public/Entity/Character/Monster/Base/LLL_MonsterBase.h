@@ -35,7 +35,7 @@ protected:
 	virtual void InitAttributeSet() override;
 	
 public:
-	virtual void Damaged(AActor* Attacker, bool IsDOT) override;
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
 	virtual void Dead() override;
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	virtual void ApplyStackedKnockBack() override;

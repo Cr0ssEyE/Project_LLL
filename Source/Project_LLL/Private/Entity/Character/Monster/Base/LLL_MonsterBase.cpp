@@ -293,6 +293,7 @@ void ALLL_MonsterBase::ApplyStackedKnockBack()
 	}
 
 	// TODO: 나중에 몬스터별 최대 넉백값 같은거 나오면 수정하기
+	Damaged();
 	FVector ScaledStackedKnockBackVelocity = ClampVector(StackedKnockBackVelocity, FVector::One() * -30000.f, FVector::One() * 30000.f);
 	ScaledStackedKnockBackVelocity.Z = 0.f;
 	GetCharacterMovement()->Velocity = FVector::Zero();

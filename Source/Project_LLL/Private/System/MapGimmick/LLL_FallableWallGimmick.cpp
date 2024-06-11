@@ -12,6 +12,7 @@
 #include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/Ability/Character/Monster/LLL_MGA_SetFallableState.h"
 #include "Util/LLL_MathHelper.h"
 
 
@@ -61,6 +62,7 @@ void ALLL_FallableWallGimmick::NotifyActorBeginOverlap(AActor* OtherActor)
 	Monster->GetAbilitySystemComponent()->RemoveLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE, 99);
 	Monster->CustomTimeDilation = 1.f;
 	Monster->GetCharacterMovement()->Velocity = FVector::Zero();
+	Monster->GetAbilitySystemComponent()->CancelAbility(Cast<UGameplayAbility>(ULLL_MGA_SetFallableState::StaticClass()->GetDefaultObject()));
 	
 	// 여기에 연출 입력
 	FallOutBegin(Monster, OverlapDirection, Monster->GetActorLocation());
@@ -117,7 +119,8 @@ void ALLL_FallableWallGimmick::FallOutStart(AActor* Actor, FVector HitNormal)
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_OVERLAP_ALL);
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&, HitNormal, Monster]
 	{
-		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(HitNormal, Monster->GetKnockBackedPower() * 3.f);
+		float StackedKnockBackPower = FMath::Max(Monster->GetKnockBackedPower() * 5.f, 2000.f);
+		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(HitNormal, StackedKnockBackPower);
 		Monster->AddKnockBackVelocity(LaunchVelocity, -1.f);
 	}));
 }
