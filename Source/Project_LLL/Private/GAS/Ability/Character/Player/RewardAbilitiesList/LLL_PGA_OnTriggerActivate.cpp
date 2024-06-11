@@ -46,7 +46,14 @@ void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	
 	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(CurrentEventData.TargetData, 0))
 	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		if (bUseOnAttackHitSpawnThrown && IsValid(ThrownObjectClass))
+		{
+			SpawnThrownObject();
+		}
+		else
+		{
+			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		}
 		return;
 	}
 
@@ -57,20 +64,18 @@ void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 	if (bUseOnAttackHitSpawnObject && IsValid(AbilityObjectClass))
 	{
-		SpawnObjectWhenHit();
+		SpawnAbilityObject();
 	}
 
 	if (bUseOnAttackHitSpawnThrown && IsValid(ThrownObjectClass))
 	{
-		SpawnThrownWhenHit();
+		SpawnThrownObject();
 	}
 
 	if (bUseOnAttackHitGrantTag && GrantTagContainer.IsValid())
 	{
 		GrantTagWhenHit();
 	}
-
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void ULLL_PGA_OnAttackHit::ApplyEffectWhenHit()
@@ -97,14 +102,18 @@ void ULLL_PGA_OnAttackHit::ApplyEffectWhenHit()
 	{
 		K2_ApplyGameplayEffectSpecToTarget(EffectHandle, CurrentEventData.TargetData);
 	}
+
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
-void ULLL_PGA_OnAttackHit::SpawnObjectWhenHit()
+void ULLL_PGA_OnAttackHit::SpawnAbilityObject()
 {
 	FLLL_AbilityDataHelper::SpawnAbilityObject(this, AbilityObjectClass, CurrentEventData, AbilityObjectLocationTarget);
+
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
-void ULLL_PGA_OnAttackHit::SpawnThrownWhenHit()
+void ULLL_PGA_OnAttackHit::SpawnThrownObject()
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 
@@ -131,7 +140,7 @@ void ULLL_PGA_OnAttackHit::SpawnThrownWhenHit()
 	float TempSpawnOffsetTime = 0.01f;
 	for (int i = 0; i < SpawnCount; i++)
 	{
-		const AActor* Target = CurrentEventData.TargetData.Data[0]->GetActors()[0].Get();
+		const AActor* Target = Cast<ALLL_PlayerBase>(CurrentEventData.Instigator) ? CurrentEventData.TargetData.Data[0]->GetActors()[0].Get() : CurrentEventData.Instigator;
 		
 		FTimerHandle SpawnTimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, Player, Target, i, SpawnCount]{
@@ -191,4 +200,6 @@ void ULLL_PGA_OnAttackHit::GrantTagWhenHit()
 			}
 		}
 	}
+	
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

@@ -23,8 +23,8 @@ public:
 
 protected:
 	virtual void ApplyEffectWhenHit();
-	virtual void SpawnObjectWhenHit();
-	virtual void SpawnThrownWhenHit();
+	virtual void SpawnAbilityObject();
+	virtual void SpawnThrownObject();
 	virtual void GrantTagWhenHit();
 	
 protected:
