@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_OnAttackHit.h"
+#include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_OnTriggerActivate.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Components/CapsuleComponent.h"
@@ -16,11 +16,11 @@
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
-ULLL_PGA_OnAttackHit::ULLL_PGA_OnAttackHit() :
+ULLL_PGA_OnTriggerActivate::ULLL_PGA_OnTriggerActivate() :
 	bUseOnAttackHitEffect(false),
-	bUseOnAttackHitSpawnObject(false),
+	bUseSpawnAbilityObject(false),
 	AbilityObjectLocationTarget(EEffectApplyTarget::Target),
-	bUseOnAttackHitSpawnThrown(false),
+	bUseSpawnThrownObject(false),
 	ThrowSpeed(0.f),
 	SpawnOffsetTime(0.f),
 	bUseOnAttackHitGrantTag(false),
@@ -28,7 +28,7 @@ ULLL_PGA_OnAttackHit::ULLL_PGA_OnAttackHit() :
 {
 }
 
-void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
@@ -46,11 +46,20 @@ void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	
 	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(CurrentEventData.TargetData, 0))
 	{
-		if (bUseOnAttackHitSpawnThrown && IsValid(ThrownObjectClass))
+		bool Valid = false;
+		if (bUseSpawnAbilityObject && IsValid(AbilityObjectClass) && AbilityObjectLocationTarget == EEffectApplyTarget::Self)
 		{
+			Valid = true;
+			SpawnAbilityObject();
+		}
+		
+		if (bUseSpawnThrownObject && IsValid(ThrownObjectClass) && !Cast<ALLL_PlayerBase>(CurrentEventData.Instigator))
+		{
+			Valid = true;
 			SpawnThrownObject();
 		}
-		else
+		
+		if (!Valid)
 		{
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		}
@@ -62,12 +71,12 @@ void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		ApplyEffectWhenHit();
 	}
 
-	if (bUseOnAttackHitSpawnObject && IsValid(AbilityObjectClass))
+	if (bUseSpawnAbilityObject && IsValid(AbilityObjectClass))
 	{
 		SpawnAbilityObject();
 	}
 
-	if (bUseOnAttackHitSpawnThrown && IsValid(ThrownObjectClass))
+	if (bUseSpawnThrownObject && IsValid(ThrownObjectClass))
 	{
 		SpawnThrownObject();
 	}
@@ -78,7 +87,7 @@ void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	}
 }
 
-void ULLL_PGA_OnAttackHit::ApplyEffectWhenHit()
+void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 {
 	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
@@ -106,14 +115,14 @@ void ULLL_PGA_OnAttackHit::ApplyEffectWhenHit()
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
-void ULLL_PGA_OnAttackHit::SpawnAbilityObject()
+void ULLL_PGA_OnTriggerActivate::SpawnAbilityObject()
 {
 	FLLL_AbilityDataHelper::SpawnAbilityObject(this, AbilityObjectClass, CurrentEventData, AbilityObjectLocationTarget);
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
-void ULLL_PGA_OnAttackHit::SpawnThrownObject()
+void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 
@@ -168,7 +177,7 @@ void ULLL_PGA_OnAttackHit::SpawnThrownObject()
 	}
 }
 
-void ULLL_PGA_OnAttackHit::GrantTagWhenHit()
+void ULLL_PGA_OnTriggerActivate::GrantTagWhenHit()
 {
 	float GrantNum = 1.f;
 	if (TagGrantNumTag == TAG_GAS_ABILITY_CHANGEABLE_VALUE)
