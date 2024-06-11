@@ -43,9 +43,6 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	GetMesh()->SetCollisionProfileName(CP_MONSTER);
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 	
-	GetMesh()->SetUpdateKinematicFromSimulation(true);
-	GetMesh()->PhysicsTransformUpdateMode = EPhysicsTransformUpdateMode::ComponentTransformIsKinematic;
-	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
@@ -80,7 +77,7 @@ void ALLL_MonsterBase::BeginPlay()
 	{
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}
-
+	
 	MonsterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
 	MonsterStatusWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	MonsterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
@@ -158,7 +155,20 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 	}
 
 	MonsterBaseAnimInstance->StopAllMontages(1.0f);
-	PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+	if ( GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_STATE_COLLIDE_OTHER) && IsValid(MonsterBaseDataAsset->KnockBackCollideMontage))
+	{
+		FVector HitDirection = (GetActorLocation() - GetLastCollideLocation()).GetSafeNormal2D();
+		HitDirection.Z = 0.f;
+		SetActorRotation(HitDirection.Rotation(), ETeleportType::TeleportPhysics);
+		
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충돌 경직")));
+		PlayAnimMontage(MonsterBaseDataAsset->KnockBackCollideMontage);
+	}
+	else if (IsValid(MonsterBaseDataAsset->DamagedAnimMontage))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("일반 경직")));
+		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+	}
 
 	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
 	for (auto TempNiagaraComponent : TempNiagaraComponents)
