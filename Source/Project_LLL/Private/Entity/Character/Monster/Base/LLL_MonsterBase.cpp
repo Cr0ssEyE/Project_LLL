@@ -77,7 +77,7 @@ void ALLL_MonsterBase::BeginPlay()
 	{
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}
-
+	
 	MonsterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
 	MonsterStatusWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	MonsterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
@@ -155,7 +155,20 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 	}
 
 	MonsterBaseAnimInstance->StopAllMontages(1.0f);
-	PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+	if ( GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_STATE_COLLIDE_OTHER) && IsValid(MonsterBaseDataAsset->KnockBackCollideMontage))
+	{
+		FVector HitDirection = (GetActorLocation() - GetLastCollideLocation()).GetSafeNormal2D();
+		HitDirection.Z = 0.f;
+		SetActorRotation(HitDirection.Rotation(), ETeleportType::TeleportPhysics);
+		
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충돌 경직")));
+		PlayAnimMontage(MonsterBaseDataAsset->KnockBackCollideMontage);
+	}
+	else if (IsValid(MonsterBaseDataAsset->DamagedAnimMontage))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("일반 경직")));
+		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+	}
 
 	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
 	for (auto TempNiagaraComponent : TempNiagaraComponents)
@@ -169,6 +182,21 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 
+	if (!IsValid(HitEffectOverlayMaterialInstance))
+	{
+		HitEffectOverlayMaterialInstance = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
+		GetMesh()->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
+		for (auto ChildComponent : GetMesh()->GetAttachChildren())
+		{
+			if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ChildComponent))
+			{
+				StaticMeshComponent->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
+			}
+		}
+	}
+
+	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 1.f);
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
 	RecognizePlayerToAroundMonster();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -280,6 +308,7 @@ void ALLL_MonsterBase::ApplyStackedKnockBack()
 	}
 
 	// TODO: 나중에 몬스터별 최대 넉백값 같은거 나오면 수정하기
+	Damaged();
 	FVector ScaledStackedKnockBackVelocity = ClampVector(StackedKnockBackVelocity, FVector::One() * -30000.f, FVector::One() * 30000.f);
 	ScaledStackedKnockBackVelocity.Z = 0.f;
 	GetCharacterMovement()->Velocity = FVector::Zero();
@@ -418,6 +447,20 @@ void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)
 		}
 		BleedingVFXComponent->Deactivate();
 	}
+}
+
+void ALLL_MonsterBase::UpdateMonsterHitVFX()
+{
+	float CurrentOpacity = HitEffectOverlayMaterialInstance->K2_GetScalarParameterValue(MAT_PARAM_OPACITY);
+	if (CurrentOpacity <= 0.f)
+	{
+		HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 0.f);
+		return;
+	}
+	
+	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, CurrentOpacity - 0.05f);
+	
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
 }
 
 void ALLL_MonsterBase::DropGold(const FGameplayTag tag, int32 data)

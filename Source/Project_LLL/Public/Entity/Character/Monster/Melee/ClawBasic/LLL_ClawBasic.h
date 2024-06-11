@@ -17,7 +17,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	
+protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_ClawBasicDataAsset> ClawBasicDataAsset;
 	

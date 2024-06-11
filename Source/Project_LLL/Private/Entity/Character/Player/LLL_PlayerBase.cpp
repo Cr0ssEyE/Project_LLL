@@ -206,7 +206,6 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->ControlChaseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::ChaseAction, EAbilityInputName::Chase);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractiveTargetChangeInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractiveTargetChangeAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->PauseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::PauseAction);
 }
@@ -467,22 +466,6 @@ void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
 	InteractiveObjects[SelectedInteractiveObjectNum]->InteractiveEvent();
 }
 
-void ALLL_PlayerBase::InteractiveTargetChangeAction(const FInputActionValue& Value)
-{
-	if (!InteractiveObjects.Num())
-	{
-		return;
-	}
-	
-	SelectedInteractiveObjectNum++;
-	if (SelectedInteractiveObjectNum >= InteractiveObjects.Num())
-	{
-		SelectedInteractiveObjectNum = 0;
-	}
-	PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
-	
-}
-
 void ALLL_PlayerBase::InventoryAction(const FInputActionValue& Value)
 {
 	PlayerUIManager->ToggleInventoryWidget();
@@ -660,6 +643,7 @@ void ALLL_PlayerBase::DropDissolveActor()
 	{
 		return;
 	}
+	
 	DeadSequenceDissolveActor->SetActorLocation(DeadSequenceDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
 }

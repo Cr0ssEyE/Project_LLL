@@ -35,7 +35,7 @@ protected:
 	virtual void InitAttributeSet() override;
 	
 public:
-	virtual void Damaged(AActor* Attacker, bool IsDOT) override;
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
 	virtual void Dead() override;
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	virtual void ApplyStackedKnockBack() override;
@@ -66,16 +66,22 @@ public:
 	UFUNCTION()
 	void ToggleAIHandle(bool value);
 
+	// 이펙트 관련
 public:
 	void UpdateMarkVFX(uint8 NewCount = 0, uint8 MaxCount = 0);
 	void UpdateBleedingVFX(bool ActiveState = true);
+	void UpdateMonsterHitVFX();
 	
+	// 이펙트 관련
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UNiagaraComponent> MarkVFXComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UNiagaraComponent> BleedingVFXComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UMaterialInstanceDynamic> HitEffectOverlayMaterialInstance;
 	
 //gold section
 public:

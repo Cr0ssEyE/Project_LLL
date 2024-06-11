@@ -51,6 +51,7 @@ void ALLL_BaseObject::SetDefaultInformation()
 	{
 		BaseMesh->SetStaticMesh(BaseObjectDataAsset->StaticMesh);
 		BaseMesh->SetRelativeScale3D(BaseObjectDataAsset->MeshScale);
+		BaseMesh->SetBoundsScale(100.f);
 	}
 }
 

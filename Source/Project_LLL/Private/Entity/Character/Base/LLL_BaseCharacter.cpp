@@ -64,7 +64,8 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		GetMesh()->SetRelativeScale3D(CharacterDataAsset->MeshSize);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -CharacterDataAsset->CollisionSize.X));
-
+		GetMesh()->SetBoundsScale(100.f);
+		
 		UClass* AnimBlueprint = CharacterDataAsset->AnimInstance.LoadSynchronous();
 		if (IsValid(AnimBlueprint))
 		{
@@ -142,18 +143,25 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	if (HitLocation.Z >= GetActorLocation().Z)
+	if (HitLocation.Z < GetActorLocation().Z)
 	{
-		OtherActorCollidedDelegate.Broadcast(this, Other);
+		return;
+	}
 
-		const ECollisionResponse WallResponse = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
-		const ECollisionResponse FieldResponse = Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD);
+	LastCollideLocation = HitLocation;
+	LastCollideLocation.Z = GetActorLocation().Z;
 	
-		if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
-		{
-			const FGameplayEventData PayloadData;
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
-		}
+	OtherActorCollidedDelegate.Broadcast(this, Other);
+
+	const ECollisionResponse WallResponse = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
+	const ECollisionResponse FieldResponse = Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD);
+	
+	if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
+	{
+		FGameplayEventData PayloadData;
+		PayloadData.Instigator = Other;
+		
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
 	}
 }
 
