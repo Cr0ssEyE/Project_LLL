@@ -35,7 +35,7 @@ protected:
 
 protected:
 	virtual void SetFModParameter(EFModParameter FModParameter) override {}
-	virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
+	virtual void AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
 
 protected:
 	UPROPERTY(VisibleAnywhere)

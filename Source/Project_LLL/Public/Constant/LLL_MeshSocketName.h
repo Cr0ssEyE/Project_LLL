@@ -10,6 +10,7 @@
 #define SOCKET_RIGHT_FOOT TEXT("RightFootSocket")
 
 #define SOCKET_LEFT_WEAPON TEXT("LeftWeaponSocket")
+#define SOCKET_RIGHT_WEAPON TEXT("RightWeaponSocket")
 
 // 본
 #define BONE_HIPS TEXT("Hips")

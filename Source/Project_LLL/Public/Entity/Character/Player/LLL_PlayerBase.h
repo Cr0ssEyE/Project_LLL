@@ -55,6 +55,7 @@ public:
 
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
 	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
+	FORCEINLINE UCameraComponent* GetPlayerCamera() const { return Camera; }
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ALLL_PlayerChaseHand* GetChaseHand() const { return ChaseHandActor; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }

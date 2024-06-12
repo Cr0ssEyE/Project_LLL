@@ -161,12 +161,12 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 		HitDirection.Z = 0.f;
 		SetActorRotation(HitDirection.Rotation(), ETeleportType::TeleportPhysics);
 		
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충돌 경직")));
+		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충돌 경직")));
 		PlayAnimMontage(MonsterBaseDataAsset->KnockBackCollideMontage);
 	}
 	else if (IsValid(MonsterBaseDataAsset->DamagedAnimMontage))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("일반 경직")));
+		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("일반 경직")));
 		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
 	}
 
