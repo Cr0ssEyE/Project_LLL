@@ -25,7 +25,7 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_RewardGimmick();
 
-	FORCEINLINE FRewardDataTable* GetRewardData(uint8 index) { return &RewardData[index]; }
+	FORCEINLINE const FRewardDataTable* GetRewardData(uint8 index) { return RewardData[index]; }
 	FORCEINLINE void InformMapGimmickIsExist() { bMapGimmickIsExist = true; }
 
 protected:
@@ -44,6 +44,9 @@ public:
 
 	void SetDataTable();
 
+	void SetRewardWeight();
+
+	void RollReward(TArray<TTuple<const FAbilityDataTable*, float>> AbilityDataTables);
 	
 protected:
 	UFUNCTION()
@@ -55,24 +58,23 @@ protected:
 	UFUNCTION()
 	void ClickThirdButton();
 	
-	void ClickButtonEvent(FAbilityDataTable* ButtonAbilityData);
+	void ClickButtonEvent(const FAbilityDataTable* ButtonAbilityData);
 
 	UFUNCTION()
 	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects);
 	
 protected:
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FRewardDataTable> RewardData;
+	TArray<const FRewardDataTable*> RewardData;
 	
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FAbilityDataTable> AbilityData;
+	TArray<const FAbilityDataTable*> AbilityData;
 
-	FAbilityDataTable* ButtonAbilityData1;
-	FAbilityDataTable* ButtonAbilityData2;
-	FAbilityDataTable* ButtonAbilityData3;
-	TArray<FAbilityDataTable*> ButtonAbilityDataArray;
+	uint32 TotalRewardWeight;
+	TArray<TTuple<const FAbilityDataTable*, float>> NormalizedWeightRewardArray;
 	
-	FAbilityDataTable* CurrentAbilityData;
+	TArray<const FAbilityDataTable*> GettenAbilityArray;
+	TArray<const FAbilityDataTable*> ButtonAbilityDataArray;
+
+	const FAbilityDataTable* CurrentAbilityData;
 	
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsButtonEventSetup : 1;
@@ -85,11 +87,11 @@ protected:
 	uint8 bIsTest : 1;
 
 	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
-	uint8 TestAbilityDataArrayNum1;
+	uint32 TestAbilityDataID1;
 
 	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
-	uint8 TestAbilityDataArrayNum2;
+	uint32 TestAbilityDataID2;
 	
 	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
-	uint8 TestAbilityDataArrayNum3;
+	uint32 TestAbilityDataID3;
 };

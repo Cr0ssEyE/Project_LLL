@@ -10,7 +10,7 @@
 #include "DataTable/LLL_MonsterSpawnDataTable.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "NiagaraFunctionLibrary.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawnPointComponent.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -75,15 +75,9 @@ void ALLL_MonsterSpawner::NotifyActorBeginOverlap(AActor* OtherActor)
 		if (IsValid(Player))
 		{
 			SpawnMonster();
+			StartSpawnDelegate.Broadcast();
 		}
 	}
-}
-
-void ALLL_MonsterSpawner::BeginDestroy()
-{
-	Super::BeginDestroy();
-
-	MonsterSpawnerDestroyDelegate.Broadcast();
 }
 
 void ALLL_MonsterSpawner::SpawnMonster()
@@ -115,9 +109,9 @@ void ALLL_MonsterSpawner::SpawnMonster()
 							Monsters.Emplace(MonsterBase);
 						
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-							if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+							if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 							{
-								if (ProtoGameInstance->CheckMonsterSpawnDataDebug())
+								if (DebugGameInstance->CheckMonsterSpawnDataDebug())
 								{
 									GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 스폰 (웨이브 : %d, 그룹 : %d, 스폰 포인트 : %d)"), *GetName(), CurrentWave, CurrentGroup, SpawnPointNum));
 								}
@@ -128,7 +122,7 @@ void ALLL_MonsterSpawner::SpawnMonster()
 
 					FTimerHandle SpawnParticleTimerHandle;
 					GetWorldTimerManager().SetTimer(SpawnParticleTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, SpawnPoint]{
-						UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MonsterSpawnerDataAsset->SpawnParticle, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+						SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MonsterSpawnerDataAsset->SpawnParticle, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation()));
 					}), MonsterSpawnerDataAsset->SpawnParticleTimer, false);
 				}
 			}
