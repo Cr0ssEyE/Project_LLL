@@ -57,4 +57,5 @@ protected:
 	FTimerHandle HideTimerHandle;
 	const FAbilityDataTable* AbilityData;
 	float AbilityLevel;
+	float OffencePower;
 };

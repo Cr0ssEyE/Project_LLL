@@ -169,6 +169,7 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 
 			if (i == SpawnCount - 1)
 			{
+				BP_ApplyGameplayEffectToOwner(ResetLastSentDamageEffect);
 				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 			}
 		}), TempSpawnOffsetTime, false);
@@ -193,7 +194,7 @@ void ULLL_PGA_OnTriggerActivate::GrantTagWhenHit()
 	{
 		for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
 		{
-			if (IAbilitySystemInterface* ASC = Cast<IAbilitySystemInterface>(Actor))
+			if (const IAbilitySystemInterface* ASC = Cast<IAbilitySystemInterface>(Actor))
 			{
 				ASC->GetAbilitySystemComponent()->AddLooseGameplayTags(GrantTagContainer, GrantNum);
 			}
