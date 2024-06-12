@@ -10,6 +10,11 @@
 #include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
+ALLL_MapSoundManager::ALLL_MapSoundManager()
+{
+	PlayBGM = true;
+}
+
 void ALLL_MapSoundManager::SetPitch(float InPitch) const
 {
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
@@ -67,7 +72,10 @@ void ALLL_MapSoundManager::BeginPlay()
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->CharacterDeadDelegate.AddDynamic(this, &ALLL_MapSoundManager::PlayerDeadHandle);
 
-	BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), BGM, true);
+	if (PlayBGM)
+	{
+		BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), BGM, true);
+	}
 	AMBWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), AMB, true);
 
 	ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
