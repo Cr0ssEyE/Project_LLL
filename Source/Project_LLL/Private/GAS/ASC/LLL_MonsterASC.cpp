@@ -25,7 +25,6 @@ FActiveGameplayEffectHandle ULLL_MonsterASC::ApplyGameplayEffectSpecToSelf(const
 	return Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
 }
 
-
 // Called when the game starts
 void ULLL_MonsterASC::BeginPlay()
 {
@@ -51,7 +50,7 @@ void ULLL_MonsterASC::OnFallableTagAdded(const FGameplayTag Tag, int32 count)
 	{
 		if (TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_FALLABLE)))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("낙하 상태로 전환 %s"), *Tag.GetTagName().ToString()));
+			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("낙하 상태로 전환 %s"), *Tag.GetTagName().ToString()));
 		}
 	}
 }
@@ -112,22 +111,52 @@ void ULLL_MonsterASC::OnMarkTagAdded(const FGameplayTag Tag, int32 count)
 
 void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEffectSpec)
 {
+	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActor());
+	ACharacter* Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	if (!Character)
+	{
+		return;
+	}
+
+	const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(Cast<ALLL_PlayerBase>(Character)->GetAbilitySystemComponent()->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
+	
 	if (GameplayEffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_BLEEDING))
 	{
+		if (GetWorld()->GetTimerManager().IsTimerActive(BleedingTimerHandle))
+		{
+			GetWorld()->GetTimerManager().ClearTimer(BleedingTimerHandle);
+		}
+
+		Monster->UpdateBleedingVFX(true);
 		TArray<FGameplayTag> EffectGrantTags = GameplayEffectSpec.Def->GetGrantedTags().GetGameplayTagArray();
+		FGameplayTag EffectBleedingTag;
 		if (EffectGrantTags.Find(TAG_GAS_STATUS_BLEEDING_BASE_ATTACK) != INDEX_NONE)
 		{
+			EffectBleedingTag = TAG_GAS_STATUS_BLEEDING_BASE_ATTACK;
 			RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING_BASE_ATTACK));
 		}
 		
 		if (EffectGrantTags.Find(TAG_GAS_STATUS_BLEEDING_CHASE_ATTACK) != INDEX_NONE)
 		{
+			EffectBleedingTag = TAG_GAS_STATUS_BLEEDING_CHASE_ATTACK;
 			RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING_CHASE_ATTACK));
 		}
 
 		if (EffectGrantTags.Find(TAG_GAS_STATUS_BLEEDING_DASH_ATTACK) != INDEX_NONE)
 		{
+			EffectBleedingTag = TAG_GAS_STATUS_BLEEDING_DASH_ATTACK;
 			RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING_DASH_ATTACK));
 		}
+		
+		GetWorld()->GetTimerManager().SetTimer(BleedingTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]()
+		{
+			if (!Monster)
+			{
+				return;
+			}
+
+			RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(EffectBleedingTag));
+			Monster->UpdateBleedingVFX(false);
+		}), AbnormalStatusAttributeSet->GetBleedingStatusDuration(), false);
 	}
 }

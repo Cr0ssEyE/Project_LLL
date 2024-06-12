@@ -6,7 +6,6 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "BrainComponent.h"
-#include "FMODAudioComponent.h"
 #include "GameplayAbilitiesModule.h"
 #include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -59,6 +58,10 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	MarkVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MarkStatusEffect"));
 	MarkVFXComponent->SetupAttachment(RootComponent);
 	MarkVFXComponent->SetAutoActivate(false);
+
+	BleedingVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BleedingStatusEffect"));
+	BleedingVFXComponent->SetupAttachment(RootComponent);
+	BleedingVFXComponent->SetAutoActivate(false);
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -74,7 +77,7 @@ void ALLL_MonsterBase::BeginPlay()
 	{
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}
-
+	
 	MonsterStatusWidgetComponent->SetWidget(CharacterUIManager->GetCharacterStatusWidget());
 	MonsterStatusWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	MonsterStatusWidgetComponent->SetRelativeLocation(MonsterBaseDataAsset->StatusGaugeLocation);
@@ -91,6 +94,13 @@ void ALLL_MonsterBase::BeginPlay()
 	{
 		MarkVFXComponent->SetAsset(MarkCountNiagaraSystem);
 		MarkVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_OVERHEAD);
+	}
+
+	UNiagaraSystem* BleedingNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->BleedingNiagaraSystem;
+	if (IsValid(BleedingNiagaraSystem))
+	{
+		BleedingVFXComponent->SetAsset(BleedingNiagaraSystem);
+		BleedingVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
 	}
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -129,38 +139,6 @@ void ALLL_MonsterBase::InitAttributeSet()
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_MONSTER, Data, true);
 }
 
-void ALLL_MonsterBase::Attack() const
-{
-	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK)))
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (DebugGameInstance->CheckMonsterAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
-			}
-		}
-#endif
-	}
-}
-
-void ALLL_MonsterBase::Charge() const
-{
-	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE)))
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (DebugGameInstance->CheckMonsterAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
-			}
-		}
-#endif
-	}
-}
-
 void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 {
 	Super::Damaged(Attacker, IsDOT);
@@ -177,7 +155,20 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 	}
 
 	MonsterBaseAnimInstance->StopAllMontages(1.0f);
-	PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+	if ( GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_STATE_COLLIDE_OTHER) && IsValid(MonsterBaseDataAsset->KnockBackCollideMontage))
+	{
+		FVector HitDirection = (GetActorLocation() - GetLastCollideLocation()).GetSafeNormal2D();
+		HitDirection.Z = 0.f;
+		SetActorRotation(HitDirection.Rotation(), ETeleportType::TeleportPhysics);
+		
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충돌 경직")));
+		PlayAnimMontage(MonsterBaseDataAsset->KnockBackCollideMontage);
+	}
+	else if (IsValid(MonsterBaseDataAsset->DamagedAnimMontage))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("일반 경직")));
+		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+	}
 
 	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
 	for (auto TempNiagaraComponent : TempNiagaraComponents)
@@ -190,6 +181,23 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 		TempNiagaraComponent->DestroyComponent();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
+
+	if (!IsValid(HitEffectOverlayMaterialInstance))
+	{
+		HitEffectOverlayMaterialInstance = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
+		GetMesh()->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
+		for (auto ChildComponent : GetMesh()->GetAttachChildren())
+		{
+			if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ChildComponent))
+			{
+				StaticMeshComponent->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
+			}
+		}
+	}
+
+	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 1.f);
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
+	RecognizePlayerToAroundMonster();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
@@ -210,6 +218,7 @@ void ALLL_MonsterBase::Dead()
 
 	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
 	GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
+	GetMesh()->SetCustomDepthStencilValue(0);
 	
 	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
 
@@ -247,6 +256,8 @@ void ALLL_MonsterBase::Dead()
     	TempNiagaraComponent->DestroyComponent();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
+
+	RecognizePlayerToAroundMonster();
 
 	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();
 	FTimerHandle DestroyTimerHandle;
@@ -297,12 +308,88 @@ void ALLL_MonsterBase::ApplyStackedKnockBack()
 	}
 
 	// TODO: 나중에 몬스터별 최대 넉백값 같은거 나오면 수정하기
+	Damaged();
 	FVector ScaledStackedKnockBackVelocity = ClampVector(StackedKnockBackVelocity, FVector::One() * -30000.f, FVector::One() * 30000.f);
 	ScaledStackedKnockBackVelocity.Z = 0.f;
 	GetCharacterMovement()->Velocity = FVector::Zero();
 	LaunchCharacter(ScaledStackedKnockBackVelocity, true, true);
 
 	ResetKnockBackStack();
+}
+
+void ALLL_MonsterBase::Attack() const
+{
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK)))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (DebugGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
+			}
+		}
+#endif
+	}
+}
+
+void ALLL_MonsterBase::Charge() const
+{
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE)))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (DebugGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
+			}
+		}
+#endif
+	}
+}
+
+void ALLL_MonsterBase::RecognizePlayerToAroundMonster() const
+{
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	
+	const float ClusterRecognizeRadius = MonsterAttributeSet->GetClusterRecognizeRadius();
+	
+	GetWorld()->SweepMultiByProfile(
+		HitResults,
+		GetActorLocation(),
+		GetActorLocation(),
+		FQuat::Identity,
+		CP_MONSTER,
+		FCollisionShape::MakeSphere(ClusterRecognizeRadius),
+		Params
+		);
+
+	FColor DebugColor = FColor::Red;
+	if (!HitResults.IsEmpty())
+	{
+		for (auto HitResult : HitResults)
+		{
+			if (const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitResult.GetActor()))
+			{
+				ALLL_MonsterBaseAIController* MonsterAIController = CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController());
+				MonsterAIController->SetPlayer();
+				DebugColor = FColor::Green;
+			}
+		}
+	}
+	
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (DebugGameInstance->CheckMonsterAttackDebug())
+		{
+			DrawDebugSphere(GetWorld(), GetActorLocation(), ClusterRecognizeRadius, 16, DebugColor, false, 2.0f);
+		}
+	}
+#endif
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)
@@ -329,23 +416,51 @@ void ALLL_MonsterBase::UpdateMarkVFX(uint8 NewCount, uint8 MaxCount)
 		return;
 	}
 
-	UNiagaraParameterCollection* MarkParam = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->MarkCountNiagaraParameterCollection;
-	if (!IsValid(MarkParam))
-	{
-		return;
-	}
-
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("표식 값 갱신: %d"), NewCount));
-	MarkVFXComponent->SetFloatParameter(NS_MARK_COUNT, NewCount - 1.f);
+
+	MarkVFXComponent->SetFloatParameter(NS_MARK_COUNT, FMath::Max(NewCount - 1.f, 0.f));
 	
 	if (NewCount > 0)
 	{
 		MarkVFXComponent->ActivateSystem();
+		MarkVFXComponent->SetVisibility(true);
 	}
 	else
 	{
 		MarkVFXComponent->Deactivate();
+		MarkVFXComponent->SetVisibility(false);
 	}
+	
+}
+
+void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)
+{
+	if (ActiveState)
+	{
+		BleedingVFXComponent->ActivateSystem();
+	}
+	else
+	{
+		if (GetAbilitySystemComponent()->HasAnyMatchingGameplayTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING)))
+		{
+			return;
+		}
+		BleedingVFXComponent->Deactivate();
+	}
+}
+
+void ALLL_MonsterBase::UpdateMonsterHitVFX()
+{
+	float CurrentOpacity = HitEffectOverlayMaterialInstance->K2_GetScalarParameterValue(MAT_PARAM_OPACITY);
+	if (CurrentOpacity <= 0.f)
+	{
+		HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 0.f);
+		return;
+	}
+	
+	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, CurrentOpacity - 0.05f);
+	
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
 }
 
 void ALLL_MonsterBase::DropGold(const FGameplayTag tag, int32 data)

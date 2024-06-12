@@ -24,6 +24,7 @@
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MaterialParameterName.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
@@ -205,7 +206,6 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->ControlChaseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::ChaseAction, EAbilityInputName::Chase);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractiveTargetChangeInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractiveTargetChangeAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->PauseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::PauseAction);
 }
@@ -373,10 +373,14 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	CameraRotation.Pitch = CameraRotation.Roll = 0.f;
 	MoveDirection = CameraRotation.RotateVector(FVector(MoveInputValue.X, MoveInputValue.Y, 0.f));
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
-	if (GetCharacterMovement()->IsWalking())
+	
+	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_PLAYER_STATE_CHASE_PROGRESS))
 	{
-		AddMovementInput(MoveDirection, 1.f);
+		return;
 	}
+
+	AddMovementInput(MoveDirection, 1.f);
+	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -460,22 +464,6 @@ void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
 		return;
 	}
 	InteractiveObjects[SelectedInteractiveObjectNum]->InteractiveEvent();
-}
-
-void ALLL_PlayerBase::InteractiveTargetChangeAction(const FInputActionValue& Value)
-{
-	if (!InteractiveObjects.Num())
-	{
-		return;
-	}
-	
-	SelectedInteractiveObjectNum++;
-	if (SelectedInteractiveObjectNum >= InteractiveObjects.Num())
-	{
-		SelectedInteractiveObjectNum = 0;
-	}
-	PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
-	
 }
 
 void ALLL_PlayerBase::InventoryAction(const FInputActionValue& Value)
@@ -616,6 +604,7 @@ void ALLL_PlayerBase::Dead()
 
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
 	
 	GetWorld()->SweepMultiByProfile(
 		HitResults,
@@ -640,8 +629,8 @@ void ALLL_PlayerBase::Dead()
 			HitResult.GetActor()->SetHidden(true);
 		}
 	}
-	
-	FTransform DissolveStartTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
+
+	const FTransform DissolveStartTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
 	DeadSequenceDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->DeadSequenceDissolveActor, DissolveStartTransform);
 	DeadSequenceActor->FinishSpawning(FTransform::Identity);
 
@@ -654,6 +643,7 @@ void ALLL_PlayerBase::DropDissolveActor()
 	{
 		return;
 	}
+	
 	DeadSequenceDissolveActor->SetActorLocation(DeadSequenceDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
 }

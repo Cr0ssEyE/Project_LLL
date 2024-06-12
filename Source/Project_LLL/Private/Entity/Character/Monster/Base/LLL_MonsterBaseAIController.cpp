@@ -33,6 +33,18 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	}));
 }
 
+void ALLL_MonsterBaseAIController::SetPlayer()
+{
+	if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
+	{
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+		if (IsValid(Player))
+		{
+			BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
+		}
+	}
+}
+
 void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
@@ -54,14 +66,6 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 		}
 
 		BrainComponent->StartLogic();
-
-		if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
-		{
-			ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-			if (IsValid(Player))
-			{
-				BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
-			}
-		}
+		SetPlayer();
 	}
 }

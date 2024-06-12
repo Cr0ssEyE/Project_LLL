@@ -70,7 +70,7 @@ void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallb
 	{
 		const int32 MarkCount = GetOwningAbilitySystemComponentChecked()->GetGameplayTagCount(TAG_GAS_MARK_STACK);
 		Damage *= 1.f + AbnormalStatusAttributeSet->GetMarkStatusDamageAmplifyPerStack() * MarkCount;
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("표식 대미지 배율 적용. 카운트: %d | 최종값: %f"), MarkCount, Damage));
+		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("표식 대미지 배율 적용. 카운트: %d | 최종값: %f"), MarkCount, Damage));
 	}
 
 	if (Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration)

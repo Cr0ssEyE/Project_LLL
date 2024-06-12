@@ -40,7 +40,7 @@ public:
 		}
 	}
 
-	static bool SpawnAbilityObject(ULLL_PGA_RewardAbilityBase* OwnerAbility, TSubclassOf<ALLL_AbilityObject> AbilityObjectClass, FGameplayEventData EventData = FGameplayEventData(), EEffectApplyTarget AbilityObjectLocationTarget = EEffectApplyTarget::Self)
+	static bool SpawnAbilityObject(const ULLL_PGA_RewardAbilityBase* OwnerAbility, const TSubclassOf<ALLL_AbilityObject>& AbilityObjectClass, FGameplayEventData EventData = FGameplayEventData(), EEffectApplyTarget AbilityObjectLocationTarget = EEffectApplyTarget::Self)
 	{
 		UWorld* World = OwnerAbility->GetWorld();
 		if (!World)

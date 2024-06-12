@@ -28,6 +28,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "충돌 대상에게 적용되는 이펙트")
 	TSubclassOf<UGameplayEffect> CollideTargetApplyEffect;
+
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "충돌 상태 태그 부여 이펙트")
+	TSubclassOf<UGameplayEffect> CollideStateEffect;
 	
 protected:
 	UFUNCTION()

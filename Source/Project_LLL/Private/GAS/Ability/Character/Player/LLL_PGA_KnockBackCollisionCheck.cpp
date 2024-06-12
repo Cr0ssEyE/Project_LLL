@@ -33,7 +33,7 @@ void ULLL_PGA_KnockBackCollisionCheck::EndAbility(const FGameplayAbilitySpecHand
 	{
 		for (auto Character : KnockBackedCharacters)
 		{
-			if (IsValid(Character))
+			if (IsValid(Character) && Character->OtherActorCollidedDelegate.IsAlreadyBound(this, &ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack))
 			{
 				Character->OtherActorCollidedDelegate.RemoveDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack);
 			}
@@ -93,12 +93,14 @@ void ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack(AActor* HitA
 	HitCharacter->GetCharacterMovement()->Velocity = FVector::Zero();
 	HitCharacter->OtherActorCollidedDelegate.RemoveDynamic(this, &ULLL_PGA_KnockBackCollisionCheck::OnOtherActorCollidedCallBack);
 	const FGameplayAbilityTargetDataHandle HitActorHandle = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(HitCharacter);
+	BP_ApplyGameplayEffectToTarget(HitActorHandle, CollideStateEffect, CurrentEventData.EventMagnitude);
 	BP_ApplyGameplayEffectToTarget(HitActorHandle, CollideCauserApplyEffect, CurrentEventData.EventMagnitude);
 	
 	// 넉백당한 대상에 충돌한 대상에 대한 처리
 	if (Cast<IAbilitySystemInterface>(OtherActor))
 	{
 		const FGameplayAbilityTargetDataHandle OtherActorHandle = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(OtherActor);
+		BP_ApplyGameplayEffectToTarget(OtherActorHandle, CollideStateEffect, CurrentEventData.EventMagnitude);
 		BP_ApplyGameplayEffectToTarget(OtherActorHandle, CollideTargetApplyEffect, CurrentEventData.EventMagnitude);
 	}
 
