@@ -106,9 +106,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "상호작용 입력 키")
 	TObjectPtr<UInputAction> InteractionInputAction;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "상호작용 대상 전환 키")
-	TObjectPtr<UInputAction> InteractiveTargetChangeInputAction;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "인벤토리 입력 키")
 	TObjectPtr<UInputAction> InventoryInputAction;
 

@@ -44,8 +44,8 @@ public:
 	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
 	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
 	FORCEINLINE float GetCharacterLevel() const { return Level; }
-
-	// 플레이어
+	FORCEINLINE FVector GetLastCollideLocation() const { return LastCollideLocation; }
+	
 protected:
 	virtual void PostLoad() override;
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -63,7 +63,7 @@ protected:
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Damaged(AActor* Attacker, bool IsDOT = false) {}
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) {}
 	virtual void Dead();
 
 	// 상태 체크용 변수
@@ -101,6 +101,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	FVector MoveDirection;
 
+	UPROPERTY(VisibleAnywhere)
+	FVector LastCollideLocation;
+	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BaseCharacterDataAsset> CharacterDataAsset;

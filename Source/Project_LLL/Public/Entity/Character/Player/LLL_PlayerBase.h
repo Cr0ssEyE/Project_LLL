@@ -44,7 +44,7 @@ public:
 	virtual void InitAttributeSet() override;
 	virtual void SetFModParameter(EFModParameter FModParameter) override;
 	
-	virtual void Damaged(AActor* Attacker, bool IsDOT = false) override;
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
 	virtual void Dead() override;
 	
 	// 외부 접근용
@@ -93,10 +93,13 @@ protected:
 	TObjectPtr<ALLL_PlayerChaseHand> ChaseHandActor;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerSkillAttributeSet> SkillAttributeSet;
+	TObjectPtr<ULLL_AbnormalStatusAttributeSet> AbnormalStatusAttributeSet;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_PlayerCharacterAttributeSet> PlayerCharacterAttributeSet;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_AbnormalStatusAttributeSet> AbnormalStatusAttributeSet;
+	TObjectPtr<ULLL_PlayerSkillAttributeSet> SkillAttributeSet;
 	
 	// 입력 액션 관련
 private:
@@ -106,7 +109,6 @@ private:
 	void ChaseAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void SkillAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void InteractAction(const FInputActionValue& Value);
-	void InteractiveTargetChangeAction(const FInputActionValue& Value);
 	void InventoryAction(const FInputActionValue& Value);
 	void PauseAction(const FInputActionValue& Value);
 
@@ -114,9 +116,6 @@ private:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_PlayerCharacterAttributeSet> PlayerCharacterAttributeSet;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_CameraDataAsset> CameraDataAsset;
