@@ -60,6 +60,7 @@ public:
 	
 		ALLL_AbilityObject* AbilityObject = World->SpawnActorDeferred<ALLL_AbilityObject>(AbilityObjectClass, SpawnTransform);
 		AbilityObject->SetAbilityInfo(OwnerAbility->GetAbilityData(), OwnerAbility->GetAbilityLevel());
+		AbilityObject->SetOwner(OwnerAbility->GetAvatarActorFromActorInfo());
 		AbilityObject->FinishSpawning(OwnerAbility->GetAvatarActorFromActorInfo()->GetActorTransform());
 
 		if (AbilityObject)
