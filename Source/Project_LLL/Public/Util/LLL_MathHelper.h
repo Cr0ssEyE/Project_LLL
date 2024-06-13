@@ -140,6 +140,20 @@ public:
 		const float CalculateResult = (PlayerCharacterAttributeSet->GetKnockBackPower() + PlayerCharacterAttributeSet->GetOffensePower() * PlayerCharacterAttributeSet->GetKnockBackOffensePowerRate()) * ActionAmplify;
 		return CalculateResult;
 	}
+
+	static float CalculateCriticalDamage(const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet, const float OffensePower)
+	{
+		const float CriticalChance = PlayerAttributeSet->GetCriticalChance();
+		const float CriticalAmplify = PlayerAttributeSet->GetCriticalAmplify();
+	
+		bool bIsChance = false;
+		if (CriticalChance != 0.0f)
+		{
+			bIsChance = FMath::RandRange(0.0f, 1.0f) <= CriticalChance;
+		}
+	
+		return OffensePower + (bIsChance ? CriticalAmplify * OffensePower : 0);
+	}
 	
 	static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)
 	{
