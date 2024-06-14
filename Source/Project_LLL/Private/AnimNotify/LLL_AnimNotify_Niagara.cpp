@@ -3,6 +3,7 @@
 
 #include "AnimNotify/LLL_AnimNotify_Niagara.h"
 
+#include "AnimNotifyState_TimedNiagaraEffect.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Interface/LLL_NiagaraInterface.h"
