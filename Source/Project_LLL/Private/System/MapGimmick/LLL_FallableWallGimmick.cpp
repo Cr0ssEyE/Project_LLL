@@ -98,7 +98,7 @@ void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FV
 	UNiagaraSystem* WallCrashNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->InvisibleWallCrashNiagaraSystem;
 	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), WallCrashNiagaraSystem, HitLocation, HitNormal.Rotation());
 	NiagaraComponent->SetCustomTimeDilation(CustomTimeDilation);
-	SetNiagaraComponent(NiagaraComponent);
+	AddNiagaraComponent(NiagaraComponent);
 	
 	FTimerHandle DilationTimerHandle;
 	GetWorldTimerManager().SetTimer(DilationTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]

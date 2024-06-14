@@ -133,7 +133,7 @@ void ALLL_BaseCharacter::InitAttributeSet()
 	}
 }
 
-void ALLL_BaseCharacter::SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
+void ALLL_BaseCharacter::AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
 {
 	NiagaraComponents.Remove(nullptr);
 	NiagaraComponents.Emplace(InNiagaraComponent);

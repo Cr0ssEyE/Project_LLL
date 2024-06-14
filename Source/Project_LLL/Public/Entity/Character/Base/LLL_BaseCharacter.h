@@ -56,7 +56,7 @@ protected:
 
 protected:
 	virtual void SetFModParameter(EFModParameter FModParameter) override {}
-	virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
+	virtual void AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
 	
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;

@@ -14,6 +14,16 @@ enum class EAbilityInputName : uint8
 	Dash UMETA(Displayname="회피")
 };
 
+// 이펙트 회전 방향을 임의로 지정하는 경우 사용
+UENUM(BlueprintType)
+enum class EEffectFacingSetting : uint8
+{
+	None,
+	LookPlayer,
+	PlayerForward,
+	LookCamera // 카메라 미구현
+};
+
 // 이펙트가 적용되는 대상을 지정하는 경우 사용
 UENUM(BlueprintType)
 enum class EEffectApplyTarget : uint8

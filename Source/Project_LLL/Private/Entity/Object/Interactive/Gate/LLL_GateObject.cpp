@@ -57,7 +57,7 @@ void ALLL_GateObject::SetActivate()
 	
 	if (IsValid(GateDataAsset->Particle))
 	{
-		SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
+		AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
 	}
 }
 
