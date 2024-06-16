@@ -8,8 +8,7 @@
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
-ULLL_PGA_OnSkillActivate::ULLL_PGA_OnSkillActivate() :
-EffectApplyTarget(EEffectApplyTarget::Self)
+ULLL_PGA_OnSkillActivate::ULLL_PGA_OnSkillActivate()
 {
 	
 }
@@ -28,21 +27,15 @@ void ULLL_PGA_OnSkillActivate::ActivateAbility(const FGameplayAbilitySpecHandle 
 	EventTask->EventReceived.AddDynamic(this, &ULLL_PGA_OnSkillActivate::OnSkillDeactivatedCallBack);
 	EventTask->ReadyForActivation();
 
-	if (OnActivateSuccessEffect)
+	if (IsValid(OnActivateSuccessEffect))
 	{
 		ApplyEffectWhenActivateSuccess();
 	}
 }
 
-void ULLL_PGA_OnSkillActivate::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
-{
-	
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-}
-
 void ULLL_PGA_OnSkillActivate::ApplyEffectWhenActivateSuccess()
 {
-	ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnActivateSuccessEffect.GetDefaultObject());
+	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnActivateSuccessEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnActivateSuccessEffect, GetAbilityLevel());
 
 	const float ChangeableValue = (AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel()) / static_cast<uint32>(AbilityData->AbilityValueType);
