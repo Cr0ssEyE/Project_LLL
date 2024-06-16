@@ -112,7 +112,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 			continue;
 		}
 
-		if (NiagaraEffectNotify->GetSpawnedEffect())
+		if (IsValid(NiagaraEffectNotify->GetSpawnedEffect()))
 		{
 			NiagaraEffectNotify->GetSpawnedEffect()->DestroyComponent();
 		}

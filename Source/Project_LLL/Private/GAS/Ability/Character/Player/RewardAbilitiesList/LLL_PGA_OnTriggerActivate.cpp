@@ -4,6 +4,7 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_OnTriggerActivate.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "DataTable/LLL_AbilityDataTable.h"
@@ -11,6 +12,7 @@
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
 #include "Entity/Object/Thrown/LLL_ThrownFeather.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_OnSkillActivate.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
@@ -32,10 +34,16 @@ void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandl
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (TriggerRequiredTag.IsValid() && !TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag))
+	if (TriggerRequiredTags.IsValid())
 	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-		return;
+		for (auto TriggerRequiredTagOne : TriggerRequiredTags)
+		{
+			if (!TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTagOne))
+			{
+				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+				return;
+			}
+		}
 	}
 
 	if (ActorStateRequiredTag.IsValid() && !GetAbilitySystemComponentFromActorInfo_Checked()->HasMatchingGameplayTag(ActorStateRequiredTag))
