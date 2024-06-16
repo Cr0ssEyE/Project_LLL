@@ -11,6 +11,7 @@
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ALLL_PlayerController;
 class ULLL_GameInstance;
 class ULLL_AbnormalStatusAttributeSet;
 class ULLL_PlayerSkillAttributeSet;
@@ -53,6 +54,7 @@ public:
 	void AddInteractiveObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
+public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
 	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
 	FORCEINLINE UCameraComponent* GetPlayerCamera() const { return Camera; }
@@ -69,6 +71,10 @@ public:
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
 
+public:
+	void StartCameraMoveToCursor(ALLL_PlayerController* PlayerController = nullptr);
+	void PauseCameraMoveToCursor();
+	
 protected:
 	void TurnToMouseCursor();
 	void MoveCameraToMouseCursor();

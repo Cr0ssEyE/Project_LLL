@@ -3,6 +3,7 @@
 
 #include "Entity/Character/Player/LLL_PlayerController.h"
 
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Kismet/GameplayStatics.h"
 
 ALLL_PlayerController::ALLL_PlayerController()
@@ -16,6 +17,13 @@ void ALLL_PlayerController::BeginPlay()
 	
 	UGameplayStatics::SetViewportMouseCaptureMode(this, EMouseCaptureMode::CapturePermanently_IncludingInitialMouseDown);
 	SetGameInputMode();
+}
+
+void ALLL_PlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(InPawn);
+	PlayerCharacter->StartCameraMoveToCursor(this);
 }
 
 void ALLL_PlayerController::SetGameInputMode()
