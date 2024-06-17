@@ -275,7 +275,9 @@ void ALLL_MonsterBase::Dead()
     	TempNiagaraComponent->DestroyComponent();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
-
+	BleedingVFXComponent->SetHiddenInGame(true);
+	MarkVFXComponent->SetHiddenInGame(true);
+	
 	RecognizePlayerToAroundMonster();
 
 	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();

@@ -145,3 +145,5 @@ void ULLL_MainEruriaInfoWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBl
 	MaterialInstanceDynamic->SetTextureParameterValue(UI_ERURIA_ICON, EruriaIConTextures[static_cast<uint32>(AbilityData->AbilityType)]);
 }
 
+// 만약 여기서 중단점 터지면 부여한 어빌리티에 태그 뭔가 빠졌는지 체크
+
