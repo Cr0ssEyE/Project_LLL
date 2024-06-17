@@ -12,7 +12,9 @@
 #include "Util/LLL_MathHelper.h"
 
 ULLL_PlayerCharacterAttributeSet::ULLL_PlayerCharacterAttributeSet() :
-TargetingCorrectionRadius(100.f)
+TargetingCorrectionRadius(100.f),
+BaseAttackDamageAmplifyByOther(1.f),
+ChaseAttackDamageAmplifyByOther(1.f)
 {
 	
 }

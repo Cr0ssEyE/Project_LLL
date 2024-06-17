@@ -379,6 +379,24 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		}
 
 		// 단순 수치 변화는 여기에서 적용.
+		float ChangeableValue = CurrentAbilityData->AbilityValue / static_cast<uint32>(CurrentAbilityData->AbilityValueType);
+		if (!EffectSpecHandle.Data->Def->Modifiers.IsEmpty())
+		{
+			switch (EffectSpecHandle.Data->Def->Modifiers[0].ModifierOp)
+			{
+			case EGameplayModOp::Multiplicitive:
+				++ChangeableValue;
+				break;
+			default: // Add, Divide, Max, Override
+				break;
+			}
+		}
+		
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, ChangeableValue);
+
+		const float UnChangeableValue = CurrentAbilityData->UnchangeableValue;
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_UNCHANGEABLE_VALUE, UnChangeableValue);
+		
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
 		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("%s 부여"), *LoadedEffect.Get()->GetName()));

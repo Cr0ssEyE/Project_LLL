@@ -22,6 +22,7 @@ public:
 			EffectSpec->bDurationLocked = false;
 			EffectSpec->SetDuration(AbnormalStatusAttributeSet->GetBleedingStatusDuration(), true);
 			EffectSpec->Period = AbnormalStatusAttributeSet->GetBleedingStatusPeriod();
+			UE_LOG(LogTemp, Log, TEXT("%f Period 값 변경"), EffectSpec->GetPeriod());
 			return;
 		}
 

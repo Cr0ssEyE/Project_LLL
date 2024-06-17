@@ -61,8 +61,8 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<const FAbilityDataTable*> Abi
 		FString AbilityInformation = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityInformation, TEXT("Failed To Load Ability Information"))->Korean;
 		
 		// TODO: 강화 UI는 AbilityData->ChangeValue 고려하도록 개선하기
-		AbilityInformation = AbilityInformation.Replace(TEXT("[AV]"), *FString::SanitizeFloat(AbilityData->AbilityValue));
-		AbilityInformation = AbilityInformation.Replace(TEXT("[UV]"), *FString::SanitizeFloat(AbilityData->UnchangeableValue));
+		AbilityInformation = AbilityInformation.Replace(TEXT("[AV]"), *FString::SanitizeFloat(FMath::Abs(AbilityData->AbilityValue)));
+		AbilityInformation = AbilityInformation.Replace(TEXT("[UV]"), *FString::SanitizeFloat(FMath::Abs(AbilityData->UnchangeableValue)));
 		WidgetInfoTexts.Emplace(TTuple<FString, FString>(AbilityName, AbilityInformation));
 	}
 	
