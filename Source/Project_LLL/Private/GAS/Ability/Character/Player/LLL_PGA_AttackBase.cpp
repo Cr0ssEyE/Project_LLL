@@ -103,18 +103,22 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 		PlayerCharacter->SetAttacking(false);
 		PlayerCharacter->SetCurrentCombo(CurrentComboAction);
 	}
-	
-	for (auto Notify : AttackAnimMontage->Notifies)
-	{
-		UAnimNotify_PlayNiagaraEffect* NiagaraEffectNotify = Cast<UAnimNotify_PlayNiagaraEffect>(Notify.Notify);
-		if (!NiagaraEffectNotify)
-		{
-			continue;
-		}
 
-		if (IsValid(NiagaraEffectNotify->GetSpawnedEffect()))
+	if (bWasCancelled)
+	{
+		for (auto Notify : AttackAnimMontage->Notifies)
 		{
-			NiagaraEffectNotify->GetSpawnedEffect()->DestroyComponent();
+			UAnimNotify_PlayNiagaraEffect* NiagaraEffectNotify = Cast<UAnimNotify_PlayNiagaraEffect>(Notify.Notify);
+			if (!NiagaraEffectNotify)
+			{
+				continue;
+			}
+
+			UFXSystemComponent* NotifyComponent = NiagaraEffectNotify->GetSpawnedEffect();
+			if (IsValid(GetWorld()) && IsValid(PlayerCharacter) && IsValid(NotifyComponent) && !NotifyComponent->IsGarbageEliminationEnabled())
+			{
+				NotifyComponent->DestroyComponent();
+			}
 		}
 	}
 	

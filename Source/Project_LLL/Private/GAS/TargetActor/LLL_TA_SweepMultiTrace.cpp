@@ -30,12 +30,12 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 	{
 		if (SourceCharacter->GetMesh()->GetComponentLocation() != SourceCharacter->GetMesh()->GetSocketLocation(OriginSocketOrBoneName))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("소켓 위치 감지")));
+			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("소켓 위치 감지")));
 			OriginLocation = SourceCharacter->GetMesh()->GetSocketLocation(OriginSocketOrBoneName);
 		}
 		else if (FVector::Zero() != SourceCharacter->GetMesh()->GetBoneLocation(OriginSocketOrBoneName))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("본 위치 감지")));
+			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("본 위치 감지")));
 			OriginLocation = SourceCharacter->GetMesh()->GetBoneLocation(OriginSocketOrBoneName);
 		}
 	}
