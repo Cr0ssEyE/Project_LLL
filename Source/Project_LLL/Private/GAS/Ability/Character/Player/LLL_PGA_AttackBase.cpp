@@ -130,7 +130,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 	}
 
 	// 강건님 예외처리 안
-	if (bWasCancelled)
+	/*if (bWasCancelled)
 	{
 		for (auto Notify : AttackAnimMontage->Notifies)
 		{
@@ -146,7 +146,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 				NotifyComponent->DestroyComponent();
 			}
 		}
-	}
+	}*/
 	
 	GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
 	WaitTagTask->EndTask();
