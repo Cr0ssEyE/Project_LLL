@@ -59,7 +59,7 @@ void ULLL_GC_Base::ReceiveSpawnResult(AActor* Target, const FGameplayCueNotify_S
 
 		NiagaraInterface->AddNiagaraComponent(NiagaraComponent);
 
-		ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		FVector FacingDirection = NiagaraComponent->GetComponentRotation().Vector();
 		switch (EffectFacingTarget)
 		{
