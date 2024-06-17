@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "System/Base/LLL_SystemBase.h"
-#include "DataTable/LLL_RewardDataTable.h"
 #include "LLL_TutorialGimmick.generated.h"
 
 class ALLL_GateObject;
@@ -13,8 +12,9 @@ class ALLL_RewardObject;
 class ULLL_GateSpawnPointComponent;
 class ULLL_PlayerSpawnPointComponent;
 class AActor;
-class ULLL_MapDataAsset;
 class UNiagaraComponent;
+class ULLL_TutorialMapDataAsset;
+class ULLL_TutorialWidget;
 /**
  * 
  */
@@ -31,10 +31,7 @@ protected:
 	
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AActor> StageBP;
-
-	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<AActor> StageActor;
+	TArray<TObjectPtr<AActor>> StageActors;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ALLL_GateObject> Gate;
@@ -52,7 +49,15 @@ protected:
 	TObjectPtr<UNiagaraComponent> PlayerTeleportNiagara;
 
 	UPROPERTY(VisibleAnywhere, Category = "stage")
-	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
+	TObjectPtr<const ULLL_TutorialMapDataAsset> TutorialDataAsset;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "튜토리얼 UI")
+	TSubclassOf<ULLL_TutorialWidget> TutorialWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_TutorialWidget> TutorialWidget;
+
+	uint8 bIsActiveSkill : 1;
 
 	void OnInteractionGate();
 
@@ -63,6 +68,14 @@ protected:
 	void MonsterDestroyed(AActor* DestroyedActor);
 
 	UFUNCTION()
+	void BeginOverlapAttackTutorial(AActor* OverlappedActor, AActor* OtherActor);
+
+	UFUNCTION()
+	void FinalMapSpawn(AActor* DestroyedActor);
+
+	UFUNCTION()
+	void FinalMonsterSpawn(AActor* DestroyedActor);
+
+	UFUNCTION()
 	void LoadLevel(UNiagaraComponent* InNiagaraComponent);
 };
-
