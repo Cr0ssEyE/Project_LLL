@@ -54,7 +54,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage")
 	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
 
-	void OnInteractionGate(const FRewardDataTable* Data);
+	void OnInteractionGate();
 
 	UFUNCTION()
 	void RewardDestroyed(AActor* DestroyedActor);

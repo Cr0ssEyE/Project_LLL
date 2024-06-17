@@ -45,7 +45,7 @@ void ALLL_TutorialGimmick::BeginPlay()
 		if (IsValid(GateSpawnPointComponent))
 		{
 			Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), GateSpawnPointComponent->GetComponentLocation(), GateSpawnPointComponent->GetComponentRotation());
-			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_TutorialGimmick::OnInteractionGate);
+			Gate->FadeOutDelegate.AddUObject(this, &ALLL_TutorialGimmick::OnInteractionGate);
 		}
 	}
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
@@ -56,7 +56,7 @@ void ALLL_TutorialGimmick::BeginPlay()
 	AbilityReward->SetInformation(GameInstance->GetRewardDataTable()[0]);
 }
 
-void ALLL_TutorialGimmick::OnInteractionGate(const FRewardDataTable* Data)
+void ALLL_TutorialGimmick::OnInteractionGate()
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->DisableInput(GetWorld()->GetFirstPlayerController());
