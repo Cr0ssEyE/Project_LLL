@@ -44,6 +44,11 @@ void ULLL_GC_Base::ReceiveSpawnResult(AActor* Target, const FGameplayCueNotify_S
 	
 	// FGameplayCueNotify_SpawnContext가 영문도 모른 채 코드에서 LNK2019 오류 뿜어대서 블루프린트로 우회 구현
 	ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(Target);
+	if (!NiagaraInterface)
+	{
+		return;
+	}
+	
 	if (SpawnResult.FxSystemComponents.IsEmpty())
 	{
 		return;
@@ -59,7 +64,7 @@ void ULLL_GC_Base::ReceiveSpawnResult(AActor* Target, const FGameplayCueNotify_S
 
 		NiagaraInterface->AddNiagaraComponent(NiagaraComponent);
 
-		ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		FVector FacingDirection = NiagaraComponent->GetComponentRotation().Vector();
 		switch (EffectFacingTarget)
 		{

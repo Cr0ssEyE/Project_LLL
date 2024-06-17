@@ -139,6 +139,25 @@ void ALLL_MonsterBase::InitAttributeSet()
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_MONSTER, Data, true);
 }
 
+void ALLL_MonsterBase::SetFModParameter(EFModParameter FModParameter)
+{
+	Super::SetFModParameter(FModParameter);
+
+	if (FModParameter == EFModParameter::MonsterWalkMaterialParameter)
+	{
+		const TEnumAsByte<EPhysicalSurface> SurfaceType = GetCharacterAnimInstance()->GetSurfaceType();
+		for (auto StepEventParameterProperty : MonsterBaseDataAsset->StepEventParameterProperties)
+		{
+			if (SurfaceType != StepEventParameterProperty.Key)
+			{
+				continue;
+			}
+
+			SetParameter(FModParameter, static_cast<float>(StepEventParameterProperty.Value));
+		}
+	}
+}
+
 void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 {
 	Super::Damaged(Attacker, IsDOT);

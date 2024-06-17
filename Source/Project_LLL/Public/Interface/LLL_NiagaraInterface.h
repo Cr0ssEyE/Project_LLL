@@ -25,4 +25,6 @@ class PROJECT_LLL_API ILLL_NiagaraInterface
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual void AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent) = 0;
+
+	virtual TArray<UNiagaraComponent*> GetNiagaraComponents() const = 0;
 };

@@ -19,6 +19,7 @@ public:
 	ALLL_SystemBase();
 	
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
+	FORCEINLINE virtual TArray<UNiagaraComponent*> GetNiagaraComponents() const { return NiagaraComponents; }
 
 protected:
 	virtual void SetFModParameter(EFModParameter FModParameter) override {}

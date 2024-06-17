@@ -78,7 +78,6 @@ public:
 protected:
 	void TurnToMouseCursor();
 	void MoveCameraToMouseCursor();
-	void SetParameter(EFModParameter FModParameter, float value) const;
 	
 	// 카메라
 private:
