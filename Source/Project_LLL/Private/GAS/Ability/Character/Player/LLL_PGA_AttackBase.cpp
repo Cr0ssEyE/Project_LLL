@@ -5,18 +5,17 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AnimNotify_PlayNiagaraEffect.h"
-#include "FMODAudioComponent.h"
+#include "NiagaraComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "AnimNotify/LLL_AnimNotify_Niagara.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MonatgeSectionName.h"
-#include "DataTable/LLL_FModParameterDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "Util/LLL_FModPlayHelper.h"
 
 ULLL_PGA_AttackBase::ULLL_PGA_AttackBase()
 {
@@ -104,17 +103,34 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 		PlayerCharacter->SetCurrentCombo(CurrentComboAction);
 	}
 	
-	for (auto Notify : AttackAnimMontage->Notifies)
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = PlayerCharacter->GetNiagaraComponents();
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
-		UAnimNotify_PlayNiagaraEffect* NiagaraEffectNotify = Cast<UAnimNotify_PlayNiagaraEffect>(Notify.Notify);
-		if (!NiagaraEffectNotify)
+		if (!IsValid(TempNiagaraComponent))
 		{
 			continue;
 		}
 
-		if (IsValid(NiagaraEffectNotify->GetSpawnedEffect()))
+		for (auto Notify : AttackAnimMontage->Notifies)
 		{
-			NiagaraEffectNotify->GetSpawnedEffect()->DestroyComponent();
+			ULLL_AnimNotify_Niagara* NiagaraEffectNotify = Cast<ULLL_AnimNotify_Niagara>(Notify.Notify);
+			if (!IsValid(NiagaraEffectNotify))
+			{
+				continue;
+			}
+
+			const UFXSystemComponent* SpawnedEffect = NiagaraEffectNotify->GetSpawnedEffect();
+			if (!IsValid(SpawnedEffect))
+			{
+				continue;
+			}
+
+			if (TempNiagaraComponent == SpawnedEffect)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Destroying Niagara Component: %s"), *SpawnedEffect->GetName());
+				TempNiagaraComponent->DestroyComponent();
+				PlayerCharacter->GetNiagaraComponents().Remove(TempNiagaraComponent);
+			}
 		}
 	}
 	
