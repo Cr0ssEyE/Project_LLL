@@ -103,6 +103,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 		PlayerCharacter->SetCurrentCombo(CurrentComboAction);
 	}
 	
+	// 하예찬 예외처리 안
 	const TArray<UNiagaraComponent*> TempNiagaraComponents = PlayerCharacter->GetNiagaraComponents();
 	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
@@ -130,6 +131,25 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 				UE_LOG(LogTemp, Warning, TEXT("Destroying Niagara Component: %s"), *SpawnedEffect->GetName());
 				TempNiagaraComponent->DestroyComponent();
 				PlayerCharacter->GetNiagaraComponents().Remove(TempNiagaraComponent);
+			}
+		}
+	}
+
+	// 강건님 예외처리 안
+	if (bWasCancelled)
+	{
+		for (auto Notify : AttackAnimMontage->Notifies)
+		{
+			UAnimNotify_PlayNiagaraEffect* NiagaraEffectNotify = Cast<UAnimNotify_PlayNiagaraEffect>(Notify.Notify);
+			if (!NiagaraEffectNotify)
+			{
+				continue;
+			}
+
+			UFXSystemComponent* NotifyComponent = NiagaraEffectNotify->GetSpawnedEffect();
+			if (IsValid(GetWorld()) && IsValid(PlayerCharacter) && IsValid(NotifyComponent) && !NotifyComponent->IsGarbageEliminationEnabled())
+			{
+				NotifyComponent->DestroyComponent();
 			}
 		}
 	}
