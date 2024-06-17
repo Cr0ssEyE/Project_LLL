@@ -25,7 +25,6 @@ FActiveGameplayEffectHandle ULLL_MonsterASC::ApplyGameplayEffectSpecToSelf(const
 	return Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
 }
 
-
 // Called when the game starts
 void ULLL_MonsterASC::BeginPlay()
 {

@@ -11,6 +11,7 @@
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ALLL_PlayerController;
 class ULLL_GameInstance;
 class ULLL_AbnormalStatusAttributeSet;
 class ULLL_PlayerSkillAttributeSet;
@@ -44,7 +45,7 @@ public:
 	virtual void InitAttributeSet() override;
 	virtual void SetFModParameter(EFModParameter FModParameter) override;
 	
-	virtual void Damaged(AActor* Attacker, bool IsDOT = false) override;
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
 	virtual void Dead() override;
 	
 	// 외부 접근용
@@ -53,8 +54,10 @@ public:
 	void AddInteractiveObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
+public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
 	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
+	FORCEINLINE UCameraComponent* GetPlayerCamera() const { return Camera; }
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ALLL_PlayerChaseHand* GetChaseHand() const { return ChaseHandActor; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
@@ -68,10 +71,13 @@ public:
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
 
+public:
+	void StartCameraMoveToCursor(ALLL_PlayerController* PlayerController = nullptr);
+	void PauseCameraMoveToCursor();
+	
 protected:
 	void TurnToMouseCursor();
 	void MoveCameraToMouseCursor();
-	void SetParameter(EFModParameter FModParameter, float value) const;
 	
 	// 카메라
 private:
@@ -93,10 +99,13 @@ protected:
 	TObjectPtr<ALLL_PlayerChaseHand> ChaseHandActor;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerSkillAttributeSet> SkillAttributeSet;
+	TObjectPtr<ULLL_AbnormalStatusAttributeSet> AbnormalStatusAttributeSet;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_PlayerCharacterAttributeSet> PlayerCharacterAttributeSet;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_AbnormalStatusAttributeSet> AbnormalStatusAttributeSet;
+	TObjectPtr<ULLL_PlayerSkillAttributeSet> SkillAttributeSet;
 	
 	// 입력 액션 관련
 private:
@@ -106,7 +115,6 @@ private:
 	void ChaseAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void SkillAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void InteractAction(const FInputActionValue& Value);
-	void InteractiveTargetChangeAction(const FInputActionValue& Value);
 	void InventoryAction(const FInputActionValue& Value);
 	void PauseAction(const FInputActionValue& Value);
 
@@ -114,9 +122,6 @@ private:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_PlayerCharacterAttributeSet> PlayerCharacterAttributeSet;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_CameraDataAsset> CameraDataAsset;

@@ -9,6 +9,7 @@
 #include "System/MapSound/LLL_MapSoundManager.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Materials/MaterialParameterCollection.h"
+#include "Util/Save/LLL_CustomGameUserSettings.h"
 
 ULLL_GameInstance::ULLL_GameInstance()
 {
@@ -74,6 +75,9 @@ void ULLL_GameInstance::Init()
 	GetWorld()->AddParameterCollectionInstance(ObjectMPC, true);
 	GetWorld()->AddParameterCollectionInstance(PlayerMPC, true);
 	GetWorld()->AddParameterCollectionInstance(PostProcessMPC, true);
+
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetFrameRateLimit(60.f);
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetVSyncEnabled(true);
 }
 
 void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)

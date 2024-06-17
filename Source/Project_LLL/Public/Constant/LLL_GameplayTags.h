@@ -15,6 +15,8 @@
 #define TAG_GAS_STATUS_BLEEDING_DASH_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding.FromDash"))
 #define TAG_GAS_STATUS_MARKED FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Marked"))
 #define TAG_GAS_STATUS_TARGETED FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Targeted"))
+#define TAG_GAS_STATE_KNOCKBACKED FGameplayTag::RequestGameplayTag(FName("Character.State.IsKnockBacked"))
+#define TAG_GAS_STATE_COLLIDE_OTHER FGameplayTag::RequestGameplayTag(FName("Character.State.CollideOther"))
 
 // 플레이어 이벤트 게임플레이 태그
 #define TAG_GAS_COMBO_MANAGEMENT FGameplayTag::RequestGameplayTag(FName("Character.Player.Event.FirstComboStacked"))
@@ -91,3 +93,7 @@
 #define TAG_GAS_ABILITY_PART_DASH FGameplayTag::RequestGameplayTag(FName("AbilityPart.Dash"))
 #define TAG_GAS_ABILITY_PART_GRANT FGameplayTag::RequestGameplayTag(FName("AbilityPart.Event.Granted"))
 #define TAG_GAS_ABILITY_PART_REMOVE FGameplayTag::RequestGameplayTag(FName("AbilityPart.Event.Removed"))
+
+// 카메라 관련 태그
+#define TAG_SYSTEM_CAMERA_STATE_FOLLOW_CURSOR FGameplayTag::RequestGameplayTag(FName("System.User.Camera.State.FollowCursor"))
+#define TAG_SYSTEM_CAMERA_STATE_HOLD_TARGET FGameplayTag::RequestGameplayTag(FName("System.User.Camera.State.HoldToTarget"))

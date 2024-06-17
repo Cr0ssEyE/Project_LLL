@@ -68,9 +68,10 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 			K2_ApplyGameplayEffectSpecToOwner(HitCountEffectSpecHandle);
 		}
 	}
-	
+
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect, CurrentEventData.EventMagnitude);
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect); 
+	BP_ApplyGameplayEffectToOwner(ApplyToOwnerEffect);
 
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [=, this]()
 	{

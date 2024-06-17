@@ -1,9 +1,10 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_OnAttackHit.h"
+#include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_OnTriggerActivate.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "DataTable/LLL_AbilityDataTable.h"
@@ -11,16 +12,17 @@
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
 #include "Entity/Object/Thrown/LLL_ThrownFeather.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_OnSkillActivate.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
-ULLL_PGA_OnAttackHit::ULLL_PGA_OnAttackHit() :
+ULLL_PGA_OnTriggerActivate::ULLL_PGA_OnTriggerActivate() :
 	bUseOnAttackHitEffect(false),
-	bUseOnAttackHitSpawnObject(false),
+	bUseSpawnAbilityObject(false),
 	AbilityObjectLocationTarget(EEffectApplyTarget::Target),
-	bUseOnAttackHitSpawnThrown(false),
+	bUseSpawnThrownObject(false),
 	ThrowSpeed(0.f),
 	SpawnOffsetTime(0.f),
 	bUseOnAttackHitGrantTag(false),
@@ -28,14 +30,20 @@ ULLL_PGA_OnAttackHit::ULLL_PGA_OnAttackHit() :
 {
 }
 
-void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (TriggerRequiredTag.IsValid() && !TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag))
+	if (TriggerRequiredTags.IsValid())
 	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-		return;
+		for (auto TriggerRequiredTagOne : TriggerRequiredTags)
+		{
+			if (!TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTagOne))
+			{
+				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+				return;
+			}
+		}
 	}
 
 	if (ActorStateRequiredTag.IsValid() && !GetAbilitySystemComponentFromActorInfo_Checked()->HasMatchingGameplayTag(ActorStateRequiredTag))
@@ -46,7 +54,23 @@ void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	
 	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(CurrentEventData.TargetData, 0))
 	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		bool Valid = false;
+		if (bUseSpawnAbilityObject && IsValid(AbilityObjectClass) && AbilityObjectLocationTarget == EEffectApplyTarget::Self)
+		{
+			Valid = true;
+			SpawnAbilityObject();
+		}
+		
+		if (bUseSpawnThrownObject && IsValid(ThrownObjectClass) && !Cast<ALLL_PlayerBase>(CurrentEventData.Instigator))
+		{
+			Valid = true;
+			SpawnThrownObject();
+		}
+		
+		if (!Valid)
+		{
+			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		}
 		return;
 	}
 
@@ -55,25 +79,23 @@ void ULLL_PGA_OnAttackHit::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		ApplyEffectWhenHit();
 	}
 
-	if (bUseOnAttackHitSpawnObject && IsValid(AbilityObjectClass))
+	if (bUseSpawnAbilityObject && IsValid(AbilityObjectClass))
 	{
-		SpawnObjectWhenHit();
+		SpawnAbilityObject();
 	}
 
-	if (bUseOnAttackHitSpawnThrown && IsValid(ThrownObjectClass))
+	if (bUseSpawnThrownObject && IsValid(ThrownObjectClass))
 	{
-		SpawnThrownWhenHit();
+		SpawnThrownObject();
 	}
 
 	if (bUseOnAttackHitGrantTag && GrantTagContainer.IsValid())
 	{
 		GrantTagWhenHit();
 	}
-
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
-void ULLL_PGA_OnAttackHit::ApplyEffectWhenHit()
+void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 {
 	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
@@ -97,14 +119,18 @@ void ULLL_PGA_OnAttackHit::ApplyEffectWhenHit()
 	{
 		K2_ApplyGameplayEffectSpecToTarget(EffectHandle, CurrentEventData.TargetData);
 	}
+
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
-void ULLL_PGA_OnAttackHit::SpawnObjectWhenHit()
+void ULLL_PGA_OnTriggerActivate::SpawnAbilityObject()
 {
 	FLLL_AbilityDataHelper::SpawnAbilityObject(this, AbilityObjectClass, CurrentEventData, AbilityObjectLocationTarget);
+
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
-void ULLL_PGA_OnAttackHit::SpawnThrownWhenHit()
+void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 
@@ -131,7 +157,7 @@ void ULLL_PGA_OnAttackHit::SpawnThrownWhenHit()
 	float TempSpawnOffsetTime = 0.01f;
 	for (int i = 0; i < SpawnCount; i++)
 	{
-		const AActor* Target = CurrentEventData.TargetData.Data[0]->GetActors()[0].Get();
+		const AActor* Target = Cast<ALLL_PlayerBase>(CurrentEventData.Instigator) ? CurrentEventData.TargetData.Data[0]->GetActors()[0].Get() : CurrentEventData.Instigator;
 		
 		FTimerHandle SpawnTimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, Player, Target, i, SpawnCount]{
@@ -151,6 +177,7 @@ void ULLL_PGA_OnAttackHit::SpawnThrownWhenHit()
 
 			if (i == SpawnCount - 1)
 			{
+				BP_ApplyGameplayEffectToOwner(ResetLastSentDamageEffect);
 				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 			}
 		}), TempSpawnOffsetTime, false);
@@ -159,7 +186,7 @@ void ULLL_PGA_OnAttackHit::SpawnThrownWhenHit()
 	}
 }
 
-void ULLL_PGA_OnAttackHit::GrantTagWhenHit()
+void ULLL_PGA_OnTriggerActivate::GrantTagWhenHit()
 {
 	float GrantNum = 1.f;
 	if (TagGrantNumTag == TAG_GAS_ABILITY_CHANGEABLE_VALUE)
@@ -175,7 +202,7 @@ void ULLL_PGA_OnAttackHit::GrantTagWhenHit()
 	{
 		for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
 		{
-			if (IAbilitySystemInterface* ASC = Cast<IAbilitySystemInterface>(Actor))
+			if (const IAbilitySystemInterface* ASC = Cast<IAbilitySystemInterface>(Actor))
 			{
 				ASC->GetAbilitySystemComponent()->AddLooseGameplayTags(GrantTagContainer, GrantNum);
 			}
@@ -191,4 +218,6 @@ void ULLL_PGA_OnAttackHit::GrantTagWhenHit()
 			}
 		}
 	}
+	
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

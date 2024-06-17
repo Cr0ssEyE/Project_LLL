@@ -29,6 +29,7 @@
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
+#include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
@@ -42,8 +43,6 @@
 #include "GAS/ASC/LLL_PlayerASC.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
-#include "Kismet/KismetMaterialLibrary.h"
-#include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
@@ -172,7 +171,6 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	MoveCameraToMouseCursor();
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -206,7 +204,6 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->ControlChaseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::ChaseAction, EAbilityInputName::Chase);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractiveTargetChangeInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractiveTargetChangeAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->PauseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::PauseAction);
 }
@@ -237,7 +234,7 @@ void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)
 	}
 	else if (FModParameter == EFModParameter::PlayerWalkMaterialParameter)
 	{
-		const TEnumAsByte<EPhysicalSurface> SurfaceType = PlayerAnimInstance->GetSurfaceType();
+		const TEnumAsByte<EPhysicalSurface> SurfaceType = GetCharacterAnimInstance()->GetSurfaceType();
 		for (auto StepEventParameterProperty : PlayerDataAsset->StepEventParameterProperties)
 		{
 			if (SurfaceType != StepEventParameterProperty.Key)
@@ -467,22 +464,6 @@ void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
 	InteractiveObjects[SelectedInteractiveObjectNum]->InteractiveEvent();
 }
 
-void ALLL_PlayerBase::InteractiveTargetChangeAction(const FInputActionValue& Value)
-{
-	if (!InteractiveObjects.Num())
-	{
-		return;
-	}
-	
-	SelectedInteractiveObjectNum++;
-	if (SelectedInteractiveObjectNum >= InteractiveObjects.Num())
-	{
-		SelectedInteractiveObjectNum = 0;
-	}
-	PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
-	
-}
-
 void ALLL_PlayerBase::InventoryAction(const FInputActionValue& Value)
 {
 	PlayerUIManager->ToggleInventoryWidget();
@@ -513,6 +494,26 @@ void ALLL_PlayerBase::PlayerRotateToMouseCursor(float RotationMultiplyValue, boo
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
 }
 
+void ALLL_PlayerBase::StartCameraMoveToCursor(ALLL_PlayerController* PlayerController)
+{
+	if (PlayerController != CastChecked<ALLL_PlayerController>(GetController()))
+	{
+		return;
+	}
+
+	ASC->RemoveLooseGameplayTag(TAG_SYSTEM_CAMERA_STATE_HOLD_TARGET);
+	ASC->AddLooseGameplayTag(TAG_SYSTEM_CAMERA_STATE_FOLLOW_CURSOR);
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::MoveCameraToMouseCursor);
+}
+
+void ALLL_PlayerBase::PauseCameraMoveToCursor()
+{
+	ASC->RemoveLooseGameplayTag(TAG_SYSTEM_CAMERA_STATE_FOLLOW_CURSOR);
+	ASC->AddLooseGameplayTag(TAG_SYSTEM_CAMERA_STATE_HOLD_TARGET);
+
+	SpringArm->SetRelativeLocation(GetActorLocation());
+}
+
 void ALLL_PlayerBase::TurnToMouseCursor()
 {
 	if (GetActorRotation() == MouseDirectionRotator || !GetCharacterAnimInstance()->IsSlotActive(ANIM_SLOT_ATTACK))
@@ -527,6 +528,11 @@ void ALLL_PlayerBase::TurnToMouseCursor()
 
 void ALLL_PlayerBase::MoveCameraToMouseCursor()
 {
+	if (!ASC->HasMatchingGameplayTag(TAG_SYSTEM_CAMERA_STATE_FOLLOW_CURSOR))
+	{
+		return;
+	}
+	
 	const APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	FVector2d MouseScreenLocation;
 	FVector2d ScreenViewport;
@@ -541,27 +547,25 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	FVector CameraMoveVector = FVector(MovementDirection.X, MovementDirection.Y, 0.f);
 	CameraMoveVector = SpringArm->GetDesiredRotation().UnrotateVector(CameraMoveVector);
 	
-	CameraMoveVector *= 500.f;
+	CameraMoveVector *= CameraDataAsset->CameraCursorTrackingSpeed;
 	if (CameraMoveVector.ContainsNaN())
 	{
 		return;
 	}
-	
-	SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
-}
 
-void ALLL_PlayerBase::SetParameter(EFModParameter FModParameter, float value) const
-{
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	if (CameraDataAsset->CameraCursorTrackingLength > 0)
 	{
-		if (FModParameterData.Parameter != FModParameter)
-		{
-			continue;
-		}
-
-		FModAudioComponent->SetParameter(FModParameterData.Name, value);
+		CameraMoveVector = FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + SpringArm->GetRelativeLocation();
+		const FVector MoveRangeVector = FVector(CameraDataAsset->CameraCursorTrackingLength, CameraDataAsset->CameraCursorTrackingLength, 0.f);
+		CameraMoveVector = ClampVector(CameraMoveVector, -MoveRangeVector + GetActorLocation(), MoveRangeVector + GetActorLocation());
+		SpringArm->SetRelativeLocation(CameraMoveVector);
 	}
+	else
+	{
+		SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
+	}
+	
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::MoveCameraToMouseCursor);
 }
 
 void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
@@ -660,6 +664,7 @@ void ALLL_PlayerBase::DropDissolveActor()
 	{
 		return;
 	}
+	
 	DeadSequenceDissolveActor->SetActorLocation(DeadSequenceDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
 }

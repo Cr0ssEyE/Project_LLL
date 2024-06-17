@@ -20,18 +20,13 @@ class PROJECT_LLL_API ULLL_PlayerAnimInstance : public ULLL_BaseCharacterAnimIns
 
 public:
 	FORCEINLINE void SetDash(bool IsDashing) { bIsDashing = IsDashing; }
-	FORCEINLINE TEnumAsByte<EPhysicalSurface> GetSurfaceType() const { return SurfaceType; }
 
 	FDeadMotionEndedDelegate DeadMotionEndedDelegate;
 	
 protected:
 	virtual void NativeInitializeAnimation() override;
-	virtual void AnimNotify_LeftStep() override;
-	virtual void AnimNotify_RightStep() override;
 
 protected:
-	void SetStepEventParameter(FName FootSocketName);
-
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AnimNotify_DeadMotionEnded() { DeadMotionEndedDelegate.Broadcast(); }
 
@@ -40,7 +35,4 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_PlayerBaseDataAsset> PlayerDataAsset;
-
-	UPROPERTY()
-	TEnumAsByte<EPhysicalSurface> SurfaceType;
 };

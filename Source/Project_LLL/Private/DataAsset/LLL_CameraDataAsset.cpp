@@ -15,6 +15,8 @@ ULLL_CameraDataAsset::ULLL_CameraDataAsset() :
 	AutoPlaneShift(0),
 	bUseUpdateOrthoPlanes(false),
 	OrthographicNearClipDistance(-3000),
-	OrthographicFarClipDistance(10000000)
+	OrthographicFarClipDistance(10000000),
+	CameraCursorTrackingSpeed(500),
+	CameraCursorTrackingLength(0)
 {
 }
