@@ -33,6 +33,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void InitAttributeSet() override;
+	virtual void SetFModParameter(EFModParameter FModParameter) override;
 	
 public:
 	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;

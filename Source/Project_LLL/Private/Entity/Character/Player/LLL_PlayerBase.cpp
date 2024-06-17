@@ -234,7 +234,7 @@ void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)
 	}
 	else if (FModParameter == EFModParameter::PlayerWalkMaterialParameter)
 	{
-		const TEnumAsByte<EPhysicalSurface> SurfaceType = PlayerAnimInstance->GetSurfaceType();
+		const TEnumAsByte<EPhysicalSurface> SurfaceType = GetCharacterAnimInstance()->GetSurfaceType();
 		for (auto StepEventParameterProperty : PlayerDataAsset->StepEventParameterProperties)
 		{
 			if (SurfaceType != StepEventParameterProperty.Key)
@@ -566,20 +566,6 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	}
 	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::MoveCameraToMouseCursor);
-}
-
-void ALLL_PlayerBase::SetParameter(EFModParameter FModParameter, float value) const
-{
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
-	{
-		if (FModParameterData.Parameter != FModParameter)
-		{
-			continue;
-		}
-
-		FModAudioComponent->SetParameter(FModParameterData.Name, value);
-	}
 }
 
 void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)

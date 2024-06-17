@@ -38,6 +38,7 @@ enum class EFModParameter : uint8
 {
 	None,
 	PlayerWalkMaterialParameter,
+	MonsterWalkMaterialParameter,
 	PlayerAttackCountParameter,
 	PlayerAttackHitCountParameter,
 	PlayerDamagedTypeParameter,
@@ -49,6 +50,15 @@ enum class EFModParameter : uint8
 
 UENUM(BlueprintType)
 enum class EPlayerWalkMaterialParameter : uint8
+{
+	Dirt,
+	Grass,
+	Wood,
+	Steel
+};
+
+UENUM(BlueprintType)
+enum class EMonsterWalkMaterialParameter : uint8
 {
 	Dirt,
 	Grass,

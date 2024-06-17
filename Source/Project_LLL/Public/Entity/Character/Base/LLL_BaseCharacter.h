@@ -67,6 +67,8 @@ public:
 	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) {}
 	virtual void Dead();
 
+	void SetParameter(EFModParameter FModParameter, float value) const;
+
 	// 상태 체크용 변수
 public:
 	FORCEINLINE bool CheckCharacterIsDead() const { return bIsDead; }
