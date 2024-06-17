@@ -22,8 +22,12 @@ void ALLL_PlayerController::BeginPlay()
 void ALLL_PlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(InPawn);
-	PlayerCharacter->StartCameraMoveToCursor(this);
+	
+	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(InPawn);
+	if (IsValid(PlayerCharacter))
+	{
+		PlayerCharacter->StartCameraMoveToCursor(this);
+	}
 }
 
 void ALLL_PlayerController::SetGameInputMode()
