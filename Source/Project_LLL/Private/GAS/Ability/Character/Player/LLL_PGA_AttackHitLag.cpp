@@ -68,6 +68,7 @@ void ULLL_PGA_AttackHitLag::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 {
 	if (!IsValid(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
+		Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 		return;
 	}
 	
