@@ -121,7 +121,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 			}
 
 			const UFXSystemComponent* SpawnedEffect = NiagaraEffectNotify->GetSpawnedEffect();
-			if (IsValid(SpawnedEffect) && SpawnedEffect == TempNiagaraComponent)
+			if (IsValid(SpawnedEffect) && !SpawnedEffect->IsGarbageEliminationEnabled() && SpawnedEffect == TempNiagaraComponent)
 			{
 				TempNiagaraComponent->DestroyComponent();
 				PlayerCharacter->GetNiagaraComponents().Remove(TempNiagaraComponent);
