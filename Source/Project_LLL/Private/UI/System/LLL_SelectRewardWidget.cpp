@@ -69,19 +69,19 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<const FAbilityDataTable*> Abi
 	RewardNameText1->SetText(FText::FromString(WidgetInfoTexts[0].Key));
 	RewardInfoText1->SetText(FText::FromString(WidgetInfoTexts[0].Value));
 	RewardNameText1->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[0]->AbilityRank)]);
-	RewardIconImage1->SetBrushFromTexture(EruriaIConTextures[static_cast<uint32>(AbilityDataArray[0]->AbilityType)]);
+	RewardIconImage1->SetBrushFromTexture(EnhancedEruriaIConTextures[static_cast<uint32>(AbilityDataArray[0]->AbilityType) - 1].AbilityIcon[static_cast<uint32>(AbilityDataArray[0]->AbilityPart)]);
 	RewardBackgroundImage1->SetBrushFromTexture(EruriaBackgroundTextures[static_cast<uint32>(AbilityDataArray[0]->AbilityType)]);
 	
 	RewardNameText2->SetText(FText::FromString(WidgetInfoTexts[1].Key));
 	RewardInfoText2->SetText(FText::FromString(WidgetInfoTexts[1].Value));
 	RewardNameText2->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[1]->AbilityRank)]);
-	RewardIconImage2->SetBrushFromTexture(EruriaIConTextures[static_cast<uint32>(AbilityDataArray[1]->AbilityType)]);
+	RewardIconImage2->SetBrushFromTexture(EnhancedEruriaIConTextures[static_cast<uint32>(AbilityDataArray[1]->AbilityType) - 1].AbilityIcon[static_cast<uint32>(AbilityDataArray[1]->AbilityPart)]);
 	RewardBackgroundImage2->SetBrushFromTexture(EruriaBackgroundTextures[static_cast<uint32>(AbilityDataArray[1]->AbilityType)]);
 	
 	RewardNameText3->SetText(FText::FromString(WidgetInfoTexts[2].Key));
 	RewardInfoText3->SetText(FText::FromString(WidgetInfoTexts[2].Value));
 	RewardNameText3->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[2]->AbilityRank)]);
-	RewardIconImage3->SetBrushFromTexture(EruriaIConTextures[static_cast<uint32>(AbilityDataArray[2]->AbilityType)]);
+	RewardIconImage3->SetBrushFromTexture(EnhancedEruriaIConTextures[static_cast<uint32>(AbilityDataArray[2]->AbilityType) - 1].AbilityIcon[static_cast<uint32>(AbilityDataArray[2]->AbilityPart)]);
 	RewardBackgroundImage3->SetBrushFromTexture(EruriaBackgroundTextures[static_cast<uint32>(AbilityDataArray[2]->AbilityType)]);
 }
 
