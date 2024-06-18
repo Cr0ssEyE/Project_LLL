@@ -38,7 +38,7 @@ void ULLL_PGA_OnSkillActivate::ApplyEffectWhenActivateSuccess()
 	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnActivateSuccessEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnActivateSuccessEffect, GetAbilityLevel());
 
-	const float ChangeableValue = (AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel()) / static_cast<uint32>(AbilityData->AbilityValueType);
+	const float ChangeableValue = (AbilityData->AbilityValue + AbilityData->ChangeValue * (GetAbilityLevel() - 1)) / static_cast<uint32>(AbilityData->AbilityValueType);
 	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, ChangeableValue);
 
 	const float UnChangeableValue = AbilityData->UnchangeableValue;

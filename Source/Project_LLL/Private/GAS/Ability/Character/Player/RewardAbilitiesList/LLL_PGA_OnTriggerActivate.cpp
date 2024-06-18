@@ -4,7 +4,6 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_OnTriggerActivate.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "DataTable/LLL_AbilityDataTable.h"
@@ -100,7 +99,7 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
 
-	const float ChangeableValue = (AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel()) / static_cast<uint32>(AbilityData->AbilityValueType);
+	const float ChangeableValue = (AbilityData->AbilityValue + AbilityData->ChangeValue * (GetAbilityLevel() - 1)) / static_cast<uint32>(AbilityData->AbilityValueType);
 	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, ChangeableValue);
 
 	const float UnChangeableValue = AbilityData->UnchangeableValue;
@@ -190,7 +189,7 @@ void ULLL_PGA_OnTriggerActivate::GrantTagWhenHit()
 	float GrantNum = 1.f;
 	if (TagGrantNumTag == TAG_GAS_ABILITY_CHANGEABLE_VALUE)
 	{
-		GrantNum = AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel();
+		GrantNum = AbilityData->AbilityValue + AbilityData->ChangeValue * (GetAbilityLevel() - 1);
 	}
 	else // TagGrantNumTag == TAG_GAS_ABILITY_UNCHANGEABLE_VALUE
 	{
