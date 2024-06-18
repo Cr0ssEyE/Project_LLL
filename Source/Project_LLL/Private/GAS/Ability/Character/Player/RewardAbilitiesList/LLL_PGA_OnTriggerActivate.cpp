@@ -177,7 +177,6 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 
 			if (i == SpawnCount - 1)
 			{
-				BP_ApplyGameplayEffectToOwner(ResetLastSentDamageEffect);
 				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 			}
 		}), TempSpawnOffsetTime, false);

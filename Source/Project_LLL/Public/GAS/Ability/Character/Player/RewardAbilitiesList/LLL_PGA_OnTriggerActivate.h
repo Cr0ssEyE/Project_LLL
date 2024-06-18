@@ -67,9 +67,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS|ThrownObject", DisplayName = "투사체 스폰 간격 시간", meta =(EditCondition = "bUseSpawnThrownObject == true", EditConditionHides))
 	float SpawnOffsetTime;
 
-	UPROPERTY(EditAnywhere, Category = "GAS|ThrownObject", DisplayName = "임시 데미지 초기화 이펙트", meta =(EditCondition = "bUseSpawnThrownObject == true", EditConditionHides))
-	TSubclassOf<UGameplayEffect> ResetLastSentDamageEffect;
-
 	// Tag
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "적중시 태그 부여 여부")

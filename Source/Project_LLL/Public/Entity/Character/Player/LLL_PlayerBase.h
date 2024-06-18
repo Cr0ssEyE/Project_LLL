@@ -64,9 +64,11 @@ public:
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
+	FORCEINLINE float GetLastSentDamage() const { return LastSentDamage; }
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
+	FORCEINLINE void SetLastSentDamage(float InLastSentDamage) { LastSentDamage = InLastSentDamage; }
 	
 	FVector CheckMouseLocation();
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
@@ -187,4 +189,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	float ScalarValue;
+
+	UPROPERTY(VisibleAnywhere)
+	float LastSentDamage;
 };
