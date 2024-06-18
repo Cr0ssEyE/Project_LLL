@@ -8,7 +8,6 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "DataAsset/LLL_AbilityObjectDataAsset.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GameFramework/Character.h"
 #include "GAS/Attribute/Object/Ability/Base/LLL_AbilityObjectAttributeSet.h"
 #include "Util/LLL_MathHelper.h"
@@ -50,10 +49,7 @@ void ALLL_AbilityObject::NotifyActorBeginOverlap(AActor* OtherActor)
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AbilityObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
-		
-		const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwner());
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(OwnerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-		const float OffencePower = FLLL_MathHelper::CalculateCriticalDamage(PlayerAttributeSet, AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel);
+		const float OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel;
 		
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
 		if(EffectSpecHandle.IsValid())
