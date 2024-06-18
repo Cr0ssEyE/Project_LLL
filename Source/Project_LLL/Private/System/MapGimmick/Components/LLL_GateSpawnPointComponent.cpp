@@ -12,7 +12,6 @@ ULLL_GateSpawnPointComponent::ULLL_GateSpawnPointComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
-	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("VisibleCollision"));
 }
 
 
