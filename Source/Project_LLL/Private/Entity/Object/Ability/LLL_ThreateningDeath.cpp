@@ -52,7 +52,7 @@ void ALLL_ThreateningDeath::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	const FVector AvatarLocation = GetActorLocation();
 	const FVector LaunchDirection = (OtherActor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
-	const float KnockBackPower = (AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel) / static_cast<uint32>(AbilityData->AbilityValueType) * 100.0f;
+	const float KnockBackPower = (AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1)) / static_cast<uint32>(AbilityData->AbilityValueType) * 100.0f;
 	FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
 
 	UE_LOG(LogTemp, Log, TEXT("넉백 : %f"), KnockBackPower)

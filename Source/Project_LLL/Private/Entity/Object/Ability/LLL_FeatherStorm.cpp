@@ -45,7 +45,7 @@ void ALLL_FeatherStorm::NotifyActorBeginOverlap(AActor* OtherActor)
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AbilityObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
-		const float OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel;
+		const float OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1);
 
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
 		if(EffectSpecHandle.IsValid())

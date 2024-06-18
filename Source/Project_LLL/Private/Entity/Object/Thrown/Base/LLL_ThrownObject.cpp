@@ -102,11 +102,11 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 
 		if (AbilityData->AbilityValueType == EAbilityValueType::Fixed)
 		{
-			OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel;
+			OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1);
 		}
 		else
 		{
-			OffencePower = (AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel) / static_cast<uint32>(AbilityData->AbilityValueType) * LastSentDamage;
+			OffencePower = (AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1)) / static_cast<uint32>(AbilityData->AbilityValueType) * LastSentDamage;
 		}
 	}
 	
