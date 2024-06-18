@@ -102,7 +102,7 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 
 		if (AbilityData->AbilityValueType == EAbilityValueType::Fixed)
 		{
-			OffencePower = FLLL_MathHelper::CalculateCriticalDamage(PlayerAttributeSet, AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel);
+			OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel;
 		}
 		else
 		{
