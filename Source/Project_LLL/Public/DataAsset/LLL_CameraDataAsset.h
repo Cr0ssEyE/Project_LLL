@@ -53,5 +53,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera|Plane", DisplayName = "원평면 클리핑 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
 	float OrthographicFarClipDistance;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Plane", DisplayName = "카메라가 마우스를 따라가는 속도")
+	float CameraCursorTrackingSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Plane", DisplayName = "카메라가 마우스를 따라가는 최대 거리(0인 경우 속도 = 최대 거리)")
+	float CameraCursorTrackingLength;
 };

@@ -3,6 +3,7 @@
 
 #include "AnimNotify/LLL_AnimNotify_Niagara.h"
 
+#include "AnimNotifyState_TimedNiagaraEffect.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Interface/LLL_NiagaraInterface.h"
@@ -23,7 +24,7 @@ UFXSystemComponent* ULLL_AnimNotify_Niagara::SpawnEffect(USkeletalMeshComponent*
 			FXSystemComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(Template, MeshComp, SocketName, LocationOffset, RotationOffset, EAttachLocation::KeepRelativeOffset, true);
 			if (ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(MeshComp->GetOwner()))
 			{
-				NiagaraInterface->SetNiagaraComponent(CastChecked<UNiagaraComponent>(FXSystemComponent));
+				NiagaraInterface->AddNiagaraComponent(CastChecked<UNiagaraComponent>(FXSystemComponent));
 			}
 		}
 		else
@@ -32,7 +33,7 @@ UFXSystemComponent* ULLL_AnimNotify_Niagara::SpawnEffect(USkeletalMeshComponent*
 			FXSystemComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(MeshComp->GetWorld(), Template, SocketTransform.TransformPosition(LocationOffset), (SocketTransform.GetRotation() * RotationOffsetQuat).Rotator(), FVector::OneVector, true);
 			if (ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(MeshComp->GetOwner()))
 			{
-				NiagaraInterface->SetNiagaraComponent(CastChecked<UNiagaraComponent>(FXSystemComponent));
+				NiagaraInterface->AddNiagaraComponent(CastChecked<UNiagaraComponent>(FXSystemComponent));
 			}
 		}
 

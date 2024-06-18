@@ -6,10 +6,10 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "FMODAudioComponent.h"
-#include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Game/LLL_GameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
@@ -133,7 +133,7 @@ void ALLL_BaseCharacter::InitAttributeSet()
 	}
 }
 
-void ALLL_BaseCharacter::SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
+void ALLL_BaseCharacter::AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
 {
 	NiagaraComponents.Remove(nullptr);
 	NiagaraComponents.Emplace(InNiagaraComponent);
@@ -178,4 +178,18 @@ void ALLL_BaseCharacter::Dead()
 
 	ASC->CancelAbilities();
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("캐릭터 사망")));
+}
+
+void ALLL_BaseCharacter::SetParameter(EFModParameter FModParameter, float value) const
+{
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	{
+		if (FModParameterData.Parameter != FModParameter)
+		{
+			continue;
+		}
+
+		FModAudioComponent->SetParameter(FModParameterData.Name, value);
+	}
 }

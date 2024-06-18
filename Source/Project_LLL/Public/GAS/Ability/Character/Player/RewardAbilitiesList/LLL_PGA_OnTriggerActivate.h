@@ -29,8 +29,8 @@ protected:
 	
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그")
-	FGameplayTag TriggerRequiredTag;
-
+	FGameplayTagContainer TriggerRequiredTags;
+	
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "액터 상태 요구 태그")
 	FGameplayTag ActorStateRequiredTag;
 	

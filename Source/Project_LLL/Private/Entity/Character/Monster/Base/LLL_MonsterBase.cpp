@@ -139,6 +139,25 @@ void ALLL_MonsterBase::InitAttributeSet()
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_MONSTER, Data, true);
 }
 
+void ALLL_MonsterBase::SetFModParameter(EFModParameter FModParameter)
+{
+	Super::SetFModParameter(FModParameter);
+
+	if (FModParameter == EFModParameter::MonsterWalkMaterialParameter)
+	{
+		const TEnumAsByte<EPhysicalSurface> SurfaceType = GetCharacterAnimInstance()->GetSurfaceType();
+		for (auto StepEventParameterProperty : MonsterBaseDataAsset->StepEventParameterProperties)
+		{
+			if (SurfaceType != StepEventParameterProperty.Key)
+			{
+				continue;
+			}
+
+			SetParameter(FModParameter, static_cast<float>(StepEventParameterProperty.Value));
+		}
+	}
+}
+
 void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 {
 	Super::Damaged(Attacker, IsDOT);
@@ -161,12 +180,12 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 		HitDirection.Z = 0.f;
 		SetActorRotation(HitDirection.Rotation(), ETeleportType::TeleportPhysics);
 		
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충돌 경직")));
+		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충돌 경직")));
 		PlayAnimMontage(MonsterBaseDataAsset->KnockBackCollideMontage);
 	}
 	else if (IsValid(MonsterBaseDataAsset->DamagedAnimMontage))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("일반 경직")));
+		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("일반 경직")));
 		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
 	}
 

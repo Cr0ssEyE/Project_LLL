@@ -40,6 +40,7 @@ public:
 	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
+	FORCEINLINE virtual TArray<UNiagaraComponent*> GetNiagaraComponents() const { return NiagaraComponents; }
 	
 	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
 	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
@@ -56,7 +57,7 @@ protected:
 
 protected:
 	virtual void SetFModParameter(EFModParameter FModParameter) override {}
-	virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
+	virtual void AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
 	
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -65,6 +66,8 @@ protected:
 public:
 	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) {}
 	virtual void Dead();
+
+	void SetParameter(EFModParameter FModParameter, float value) const;
 
 	// 상태 체크용 변수
 public:

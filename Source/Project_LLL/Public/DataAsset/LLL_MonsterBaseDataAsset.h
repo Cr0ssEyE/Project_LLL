@@ -6,6 +6,7 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_MonsterBaseDataAsset.generated.h"
 
+enum class EMonsterWalkMaterialParameter : uint8;
 class UBehaviorTree;
 class UBlackboardData;
 
@@ -44,4 +45,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "가면 트랜스폼")
 	FTransform MaskTransform;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
+	TMap<TEnumAsByte<EPhysicalSurface>, EMonsterWalkMaterialParameter> StepEventParameterProperties;
 };
