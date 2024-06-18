@@ -151,7 +151,12 @@ public:
 		{
 			bIsChance = FMath::RandRange(0.0f, 1.0f) <= CriticalChance;
 		}
-	
+
+		if (bIsChance)
+		{
+			UE_LOG(LogTemp, Log, TEXT("치명타 발동 (확률 : %.2f%%)"), CriticalChance * 100.0f)
+		}
+		
 		return OffensePower + (bIsChance ? CriticalAmplify * OffensePower : 0);
 	}
 	
