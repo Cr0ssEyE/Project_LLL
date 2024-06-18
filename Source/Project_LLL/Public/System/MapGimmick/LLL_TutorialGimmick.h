@@ -59,6 +59,8 @@ protected:
 
 	uint8 bIsActiveSkill : 1;
 
+	uint8 bIsActiveDash : 1;
+	
 	void OnInteractionGate();
 
 	UFUNCTION()

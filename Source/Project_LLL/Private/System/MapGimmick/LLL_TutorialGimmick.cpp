@@ -23,6 +23,7 @@ ALLL_TutorialGimmick::ALLL_TutorialGimmick()
 {
 	TutorialDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_TutorialMapDataAsset>(PATH_TUTORIAL_MAP_DATA, EAssertionLevel::Check);
 	bIsActiveSkill = false;
+	bIsActiveDash = false;
 }
 
 void ALLL_TutorialGimmick::BeginPlay()
@@ -59,6 +60,11 @@ void ALLL_TutorialGimmick::BeginPlay()
 
 void ALLL_TutorialGimmick::BeginOverlapAttackTutorial(AActor* OverlappedActor, AActor* OtherActor)
 {
+	if (bIsActiveDash)
+	{
+		return;
+	}
+	bIsActiveDash = true;
 	FVector Vector = TutorialDataAsset->AttackStageLocation;
 	Vector.Z += 150;
 	ALLL_SwordDash* Monster = GetWorld()->SpawnActor<ALLL_SwordDash>(ALLL_SwordDash::StaticClass(), Vector, GetActorRotation());
@@ -98,7 +104,7 @@ void ALLL_TutorialGimmick::FinalMonsterSpawn(AActor* DestroyedActor)
 void ALLL_TutorialGimmick::MonsterDestroyed(AActor* DestroyedActor)
 {
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	FVector Vector = GetActorLocation();
+	FVector Vector = TutorialDataAsset->FinalStageLocation;
 	Vector.Z += 150;
 	AbilityReward = GetWorld()->SpawnActor<ALLL_RewardObject>(ALLL_RewardObject::StaticClass(), Vector, GetActorRotation());
 	AbilityReward->OnDestroyed.AddDynamic(this, &ALLL_TutorialGimmick::RewardDestroyed);
