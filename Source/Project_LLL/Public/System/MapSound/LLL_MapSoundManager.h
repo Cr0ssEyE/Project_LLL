@@ -25,6 +25,7 @@ public:
 	void SetPitch(float InPitch) const;
 	void SetBattleParameter(float Value) const;
 	void SetPauseParameter(float Value) const;
+	void StopBGM() const;
 	
 protected:
 	virtual void BeginPlay() override;

@@ -3,9 +3,6 @@
 
 #include "System/MapSound/LLL_MapSoundManager.h"
 
-#include "FMODAudioComponent.h"
-#include "Components/BoxComponent.h"
-#include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
@@ -60,6 +57,12 @@ void ALLL_MapSoundManager::SetPauseParameter(float Value) const
 	}
 }
 
+void ALLL_MapSoundManager::StopBGM() const
+{
+	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
+	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
+}
+
 void ALLL_MapSoundManager::BeginPlay()
 {
 	Super::BeginPlay();
@@ -91,8 +94,7 @@ void ALLL_MapSoundManager::BeginDestroy()
 		return;
 	}
 
-	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
-	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
+	StopBGM();
 	
 	UFMODBlueprintStatics::EventInstanceStop(AMBWrapper);
 	UFMODBlueprintStatics::EventInstanceRelease(AMBWrapper);
@@ -100,8 +102,7 @@ void ALLL_MapSoundManager::BeginDestroy()
 
 void ALLL_MapSoundManager::PlayerDeadHandle(ALLL_BaseCharacter* Character)
 {
-	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
-	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
+	StopBGM();
 
 	UFMODBlueprintStatics::EventInstanceStop(AMBWrapper);
 	UFMODBlueprintStatics::EventInstanceRelease(AMBWrapper);
