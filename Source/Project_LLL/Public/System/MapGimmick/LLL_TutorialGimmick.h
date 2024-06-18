@@ -32,6 +32,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TArray<TObjectPtr<AActor>> StageActors;
+	
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
+	TArray<TObjectPtr<AActor>> Monsters;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ALLL_GateObject> Gate;

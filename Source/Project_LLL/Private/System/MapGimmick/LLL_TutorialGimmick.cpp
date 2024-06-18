@@ -44,10 +44,15 @@ void ALLL_TutorialGimmick::BeginPlay()
 		}
 	}
 
-	StageActor = GetWorld()->SpawnActor<AActor>(TutorialDataAsset->BPMap, TutorialDataAsset->AttackStageLocation, RootComponent->GetComponentRotation());
+	FTransform StageActorTransform;
+	StageActorTransform.SetLocation(TutorialDataAsset->AttackStageLocation);
+	StageActorTransform.SetRotation(RootComponent->GetComponentRotation().Quaternion());
+	
+	StageActor = GetWorld()->SpawnActorDeferred<AActor>(TutorialDataAsset->BPMap, StageActorTransform);
 	StageActor->OnActorBeginOverlap.AddDynamic(this, &ALLL_TutorialGimmick::BeginOverlapAttackTutorial);
+	StageActor->FinishSpawning(StageActorTransform);
 	StageActors.Emplace(StageActor);
-
+	
 	TutorialWidgetClass = TutorialDataAsset->TutorialWidgetClass;
 
 	if(IsValid(TutorialWidgetClass))
@@ -64,6 +69,12 @@ void ALLL_TutorialGimmick::BeginOverlapAttackTutorial(AActor* OverlappedActor, A
 	{
 		return;
 	}
+
+	if (OtherActor != GetWorld()->GetFirstPlayerController()->GetPawn())
+	{
+		return;
+	}
+	
 	bIsActiveDash = true;
 	FVector Vector = TutorialDataAsset->AttackStageLocation;
 	Vector.Z += 150;
@@ -97,12 +108,22 @@ void ALLL_TutorialGimmick::FinalMonsterSpawn(AActor* DestroyedActor)
 	TutorialWidget->SetSkillTutorial();
 	FVector Vector = TutorialDataAsset->FinalStageLocation;
 	Vector.Z += 150;
-	ALLL_SwordDash* Monster = GetWorld()->SpawnActor<ALLL_SwordDash>(ALLL_SwordDash::StaticClass(), Vector, GetActorRotation());
-	Monster->OnDestroyed.AddDynamic(this, &ALLL_TutorialGimmick::MonsterDestroyed);
+	for (int i = 0; i < 3; i++)
+	{
+		ALLL_SwordDash* Monster = GetWorld()->SpawnActor<ALLL_SwordDash>(ALLL_SwordDash::StaticClass(), Vector, GetActorRotation());
+		Vector.Y += 100;
+		Monster->OnDestroyed.AddDynamic(this, &ALLL_TutorialGimmick::MonsterDestroyed);
+		Monsters.Emplace(Monster);
+	}
 }
 
 void ALLL_TutorialGimmick::MonsterDestroyed(AActor* DestroyedActor)
 {
+	Monsters.Remove(DestroyedActor);
+	if (Monsters.Num() > 0)
+	{
+		return;
+	}
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
 	FVector Vector = TutorialDataAsset->FinalStageLocation;
 	Vector.Z += 150;
