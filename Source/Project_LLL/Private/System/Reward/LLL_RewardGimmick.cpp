@@ -116,19 +116,27 @@ void ALLL_RewardGimmick::SetRewardButtons()
 		return;
 	}
 
+	if (NormalizedWeightRewardArray.IsEmpty())
+	{
+		SetRewardWeight();
+	}
+	
 	TArray<TTuple<const FAbilityDataTable*, float>> AbilityDataTables = NormalizedWeightRewardArray;
 	
 	RollReward(AbilityDataTables);
-	if (ButtonAbilityDataArray.IsEmpty())
-	{
-		ensure(false);
-		return;
-	}
 
+	uint8 LoopCount = 0;
 	while (ButtonAbilityDataArray.Num() < 3)
 	{
 		AbilityDataTables = NormalizedWeightRewardArray;
 		RollReward(AbilityDataTables);
+		++LoopCount;
+		if (LoopCount > 100) // 100번 이상 돌면 문제 있?음
+		{
+			UE_LOG(LogTemp, Log, TEXT("가중치 리롤 100회 이상 동작"));
+			ensure(false);
+			return;
+		}
 	}
 	
 	RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
@@ -145,7 +153,7 @@ void ALLL_RewardGimmick::SetDataTable()
 void ALLL_RewardGimmick::SetRewardWeight()
 {
 	NormalizedWeightRewardArray.Empty();
-	for (auto Data : AbilityData)
+	for (const auto Data : AbilityData)
 	{
 		TotalRewardWeight += Data->GetAbilityRate;
 	}
@@ -434,6 +442,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 			AbilityData.Remove(EqualAbility);
 		}
 	}
+	AbilityData.Remove(CurrentAbilityData);
 	// 테이블에서 중복 보상 제거 후 가중치 재계산
 	SetRewardWeight();
 	
