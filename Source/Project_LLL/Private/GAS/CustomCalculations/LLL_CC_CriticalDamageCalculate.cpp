@@ -19,7 +19,7 @@ float ULLL_CC_CriticalDamageCalculate::CalculateBaseMagnitude_Implementation(con
 	}
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
-	FGameplayTagContainer EffectTagContainer = Spec.Def->GetAssetTags();
+	const FGameplayTagContainer EffectTagContainer = Spec.Def->GetAssetTags();
 	float DamageAmplifyValue = 1.f;
 	if (EffectTagContainer.HasTag(TAG_GAS_ATTACK_HIT_CHECK_MELEE))
 	{

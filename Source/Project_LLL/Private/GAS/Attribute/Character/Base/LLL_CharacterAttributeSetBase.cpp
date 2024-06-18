@@ -22,11 +22,13 @@ ULLL_CharacterAttributeSetBase::ULLL_CharacterAttributeSetBase() :
 void ULLL_CharacterAttributeSetBase::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+	
 	if(Attribute == GetMoveSpeedAttribute())
 	{
 		const ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwningActor());
 		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GetMoveSpeed();
 	}
+	
 	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }
@@ -40,6 +42,7 @@ bool ULLL_CharacterAttributeSetBase::PreGameplayEffectExecute(FGameplayEffectMod
 			Data.EvaluatedData.Magnitude = 0.f;
 		}
 	}
+	
 	return Super::PreGameplayEffectExecute(Data);
 }
 
