@@ -7,6 +7,7 @@
 #include "Components/Button.h"
 #include "LLL_SelectRewardWidget.generated.h"
 
+struct FAbilityIconWrapper;
 class UImage;
 class URichTextBlock;
 struct FAbilityDataTable;
@@ -67,6 +68,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 아이콘(임시)")
 	TArray<UTexture2D*> EruriaIConTextures;
 
+	// 3x5 AbilityType - AbilityPart
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 아이콘")
+	TArray<FAbilityIconWrapper> EnhancedEruriaIConTextures;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 배경 이미지(임시)")
 	TArray<UTexture2D*> EruriaBackgroundTextures;
 	

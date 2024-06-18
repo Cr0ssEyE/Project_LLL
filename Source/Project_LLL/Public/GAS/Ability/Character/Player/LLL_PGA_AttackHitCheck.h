@@ -42,9 +42,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<UGameplayEffect> GiveTagEffect;
 
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TSubclassOf<UGameplayEffect> ApplyToOwnerEffect;
-
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<ALLL_TA_TraceBase> TargetActorClass;

@@ -107,11 +107,18 @@ void ALLL_TutorialGimmick::FinalMonsterSpawn(AActor* DestroyedActor)
 {
 	TutorialWidget->SetSkillTutorial();
 	FVector Vector = TutorialDataAsset->FinalStageLocation;
+	
 	Vector.Z += 150;
-	for (int i = 0; i < 3; i++)
+	while (Monsters.Num() < 3)
 	{
-		ALLL_SwordDash* Monster = GetWorld()->SpawnActor<ALLL_SwordDash>(ALLL_SwordDash::StaticClass(), Vector, GetActorRotation());
-		Vector.Y += 100;
+		float RandomSpawnPointX = FMath::RandRange(-300.f, 300.f);
+		float RandomSpawnPointY = FMath::RandRange(-300.f, 300.f);
+		ALLL_SwordDash* Monster = GetWorld()->SpawnActor<ALLL_SwordDash>(ALLL_SwordDash::StaticClass(), Vector + FVector(RandomSpawnPointX, RandomSpawnPointY, 0.f), GetActorRotation());
+		if (!IsValid(Monster))
+		{
+			continue;
+		}
+		
 		Monster->OnDestroyed.AddDynamic(this, &ALLL_TutorialGimmick::MonsterDestroyed);
 		Monsters.Emplace(Monster);
 	}

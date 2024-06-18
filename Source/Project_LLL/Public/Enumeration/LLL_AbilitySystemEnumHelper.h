@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LLL_AbilitySystemEnumHelper.generated.h"
 
 // TMap<>과 같은 형식으로 키 값에 따라 고유한 어빌리티를 지정하는 경우 사용하기 위함
 UENUM(BlueprintType)
@@ -108,4 +109,16 @@ enum class EAbilityValueType : uint8
 	None UMETA(Hidden),
 	Fixed = 1,
 	Percent = 100
+};
+
+USTRUCT(BlueprintType)
+struct FAbilityIconWrapper
+{
+	GENERATED_BODY()
+
+public:
+	FAbilityIconWrapper() {}
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UTexture2D*> AbilityIcon;
 };

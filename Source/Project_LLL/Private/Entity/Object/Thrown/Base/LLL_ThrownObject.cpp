@@ -89,24 +89,23 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 	FModAudioComponent->SetPitch(Owner->CustomTimeDilation);
 	FModAudioComponent->Play();
 
-	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwner());
+	ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwner());
 	if (Cast<ALLL_MonsterBase>(OwnerCharacter))
 	{
 		const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(OwnerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 		OffencePower = MonsterAttributeSet->GetOffensePower();
 	}
-	else if (Cast<ALLL_PlayerBase>(OwnerCharacter))
+	else if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerCharacter))
 	{
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(OwnerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-		const float LastSentDamage = PlayerAttributeSet->GetLastSentDamage();
+		const float LastSentDamage = Player->GetLastSentDamage();
 
 		if (AbilityData->AbilityValueType == EAbilityValueType::Fixed)
 		{
-			OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel;
+			OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1);
 		}
 		else
 		{
-			OffencePower = (AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel) / static_cast<uint32>(AbilityData->AbilityValueType) * LastSentDamage;
+			OffencePower = (AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1)) / static_cast<uint32>(AbilityData->AbilityValueType) * LastSentDamage;
 		}
 	}
 	

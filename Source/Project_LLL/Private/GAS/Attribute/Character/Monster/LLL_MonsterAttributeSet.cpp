@@ -9,6 +9,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 
 void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -16,13 +17,18 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
 		AActor* Attacker = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
+		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
 		if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Attacker))
 		{
 			Attacker = ThrownObject->GetOwner();
 		}
-		
-		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
-		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
+		else if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Attacker))
+		{
+			if (!DOT)
+			{
+				Player->SetLastSentDamage(GetReceiveDamage());
+			}
+		}
 
 		FGameplayTagContainer TagContainer(TAG_GAS_STATUS_MARKED);
 		TagContainer.AddTag(TAG_GAS_STATUS_TARGETED);
@@ -31,7 +37,8 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		{
 			CheckAbnormalStatus(Data);
 		}
-		
+
+		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 		if (GetCurrentShield() > 0)
 		{
 			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
