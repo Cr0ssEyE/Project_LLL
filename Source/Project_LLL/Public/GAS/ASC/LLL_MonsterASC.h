@@ -7,6 +7,8 @@
 #include "LLL_MonsterASC.generated.h"
 
 
+class ALLL_BaseCharacter;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECT_LLL_API ULLL_MonsterASC : public ULLL_BaseASC
 {
@@ -29,6 +31,9 @@ protected:
 	virtual void OnMarkTagAdded(const FGameplayTag Tag, int32 count);
     virtual void CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEffectSpec);
 
+	UFUNCTION()
+	void ClearAllTimer(ALLL_BaseCharacter* Character);
+	
 protected:
 	FTimerHandle MarkTimerHandle;
 
