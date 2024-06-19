@@ -5,6 +5,7 @@
 
 #include "Constant/LLL_FilePath.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 #include "System/MapGimmick/Components/LLL_GateSpawnPointComponent.h"
@@ -22,8 +23,9 @@
 ALLL_TutorialGimmick::ALLL_TutorialGimmick()
 {
 	TutorialDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_TutorialMapDataAsset>(PATH_TUTORIAL_MAP_DATA, EAssertionLevel::Check);
-	bIsActiveSkill = false;
+	bIsActiveSkill = false; 
 	bIsActiveDash = false;
+	ChargeSkillGaugeEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(PATH_SKILL_GAUGE_EFFECT, EAssertionLevel::Check);
 }
 
 void ALLL_TutorialGimmick::BeginPlay()
@@ -106,6 +108,13 @@ void ALLL_TutorialGimmick::FinalMapSpawn(AActor* DestroyedActor)
 void ALLL_TutorialGimmick::FinalMonsterSpawn(AActor* DestroyedActor)
 {
 	TutorialWidget->SetSkillTutorial();
+
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	FGameplayEffectContextHandle EffectContextHandle = Player->GetAbilitySystemComponent()->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(Player);
+	const FGameplayEffectSpecHandle EffectSpecHandle = Player->GetAbilitySystemComponent()->MakeOutgoingSpec(ChargeSkillGaugeEffect, 1.0, EffectContextHandle);
+	Player->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+
 	FVector Vector = TutorialDataAsset->FinalStageLocation;
 	
 	Vector.Z += 150;
@@ -122,6 +131,11 @@ void ALLL_TutorialGimmick::FinalMonsterSpawn(AActor* DestroyedActor)
 		Monster->OnDestroyed.AddDynamic(this, &ALLL_TutorialGimmick::MonsterDestroyed);
 		Monsters.Emplace(Monster);
 	}
+
+	FTimerHandle SetTutorialTimerHandle;
+	GetWorldTimerManager().SetTimer(SetTutorialTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&] {
+		TutorialWidget->SetSkillChargeTutorial();
+	}), 3.0f, false);
 }
 
 void ALLL_TutorialGimmick::MonsterDestroyed(AActor* DestroyedActor)
