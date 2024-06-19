@@ -25,7 +25,7 @@ public:
 	
 public:
 	void SetupPauseState();
-	void RestorePauseState();
+	void RestorePauseState(bool EnableInput = true);
 	void SetupDeadStateLayout() const;
 	
 protected:

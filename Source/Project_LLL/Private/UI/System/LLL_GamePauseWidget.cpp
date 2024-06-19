@@ -67,14 +67,17 @@ void ULLL_GamePauseWidget::SetupPauseState()
 	GameInstance->SetMapSoundManagerPauseParameter(1.0f);
 }
 
-void ULLL_GamePauseWidget::RestorePauseState()
+void ULLL_GamePauseWidget::RestorePauseState(bool EnableInput)
 {
 	PlayAnimationForward(ResetAnim);
 	SetVisibility(ESlateVisibility::Hidden);
 	SetIsEnabled(false);
-	GetOwningPlayer()->EnableInput(GetOwningPlayer());
-	Cast<ALLL_PlayerController>(GetOwningPlayer())->SetGameInputMode();
-
+	if (EnableInput)
+	{
+		GetOwningPlayer()->EnableInput(GetOwningPlayer());
+		Cast<ALLL_PlayerController>(GetOwningPlayer())->SetGameInputMode();
+	}
+	
 	if (SettingWidget->GetIsEnabled())
 	{
 		SettingWidget->HideMainWidget();
