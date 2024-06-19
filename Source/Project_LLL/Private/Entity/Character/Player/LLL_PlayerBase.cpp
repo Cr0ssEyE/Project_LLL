@@ -5,18 +5,12 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
-#include "AIController.h"
-#include "AnimNotifyState_TimedNiagaraEffect.h"
-#include "BrainComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "FMODAudioComponent.h"
-#include "FMODEvent.h"
 #include "GameplayAbilitiesModule.h"
 #include "GameplayAbilitySpec.h"
 #include "LevelSequenceActor.h"
 #include "MovieSceneSequencePlaybackSettings.h"
-#include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_AnimMontageSlotName.h"
@@ -28,6 +22,7 @@
 #include "Constant/LLL_MaterialParameterName.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -644,7 +639,7 @@ void ALLL_PlayerBase::Dead()
 		{
 			if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitResult.GetActor()))
 			{
-				Cast<AAIController>(Monster->GetController())->GetBrainComponent()->StopLogic(TEXT("PlayerDead"));
+				CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController())->StopLogic(TEXT("PlayerDead"));
 				Monster->StopAnimMontage();
 			}
 			HitResult.GetActor()->CustomTimeDilation = 0.01f;

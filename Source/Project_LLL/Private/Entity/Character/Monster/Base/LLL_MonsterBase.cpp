@@ -245,7 +245,7 @@ void ALLL_MonsterBase::Dead()
 	MonsterBaseAnimInstance->StopAllMontages(1.0f);
 	
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
-	MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
+	MonsterBaseAIController->StopLogic("Monster Is Dead");
 
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
@@ -302,6 +302,10 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 		if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower) && GetCapsuleComponent()->GetCollisionProfileName() != CP_MONSTER_FALLABLE)
 		{
 			GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
+			const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
+			MonsterBaseAIController->StopLogic("Monster Is Fallable State");
+			CharacterAnimInstance->StopAllMontages(1.0f);
+			UE_LOG(LogTemp, Log, TEXT("낙사로 인한 BT 정지"))
 		}
 		GetCharacterMovement()->Velocity = FVector::Zero();
 		LaunchCharacter(KnockBackVelocity, true, true);

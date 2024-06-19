@@ -6,6 +6,7 @@
 #include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
 #include "Components/Overlay.h"
+#include "Components/TextBlock.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -88,6 +89,8 @@ void ULLL_GamePauseWidget::RestorePauseState(bool EnableInput)
 
 void ULLL_GamePauseWidget::SetupDeadStateLayout() const
 {
+	PauseTypeText->SetText(FText::FromString(TEXT("죽었습니다!")));
+	PauseTypeText->SetColorAndOpacity(FSlateColor(FColor::Red));
 	ResumeButton->SetIsEnabled(false);
 	SettingButton->SetIsEnabled(false);
 }
