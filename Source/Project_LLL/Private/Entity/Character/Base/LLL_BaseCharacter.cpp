@@ -177,7 +177,6 @@ void ALLL_BaseCharacter::Dead()
 	CharacterDeadDelegate.Broadcast(this);
 
 	ASC->CancelAbilities();
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("캐릭터 사망")));
 }
 
 void ALLL_BaseCharacter::SetParameter(EFModParameter FModParameter, float value) const
