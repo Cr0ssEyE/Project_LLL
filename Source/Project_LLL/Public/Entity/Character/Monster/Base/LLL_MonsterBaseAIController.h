@@ -22,7 +22,8 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
 public:
-	void SetPlayer();
+	void SetPlayer() const;
+	void StopLogic(const FString& Reason) const;
 
 protected:
 	UFUNCTION()
