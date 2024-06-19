@@ -26,6 +26,7 @@ ALLL_GateObject::ALLL_GateObject()
 	TextureMeshComponent->SetupAttachment(RootComponent);
 	TextureMeshComponent->SetRelativeLocation(FVector(60.0f, 60.0f, 370.0f));
 	TextureMeshComponent->SetMaterial(0, RewardObjectDataAsset->TextureMaterialInst);
+	TextureMeshComponent->SetVisibility(false);
 
 	RewardTextureMesh = RewardObjectDataAsset->RewardTextureMesh;
 	TextureMeshComponent->SetStaticMesh(RewardTextureMesh);
@@ -75,6 +76,7 @@ void ALLL_GateObject::SetActivate()
 	{
 		AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
 	}
+	TextureMeshComponent->SetVisibility(true);
 }
 
 void ALLL_GateObject::InteractiveEvent()

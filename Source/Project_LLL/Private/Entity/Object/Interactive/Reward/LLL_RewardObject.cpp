@@ -139,10 +139,8 @@ void ALLL_RewardObject::InteractiveEvent()
 		break;
 		// 최대 체력
 	case 3:
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("체력 보상 로직 진입"));
 		if(EffectSpecHandle.IsValid())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("플레이어 체력 증가 시작"));
 			Player->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 
