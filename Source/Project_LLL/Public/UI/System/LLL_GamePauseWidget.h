@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LLL_GamePauseWidget.generated.h"
 
+class UTextBlock;
 class ULLL_SettingWidget;
 class UOverlay;
 class UButton;
@@ -25,7 +26,7 @@ public:
 	
 public:
 	void SetupPauseState();
-	void RestorePauseState();
+	void RestorePauseState(bool EnableInput = true);
 	void SetupDeadStateLayout() const;
 	
 protected:
@@ -88,6 +89,9 @@ protected:
 	TObjectPtr<UWidgetAnimation> ResetAnim;
 	
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UTextBlock> PauseTypeText;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> ResumeButton;
 

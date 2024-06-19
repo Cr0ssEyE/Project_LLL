@@ -107,7 +107,8 @@ void ULLL_PlayerUIManager::TogglePauseWidget(bool IsDead) const
 {
 	if(GamePauseWidget->GetIsEnabled())
 	{
-		GamePauseWidget->RestorePauseState();
+		bool IsUniquePopup = SelectRewardWidget->GetIsEnabled();
+		GamePauseWidget->RestorePauseState(!IsUniquePopup);
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 	}
 	else

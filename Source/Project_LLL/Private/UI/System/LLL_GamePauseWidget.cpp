@@ -6,6 +6,7 @@
 #include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
 #include "Components/Overlay.h"
+#include "Components/TextBlock.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -67,14 +68,17 @@ void ULLL_GamePauseWidget::SetupPauseState()
 	GameInstance->SetMapSoundManagerPauseParameter(1.0f);
 }
 
-void ULLL_GamePauseWidget::RestorePauseState()
+void ULLL_GamePauseWidget::RestorePauseState(bool EnableInput)
 {
 	PlayAnimationForward(ResetAnim);
 	SetVisibility(ESlateVisibility::Hidden);
 	SetIsEnabled(false);
-	GetOwningPlayer()->EnableInput(GetOwningPlayer());
-	Cast<ALLL_PlayerController>(GetOwningPlayer())->SetGameInputMode();
-
+	if (EnableInput)
+	{
+		GetOwningPlayer()->EnableInput(GetOwningPlayer());
+		Cast<ALLL_PlayerController>(GetOwningPlayer())->SetGameInputMode();
+	}
+	
 	if (SettingWidget->GetIsEnabled())
 	{
 		SettingWidget->HideMainWidget();
@@ -85,6 +89,8 @@ void ULLL_GamePauseWidget::RestorePauseState()
 
 void ULLL_GamePauseWidget::SetupDeadStateLayout() const
 {
+	PauseTypeText->SetText(FText::FromString(TEXT("죽었습니다!")));
+	PauseTypeText->SetColorAndOpacity(FSlateColor(FColor::Red));
 	ResumeButton->SetIsEnabled(false);
 	SettingButton->SetIsEnabled(false);
 }
