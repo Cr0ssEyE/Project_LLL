@@ -14,6 +14,7 @@ DECLARE_MULTICAST_DELEGATE(FOnFadeOutDelegate);
 struct FRewardDataTable;
 class ULLL_RewardDataTable;
 class ULLL_GateDataAsset;
+class ULLL_RewardObjectDataAsset;
 UCLASS()
 class PROJECT_LLL_API ALLL_GateObject : public ALLL_InteractiveObject
 {
@@ -38,7 +39,16 @@ protected:
 	TObjectPtr<UStaticMesh> GateMesh;
 
 	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UStaticMeshComponent> TextureMeshComponent;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UStaticMesh> RewardTextureMesh;
+
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<const ULLL_GateDataAsset> GateDataAsset;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<const ULLL_RewardObjectDataAsset> RewardObjectDataAsset;
 
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsGateEnabled : 1;

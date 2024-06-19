@@ -37,6 +37,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMesh> RewardMesh;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UStaticMeshComponent> TextureMeshComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UStaticMesh> RewardTextureMesh;
+
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsProduct;
 

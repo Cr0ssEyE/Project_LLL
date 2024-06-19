@@ -22,4 +22,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "활성화 사운드 이벤트")
 	TObjectPtr<UFMODEvent> ActivateEvent;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh", DisplayName = "보상 표시용 매시")
+	TObjectPtr<UStaticMesh> RewardTextureMesh;
+
 };

@@ -22,9 +22,17 @@ ALLL_RewardObject::ALLL_RewardObject()
 
 	RewardMesh = RewardObjectDataAsset->StaticMesh;
 	BaseMesh->SetStaticMesh(RewardMesh);
-	BaseMesh->SetMaterial(0, RewardObjectDataAsset->MaterialInst);
+	BaseMesh->SetMaterial(0, RewardObjectDataAsset->MainMaterialInst);
 	BaseMesh->SetCollisionProfileName(CP_OVERLAP_ALL);
-	
+
+	TextureMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TextureMashComponent"));
+	TextureMeshComponent->SetupAttachment(RootComponent);
+	TextureMeshComponent->SetRelativeLocation(FVector(0, 0, 130.0f));
+	TextureMeshComponent->SetMaterial(0, RewardObjectDataAsset->TextureMaterialInst);
+
+	RewardTextureMesh = RewardObjectDataAsset->RewardTextureMesh;
+	TextureMeshComponent->SetStaticMesh(RewardTextureMesh);
+
 	PriceWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("PriceWidgetComponent");
 	PriceWidgetComponent->SetupAttachment(RootComponent);
 	PriceWidget = CreateDefaultSubobject<ULLL_ProductObjectPriceWidget>(TEXT("PriceWidget"));
@@ -66,19 +74,23 @@ void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data)
 	{
 			// 능력
 		case 1:
-			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->AbilityTexture);
+			TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->AbilityTexture);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Green);
 		break;
 			// 재화
 		case 2:
-			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->GoldTexture);
+			TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->GoldTexture);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Yellow);
 		break;
 			// 최대 체력
 		case 3:
-			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->MaxHPTexture);
+			TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->MaxHPTexture);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Red);
 		break;
 			// 능력 강화
 		case 4:
-			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->EnhanceTexture);
+			TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->EnhanceTexture);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(TEXT("Color"), FLinearColor::Blue);
 			break;
 	default:;
 	}
