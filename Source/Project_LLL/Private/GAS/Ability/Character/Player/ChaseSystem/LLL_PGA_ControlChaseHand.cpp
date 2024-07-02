@@ -4,13 +4,14 @@
 #include "GAS/Ability/Character/Player/ChaseSystem/LLL_PGA_ControlChaseHand.h"
 
 #include "AbilitySystemComponent.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 
 ULLL_PGA_ControlChaseHand::ULLL_PGA_ControlChaseHand()
@@ -28,10 +29,15 @@ void ULLL_PGA_ControlChaseHand::ActivateAbility(const FGameplayAbilitySpecHandle
 	
 	PlayerChaseHand->ReleaseCompleteDelegate.AddDynamic(this, &ULLL_PGA_ControlChaseHand::OnCompleteCallBack);
 
-	if (IsValid(ThrowAnimMontage))
+	if (!IsValid(ThrowAnimMontage))
 	{
-		PlayerCharacter->GetCharacterAnimInstance()->Montage_Play(ThrowAnimMontage);
+		EndAbility(CurrentSpecHandle,  CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
 	}
+
+	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ThrowMontage"), ThrowAnimMontage, 1.0f);
+	MontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_ControlChaseHand::OnInterruptedCallBack);
+	MontageTask->ReadyForActivation();
 	
 	UAbilityTask_WaitGameplayEvent* ThrowTriggerTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_PLAYER_THROW_TRIGGERED, nullptr, true);
 	ThrowTriggerTask->EventReceived.AddDynamic(this, &ULLL_PGA_ControlChaseHand::ThrowHand);
@@ -62,9 +68,9 @@ void ULLL_PGA_ControlChaseHand::ThrowHand(const FGameplayEventData EventData)
 	if(bIsAlreadyThrown)
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+			if(DebugGameInstance->CheckPlayerChaseActionDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 와이어 투척이 이미 발동된 상태")));
 			}
@@ -74,9 +80,9 @@ void ULLL_PGA_ControlChaseHand::ThrowHand(const FGameplayEventData EventData)
 	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+		if(DebugGameInstance->CheckPlayerChaseActionDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("플레이어 와이어 투척 어빌리티 발동")));
 		}

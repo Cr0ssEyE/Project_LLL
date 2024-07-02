@@ -3,7 +3,9 @@
 
 #include "GAS/Ability/Character/Base/LLL_CharacterGameplayAbilityBase.h"
 
+#include "Constant/LLL_GameplayTags.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 
 ULLL_CharacterGameplayAbilityBase::ULLL_CharacterGameplayAbilityBase()
 {

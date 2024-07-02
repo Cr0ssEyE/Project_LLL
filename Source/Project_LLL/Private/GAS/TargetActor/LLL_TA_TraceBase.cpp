@@ -6,7 +6,13 @@
 #include "Abilities/GameplayAbility.h"
 #include "Constant/LLL_CollisionChannel.h"
 
-ALLL_TA_TraceBase::ALLL_TA_TraceBase()
+ALLL_TA_TraceBase::ALLL_TA_TraceBase() :
+	TraceTarget(ESelectTraceTarget::AllEntity),
+	BaseShape(ESelectShapeTypes::Box),
+	SphereRadius(100),
+	ConeDistance(100),
+	ConeFieldOfView(100),
+	TraceChannel(ECC_Visibility)
 {
 	PrimaryActorTick.bCanEverTick = true;
 }

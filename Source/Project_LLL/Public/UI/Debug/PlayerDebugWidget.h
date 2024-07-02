@@ -41,7 +41,7 @@ protected:
 	void PlayerFillHealthButtonEvent();
 
 	UFUNCTION(BlueprintCallable)
-	void PlayerCoolDownResetButtonEvent();
+	void PlayerInvincibleCheckBoxEvent(bool value);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
@@ -54,13 +54,13 @@ protected:
 	TObjectPtr<UCheckBox> PlayerSkillCheckBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCheckBox> PlayerWireActionCheckBox;
+	TObjectPtr<UCheckBox> PlayerChaseActionCheckBox;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> PlayerFillHealthButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UButton> PlayerCoolDownResetButton;
+	TObjectPtr<UCheckBox> PlayerInvincibleCheckBox;
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GAS", DisplayName = "플레이어 체력 회복 이펙트")

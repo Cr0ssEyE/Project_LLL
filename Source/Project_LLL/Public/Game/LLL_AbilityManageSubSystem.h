@@ -39,7 +39,7 @@ public:
 public:
 	void ASyncLoadEffectsByTag(FAsyncLoadEffectDelegate Delegate, EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, const EEffectAccessRange AccessRange, bool TagHasMatching = false);
 	void ASyncLoadEffectsByID(FAsyncLoadEffectDelegate Delegate, EEffectOwnerType Owner, int32 ID, const EEffectAccessRange AccessRange);
-	
+
 private:
 	/** 플레이어에게 게임 진행 도중 일시적으로 어빌리티 OR 스탯을 부여하기 위해 사용하는 이펙트 모음. ex: 보상 \n
 	/GAS/Effects/Character/Player 폴더 내부의 모든 ULLL_ExtendedGameplayEffect를 가져와 저장
@@ -69,4 +69,5 @@ private:
 private:
 	static void LoadEffectsFromPath(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& Container, FName PrimaryTypes);
 	TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& GetDataSetByOwner(EEffectOwnerType Owner);
+
 };

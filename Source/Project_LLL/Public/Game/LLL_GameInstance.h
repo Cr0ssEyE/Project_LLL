@@ -6,11 +6,17 @@
 #include "DataTable/LLL_FModParameterDataTable.h"
 #include "DataTable/LLL_RewardDataTable.h"
 #include "DataTable/LLL_AbilityDataTable.h"
+#include "DataTable/LLL_StringDataTable.h"
 #include "LLL_GameInstance.generated.h"
 
 /**
  * 
  */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStageEncountedDelegate);
+
+class ALLL_MapSoundManager;
+class ULLL_ShareableNiagaraDataAsset;
 
 UCLASS()
 class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
@@ -22,13 +28,39 @@ public:
 
 	virtual void Init() override;
 
-	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterDataArray; }
-
+	FStageEncountedDelegate EncountedDelegate;
+	
 public:
+	FORCEINLINE ALLL_MapSoundManager* GetMapSoundManager() const { return MapSoundManager; }
+	FORCEINLINE void SetMapSoundManager(ALLL_MapSoundManager* InMapSoundManager) { MapSoundManager = InMapSoundManager; }
+	
 	// 데이터 테이블 Getter
-	FORCEINLINE TArray<FAbilityDataTable> GetAbilityDataTable() const { return AbilityData; }
-	FORCEINLINE TArray<FRewardDataTable> GetRewardDataTable() const { return RewardData; }
+	FORCEINLINE TArray<const FAbilityDataTable*> GetAbilityDataTable() const { return AbilityData; }
+	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterData; }
+	FORCEINLINE TArray<const FRewardDataTable*> GetRewardDataTable() const { return RewardData; }
+	FORCEINLINE const UDataTable* GetStringDataTable() const { return StringDataTable; }
+	FORCEINLINE TArray<const FStringDataTable*> GetStringDataTablesData() const { return StringData; }
+	FORCEINLINE bool CheckCustomTimeDilationIsChanging() const { return bCustomTimeDilationIsChanging; }
 
+	// MPC Getter
+	FORCEINLINE UMaterialParameterCollection* GetPlayerMPC() const { return PlayerMPC; }
+	FORCEINLINE UMaterialParameterCollection* GetObjectMPC() const { return ObjectMPC; }
+	FORCEINLINE UMaterialParameterCollection* GetMonsterMPC() const { return MonsterMPC; }
+	FORCEINLINE UMaterialParameterCollection* GetPostProcessMPC() const { return PostProcessMPC; }
+
+	// 데이터 에셋
+public:
+	FORCEINLINE TObjectPtr<const ULLL_ShareableNiagaraDataAsset> GetShareableNiagaraDataAsset() const { return ShareableNiagaraDataAsset; }
+	
+public:
+	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
+	void SetMapSoundManagerBattleParameter(float Value) const;
+	void SetMapSoundManagerPauseParameter(float Value) const;
+
+protected:
+	void SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation);
+	
+	// 머티리얼 파라미터 컬렉션 
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollection> PlayerMPC;
@@ -40,26 +72,46 @@ protected:
 	TObjectPtr<UMaterialParameterCollection> MonsterMPC;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UMaterialParameterCollection> InterfaceMPC;
+	TObjectPtr<UMaterialParameterCollection> PostProcessMPC;
 
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const UDataTable> FModParameterDataTable;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FFModParameterDataTable> FModParameterDataArray;
-
+	// 범용 데이터 에셋
+protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<const ULLL_ShareableNiagaraDataAsset> ShareableNiagaraDataAsset;
+	
 	// 데이터 테이블 변수
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<const UDataTable> AbilityDataTable;
 	
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FAbilityDataTable> AbilityData;
+	TArray<const FAbilityDataTable*> AbilityData;
 
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<const UDataTable> FModParameterDataTable;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TArray<FFModParameterDataTable> FModParameterData;
+	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<const UDataTable> RewardDataTable;
 	
-	UPROPERTY(VisibleDefaultsOnly)
-	TArray<FRewardDataTable> RewardData;
+	TArray<const FRewardDataTable*> RewardData;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<const UDataTable> StringDataTable;
+
+	TArray<const FStringDataTable*> StringData;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ALLL_MapSoundManager> MapSoundManager;
 	
+protected:
+	UPROPERTY(VisibleAnywhere)
+	float CustomTimeDilation;
+
+	UPROPERTY(EditAnywhere)
+	float CustomTimeDilationInterpSpeed;
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 bCustomTimeDilationIsChanging : 1;
 };

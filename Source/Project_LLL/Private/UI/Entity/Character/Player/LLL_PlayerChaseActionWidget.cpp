@@ -51,4 +51,13 @@ void ULLL_PlayerChaseActionWidget::UpdateWidgetView(const UAbilitySystemComponen
 	}
 	
 	SetCircleProgressBarValue(1 - CurrentCoolDownGauge / MaxCoolDownGauge);
+
+	if (1 - CurrentCoolDownGauge / MaxCoolDownGauge >= 1)
+	{
+		CircleProgressBar->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		CircleProgressBar->SetVisibility(ESlateVisibility::Visible);
+	}
 }

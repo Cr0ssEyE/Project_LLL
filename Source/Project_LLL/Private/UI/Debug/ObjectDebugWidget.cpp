@@ -5,7 +5,7 @@
 
 #include "Components/Button.h"
 #include "Components/CheckBox.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 
 void UObjectDebugWidget::NativeConstruct()
 {
@@ -20,30 +20,30 @@ void UObjectDebugWidget::NativeConstruct()
 
 void UObjectDebugWidget::ObjectGenerateCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetObjectGenerateDebug(ObjectGenerateCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetObjectGenerateDebug(ObjectGenerateCheckBox->IsChecked());
 }
 
 void UObjectDebugWidget::ObjectActivateCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetObjectActivateDebug(ObjectActivateCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetObjectActivateDebug(ObjectActivateCheckBox->IsChecked());
 }
 
 void UObjectDebugWidget::ObjectDestroyCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetObjectDestroyDebug(ObjectDestroyCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetObjectDestroyDebug(ObjectDestroyCheckBox->IsChecked());
 }
 
 void UObjectDebugWidget::ObjectHitCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetObjectHitCheckDebug(ObjectHitCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetObjectHitCheckDebug(ObjectHitCheckBox->IsChecked());
 }
 
 void UObjectDebugWidget::ObjectCollisionCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetObjectCollisionDebug(ObjectCollisionCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetObjectCollisionDebug(ObjectCollisionCheckBox->IsChecked());
 }
 
 void UObjectDebugWidget::ObjectTrapActivateButtonEvent()
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->BroadcastObjectTrapActivate();
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->BroadcastObjectTrapActivate();
 }

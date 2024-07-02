@@ -14,7 +14,7 @@
 #include "Constant/LLL_MonatgeSectionName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 
@@ -59,9 +59,9 @@ void ULLL_PGA_ChaseToTarget::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseToTarget::OwnerLaunchToChaseHand);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerDashDebug())
+		if(DebugGameInstance->CheckPlayerDashDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 돌진 어빌리티 발동")));
 		}
@@ -76,7 +76,6 @@ void ULLL_PGA_ChaseToTarget::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(CurrentActorInfo->AvatarActor);
 	const ALLL_PlayerChaseHand* PlayerChaseHand = PlayerCharacter->GetChaseHand();
 	
-	PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 	PlayerCharacter->GetCharacterMovement()->Velocity = PlayerCharacter->GetCharacterMovement()->Velocity.GetSafeNormal() * PlayerCharacter->GetCharacterMovement()->GetMaxSpeed();
 	
 	PlayerChaseHand->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_CHASER_RELEASE));
@@ -87,15 +86,19 @@ void ULLL_PGA_ChaseToTarget::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		PlayerCharacter->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_PLAYER_CHASE_ATTACK));
 	}
+	else
+	{
+		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
+	}
 	
 	TargetLocation = Direction = FVector::Zero();
 	RushSpeed = 0.f;
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerDashDebug())
+		if(DebugGameInstance->CheckPlayerDashDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 돌진 어빌리티 종료")));
 		}

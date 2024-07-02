@@ -43,6 +43,9 @@ void ULLL_DisplaySettingWidget::NativeConstruct()
 	{
 		UseWindowButton->OnClicked.Broadcast();
 	}
+
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetFrameRateLimit(60.f);
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetVSyncEnabled(true);
 }
 
 void ULLL_DisplaySettingWidget::ApplyResolutionType(FString ResolutionName, ESelectInfo::Type Info)

@@ -36,6 +36,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void ToggleWidget();
+	
+	UFUNCTION(BlueprintCallable)
+	void ToggleSoundMessage();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
@@ -59,4 +62,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> ObjectDebugButton;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UButton> SoundDebugButton;
 };

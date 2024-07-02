@@ -19,8 +19,6 @@ void ULLL_MGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 {
 	if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{
-		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
-
 		BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect);
 	}
 	

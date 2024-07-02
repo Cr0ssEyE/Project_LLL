@@ -49,6 +49,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> HandCollision;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_PlayerChaseHandAttributeSet> PlayerChaseHandAttributeSet;
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<AActor> GrabbedActor;

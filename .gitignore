@@ -112,3 +112,5 @@ Binaries/Win64/UnrealEditor-Project_LLL.patch_*
 Binaries/Win64/Project_LLL.lib
 Content/StarterContent/Architecture/Floor_400x400.uasset
 Content/StarterContent/HDRI/HDRI_Epic_Courtyard_Daylight.uasset
+Binaries/Win64/Project_LLL-Win64-Shipping.lib
+Binaries/Win64/Project_LLL-Win64-Shipping.target

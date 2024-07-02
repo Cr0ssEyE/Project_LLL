@@ -62,6 +62,17 @@ void ULLL_PlayerGoldComponent::DecreaseMoney(const float OutMoney)
 }
 
 
+void ULLL_PlayerGoldComponent::SetGoldWidgetVisibility(bool Value)
+{
+	if (Value)
+	{
+		GoldWidget->SetVisibility(ESlateVisibility::Visible);
+		return;
+	}
+	
+	GoldWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
 // Called when the game starts
 void ULLL_PlayerGoldComponent::BeginPlay()
 {

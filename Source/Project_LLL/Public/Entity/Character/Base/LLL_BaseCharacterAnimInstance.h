@@ -21,6 +21,8 @@ class PROJECT_LLL_API ULLL_BaseCharacterAnimInstance : public UAnimInstance
 public:
 	ULLL_BaseCharacterAnimInstance();
 
+	FORCEINLINE TEnumAsByte<EPhysicalSurface> GetSurfaceType() const { return SurfaceType; }
+
 protected:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
@@ -34,6 +36,8 @@ protected:
 	virtual void AnimNotify_RightStep();
 
 protected:
+	void SetStepEventParameter(FName FootSocketName);
+	
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	uint8 bIsIdle : 1;
 
@@ -54,6 +58,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	float JumpingThreshold;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Character")
+	TEnumAsByte<EPhysicalSurface> SurfaceType;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character")

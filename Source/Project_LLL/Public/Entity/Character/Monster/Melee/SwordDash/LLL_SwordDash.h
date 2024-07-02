@@ -23,10 +23,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void InitAttributeSet() override;
+
+protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 public:
-	FORCEINLINE virtual void SetDash(bool IsDashing) override { bIsDashing = IsDashing; }
+	FORCEINLINE virtual void SetDashing(bool IsDashing) override { bIsDashing = IsDashing; }
 	FORCEINLINE virtual bool IsDashing() const override { return bIsDashing; }
 	
 	virtual void Dash() const override;
@@ -38,8 +41,15 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UBoxComponent> DashDamageRangeBox;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> SwordMeshComponent;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> LeftShoulderGuardMeshComponent;
 
-	uint8 bIsDashing : 1 = false;
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> ShoulderGuardMeshComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsDashing : 1;
 };

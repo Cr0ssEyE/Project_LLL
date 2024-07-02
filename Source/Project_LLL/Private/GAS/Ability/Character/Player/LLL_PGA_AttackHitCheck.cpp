@@ -7,13 +7,13 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Task/LLL_AT_Trace.h"
 
 ULLL_PGA_AttackHitCheck::ULLL_PGA_AttackHitCheck()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-	
 }
 
 void ULLL_PGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -38,6 +38,15 @@ void ULLL_PGA_AttackHitCheck::EndAbility(const FGameplayAbilitySpecHandle Handle
 
 void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
+	// 디버그 찍어보니 이상해서 살펴보니 이거 실수로 빠졌나봐요
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]()
+	{
+		if(IsValid(TraceTask) && !bIsAbilityEnding)
+		{
+			TraceTask->Activate();
+		}
+	}));
+	
 	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{
 		return;
@@ -48,7 +57,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 
 	if (!CheckHitCountEffects.IsEmpty())
 	{
-		for (auto HitCountEffect : CheckHitCountEffects)
+		for (const auto HitCountEffect : CheckHitCountEffects)
 		{
 			const FGameplayEffectSpecHandle HitCountEffectSpecHandle = MakeOutgoingGameplayEffectSpec(HitCountEffect, CurrentEventData.EventMagnitude);
 			if (!HitCountEffectSpecHandle.IsValid())
@@ -59,9 +68,9 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 			K2_ApplyGameplayEffectSpecToOwner(HitCountEffectSpecHandle);
 		}
 	}
-	
+
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect, CurrentEventData.EventMagnitude);
-	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect); 
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect);
 
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [=, this]()
 	{
@@ -72,6 +81,21 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 		
 		Cast<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked())->ReceiveTargetData(this, TargetDataHandle);
 	}));
+
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	
+	FGameplayEventData PayloadData;
+	FGameplayTagContainer TriggerTags;
+	for (auto Trigger : AbilityTriggers)
+	{
+		TriggerTags.AddTag(Trigger.TriggerTag);
+	}
+	PayloadData.Instigator = GetAvatarActorFromActorInfo();
+	PayloadData.InstigatorTags.AppendTags(GetAbilitySystemComponentFromActorInfo_Checked()->GetOwnedGameplayTags());
+	PayloadData.InstigatorTags.AppendTags(TriggerTags);
+	PayloadData.TargetData = TargetDataHandle;
+	PayloadData.EventMagnitude = CurrentEventData.EventMagnitude;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
 }
 
 void ULLL_PGA_AttackHitCheck::OnTraceEndCallBack(FGameplayEventData EventData)

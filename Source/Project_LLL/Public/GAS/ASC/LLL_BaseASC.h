@@ -18,12 +18,17 @@ public:
 	ULLL_BaseASC();
 
 	virtual void BeginPlay() override;
-	
+
+	// 델리게이트
+public:
 	FTargetDataDelegate TargetDataDelegate;
 
 	void ReceiveTargetData(const UGameplayAbility* OwnerAbility, const FGameplayAbilityTargetDataHandle& TargetDataHandle) const;
-	
-protected:
-	virtual void OnFallableTagAdded(const FGameplayTag Tag, int32 count);
 
+	// 외부 호출 기능
+public:
+	FORCEINLINE FActiveGameplayEffect* GetEditableActiveGameplayEffect(const FActiveGameplayEffectHandle EffectHandle) { return ActiveGameplayEffects.GetActiveGameplayEffect(EffectHandle); }
+	
+	void ReduceCoolDownEffectDuration(const FActiveGameplayEffectHandle& ActiveGameplayEffectHandle, float ReduceAmount);
+	
 };

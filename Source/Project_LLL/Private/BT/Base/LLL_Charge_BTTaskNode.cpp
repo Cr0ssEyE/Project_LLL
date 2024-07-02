@@ -17,7 +17,7 @@ EBTNodeResult::Type ULLL_Charge_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-	if (!Monster->GetCharacterAnimInstance()->IsAnyMontagePlaying())
+	if (!Monster->IsCharging())
 	{
 		Monster->Charge();
 	}
@@ -30,7 +30,7 @@ void ULLL_Charge_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
 	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-	if (!Monster->GetCharacterAnimInstance()->IsAnyMontagePlaying())
+	if (!Monster->IsCharging())
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}

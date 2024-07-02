@@ -6,6 +6,7 @@
 #include "LLL_BaseObjectDataAsset.h"
 #include "LLL_ThrownObjectDataAsset.generated.h"
 
+class UFMODEvent;
 /**
  * 
  */
@@ -17,4 +18,7 @@ class PROJECT_LLL_API ULLL_ThrownObjectDataAsset : public ULLL_BaseObjectDataAss
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "데미지 이펙트")
 	TSubclassOf<UGameplayEffect> DamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "사운드")
+	TObjectPtr<UFMODEvent> FModEvent;
 };

@@ -25,7 +25,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	TObjectPtr<UAnimMontage> AbilityActionMontage;
 
-protected:
-	UPROPERTY(EditAnywhere, DisplayName = "체이서 공격 이벤트 태그", meta=(Categories = "GameplayCue"))
-	FGameplayTag ChaseAttackCueTag;
+	UPROPERTY(EditDefaultsOnly, DisplayName = "공격시 이동거리")
+	float MoveDistance;
 };

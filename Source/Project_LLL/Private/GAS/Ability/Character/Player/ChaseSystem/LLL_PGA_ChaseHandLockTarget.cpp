@@ -10,7 +10,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 
@@ -49,9 +49,9 @@ void ULLL_PGA_ChaseHandLockTarget::ActivateAbility(const FGameplayAbilitySpecHan
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_PGA_ChaseHandLockTarget::GrabTargetEntity);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+		if(DebugGameInstance->CheckPlayerChaseActionDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 그랩 동작")));
 		}
@@ -91,9 +91,9 @@ bool ULLL_PGA_ChaseHandLockTarget::TryGrabAroundEntity(const FGameplayAbilitySpe
 	if(Result.GetActor())
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+			if(DebugGameInstance->CheckPlayerChaseActionDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("그랩 가능한 대상 감지 성공 %s"), *Result.GetActor()->GetName()));
 			}
@@ -105,9 +105,9 @@ bool ULLL_PGA_ChaseHandLockTarget::TryGrabAroundEntity(const FGameplayAbilitySpe
 	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+		if(DebugGameInstance->CheckPlayerChaseActionDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("그랩 가능한 대상 감지 실패")));
 		}
@@ -125,17 +125,20 @@ void ULLL_PGA_ChaseHandLockTarget::GrabTargetEntity()
 	HandCollision->SetCollisionProfileName(CP_NO_COLLISION);
 	PlayerChaseHand->AttachToActor(PlayerChaseHand->GetGrabbedActor(), FAttachmentTransformRules::KeepWorldTransform);
 	PlayerChaseHand->SetActorLocation(PlayerChaseHand->GetGrabbedActor()->GetActorLocation());
-	
-	BP_ApplyGameplayEffectToTarget(UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(PlayerChaseHand->GetGrabbedActor()), GrabTargetApplyEffect);
+
+	if (IsValid(GrabTargetApplyEffect))
+	{
+		BP_ApplyGameplayEffectToTarget(UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(PlayerChaseHand->GetGrabbedActor()), GrabTargetApplyEffect);
+	}
 	
 	UProjectileMovementComponent* HandProjectile = PlayerChaseHand->GetProjectileMovementComponent();
 	HandProjectile->Velocity = FVector::Zero();
 	HandProjectile->Deactivate();
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+		if(DebugGameInstance->CheckPlayerChaseActionDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 추격 액션 연계 동작")));
 		}
@@ -165,9 +168,9 @@ void ULLL_PGA_ChaseHandLockTarget::CheckGrabbedTime()
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+			if(DebugGameInstance->CheckPlayerChaseActionDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("와이어 투사체 그랩 유지시간 종료")));
 			}

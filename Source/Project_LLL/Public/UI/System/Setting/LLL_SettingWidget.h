@@ -8,6 +8,7 @@
 #include "Enumeration/LLL_UserInterfaceEnumHelper.h"
 #include "LLL_SettingWidget.generated.h"
 
+class UCanvasPanel;
 class ULLL_GameplaySettingWidget;
 class ULLL_SoundSettingWidget;
 class ULLL_GraphicSettingWidget;
@@ -30,6 +31,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CloseSettingWidget();
 
+	UFUNCTION(BlueprintCallable)
+	void HideMainWidget();
+	
+	UFUNCTION(BlueprintCallable)
+	void ShowMainWidget();
+	
 protected:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SwitchDisplaySettingWidget() { SettingWidgetSwitcher->SetActiveWidgetIndex(static_cast<int>(ESettingWidgetType::Display)); }
@@ -47,6 +54,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UWidgetSwitcher> SettingWidgetSwitcher;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UCanvasPanel> MainCanvasPanel;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<ULLL_DisplaySettingWidget> DisplaySettingWidget;
 

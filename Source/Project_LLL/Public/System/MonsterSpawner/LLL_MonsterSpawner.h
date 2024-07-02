@@ -15,7 +15,8 @@ class UBoxComponent;
 class ULLL_MonsterSpawnDataTable;
 class ULLL_MonsterSpawnPointComponent;
 
-DECLARE_MULTICAST_DELEGATE(FMonsterSpawnerDestroyDelegate)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStartSpawnDelegate);
+
 /**
  * 
  */
@@ -30,12 +31,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-	virtual void BeginDestroy() override;
 	
 public:
 	void SpawnMonster();
 
-	FMonsterSpawnerDestroyDelegate MonsterSpawnerDestroyDelegate;
+	FStartSpawnDelegate StartSpawnDelegate;
 	
 private:
 	UFUNCTION()

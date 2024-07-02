@@ -6,6 +6,7 @@
 #include "Components/Button.h"
 #include "Enumeration/LLL_UserInterfaceEnumHelper.h"
 #include "GameFramework/GameUserSettings.h"
+#include "Kismet/GameplayStatics.h"
 
 void ULLL_GraphicSettingWidget::NativeConstruct()
 {
@@ -233,7 +234,7 @@ void ULLL_GraphicSettingWidget::ApplyAAQualityOff()
 	AAQualityMiddleButton->SetIsEnabled(true);
 	AAQualityHighButton->SetIsEnabled(true);
 	
-	GetWorld()->GetFirstPlayerController()->ConsoleCommand(TEXT("r.AntiAliasingMethod 0"));
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->ConsoleCommand(TEXT("r.AntiAliasingMethod 0"));
 	GEngine->GetGameUserSettings()->SetAntiAliasingQuality(static_cast<int32>(EGraphicQuality::Low));
 	GEngine->GetGameUserSettings()->ApplySettings(true);
 }
@@ -244,7 +245,7 @@ void ULLL_GraphicSettingWidget::ApplyAAQualityMiddle()
 	AAQualityMiddleButton->SetIsEnabled(false);
 	AAQualityHighButton->SetIsEnabled(true);
 
-	GetWorld()->GetFirstPlayerController()->ConsoleCommand(TEXT("r.AntiAliasingMethod 1"));
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->ConsoleCommand(TEXT("r.AntiAliasingMethod 1"));
 	GEngine->GetGameUserSettings()->SetAntiAliasingQuality(static_cast<int32>(EGraphicQuality::Middle));
 	GEngine->GetGameUserSettings()->ApplySettings(true);
 }
@@ -255,7 +256,7 @@ void ULLL_GraphicSettingWidget::ApplyAAQualityHigh()
 	AAQualityMiddleButton->SetIsEnabled(true);
 	AAQualityHighButton->SetIsEnabled(false);
 
-	GetWorld()->GetFirstPlayerController()->ConsoleCommand(TEXT("r.AntiAliasingMethod 1"));
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->ConsoleCommand(TEXT("r.AntiAliasingMethod 1"));
 	GEngine->GetGameUserSettings()->SetAntiAliasingQuality(static_cast<int32>(EGraphicQuality::High));
 	GEngine->GetGameUserSettings()->ApplySettings(true);
 }

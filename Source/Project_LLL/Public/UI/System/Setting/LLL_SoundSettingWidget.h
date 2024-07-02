@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "LLL_SoundSettingWidget.generated.h"
 
+class UCheckBox;
+class UFMODBus;
 class UProgressBar;
 class USlider;
 /**
@@ -20,7 +22,7 @@ public:
 	virtual void NativeConstruct() override;
 	
 protected:
-	// TODO: FMOD 사운드 구분에 맞춰 적용하기. LLL_CustomGameUserSettings에서 해야 함
+	// TODO: FMOD 사운드 구분에 맞춰 적용하기. LLL_CustomGameUserSettings에서 해야 함?
 	UFUNCTION(BlueprintCallable)
 	void ApplyMasterSliderValue(const float Value);
 
@@ -30,6 +32,15 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ApplySFXSliderValue(const float Value);
 
+	UFUNCTION(BlueprintCallable)
+	void ApplyMasterVolumeIgnoreState(bool Value);
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyBGMVolumeIgnoreState(bool Value);
+	
+	UFUNCTION(BlueprintCallable)
+	void ApplySFXVolumeIgnoreState(bool Value);
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<USlider> MasterSoundVolumeSlider;
@@ -48,4 +59,26 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UProgressBar> SFXVolumeProgressBar;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UCheckBox> MasterSoundVolumeIgnoreCheckBox;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UCheckBox> BGMSoundVolumeIgnoreCheckBox;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UCheckBox> SFXSoundVolumeIgnoreCheckBox;
+	
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+	TObjectPtr<UFMODBus> AmbienceBus;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+	TObjectPtr<UFMODBus> BackgroundBus;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+	TObjectPtr<UFMODBus> SoundEffectBus;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+	TObjectPtr<UFMODBus> InterfaceBus;
 };

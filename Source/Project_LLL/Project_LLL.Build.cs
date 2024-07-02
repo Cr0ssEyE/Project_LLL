@@ -17,6 +17,7 @@ public class Project_LLL : ModuleRules
 			"NavigationSystem",
 			"AIModule",
 			"Niagara",
+			"NiagaraAnimNotifies",
 			"EnhancedInput",
 			"GameplayTasks",
 			"AdvancedWidgets",

@@ -7,7 +7,7 @@
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 
-void ALLL_AbilityRewardObject::SetInformation(FRewardDataTable* Data)
+void ALLL_AbilityRewardObject::SetInformation(const FRewardDataTable* Data)
 {
 	Super::SetInformation(Data);
 	//매쉬 및 필수 정보 세팅
@@ -25,6 +25,7 @@ void ALLL_AbilityRewardObject::InteractiveEvent()
 	
 	SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 	SelectRewardWidget->SetIsEnabled(true);
+	SelectRewardWidget->FocusToUI();
 }
 
 void ALLL_AbilityRewardObject::SetAbilityCategory(EAbilityCategory Category)

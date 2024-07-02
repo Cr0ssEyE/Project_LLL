@@ -8,19 +8,20 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_Monster_Id.h"
 #include "DataAsset/LLL_SwordDashDataAsset.h"
 #include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDashAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Game/ProtoGameInstance.h"
-#include "GAS/Attribute/Character/Monster/MeleeMonster/SwordDash/LLL_SwordDashAttributeSet.h"
+#include "Game/LLL_DebugGameInstance.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_SwordDash::ALLL_SwordDash()
 {
-	CharacterAttributeSet = CreateDefaultSubobject<ULLL_SwordDashAttributeSet>(TEXT("SwordDashAttributeSet"));
-	
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_SwordDashDataAsset>(PATH_SWORD_DASH_DATA, EAssertionLevel::Check);
 	AIControllerClass = ALLL_SwordDashAIController::StaticClass();
+
+	Id = ID_SWORD_DASH;
 
 	DashDamageRangeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	DashDamageRangeBox->SetCollisionProfileName(CP_INTERACTION);
@@ -29,6 +30,10 @@ ALLL_SwordDash::ALLL_SwordDash()
 	SwordMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sword"));
 	SwordMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	SwordMeshComponent->SetupAttachment(RootComponent);
+
+	ShoulderGuardMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShoulderGuard"));
+	ShoulderGuardMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
+	ShoulderGuardMeshComponent->SetupAttachment(RootComponent);
 }
 
 void ALLL_SwordDash::BeginPlay()
@@ -37,16 +42,13 @@ void ALLL_SwordDash::BeginPlay()
 
 	SwordDashDataAsset = Cast<ULLL_SwordDashDataAsset>(MeleeMonsterDataAsset);
 	
-	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
-		const ULLL_SwordDashAttributeSet* SwordDashAttributeSet = CastChecked<ULLL_SwordDashAttributeSet>(ASC->GetAttributeSet(ULLL_SwordDashAttributeSet::StaticClass()));
-		DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), SwordDashAttributeSet->GetDashDamageRange(), SwordDashAttributeSet->GetDashDamageRange()));
-	}));
-
 	SwordMeshComponent->SetStaticMesh(SwordDashDataAsset->SwordMesh);
 	SwordMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->SwordAttachSocketName);
-	SwordMeshComponent->SetRelativeLocation(SwordDashDataAsset->SwordLocation);
-	SwordMeshComponent->SetRelativeRotation(SwordDashDataAsset->SwordRotation);
-	SwordMeshComponent->SetRelativeScale3D(SwordDashDataAsset->SwordScale);
+	SwordMeshComponent->SetRelativeTransform(SwordDashDataAsset->SwordTransform);
+
+	ShoulderGuardMeshComponent->SetStaticMesh(SwordDashDataAsset->ShoulderGuardMesh);
+	ShoulderGuardMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->ShoulderGuardAttachSocketName);
+	ShoulderGuardMeshComponent->SetRelativeTransform(SwordDashDataAsset->ShoulderGuardTransform);
 }
 
 void ALLL_SwordDash::Tick(float DeltaSeconds)
@@ -54,9 +56,9 @@ void ALLL_SwordDash::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckMonsterAttackDebug())
+		if (DebugGameInstance->CheckMonsterAttackDebug())
 		{
 			if (bIsDashing)
 			{
@@ -70,6 +72,13 @@ void ALLL_SwordDash::Tick(float DeltaSeconds)
 #endif
 }
 
+void ALLL_SwordDash::InitAttributeSet()
+{
+	Super::InitAttributeSet();
+	
+	DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), MonsterAttributeSet->GetMonsterData4(), MonsterAttributeSet->GetMonsterData4()));
+}
+
 void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
@@ -80,16 +89,16 @@ void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
 		{
 			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(this);
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(SwordDashDataAsset->DashDamageEffect, 1.0, EffectContextHandle);
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(SwordDashDataAsset->DashDamageEffect, Level, EffectContextHandle);
 			if(EffectSpecHandle.IsValid())
 			{
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());
 			}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-			if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+			if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 			{
-				if (ProtoGameInstance->CheckMonsterHitCheckDebug())
+				if (DebugGameInstance->CheckMonsterHitCheckDebug())
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("대시 피격")));
 				}
@@ -104,9 +113,9 @@ void ALLL_SwordDash::Dash() const
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_SWORD_DASH_DASH)))
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckMonsterAttackDebug())
+			if (DebugGameInstance->CheckMonsterAttackDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 대시 수행"), *GetName()));
 			}
