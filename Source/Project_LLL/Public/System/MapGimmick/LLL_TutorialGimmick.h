@@ -6,6 +6,7 @@
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_TutorialGimmick.generated.h"
 
+class UGameplayEffect;
 class ALLL_GateObject;
 class UStaticMeshComponent;
 class ALLL_RewardObject;
@@ -83,4 +84,7 @@ protected:
 
 	UFUNCTION()
 	void LoadLevel(UNiagaraComponent* InNiagaraComponent);
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "플레이어 최대 체력 증가 이펙트")
+	TSubclassOf<UGameplayEffect> ChargeSkillGaugeEffect;
 };
