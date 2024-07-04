@@ -1,4 +1,5 @@
-﻿
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -15,7 +16,7 @@ enum class EStageState : uint8
 };
 
 UENUM()
-enum class EProductType
+enum class EProductType : uint8
 {
 	Gold = 1,
 	MaxHP,
@@ -35,9 +36,16 @@ enum class ERewardCategory : uint8
 UENUM(BlueprintType)
 enum class EFModParameter : uint8
 {
-	None UMETA(Hidden),
+	None,
 	PlayerWalkMaterialParameter,
-	PlayerAttackCountParameter
+	MonsterWalkMaterialParameter,
+	PlayerAttackCountParameter,
+	PlayerAttackHitCountParameter,
+	PlayerDamagedTypeParameter,
+	BGM_BulletTimeParameter,
+	BGM_BattleParameter,
+	BGM_PauseParameter,
+	AMB_BulletTimeParameter
 };
 
 UENUM(BlueprintType)
@@ -47,4 +55,21 @@ enum class EPlayerWalkMaterialParameter : uint8
 	Grass,
 	Wood,
 	Steel
+};
+
+UENUM(BlueprintType)
+enum class EMonsterWalkMaterialParameter : uint8
+{
+	Dirt,
+	Grass,
+	Wood,
+	Steel
+};
+
+UENUM(BlueprintType)
+enum class EPlayerDamagedTypeParameter : uint8
+{
+	Sword,
+	Claw,
+	Staff
 };

@@ -7,6 +7,8 @@
 #include "LLL_MonsterASC.generated.h"
 
 
+class ALLL_BaseCharacter;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECT_LLL_API ULLL_MonsterASC : public ULLL_BaseASC
 {
@@ -21,10 +23,20 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	
+
+	virtual void BeginDestroy() override;
 protected:
     // TODO: 플레이어랑 몬스터 ASC 분리하기
     virtual void OnFallableTagAdded(const FGameplayTag Tag, int32 count);
+	virtual void OnMarkTagAdded(const FGameplayTag Tag, int32 count);
     virtual void CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEffectSpec);
 
+	UFUNCTION()
+	void ClearAllTimer(ALLL_BaseCharacter* Character);
+	
+protected:
+	FTimerHandle MarkTimerHandle;
+
+	FTimerHandle BleedingTimerHandle;
+	
 };

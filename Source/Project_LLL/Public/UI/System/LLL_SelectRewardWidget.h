@@ -7,6 +7,7 @@
 #include "Components/Button.h"
 #include "LLL_SelectRewardWidget.generated.h"
 
+struct FAbilityIconWrapper;
 class UImage;
 class URichTextBlock;
 struct FAbilityDataTable;
@@ -20,6 +21,8 @@ class PROJECT_LLL_API ULLL_SelectRewardWidget : public UUserWidget
 	
 public:
 	virtual void NativeConstruct() override;
+
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 	
 public:
 	FORCEINLINE UButton* GetFirstButton() const { return RewardButton1; }
@@ -27,7 +30,7 @@ public:
 	FORCEINLINE UButton* GetThirdButton() const { return RewardButton3; }
 
 public:
-	void SetWidgetInfo(TArray<FAbilityDataTable*> AbilityDataArray);
+	void SetWidgetInfo(TArray<const FAbilityDataTable*> AbilityDataArray);
 	void FocusToUI();
 	virtual void OnAnimationFinished_Implementation(const UWidgetAnimation* Animation) override;
 	
@@ -65,6 +68,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 아이콘(임시)")
 	TArray<UTexture2D*> EruriaIConTextures;
 
+	// 3x5 AbilityType - AbilityPart
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 아이콘")
+	TArray<FAbilityIconWrapper> EnhancedEruriaIConTextures;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 배경 이미지(임시)")
+	TArray<UTexture2D*> EruriaBackgroundTextures;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 레어도 색상")
 	TArray<FLinearColor> EruriaRarityColor;
 	

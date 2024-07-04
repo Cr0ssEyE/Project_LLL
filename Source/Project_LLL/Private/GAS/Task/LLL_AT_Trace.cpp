@@ -44,7 +44,7 @@ void ULLL_AT_Trace::SpawnAndInitializeTargetActor()
 		(
 		TargetActorClass,
 		FTransform::Identity,
-		nullptr,
+		GetOwnerActor(),
 		nullptr,
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn)
 		);

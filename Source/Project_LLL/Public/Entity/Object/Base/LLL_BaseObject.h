@@ -7,13 +7,14 @@
 #include "DataAsset/LLL_BaseObjectDataAsset.h"
 #include "GameFramework/Actor.h"
 #include "Interface/LLL_FModInterface.h"
+#include "Interface/LLL_NiagaraInterface.h"
 #include "LLL_BaseObject.generated.h"
 
 class UNiagaraComponent;
 class UFMODAudioComponent;
 
 UCLASS()
-class PROJECT_LLL_API ALLL_BaseObject : public AActor, public IAbilitySystemInterface, public ILLL_FModInterface
+class PROJECT_LLL_API ALLL_BaseObject : public AActor, public IAbilitySystemInterface, public ILLL_FModInterface, public ILLL_NiagaraInterface
 {
 	GENERATED_BODY()
 
@@ -23,6 +24,7 @@ public:
 
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
+	FORCEINLINE virtual TArray<UNiagaraComponent*> GetNiagaraComponents() const { return NiagaraComponents; }
 	
 protected:
 	// Called when the game starts or when spawned
@@ -31,7 +33,10 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetDefaultInformation();
 	virtual void BeginPlay() override;
-	virtual void InitAttributeSet();
+
+protected:
+	virtual void SetFModParameter(EFModParameter FModParameter) override {}
+	virtual void AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -39,12 +44,12 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UNiagaraComponent>> NiagaraComponents;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UNiagaraComponent> NiagaraComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<const ULLL_BaseObjectDataAsset> BaseObjectDataAsset;

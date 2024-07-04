@@ -7,7 +7,9 @@
 #include "GameplayEffectExtension.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 
@@ -20,11 +22,13 @@ ULLL_CharacterAttributeSetBase::ULLL_CharacterAttributeSetBase() :
 void ULLL_CharacterAttributeSetBase::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+	
 	if(Attribute == GetMoveSpeedAttribute())
 	{
 		const ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwningActor());
 		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GetMoveSpeed();
 	}
+	
 	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }
@@ -38,6 +42,7 @@ bool ULLL_CharacterAttributeSetBase::PreGameplayEffectExecute(FGameplayEffectMod
 			Data.EvaluatedData.Magnitude = 0.f;
 		}
 	}
+	
 	return Super::PreGameplayEffectExecute(Data);
 }
 
@@ -60,6 +65,15 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 		PayloadData.Instigator = Instigator;
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
 
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (ProtoGameInstance->CheckMonsterHitCheckDebug() && Cast<ALLL_MonsterBase>(GetOwningActor()))
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("몬스터 데미지 입음. : %f"), Data.EvaluatedData.Magnitude));
+			}
+		}
+#endif
 		SetReceiveDamage(0.f);
 	}
 	Character->UpdateWidgetDelegate.Broadcast();

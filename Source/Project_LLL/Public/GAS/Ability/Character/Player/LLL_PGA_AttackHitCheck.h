@@ -6,6 +6,7 @@
 #include "GAS/Ability/Character/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_AttackHitCheck.generated.h"
 
+class UFMODEvent;
 class ULLL_AT_Trace;
 class ULLL_PGA_KnockBack;
 class ALLL_TA_TraceBase;
@@ -44,7 +45,7 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<ALLL_TA_TraceBase> TargetActorClass;
-
+	
 	UPROPERTY()
 	TObjectPtr<ULLL_AT_Trace> TraceTask;
 };

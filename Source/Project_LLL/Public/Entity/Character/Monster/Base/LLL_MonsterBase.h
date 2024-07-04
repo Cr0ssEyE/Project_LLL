@@ -22,23 +22,28 @@ class PROJECT_LLL_API ALLL_MonsterBase : public ALLL_BaseCharacter, public ILLL_
 public:
 	ALLL_MonsterBase();
 	
+	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
+	FORCEINLINE void SetCharging(bool IsCharging) { bIsCharging = IsCharging; }
+	
+	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
+	FORCEINLINE bool IsCharging() const { return bIsCharging; }
+	FORCEINLINE int32 GetId() const { return Id; }
+
+protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void InitAttributeSet() override;
+	virtual void SetFModParameter(EFModParameter FModParameter) override;
 	
 public:
-	void Attack() const;
-	void Charge() const;
-	virtual void Damaged(bool IsDOT) override;
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
 	virtual void Dead() override;
-
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	virtual void ApplyStackedKnockBack() override;
-	
-	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
-	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
-	FORCEINLINE void SetCharging(bool IsCharging) { bIsCharging = IsCharging; }
-	FORCEINLINE bool IsCharging() const { return bIsCharging; }
+
+	void Attack() const;
+	void Charge() const;
+	void RecognizePlayerToAroundMonster() const;
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -62,6 +67,23 @@ public:
 	UFUNCTION()
 	void ToggleAIHandle(bool value);
 
+	// 이펙트 관련
+public:
+	void UpdateMarkVFX(uint8 NewCount = 0, uint8 MaxCount = 0);
+	void UpdateBleedingVFX(bool ActiveState = true);
+	void UpdateMonsterHitVFX();
+	
+	// 이펙트 관련
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraComponent> MarkVFXComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraComponent> BleedingVFXComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UMaterialInstanceDynamic> HitEffectOverlayMaterialInstance;
+	
 //gold section
 public:
 	virtual void DropGold(const FGameplayTag tag, int32 data) override;

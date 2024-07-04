@@ -7,13 +7,13 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Task/LLL_AT_Trace.h"
 
 ULLL_PGA_AttackHitCheck::ULLL_PGA_AttackHitCheck()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-	
 }
 
 void ULLL_PGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -68,9 +68,9 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 			K2_ApplyGameplayEffectSpecToOwner(HitCountEffectSpecHandle);
 		}
 	}
-	
+
 	BP_ApplyGameplayEffectToTarget(TargetDataHandle, AttackDamageEffect, CurrentEventData.EventMagnitude);
-	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect); 
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, GiveTagEffect);
 
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [=, this]()
 	{
@@ -82,10 +82,20 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 		Cast<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked())->ReceiveTargetData(this, TargetDataHandle);
 	}));
 
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	
 	FGameplayEventData PayloadData;
-	// 아래와 같이 복수의 데이터 전달 가능
+	FGameplayTagContainer TriggerTags;
+	for (auto Trigger : AbilityTriggers)
+	{
+		TriggerTags.AddTag(Trigger.TriggerTag);
+	}
+	PayloadData.Instigator = GetAvatarActorFromActorInfo();
+	PayloadData.InstigatorTags.AppendTags(GetAbilitySystemComponentFromActorInfo_Checked()->GetOwnedGameplayTags());
+	PayloadData.InstigatorTags.AppendTags(TriggerTags);
 	PayloadData.TargetData = TargetDataHandle;
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
+	PayloadData.EventMagnitude = CurrentEventData.EventMagnitude;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
 }
 
 void ULLL_PGA_AttackHitCheck::OnTraceEndCallBack(FGameplayEventData EventData)

@@ -142,6 +142,8 @@ void ULLL_MainEruriaInfoWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBl
 	
 	TextBlock->SetText(FText::FromString(AbilityLevelDisplayHelper.DisplayText[static_cast<uint32>(AbilityLevel)]));
 	MaterialInstanceDynamic->SetVectorParameterValue(UI_RARITY_COLOR, EruriaRarityColor[static_cast<uint32>(AbilityData->AbilityRank)]);
-	MaterialInstanceDynamic->SetTextureParameterValue(UI_ERURIA_ICON, EruriaIConTextures[static_cast<uint32>(AbilityData->AbilityType)]);
+	MaterialInstanceDynamic->SetTextureParameterValue(UI_ERURIA_ICON, EnhancedEruriaIConTextures[static_cast<uint32>(AbilityData->AbilityType) - 1].AbilityIcon[static_cast<uint32>(AbilityData->AbilityPart) - 1]);
 }
+
+// 만약 여기서 중단점 터지면 부여한 어빌리티에 태그 뭔가 빠졌는지 체크
 

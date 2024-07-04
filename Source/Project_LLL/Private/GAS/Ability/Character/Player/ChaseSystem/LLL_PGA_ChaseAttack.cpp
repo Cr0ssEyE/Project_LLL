@@ -3,17 +3,21 @@
 
 #include "GAS/Ability/Character/Player/ChaseSystem/LLL_PGA_ChaseAttack.h"
 
+#include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Components/CapsuleComponent.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_MonatgeSectionName.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
-#include "Util/LLL_ExecuteCueHelper.h"
+#include "Util/LLL_FModPlayHelper.h"
 
 ULLL_PGA_ChaseAttack::ULLL_PGA_ChaseAttack()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	MoveDistance = 100.f;
 }
 
 void ULLL_PGA_ChaseAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -21,9 +25,9 @@ void ULLL_PGA_ChaseAttack::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckPlayerSkillDebug())
+		if (DebugGameInstance->CheckPlayerSkillDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("스킬 어빌리티 발동")));
 		}
@@ -49,17 +53,21 @@ void ULLL_PGA_ChaseAttack::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_ChaseAttack::OnCompleteCallBack);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_ChaseAttack::OnInterruptedCallBack);
 
-	PlayMontageTask->ReadyForActivation();
+	float MovementTime = AbilityActionMontage->GetSectionLength(AbilityActionMontage->GetSectionIndex(SECTION_ATTACK));
+	FVector MoveLocation = PlayerCharacter->GetActorLocation() + PlayerCharacter->GetActorForwardVector() * MoveDistance;
 	
-	FLLL_ExecuteCueHelper::ExecuteCue(PlayerCharacter, ChaseAttackCueTag);
+	UAbilityTask_MoveToLocation* MoveTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), MoveLocation, MovementTime / 2, nullptr, nullptr);
+
+	MoveTask->ReadyForActivation();
+	PlayMontageTask->ReadyForActivation();
 }
 
 void ULLL_PGA_ChaseAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckPlayerSkillDebug())
+		if (DebugGameInstance->CheckPlayerSkillDebug())
 		{
 			if(bWasCancelled)
 			{
@@ -77,6 +85,7 @@ void ULLL_PGA_ChaseAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, c
 	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
 	}
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);

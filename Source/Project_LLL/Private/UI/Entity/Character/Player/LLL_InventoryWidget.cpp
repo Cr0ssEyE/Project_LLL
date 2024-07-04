@@ -14,6 +14,7 @@
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
+#include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
 
 void ULLL_InventoryWidget::NativeConstruct()
@@ -29,7 +30,7 @@ void ULLL_InventoryWidget::NativeConstruct()
 
 void ULLL_InventoryWidget::SetEruriaInfo(const FAbilityDataTable* AbilityData)
 {
-	if(SetEruriaImage(CommonEruriaImages[CurrentEmptyEruriaSlotIndex], CommonEruriaLevelTexts[CurrentEmptyEruriaSlotIndex], AbilityData))
+	if (SetEruriaImage(CommonEruriaImages[CurrentEmptyEruriaSlotIndex], CommonEruriaLevelTexts[CurrentEmptyEruriaSlotIndex], AbilityData))
 	{
 		CurrentEmptyEruriaSlotIndex++;
 	}
@@ -73,36 +74,67 @@ void ULLL_InventoryWidget::RegisterInventoryLayout(const UVerticalBox* VerticalB
 
 bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, const FAbilityDataTable* AbilityData)
 {
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningPlayer()->GetCharacter());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningPlayer()->GetCharacter());
 	TArray<FGameplayAbilitySpecHandle> SpecHandles;
 	Player->GetAbilitySystemComponent()->FindAllAbilitiesWithTags(SpecHandles, FGameplayTagContainer(TAG_GAS_ABILITY_PART_COMMON));
-	
-	if (SpecHandles.IsEmpty())
-	{
-		ensure(false);
-		return false;
-	}
-	
+
 	float AbilityLevel = 0.f;
-	for (auto AbilitySpec : SpecHandles)
+	if (!SpecHandles.IsEmpty())
 	{
-		ULLL_PGA_RewardAbilityBase* RewardAbility = Cast<ULLL_PGA_RewardAbilityBase>(Player->GetAbilitySystemComponent()->FindAbilitySpecFromHandle(AbilitySpec)->GetPrimaryInstance());
-		if (!RewardAbility)
+		for (const auto AbilitySpec : SpecHandles)
 		{
-			continue;
+			const ULLL_PGA_RewardAbilityBase* RewardAbility = Cast<ULLL_PGA_RewardAbilityBase>(Player->GetAbilitySystemComponent()->FindAbilitySpecFromHandle(AbilitySpec)->GetPrimaryInstance());
+			if (!RewardAbility)
+			{
+				continue;
+			}
+
+			if (RewardAbility->GetAbilityData()->ID == AbilityData->ID)
+			{
+				AbilityLevel = RewardAbility->GetAbilityLevel();
+				break;
+			}
+		}
+		
+	}
+	else
+	{
+		TArray<FActiveGameplayEffectHandle> EffectHandles = Player->GetAbilitySystemComponent()->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_PART_COMMON));
+
+		if (EffectHandles.IsEmpty())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("어빌리티 및 이펙트에서 보상 찾기 실패")));
+			//ensure(false);
+			return false;
 		}
 
-		if (RewardAbility->GetAbilityData()->ID == AbilityData->ID)
+		for (auto EffectHandle : EffectHandles)
 		{
-			AbilityLevel = RewardAbility->GetAbilityLevel();
-			break;
+			const FActiveGameplayEffect* ActiveGameplayEffect = Player->GetAbilitySystemComponent()->GetActiveGameplayEffect(EffectHandle);
+			if (!ActiveGameplayEffect)
+			{
+				continue;
+			}
+
+			const ULLL_ExtendedGameplayEffect* ExtendedGameplayEffect = Cast<ULLL_ExtendedGameplayEffect>(ActiveGameplayEffect->Spec.Def);
+			if (!IsValid(ExtendedGameplayEffect))
+			{
+				continue;
+			}
+
+			if (ExtendedGameplayEffect->GetAbilityData()->ID == AbilityData->ID)
+			{
+				AbilityLevel = ActiveGameplayEffect->Spec.GetLevel();
+				break;
+			}
 		}
 	}
 
 	// AbilityLevel == 0.f -> RewardAbility == nullptr
-	if (!AbilityLevel)
+	if (AbilityLevel == 0.f)
 	{
-		ensure(false);
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("스펙은 찾았는데 리워드 어빌리티 아님")));
+		//ensure(false);
 		return false;
 	}
 

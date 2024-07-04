@@ -9,10 +9,11 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Game/LLL_GameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
-#include "Util/LLL_ExecuteCueHelper.h"
+#include "Util/LLL_FModPlayHelper.h"
 
 ALLL_BaseCharacter::ALLL_BaseCharacter()
 {
@@ -21,6 +22,7 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	bIsDead = false;
 
 	ASC = CreateDefaultSubobject<ULLL_BaseASC>(TEXT("AbilitySystem"));
+	
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	FModAudioComponent->SetupAttachment(RootComponent);
 
@@ -52,7 +54,7 @@ void ALLL_BaseCharacter::PostInitializeComponents()
 void ALLL_BaseCharacter::SetDefaultInformation()
 {
 	GetMesh()->SetRenderCustomDepth(true);
-	GetMesh()->SetCustomDepthStencilValue(1);
+	GetMesh()->SetCustomDepthStencilValue(2);
 	
 	if (IsValid(CharacterDataAsset))
 	{
@@ -62,7 +64,8 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		GetMesh()->SetRelativeScale3D(CharacterDataAsset->MeshSize);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -CharacterDataAsset->CollisionSize.X));
-
+		GetMesh()->SetBoundsScale(100.f);
+		
 		UClass* AnimBlueprint = CharacterDataAsset->AnimInstance.LoadSynchronous();
 		if (IsValid(AnimBlueprint))
 		{
@@ -130,29 +133,36 @@ void ALLL_BaseCharacter::InitAttributeSet()
 	}
 }
 
+void ALLL_BaseCharacter::AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
+{
+	NiagaraComponents.Remove(nullptr);
+	NiagaraComponents.Emplace(InNiagaraComponent);
+}
+
 void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	if (HitLocation.Z >= GetActorLocation().Z)
+	if (HitLocation.Z < GetActorLocation().Z)
 	{
-		OtherActorCollidedDelegate.Broadcast(this, Other);
-
-		const ECollisionResponse WallResponse = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
-		const ECollisionResponse FieldResponse = Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD);
-	
-		if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
-		{
-			const FGameplayEventData PayloadData;
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
-		}
+		return;
 	}
-}
 
-void ALLL_BaseCharacter::Damaged(bool IsDOT)
-{
-	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DamagedCueTag);
+	LastCollideLocation = HitLocation;
+	LastCollideLocation.Z = GetActorLocation().Z;
 	
+	OtherActorCollidedDelegate.Broadcast(this, Other);
+
+	const ECollisionResponse WallResponse = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
+	const ECollisionResponse FieldResponse = Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD);
+	
+	if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
+	{
+		FGameplayEventData PayloadData;
+		PayloadData.Instigator = Other;
+		
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
+	}
 }
 
 void ALLL_BaseCharacter::Dead()
@@ -167,6 +177,18 @@ void ALLL_BaseCharacter::Dead()
 	CharacterDeadDelegate.Broadcast(this);
 
 	ASC->CancelAbilities();
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("캐릭터 사망")));
-	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DeadCueTag);
+}
+
+void ALLL_BaseCharacter::SetParameter(EFModParameter FModParameter, float value) const
+{
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	{
+		if (FModParameterData.Parameter != FModParameter)
+		{
+			continue;
+		}
+
+		FModAudioComponent->SetParameter(FModParameterData.Name, value);
+	}
 }

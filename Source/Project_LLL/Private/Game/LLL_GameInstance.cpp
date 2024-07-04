@@ -4,22 +4,29 @@
 #include "Game/LLL_GameInstance.h"
 
 #include "Constant/LLL_FilePath.h"
+#include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Interface/LLL_FModInterface.h"
 #include "System/MapSound/LLL_MapSoundManager.h"
 #include "Util/LLL_ConstructorHelper.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "Util/Save/LLL_CustomGameUserSettings.h"
 
 ULLL_GameInstance::ULLL_GameInstance()
 {
 	FModParameterDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_FMOD_PARAMETER_NAME_DATA, EAssertionLevel::Check);
-	
 	AbilityDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_ABILITY_DATA_TABLE, EAssertionLevel::Check);
-
 	RewardDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_REWARD_DATA_TABLE, EAssertionLevel::Check);
-
 	StringDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_STRING_DATA, EAssertionLevel::Check);
+
+	ShareableNiagaraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_ShareableNiagaraDataAsset>(PATH_SHAREABLE_NIAGARA_EFFECTS, EAssertionLevel::Check);
+
+	MonsterMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_MONSTER_MPC, EAssertionLevel::Check);
+	ObjectMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_OBJECT_MPC, EAssertionLevel::Check);
+	PlayerMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_PLAYER_MPC, EAssertionLevel::Check);
+	PostProcessMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_POSTPROCESS_MPC, EAssertionLevel::Check);
 	
-	CustomTimeDilation = 1.0f;
-	CustomTimeDilationInterpSpeed = 5.0f;
+	CustomTimeDilation = 1.f;
+	CustomTimeDilationInterpSpeed = 15.f;
 }
 
 void ULLL_GameInstance::Init()
@@ -39,7 +46,11 @@ void ULLL_GameInstance::Init()
 
 	for (const FAbilityDataTable* LoadAbilityData : LoadAbilityDataArray)
 	{
-		AbilityData.Add(*LoadAbilityData);
+		if (!LoadAbilityData->bIsImplement)
+		{
+			continue;
+		}
+		AbilityData.Add(LoadAbilityData);
 	}
 	
 	TArray<FRewardDataTable*> LoadRewardDataArray;
@@ -47,31 +58,94 @@ void ULLL_GameInstance::Init()
 
 	for (const FRewardDataTable* LoadRewardData : LoadRewardDataArray)
 	{
-		RewardData.Add(*LoadRewardData);
+		RewardData.Add(LoadRewardData);
 	}
 
 	TArray<FStringDataTable*> LoadStringDataArray;
 	StringDataTable->GetAllRows<FStringDataTable>(TEXT("Failed To Load Reward Data Tables"), LoadStringDataArray);
 	for (const FStringDataTable* LoadStringData : LoadStringDataArray)
 	{
-		StringData.Add(*LoadStringData);
+		StringData.Add(LoadStringData);
 	}
-}	
+
+	GetWorld()->AddParameterCollectionInstance(MonsterMPC, true);
+	GetWorld()->AddParameterCollectionInstance(ObjectMPC, true);
+	GetWorld()->AddParameterCollectionInstance(PlayerMPC, true);
+	GetWorld()->AddParameterCollectionInstance(PostProcessMPC, true);
+
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetFrameRateLimit(60.f);
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetVSyncEnabled(true);
+}
+
+void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)
+{
+	if (!bCustomTimeDilationIsChanging)
+	{
+		bCustomTimeDilationIsChanging = true;
+
+		SetActorsCustomTimeDilationRecursive(Actors, InCustomTimeDilation);
+	}
+}
+
+void ULLL_GameInstance::SetMapSoundManagerBattleParameter(float Value) const
+{
+	if (!IsValid(MapSoundManager))
+	{
+		return;
+	}
+
+	MapSoundManager->SetBattleParameter(Value);
+}
+
+void ULLL_GameInstance::SetMapSoundManagerPauseParameter(float Value) const
+{
+	if (!IsValid(MapSoundManager))
+	{
+		return;
+	}
+
+	MapSoundManager->SetPauseParameter(Value);
+}
 
 void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation)
 {
+	if (!IsValid(GetWorld()))
+	{
+		return;
+	}
+
+	TArray<AActor*> SucceedActors;
 	for (const auto Actor : Actors)
 	{
+		if (!IsValid(Actor))
+		{
+			continue;
+		}
+
+		if (Actor->CustomTimeDilation == InCustomTimeDilation)
+		{
+			SucceedActors.Emplace(Actor);
+			continue;
+		}
+		
 		Actor->CustomTimeDilation = CustomTimeDilation;
 	
 		if (const ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(Actor))
 		{
 			FModInterface->GetFModAudioComponent()->SetPitch(CustomTimeDilation);
 		}
+	}
 
-		if (const ALLL_MapSoundManager* MapSoundManager = Cast<ALLL_MapSoundManager>(Actor))
+	if (IsValid(MapSoundManager))
+	{
+		MapSoundManager->SetPitch(CustomTimeDilation);
+	}
+
+	for (auto Actor : SucceedActors)
+	{
+		if (Actors.Contains(Actor))
 		{
-			MapSoundManager->SetPitch(CustomTimeDilation);
+			Actors.Remove(Actor);
 		}
 	}
 	

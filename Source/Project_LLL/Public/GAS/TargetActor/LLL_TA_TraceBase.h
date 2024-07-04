@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbilityTargetActor.h"
-#include "Enumeration/LLL_EditorSelectHelper.h"
+#include "Enumeration/LLL_EditorSelectEnumHelper.h"
 #include "LLL_TA_TraceBase.generated.h"
 
 UCLASS()
@@ -31,6 +31,9 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Trace")
 	ESelectTraceTarget TraceTarget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+	FName OriginSocketOrBoneName;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Trace")
 	FVector TraceStartLocation = FVector::ZeroVector;

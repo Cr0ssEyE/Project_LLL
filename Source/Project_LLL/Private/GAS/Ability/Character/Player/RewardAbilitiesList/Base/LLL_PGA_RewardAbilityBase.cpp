@@ -4,15 +4,7 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 
 #include "Constant/LLL_GameplayTags.h"
-#include "DataTable/LLL_AbilityDataTable.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
-
-void ULLL_PGA_RewardAbilityBase::SetAbilityInfo(const FAbilityDataTable* InAbilityData)
-{
-	AbilityData = InAbilityData;
-	
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString::Printf(TEXT("%f, %f, %f"), static_cast<float>(AbilityData->AbilityRank), AbilityData->AbilityValue, AbilityData->ChangeValue));
-}
 
 void ULLL_PGA_RewardAbilityBase::PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
 {
@@ -20,12 +12,12 @@ void ULLL_PGA_RewardAbilityBase::PreActivate(const FGameplayAbilitySpecHandle Ha
 	
 	for (auto ActivateEffect : OnActivateEffects)
 	{
-		ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(ActivateEffect.Key.GetDefaultObject());
+		const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(ActivateEffect.Key.GetDefaultObject());
 		if (IsValid(Effect) && ActivateEffect.Value == EEffectApplyTarget::Self)
 		{
-			FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(Effect->GetClass(), GetAbilityLevel());
-			float MagnitudeValue = AbilityData->AbilityValue + AbilityData->ChangeValue * GetAbilityLevel();
-			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_EFFECT_VALUE, MagnitudeValue);
+			const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(Effect->GetClass(), GetAbilityLevel());
+			const float MagnitudeValue = AbilityData->AbilityValue + AbilityData->ChangeValue * (GetAbilityLevel() - 1) / static_cast<uint32>(AbilityData->AbilityValueType);
+			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, MagnitudeValue);
 
  			K2_ApplyGameplayEffectSpecToOwner(EffectHandle);
 		}

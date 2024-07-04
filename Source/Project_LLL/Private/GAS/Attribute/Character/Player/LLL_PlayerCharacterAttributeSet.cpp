@@ -8,11 +8,13 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "Util/LLL_MathHelper.h"
 
 ULLL_PlayerCharacterAttributeSet::ULLL_PlayerCharacterAttributeSet() :
-TargetingCorrectionRadius(100.f)
+TargetingCorrectionRadius(100.f),
+BaseAttackDamageAmplifyByOther(1.f),
+ChaseAttackDamageAmplifyByOther(1.f)
 {
 	
 }
@@ -21,9 +23,31 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
+		AActor* Attacker = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
+		if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Attacker))
+		{
+			Attacker = ThrownObject->GetOwner();
+		}
+		
 		ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
 		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
-		
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (DebugGameInstance->CheckPlayerIsInvincible())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 무적 상태")));
+				Player->Damaged(Attacker, DOT);
+				Player->TakeDamageDelegate.Broadcast(DOT);
+
+				FGameplayEventData PayloadData;
+				PayloadData.Instigator = Attacker;
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
+				return;
+			}
+		}
+#endif
 		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
 		if (GetCurrentHealth() == 0)
 		{
@@ -31,31 +55,15 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		}
 		else
 		{
-			Player->Damaged(DOT);
+			Player->Damaged(Attacker, DOT);
 		}
 		
 		const uint32 DeclinedComboCount = FMath::FloorToInt(GetCurrentComboCount() * GetMultiplyComboCountWhenHit());
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckPlayerIsInvincible())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 무적 상태")));
-				Player->TakeDamageDelegate.Broadcast(DOT);
-
-				FGameplayEventData PayloadData;
-				AActor* Instigator = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
-				if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Instigator))
-				{
-					Instigator = ThrownObject->GetOwner();
-				}
-				PayloadData.Instigator = Instigator;
-				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
-				return;
-			}
-			
-			if (ProtoGameInstance->CheckPlayerHitDebug())
+			if (DebugGameInstance->CheckPlayerHitDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 데미지 입음. : %f"), Data.EvaluatedData.Magnitude));
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 데미지를 입어 콤보 감소. %d -> %d"), static_cast<int32>(GetCurrentComboCount()), DeclinedComboCount));
@@ -76,9 +84,9 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		const uint32 DeclinedComboCount = FMath::FloorToInt(GetCurrentComboCount() * GetMultiplyComboCountPerTime());
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+			if (DebugGameInstance->CheckPlayerAttackDebug() || DebugGameInstance->CheckPlayerSkillDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("시간 경과에 따른 플레이어 콤보 감소. %d -> %d"), static_cast<int32>(GetCurrentComboCount()), DeclinedComboCount));
 			}
@@ -96,9 +104,9 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 void ULLL_PlayerCharacterAttributeSet::TryStartComboManagement(const FGameplayEffectModCallbackData& Data)
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (ProtoGameInstance->CheckPlayerAttackDebug() || ProtoGameInstance->CheckPlayerSkillDebug())
+		if (DebugGameInstance->CheckPlayerAttackDebug() || DebugGameInstance->CheckPlayerSkillDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("현재 콤보 값: %f"), GetCurrentComboCount()));
 		}

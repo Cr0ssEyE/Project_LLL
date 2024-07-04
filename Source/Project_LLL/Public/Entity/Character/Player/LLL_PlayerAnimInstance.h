@@ -19,19 +19,14 @@ class PROJECT_LLL_API ULLL_PlayerAnimInstance : public ULLL_BaseCharacterAnimIns
 	GENERATED_BODY()
 
 public:
-	FDeadMotionEndedDelegate DeadMotionEndedDelegate;
-
-protected:
-	virtual void NativeInitializeAnimation() override;
-	virtual void AnimNotify_LeftStep() override;
-	virtual void AnimNotify_RightStep() override;
-
-public:
 	FORCEINLINE void SetDash(bool IsDashing) { bIsDashing = IsDashing; }
 
+	FDeadMotionEndedDelegate DeadMotionEndedDelegate;
+	
 protected:
-	void SetStepEventParameter(FName FootSocketName) const;
+	virtual void NativeInitializeAnimation() override;
 
+protected:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AnimNotify_DeadMotionEnded() { DeadMotionEndedDelegate.Broadcast(); }
 

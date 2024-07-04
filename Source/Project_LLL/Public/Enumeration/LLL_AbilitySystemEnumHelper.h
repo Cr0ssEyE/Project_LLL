@@ -1,6 +1,9 @@
-﻿#pragma once
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
 
 #include "CoreMinimal.h"
+#include "LLL_AbilitySystemEnumHelper.generated.h"
 
 // TMap<>과 같은 형식으로 키 값에 따라 고유한 어빌리티를 지정하는 경우 사용하기 위함
 UENUM(BlueprintType)
@@ -10,6 +13,16 @@ enum class EAbilityInputName : uint8
 	Skill UMETA(Displayname="스킬"),
 	Chase UMETA(Displayname="추격"),
 	Dash UMETA(Displayname="회피")
+};
+
+// 이펙트 회전 방향을 임의로 지정하는 경우 사용
+UENUM(BlueprintType)
+enum class EEffectFacingSetting : uint8
+{
+	None,
+	LookPlayer,
+	PlayerForward,
+	LookCamera // 카메라 미구현
 };
 
 // 이펙트가 적용되는 대상을 지정하는 경우 사용
@@ -96,4 +109,16 @@ enum class EAbilityValueType : uint8
 	None UMETA(Hidden),
 	Fixed = 1,
 	Percent = 100
+};
+
+USTRUCT(BlueprintType)
+struct FAbilityIconWrapper
+{
+	GENERATED_BODY()
+
+public:
+	FAbilityIconWrapper() {}
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UTexture2D*> AbilityIcon;
 };

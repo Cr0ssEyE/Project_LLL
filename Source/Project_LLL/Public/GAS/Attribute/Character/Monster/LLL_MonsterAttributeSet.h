@@ -15,16 +15,21 @@ class PROJECT_LLL_API ULLL_MonsterAttributeSet : public ULLL_CharacterAttributeS
 	GENERATED_BODY()
 	
 public:
+	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
-	
+
+public:
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MaxShield);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, CurrentShield);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, DetectDistance);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, ProximityDetectDistance);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, ChargeTimer);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackCoolDown);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FieldOfView);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FindPatrolPosRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, DestroyTimer);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, ClusterRecognizeRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData1);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData2);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData3);
@@ -46,9 +51,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DetectDistance;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ProximityDetectDistance;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ChargeTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData AttackCoolDown;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData FieldOfView;
@@ -58,6 +69,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DestroyTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ClusterRecognizeRadius;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MonsterData1;

@@ -3,7 +3,9 @@
 
 #include "CoreMinimal.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
+#include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 
 class PROJECT_LLL_API FLLL_AbilityDataHelper
@@ -20,6 +22,7 @@ public:
 			EffectSpec->bDurationLocked = false;
 			EffectSpec->SetDuration(AbnormalStatusAttributeSet->GetBleedingStatusDuration(), true);
 			EffectSpec->Period = AbnormalStatusAttributeSet->GetBleedingStatusPeriod();
+			UE_LOG(LogTemp, Log, TEXT("%f Period 값 변경"), EffectSpec->GetPeriod());
 			return;
 		}
 
@@ -36,5 +39,35 @@ public:
 			EffectSpec->SetDuration(AbnormalStatusAttributeSet->GetTargetingStatusDuration(), true);
 			return;
 		}
+	}
+
+	static bool SpawnAbilityObject(const ULLL_PGA_RewardAbilityBase* OwnerAbility, const TSubclassOf<ALLL_AbilityObject>& AbilityObjectClass, FGameplayEventData EventData = FGameplayEventData(), EEffectApplyTarget AbilityObjectLocationTarget = EEffectApplyTarget::Self)
+	{
+		UWorld* World = OwnerAbility->GetWorld();
+		if (!World)
+		{
+			return false;	
+		}
+		
+		FTransform SpawnTransform = FTransform::Identity;
+		if (AbilityObjectLocationTarget == EEffectApplyTarget::Self)
+		{
+			SpawnTransform = OwnerAbility->GetAvatarActorFromActorInfo()->GetActorTransform();
+		}
+		else if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(EventData.TargetData, 0))
+		{
+			SpawnTransform = EventData.TargetData.Data[0]->GetActors()[0]->GetActorTransform();
+		}
+	
+		ALLL_AbilityObject* AbilityObject = World->SpawnActorDeferred<ALLL_AbilityObject>(AbilityObjectClass, SpawnTransform);
+		AbilityObject->SetAbilityInfo(OwnerAbility->GetAbilityData(), OwnerAbility->GetAbilityLevel());
+		AbilityObject->SetOwner(OwnerAbility->GetAvatarActorFromActorInfo());
+		AbilityObject->FinishSpawning(OwnerAbility->GetAvatarActorFromActorInfo()->GetActorTransform());
+
+		if (AbilityObject)
+		{
+			return true;
+		}
+		return false;
 	}
 };
