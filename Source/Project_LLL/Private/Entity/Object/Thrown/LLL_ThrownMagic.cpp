@@ -1,19 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Entity/Object/Thrown/LLL_Magic.h"
+#include "Entity/Object/Thrown/LLL_ThrownMagic.h"
 
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
-#include "DataAsset/LLL_MagicDataAsset.h"
+#include "DataAsset/LLL_ThrownMagicDataAsset.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Object/Thrown/LLL_MagicAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
-ALLL_Magic::ALLL_Magic()
+ALLL_ThrownMagic::ALLL_ThrownMagic()
 {
-	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_MagicDataAsset>(PATH_MAGIC_DATA, EAssertionLevel::Check);
+	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_ThrownMagicDataAsset>(PATH_THROWN_MAGIC_DATA, EAssertionLevel::Check);
 
 	MagicAttributeSet = CreateDefaultSubobject<ULLL_MagicAttributeSet>(TEXT("StaffBasicMagicAttributeSet"));
 	
@@ -22,17 +22,17 @@ ALLL_Magic::ALLL_Magic()
 	SetRootComponent(HitCollisionBox);
 }
 
-void ALLL_Magic::BeginPlay()
+void ALLL_ThrownMagic::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MagicDataAsset = Cast<ULLL_MagicDataAsset>(ThrownObjectDataAsset);
+	MagicDataAsset = Cast<ULLL_ThrownMagicDataAsset>(ThrownObjectDataAsset);
 	ThrownObjectAttributeSet = MagicAttributeSet;
 
 	HitCollisionBox->SetBoxExtent(MagicDataAsset->HitCollisionSize);
 }
 
-void ALLL_Magic::Tick(float DeltaSeconds)
+void ALLL_ThrownMagic::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
@@ -51,14 +51,14 @@ void ALLL_Magic::Tick(float DeltaSeconds)
 #endif
 }
 
-void ALLL_Magic::Activate()
+void ALLL_ThrownMagic::Activate()
 {
 	Super::Activate();
 
 	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
-void ALLL_Magic::Deactivate()
+void ALLL_ThrownMagic::Deactivate()
 {
 	Super::Deactivate();
 

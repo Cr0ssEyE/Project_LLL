@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DataAsset/LLL_MagicDataAsset.h"
+#include "DataAsset/LLL_ThrownMagicDataAsset.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "LLL_Magic.generated.h"
 
@@ -30,7 +30,7 @@ protected:
 	TObjectPtr<UBoxComponent> HitCollisionBox;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_MagicDataAsset> MagicDataAsset;
+	TObjectPtr<const ULLL_ThrownMagicDataAsset> MagicDataAsset;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_MagicAttributeSet> MagicAttributeSet;
