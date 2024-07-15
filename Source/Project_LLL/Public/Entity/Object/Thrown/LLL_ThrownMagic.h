@@ -5,20 +5,20 @@
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_ThrownMagicDataAsset.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
-#include "LLL_Magic.generated.h"
+#include "LLL_ThrownMagic.generated.h"
 
-class ULLL_MagicAttributeSet;
+class ULLL_ThrownMagicAttributeSet;
 class UBoxComponent;
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_Magic : public ALLL_ThrownObject
+class PROJECT_LLL_API ALLL_ThrownMagic : public ALLL_ThrownObject
 {
 	GENERATED_BODY()
 
 public:
-	ALLL_Magic();
+	ALLL_ThrownMagic();
 
 protected:
 	virtual void BeginPlay() override;
@@ -33,5 +33,5 @@ protected:
 	TObjectPtr<const ULLL_ThrownMagicDataAsset> MagicDataAsset;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<ULLL_MagicAttributeSet> MagicAttributeSet;
+	TObjectPtr<ULLL_ThrownMagicAttributeSet> ThrownMagicAttributeSet;
 };

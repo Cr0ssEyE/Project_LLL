@@ -26,7 +26,7 @@ ULLL_GameInstance::ULLL_GameInstance()
 	PostProcessMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_POSTPROCESS_MPC, EAssertionLevel::Check);
 	
 	CustomTimeDilation = 1.f;
-	CustomTimeDilationInterpSpeed = 15.f;
+	CustomTimeDilationInterpSpeed = TIME_DILATION_INTERP_SPEED;
 }
 
 void ULLL_GameInstance::Init()

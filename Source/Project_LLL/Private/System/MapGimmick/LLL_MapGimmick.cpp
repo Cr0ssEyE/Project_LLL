@@ -106,7 +106,7 @@ void ALLL_MapGimmick::CreateMap()
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorEnableCollision(false);
 	Player->SetActorHiddenInGame(true);
-	Player->DisableInput(GetWorld()->GetFirstPlayerController());
+	Player->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	RoomActor = GetWorld()->SpawnActor<AActor>(RoomClass, RootComponent->GetComponentTransform());
 	
 	for (USceneComponent* ChildComponent : RoomActor->GetRootComponent()->GetAttachChildren())
@@ -375,7 +375,7 @@ void ALLL_MapGimmick::PlayerTeleport()
 	}
 	
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	Player->DisableInput(GetWorld()->GetFirstPlayerController());
+	Player->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
 	PlayerTeleportNiagara->ActivateSystem();
 }
@@ -392,7 +392,7 @@ void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
 	{
 		
 		Player->SetActorHiddenInGame(false);
-		Player->EnableInput(GetWorld()->GetFirstPlayerController());
+		Player->EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	}
 	else
 	{

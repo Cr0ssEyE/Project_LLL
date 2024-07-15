@@ -166,7 +166,7 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 			if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
 			{
 				Location -= Rotator.Vector() * Player->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f;
-				Rotator += FRotator(0.0f, 180.0f + (FMath::RandBool() ? 10.0f : -10.0f), 0.0f);
+				Rotator += FRotator(0.0f, 180.0f + FEATHER_THROW_ANGLE * (FMath::RandBool() ? 1.0f : -1.0f), 0.0f);
 			}
 			
 			ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(Player->GetObjectPoolingComponent()->GetActor(ThrownObjectClass));

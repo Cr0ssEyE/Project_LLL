@@ -8,14 +8,14 @@
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_ThrownMagicDataAsset.h"
 #include "Game/LLL_DebugGameInstance.h"
-#include "GAS/Attribute/Object/Thrown/LLL_MagicAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/LLL_ThrownMagicAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_ThrownMagic::ALLL_ThrownMagic()
 {
 	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_ThrownMagicDataAsset>(PATH_THROWN_MAGIC_DATA, EAssertionLevel::Check);
 
-	MagicAttributeSet = CreateDefaultSubobject<ULLL_MagicAttributeSet>(TEXT("StaffBasicMagicAttributeSet"));
+	ThrownMagicAttributeSet = CreateDefaultSubobject<ULLL_ThrownMagicAttributeSet>(TEXT("StaffBasicMagicAttributeSet"));
 	
 	HitCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit Collision"));
 	HitCollisionBox->SetCollisionProfileName(CP_MONSTER_ATTACK);
@@ -27,7 +27,7 @@ void ALLL_ThrownMagic::BeginPlay()
 	Super::BeginPlay();
 
 	MagicDataAsset = Cast<ULLL_ThrownMagicDataAsset>(ThrownObjectDataAsset);
-	ThrownObjectAttributeSet = MagicAttributeSet;
+	ThrownObjectAttributeSet = ThrownMagicAttributeSet;
 
 	HitCollisionBox->SetBoxExtent(MagicDataAsset->HitCollisionSize);
 }

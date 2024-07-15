@@ -225,7 +225,7 @@ void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)
 				continue;
 			}
 
-			SetParameter(FModParameter, static_cast<float>(DamagedEventParameterProperty.Value));
+			SetOnceParameterByTupleValue(FModParameter, static_cast<float>(DamagedEventParameterProperty.Value));
 		}
 	}
 	else if (FModParameter == EFModParameter::PlayerWalkMaterialParameter)
@@ -238,12 +238,12 @@ void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)
 				continue;
 			}
 
-			SetParameter(FModParameter, static_cast<float>(StepEventParameterProperty.Value));
+			SetOnceParameterByTupleValue(FModParameter, static_cast<float>(StepEventParameterProperty.Value));
 		}
 	}
 	else if (FModParameter == EFModParameter::PlayerAttackCountParameter || FModParameter == EFModParameter::PlayerAttackHitCountParameter)
 	{
-		SetParameter(FModParameter, CurrentCombo - 1);
+		SetOnceParameterByTupleValue(FModParameter, CurrentCombo - 1);
 	}
 }
 

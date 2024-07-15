@@ -179,7 +179,7 @@ void ALLL_BaseCharacter::Dead()
 	ASC->CancelAbilities();
 }
 
-void ALLL_BaseCharacter::SetParameter(EFModParameter FModParameter, float value) const
+void ALLL_BaseCharacter::SetOnceParameterByTupleValue(EFModParameter FModParameter, float value) const
 {
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
 	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())

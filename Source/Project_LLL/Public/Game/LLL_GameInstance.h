@@ -9,6 +9,8 @@
 #include "DataTable/LLL_StringDataTable.h"
 #include "LLL_GameInstance.generated.h"
 
+#define TIME_DILATION_INTERP_SPEED 15.0f
+
 /**
  * 
  */

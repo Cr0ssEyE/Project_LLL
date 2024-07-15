@@ -41,7 +41,7 @@ void ALLL_TutorialGimmick::BeginPlay()
 		PlayerSpawnPointComponent = Cast<ULLL_PlayerSpawnPointComponent>(ChildComponent);
 		if (IsValid(PlayerSpawnPointComponent))
 		{
-			ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+			ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
 			Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 		}
 	}
@@ -72,7 +72,7 @@ void ALLL_TutorialGimmick::BeginOverlapAttackTutorial(AActor* OverlappedActor, A
 		return;
 	}
 
-	if (OtherActor != GetWorld()->GetFirstPlayerController()->GetPawn())
+	if (OtherActor != UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn())
 	{
 		return;
 	}
@@ -109,7 +109,7 @@ void ALLL_TutorialGimmick::FinalMonsterSpawn(AActor* DestroyedActor)
 {
 	TutorialWidget->SetSkillTutorial();
 
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
 	FGameplayEffectContextHandle EffectContextHandle = Player->GetAbilitySystemComponent()->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(Player);
 	const FGameplayEffectSpecHandle EffectSpecHandle = Player->GetAbilitySystemComponent()->MakeOutgoingSpec(ChargeSkillGaugeEffect, 1.0, EffectContextHandle);
@@ -162,7 +162,7 @@ void ALLL_TutorialGimmick::RewardDestroyed(AActor* DestroyedActor)
 void ALLL_TutorialGimmick::OnInteractionGate()
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	Player->DisableInput(GetWorld()->GetFirstPlayerController());
+	Player->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
 	PlayerTeleportNiagara->ActivateSystem();
 }

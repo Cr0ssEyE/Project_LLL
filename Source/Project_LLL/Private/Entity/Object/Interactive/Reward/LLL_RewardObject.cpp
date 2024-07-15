@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
+#include "Components/BoxComponent.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -14,6 +15,7 @@
 #include "Game/LLL_DebugGameInstance.h"
 #include "UI/Object/LLL_ProductObjectPriceWidget.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 
 ALLL_RewardObject::ALLL_RewardObject()
@@ -27,7 +29,7 @@ ALLL_RewardObject::ALLL_RewardObject()
 
 	TextureMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TextureMashComponent"));
 	TextureMeshComponent->SetupAttachment(RootComponent);
-	TextureMeshComponent->SetRelativeLocation(FVector(0, 0, 130.0f));
+	TextureMeshComponent->SetRelativeLocation(FVector(0, 0, RewardObjectDataAsset->TextureHeight));
 	TextureMeshComponent->SetMaterial(0, RewardObjectDataAsset->TextureMaterialInst);
 
 	RewardTextureMesh = RewardObjectDataAsset->RewardTextureMesh;
@@ -37,6 +39,8 @@ ALLL_RewardObject::ALLL_RewardObject()
 	PriceWidgetComponent->SetupAttachment(RootComponent);
 	PriceWidget = CreateDefaultSubobject<ULLL_ProductObjectPriceWidget>(TEXT("PriceWidget"));
 
+	InteractOnlyCollisionBox->SetBoxExtent(RewardObjectDataAsset->InteractOnlyCollisionBoxExtent);
+	
 	Price = RewardObjectDataAsset->Price;
 }
 
@@ -99,7 +103,7 @@ void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data)
 void ALLL_RewardObject::InteractiveEvent()
 {
 	Super::InteractiveEvent();
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
 	ULLL_PlayerGoldComponent* PlayerGoldComponent = Player->GetGoldComponent();
 	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
 	

@@ -34,7 +34,7 @@
 #define PATH_CLAW_BASIC_DATA TEXT("/Script/Project_LLL.LLL_ClawBasicDataAsset'/Game/DataAsset/DA_ClawBasic.DA_ClawBasic'")
 
 // 몬스터 투사체 관련
-#define PATH_MAGIC_DATA TEXT("/Script/Project_LLL.LLL_MagicDataAsset'/Game/DataAsset/DA_Magic.DA_Magic'")
+#define PATH_THROWN_MAGIC_DATA TEXT("/Script/Project_LLL.LLL_ThrownMagicDataAsset'/Game/DataAsset/DA_ThrownMagic.DA_ThrownMagic'")
 
 // 오브젝트 관련
 #define PATH_INTERACTIVE_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_InteractiveObjectData'/Game/DataAsset/DA_InteractiveObject.DA_InteractiveObject'")
