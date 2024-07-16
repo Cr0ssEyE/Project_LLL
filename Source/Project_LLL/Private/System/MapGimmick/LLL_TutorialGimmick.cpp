@@ -18,6 +18,7 @@
 #include "NiagaraComponent.h"
 #include "DataAsset/LLL_TutorialMapDataAsset.h"
 #include "Game/LLL_GameInstance.h"
+#include "Game/LLL_MapSoundSubsystem.h"
 #include "UI/System/LLL_TutorialWidget.h"
 
 ALLL_TutorialGimmick::ALLL_TutorialGimmick()
@@ -31,6 +32,7 @@ ALLL_TutorialGimmick::ALLL_TutorialGimmick()
 void ALLL_TutorialGimmick::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TutorialDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, TutorialDataAsset->ParticleScale, false, false);
 	PlayerTeleportNiagara->OnSystemFinished.AddDynamic(this, &ALLL_TutorialGimmick::LoadLevel);
 
@@ -63,6 +65,9 @@ void ALLL_TutorialGimmick::BeginPlay()
 		TutorialWidget->AddToViewport();
 		TutorialWidget->SetDashTutorial();
 	}
+
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->StopBGM();
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->StopAMB();
 }
 
 void ALLL_TutorialGimmick::BeginOverlapAttackTutorial(AActor* OverlappedActor, AActor* OtherActor)

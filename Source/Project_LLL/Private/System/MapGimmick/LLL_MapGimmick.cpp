@@ -24,9 +24,9 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Game/LLL_GameInstance.h"
+#include "Game/LLL_MapSoundSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/MapGimmick/Components/LLL_SequencerComponent.h"
-#include "System/MapSound/LLL_MapSoundManager.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
@@ -94,6 +94,9 @@ void ALLL_MapGimmick::BeginPlay()
 	
 	RandomMap();
 	CreateMap();
+
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayAMB();
 }
 
 void ALLL_MapGimmick::CreateMap()
@@ -181,8 +184,7 @@ void ALLL_MapGimmick::RandomMap()
 	if (CurrentRoomNumber > MapDataAsset->MaximumRoom)
 	{
 		RoomClass = MapDataAsset->Boss;
-		const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-		GameInstance->GetMapSoundManager()->StopBGM();
+		GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->StopBGM();
 		return;
 	}
 	
@@ -262,8 +264,7 @@ void ALLL_MapGimmick::SetFight()
 {
 	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
 	
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	GameInstance->SetMapSoundManagerBattleParameter(1.0f);
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetPauseParameter(1.0f);
 }
 
 void ALLL_MapGimmick::SetChooseReward()
@@ -272,8 +273,7 @@ void ALLL_MapGimmick::SetChooseReward()
 	
 	RewardSpawn();
 
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	GameInstance->SetMapSoundManagerBattleParameter(0.0f);
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetPauseParameter(0.0f);
 }
 
 void ALLL_MapGimmick::SetChooseNext()
