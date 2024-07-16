@@ -15,7 +15,7 @@ class ALLL_BaseCharacter;
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ALLL_MapSoundManager : public ALLL_SystemBase
+class PROJECT_LLL_API ALLL_MapSoundManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
