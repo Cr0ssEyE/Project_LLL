@@ -248,7 +248,7 @@ void ALLL_MapGimmick::EnableAllGates()
 void ALLL_MapGimmick::SetState(EStageState InNewState)
 {
 	CurrentState = InNewState;
-
+	
 	if (StateChangeActions.Contains(InNewState))
 	{
 		StateChangeActions[CurrentState].StageDelegate.ExecuteIfBound();
@@ -264,7 +264,7 @@ void ALLL_MapGimmick::SetFight()
 {
 	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
 	
-	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetPauseParameter(1.0f);
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetBattleParameter(1.0f);
 }
 
 void ALLL_MapGimmick::SetChooseReward()
@@ -273,7 +273,7 @@ void ALLL_MapGimmick::SetChooseReward()
 	
 	RewardSpawn();
 
-	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetPauseParameter(0.0f);
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetBattleParameter(0.0f);
 }
 
 void ALLL_MapGimmick::SetChooseNext()

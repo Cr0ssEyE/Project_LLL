@@ -16,8 +16,7 @@ AMBWrapper()
 
 void ULLL_MapSoundSubsystem::SetBulletTimeParameterValue(float Value) const
 {
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	for (const auto FModParameterData : FModParameterDataArray)
 	{
 		if (FModParameterData.Parameter == EFModParameter::BGM_BulletTimeParameter)
 		{
@@ -33,8 +32,14 @@ void ULLL_MapSoundSubsystem::SetBulletTimeParameterValue(float Value) const
 
 void ULLL_MapSoundSubsystem::SetBattleParameter(float Value) const
 {
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	// 이게 없으면 종료할때 자꾸 터져서 일단 임시로 이렇게 해놨음
+	// 추후 더 좋은 코드로 개선 예정
+	if (this == nullptr)
+	{
+		return;
+	}
+	
+	for (const auto FModParameterData : FModParameterDataArray)
 	{
 		if (FModParameterData.Parameter != EFModParameter::BGM_BattleParameter)
 		{
@@ -47,8 +52,7 @@ void ULLL_MapSoundSubsystem::SetBattleParameter(float Value) const
 
 void ULLL_MapSoundSubsystem::SetPauseParameter(float Value) const
 {
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	for (const auto FModParameterData : FModParameterDataArray)
 	{
 		if (FModParameterData.Parameter != EFModParameter::BGM_PauseParameter)
 		{
