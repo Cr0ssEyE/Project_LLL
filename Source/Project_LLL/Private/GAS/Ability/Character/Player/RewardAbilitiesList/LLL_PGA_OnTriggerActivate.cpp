@@ -134,6 +134,8 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 
 	int32 SpawnCount = AbilityData->UnchangeableValue == 0 ? 1 : AbilityData->UnchangeableValue;
+	bool ThrowCircular = false;
+	bool Straight = false;
 	if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
 	{
 		const UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
@@ -150,35 +152,48 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 			{
 				SpawnCount += ActiveEffect->GetAbilityData()->AbilityValue;
 			}
-			
-			if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
+			else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
 			{
 				SpawnCount = Player->GetChargedFeatherCount();
 				Player->StartChargeFeather();
 			}
+			else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CIRCULAR_FEATHER))
+			{
+				SpawnCount = 12;
+				ThrowCircular = true;
+				Straight = true;
+			}
 		}
 	}
 
-	float TempSpawnOffsetTime = 0.01f;
+	float ThrowAngle = 0.0f;
+	float TempSpawnOffsetTime = 0.000001f;
 	for (int i = 0; i < SpawnCount; i++)
 	{
 		const AActor* Target = Cast<ALLL_PlayerBase>(CurrentEventData.Instigator) ? CurrentEventData.TargetData.Data[0]->GetActors()[0].Get() : CurrentEventData.Instigator;
 		
 		FTimerHandle SpawnTimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, Player, Target, i, SpawnCount]{
+		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, Player, Target, i, SpawnCount, ThrowAngle, ThrowCircular, Straight]{
 			FVector Location = Player->GetActorLocation();
 			FRotator Rotator = FRotationMatrix::MakeFromX(Target->GetActorLocation() - Player->GetActorLocation()).Rotator();
 
 			if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
 			{
-				Location -= Rotator.Vector() * Player->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f;
-				Rotator += FRotator(0.0f, 180.0f + FEATHER_THROW_ANGLE * (FMath::RandBool() ? 1.0f : -1.0f), 0.0f);
+				if (ThrowCircular)
+				{
+					Rotator += FRotator(0.0f, ThrowAngle, 0.0f);
+				}
+				else
+				{
+					Location -= Rotator.Vector() * Player->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f;
+					Rotator += FRotator(0.0f, 180.0f + CHASE_FEATHER_THROW_ANGLE_OFFSET * (FMath::RandBool() ? 1.0f : -1.0f) * FMath::RandRange(0, 5), 0.0f);
+				}
 			}
 			
 			ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(Player->GetObjectPoolingComponent()->GetActor(ThrownObjectClass));
 			ThrownObject->SetActorLocationAndRotation(Location, Rotator);
 			ThrownObject->SetAbilityInfo(AbilityData, GetAbilityLevel());
-			ThrownObject->Throw(Player, const_cast<AActor*>(Target), ThrowSpeed);
+			ThrownObject->Throw(Player, const_cast<AActor*>(Target), ThrowSpeed, Straight);
 
 			if (i == SpawnCount - 1)
 			{
@@ -187,6 +202,8 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 		}), TempSpawnOffsetTime, false);
 
 		TempSpawnOffsetTime += SpawnOffsetTime;
+		UE_LOG(LogTemp, Log, TEXT("%f, %f"), TempSpawnOffsetTime, SpawnOffsetTime)
+		ThrowAngle += 360.0f / SpawnCount;
 	}
 }
 

@@ -25,6 +25,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 
 public:
 	FORCEINLINE void SetAbilityInfo(const FAbilityDataTable* InAbilityData, float InAbilityLevel) { AbilityData = InAbilityData; AbilityLevel = InAbilityLevel; }
@@ -35,10 +36,13 @@ public:
 	virtual void Activate() override;
 	virtual void Deactivate() override;
 	
-	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed);
+	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight);
 
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+
+	UFUNCTION()
+	void TargetDeadHandle(ALLL_BaseCharacter* Character);
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
@@ -58,4 +62,22 @@ protected:
 	const FAbilityDataTable* AbilityData;
 	float AbilityLevel;
 	float OffencePower;
+
+	UPROPERTY(VisibleAnywhere)
+	float CurveSpeed;
+
+	UPROPERTY(VisibleAnywhere)
+	float CurveSize;
+
+	UPROPERTY(VisibleAnywhere)
+	float TargetCapsuleRadius;
+
+	UPROPERTY(VisibleAnywhere)
+	FVector TargetDeadLocation;
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 bTargetIsDead : 1;
+	
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsStraight : 1;
 };
