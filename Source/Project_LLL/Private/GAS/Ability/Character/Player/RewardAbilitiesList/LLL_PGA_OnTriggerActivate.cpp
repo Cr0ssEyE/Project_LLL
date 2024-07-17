@@ -150,6 +150,12 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 			{
 				SpawnCount += ActiveEffect->GetAbilityData()->AbilityValue;
 			}
+			
+			if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
+			{
+				SpawnCount = Player->GetChargedFeatherCount();
+				Player->StartChargeFeather();
+			}
 		}
 	}
 
@@ -210,7 +216,7 @@ void ULLL_PGA_OnTriggerActivate::GrantTagWhenHit()
 	{
 		for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
 		{
-			if (IAbilitySystemInterface* ASC = Cast<IAbilitySystemInterface>(Actor))
+			if (const IAbilitySystemInterface* ASC = Cast<IAbilitySystemInterface>(Actor))
 			{
 				ASC->GetAbilitySystemComponent()->RemoveLooseGameplayTags(GrantTagContainer, GrantNum);
 			}

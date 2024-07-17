@@ -78,6 +78,7 @@
 // 시스템 게임플레이 태그
 #define TAG_GAS_SYSTEM_DROP_GOLD FGameplayTag::RequestGameplayTag(FName("System.Drop.Gold"))
 #define TAG_GAS_HAVE_FEATHER_AMPLIFICATION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.FeatherAmplification"))
+#define TAG_GAS_HAVE_CHARGED_FEATHER FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.ChargedFeather"))
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))

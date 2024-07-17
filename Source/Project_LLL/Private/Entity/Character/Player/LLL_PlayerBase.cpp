@@ -87,6 +87,9 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	LastCheckedMouseLocation = FVector::Zero();
 	
 	bIsLowHP = false;
+
+	// 추후 데이터화 예정
+	ChargedFeatherCount = 10;
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -290,6 +293,22 @@ void ALLL_PlayerBase::RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObje
 			PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
 		}
 	}
+}
+
+void ALLL_PlayerBase::StartChargeFeather()
+{
+	ChargedFeatherCount = 1;
+	GetWorldTimerManager().ClearTimer(ChargeFeatherTimerHandle);
+	GetWorldTimerManager().SetTimer(ChargeFeatherTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		ChargedFeatherCount++;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
+		// 추후 데이터화 예정
+		if (ChargedFeatherCount == 10)
+		{
+			GetWorldTimerManager().PauseTimer(ChargeFeatherTimerHandle);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 완료")));
+		}
+	}), 1.0f, true);
 }
 
 FVector ALLL_PlayerBase::CheckMouseLocation()

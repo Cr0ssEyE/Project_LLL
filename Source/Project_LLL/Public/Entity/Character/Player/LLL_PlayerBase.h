@@ -54,6 +54,8 @@ public:
 	void AddInteractiveObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
+	void StartChargeFeather();
+
 public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
 	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
@@ -65,6 +67,7 @@ public:
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
 	FORCEINLINE float GetLastSentDamage() const { return LastSentDamage; }
+	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
@@ -146,6 +149,8 @@ private:
 	float ToCursorRotationMultiplyValue;
 	int32 LastAttackerMonsterId;
 	int32 CurrentCombo;
+	int32 ChargedFeatherCount;
+	FTimerHandle ChargeFeatherTimerHandle;
 
 	// 상태 관련 함수
 protected:
