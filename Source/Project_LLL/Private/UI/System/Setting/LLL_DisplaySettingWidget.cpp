@@ -4,6 +4,7 @@
 #include "UI/System/Setting/LLL_DisplaySettingWidget.h"
 
 #include "Components/Button.h"
+#include "Components/CheckBox.h"
 #include "Components/ComboBoxString.h"
 #include "GameFramework/GameUserSettings.h"
 #include "UI/System/Setting/LLL_SettingWidget.h"
@@ -29,12 +30,12 @@ void ULLL_DisplaySettingWidget::NativeConstruct()
 	}
 	ResolutionComboBox->OnSelectionChanged.AddDynamic(this, &ULLL_DisplaySettingWidget::ApplyResolutionType);
 	
-	UseFullScreenButton->OnClicked.AddDynamic(this, &ULLL_DisplaySettingWidget::ApplyFullScreen);
-	UseWindowButton->OnClicked.AddDynamic(this, &ULLL_DisplaySettingWidget::ApplyWindowScreen);
-
 	ResolutionComboBox->SetSelectedOption(ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->GetDisplayResolutionString());
 	ResolutionComboBox->OnSelectionChanged.Broadcast(ResolutionComboBox->GetSelectedOption(),  ESelectInfo::Type::OnMouseClick);
 
+	UseFullScreenButton->OnClicked.AddDynamic(this, &ULLL_DisplaySettingWidget::ApplyFullScreen);
+	UseWindowButton->OnClicked.AddDynamic(this, &ULLL_DisplaySettingWidget::ApplyWindowScreen);
+	
 	if (ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->GetFullscreenMode() == EWindowMode::WindowedFullscreen)
 	{
 		UseFullScreenButton->OnClicked.Broadcast();
@@ -43,6 +44,11 @@ void ULLL_DisplaySettingWidget::NativeConstruct()
 	{
 		UseWindowButton->OnClicked.Broadcast();
 	}
+
+	
+	
+	VSyncCheckBox->OnCheckStateChanged.AddDynamic(this, &ULLL_DisplaySettingWidget::ULLL_DisplaySettingWidget::ChangeVSyncState);
+	VSyncCheckBox->SetIsChecked(ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->IsVSyncEnabled());
 
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetFrameRateLimit(60.f);
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetVSyncEnabled(true);
@@ -81,4 +87,21 @@ void ULLL_DisplaySettingWidget::ApplyWindowScreen()
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetFullscreenMode(EWindowMode::Windowed);
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->ApplySettings(true);
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->ConfirmVideoMode();
+}
+
+void ULLL_DisplaySettingWidget::ApplyMaxFrameRateValue(FString FrameRateString, ESelectInfo::Type Info)
+{
+	
+}
+
+void ULLL_DisplaySettingWidget::ChangeVSyncState(bool IsChecked)
+{
+	if (VSyncCheckBox->IsChecked())
+	{
+		ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetVSyncEnabled(true);
+	}
+	else
+	{
+		ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetVSyncEnabled(false);
+	}
 }

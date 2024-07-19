@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LLL_DisplaySettingWidget.generated.h"
 
+class UCheckBox;
 enum class EResolutionTypes : uint8;
 class UButton;
 class UComboBoxString;
@@ -29,6 +30,12 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyWindowScreen();
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyMaxFrameRateValue(FString FrameRateString, ESelectInfo::Type Info);
+	
+	UFUNCTION(BlueprintCallable)
+	void ChangeVSyncState(bool IsChecked);
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
@@ -39,5 +46,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> UseWindowButton;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UComboBoxString> MaxFrameRateComboBox;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UCheckBox> VSyncCheckBox;
 	
 };
