@@ -193,7 +193,9 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 			ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(Player->GetObjectPoolingComponent()->GetActor(ThrownObjectClass));
 			ThrownObject->SetActorLocationAndRotation(Location, Rotator);
 			ThrownObject->SetAbilityInfo(AbilityData, GetAbilityLevel());
-			ThrownObject->Throw(Player, const_cast<AActor*>(Target), ThrowSpeed, Straight);
+			// 추후 데이터화 예정
+			const float KnockBackPower = 300.0f;
+			ThrownObject->Throw(Player, const_cast<AActor*>(Target), ThrowSpeed, Straight, KnockBackPower);
 
 			if (i == SpawnCount - 1)
 			{

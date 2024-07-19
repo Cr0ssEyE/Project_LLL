@@ -109,7 +109,7 @@ void ALLL_ThrownObject::Deactivate()
 	GetWorldTimerManager().ClearTimer(HideTimerHandle);
 }
 
-void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight)
+void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower)
 {
 	SetOwner(NewOwner);
 	Target = NewTarget;
@@ -158,7 +158,9 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 			bTargetIsDead = true;
 		}
 	}
+	
 	bIsStraight = Straight;
+	KnockBackPower = InKnockBackPower;
 
 	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_ThrownObject::Deactivate, ThrownObjectAttributeSet->GetHideTimer(), false);
 }
@@ -183,6 +185,14 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 			}
 		}
+	}
+
+	if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Other))
+	{
+		const FVector AvatarLocation = GetActorLocation();
+		const FVector LaunchDirection = (Other->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
+		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
+		KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 	}
 	
 	Deactivate();

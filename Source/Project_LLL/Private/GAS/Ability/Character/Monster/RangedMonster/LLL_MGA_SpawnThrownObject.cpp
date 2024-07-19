@@ -35,7 +35,7 @@ void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 	
 		ThrownObject->SetActorLocationAndRotation(StartLocation, PredictedRotation);
 		ThrownObject->CustomTimeDilation = RangedMonster->CustomTimeDilation;
-		ThrownObject->Throw(RangedMonster, Player, MonsterAttributeSet->GetMonsterData1(), true);
+		ThrownObject->Throw(RangedMonster, Player, MonsterAttributeSet->GetMonsterData1(), true, 0.0f);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))

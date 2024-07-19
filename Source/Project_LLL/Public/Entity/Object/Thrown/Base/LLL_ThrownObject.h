@@ -36,7 +36,7 @@ public:
 	virtual void Activate() override;
 	virtual void Deactivate() override;
 	
-	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight);
+	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower);
 
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -80,4 +80,7 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsStraight : 1;
+
+	UPROPERTY(VisibleAnywhere)
+	float KnockBackPower;
 };

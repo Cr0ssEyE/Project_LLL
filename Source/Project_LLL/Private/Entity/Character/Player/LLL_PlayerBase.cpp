@@ -87,9 +87,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	LastCheckedMouseLocation = FVector::Zero();
 	
 	bIsLowHP = false;
-
-	// 추후 데이터화 예정
-	ChargedFeatherCount = 10;
 }
 
 void ALLL_PlayerBase::BeginPlay()
