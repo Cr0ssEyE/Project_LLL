@@ -6,7 +6,7 @@
 ULLL_CameraDataAsset::ULLL_CameraDataAsset() :
 	ProjectionType(ECameraProjectionMode::Orthographic),
 	CameraFOV(45.f),
-	SpringArmDistance(3000.f),
+	PerspectiveSpringArmDistance(3000.f),
 	bUseConstraintAspectRatio(false),
 	AspectRatio(1.77778f),
 	CameraDistance(3000.f),
@@ -16,6 +16,7 @@ ULLL_CameraDataAsset::ULLL_CameraDataAsset() :
 	bUseUpdateOrthoPlanes(false),
 	OrthographicNearClipDistance(-3000),
 	OrthographicFarClipDistance(10000000),
+	OrthographicSpringArmDistance(1000.f),
 	CameraCursorTrackingSpeed(500),
 	CameraCursorTrackingLength(0)
 {

@@ -13,7 +13,7 @@
 #include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "Constant/LLL_MaterialParameterName.h"
+#include "..\..\..\..\..\Public\Constant\LLL_GraphicParameterNames.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"

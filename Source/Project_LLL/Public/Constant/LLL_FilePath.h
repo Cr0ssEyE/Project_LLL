@@ -47,6 +47,7 @@
 #define PATH_FMOD_PARAMETER_NAME_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/FModParameterNameData.FModParameterNameData'")
 #define PATH_STRING_DATA TEXT("/Script/Engine.DataTable'/Game/DataTable/MiscellaneousDatas/DT_StringData.DT_StringData'")
 #define PATH_SHAREABLE_NIAGARA_EFFECTS TEXT("/Script/Project_LLL.LLL_ShareableNiagaraDataAsset'/Game/DataAsset/DA_NiagaraEffects.DA_NiagaraEffects'")
+#define PATH_GLOBAL_PARAMETERS_DATA TEXT("/Script/Project_LLL.LLL_GlobalParameterDataAsset'/Game/DataAsset/DA_GlobalData.DA_GlobalData'")
 
 // 맵 및 보상 시스템 관련
 #define PATH_MAP_DATA TEXT("/Script/Project_LLL.LLL_MapDataAsset'/Game/DataAsset/DA_Map.DA_Map'")

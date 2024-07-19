@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataAsset/LLL_GlobalParameterDataAsset.h"
 #include "DataTable/LLL_FModParameterDataTable.h"
 #include "DataTable/LLL_RewardDataTable.h"
 #include "DataTable/LLL_AbilityDataTable.h"
@@ -50,6 +51,7 @@ public:
 	// 데이터 에셋
 public:
 	FORCEINLINE TObjectPtr<const ULLL_ShareableNiagaraDataAsset> GetShareableNiagaraDataAsset() const { return ShareableNiagaraDataAsset; }
+	FORCEINLINE TObjectPtr<const ULLL_GlobalParameterDataAsset> GetGlobalParametersDataAsset() const { return GlobalParametersDataAsset; }
 	
 public:
 	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
@@ -75,6 +77,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<const ULLL_ShareableNiagaraDataAsset> ShareableNiagaraDataAsset;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<const ULLL_GlobalParameterDataAsset> GlobalParametersDataAsset;
 	
 	// 데이터 테이블 변수
 protected:

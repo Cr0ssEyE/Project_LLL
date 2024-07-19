@@ -93,10 +93,15 @@ bool ALLL_FallableWallGimmick::CheckFallable(FVector HitNormal, FVector HitLocat
 void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FVector HitLocation)
 {
 	// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("넉백 연출 시작")));
-
-	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(Actor);
+	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Actor);
+	if (!IsValid(GetWorld()) || !IsValid(Monster))
+	{
+		return;
+	}
 	
-	GetWorldSettings()->SetTimeDilation(0.1f);
+	const float FallTimeDilation = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalParametersDataAsset()->FallEventTimeDilation;
+	
+	GetWorldSettings()->SetTimeDilation(FallTimeDilation);
 	CustomTimeDilation = 1.f / GetWorldSettings()->TimeDilation;
 	UNiagaraSystem* WallCrashNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->InvisibleWallCrashNiagaraSystem;
 	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), WallCrashNiagaraSystem, HitLocation, HitNormal.Rotation());
@@ -119,13 +124,24 @@ void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FV
 void ALLL_FallableWallGimmick::FallOutStart(AActor* Actor, FVector HitNormal)
 {
 	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Actor);
+	if (!IsValid(GetWorld()) || !IsValid(Monster))
+	{
+		return;
+	}
+	
 	CustomTimeDilation = 1.f;
 	Monster->CustomTimeDilation = 1.f;
 	
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_OVERLAP_ALL);
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&, HitNormal, Monster]
 	{
-		float StackedKnockBackPower = FMath::Max(Monster->GetKnockBackedPower() * 5.f, 2000.f);
+		if (!IsValid(GetWorld()) || !IsValid(Monster))
+		{
+			return;
+		}
+		
+		const float DefaultFallKnockBackPower = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalParametersDataAsset()->DefaultFallKnockBackPower;
+		float StackedKnockBackPower = FMath::Max(Monster->GetKnockBackedPower() * 5.f, DefaultFallKnockBackPower);
 		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(HitNormal, StackedKnockBackPower);
 		Monster->AddKnockBackVelocity(LaunchVelocity, -1.f);
 	}));
