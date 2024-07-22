@@ -136,6 +136,7 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 	int32 SpawnCount = AbilityData->UnchangeableValue == 0 ? 1 : AbilityData->UnchangeableValue;
 	bool ThrowCircular = false;
 	bool Straight = false;
+	float KnockBackPower = 0.0f;
 	if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
 	{
 		const UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
@@ -162,12 +163,14 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 				SpawnCount = 12;
 				ThrowCircular = true;
 				Straight = true;
+				// 추후 데이터화 예정
+				KnockBackPower = 300.0f;
 			}
 		}
 	}
 
 	float ThrowAngle = 0.0f;
-	float TempSpawnOffsetTime = 0.000001f;
+	float TempSpawnOffsetTime = 0.01f;
 	for (int i = 0; i < SpawnCount; i++)
 	{
 		const AActor* Target = Cast<ALLL_PlayerBase>(CurrentEventData.Instigator) ? CurrentEventData.TargetData.Data[0]->GetActors()[0].Get() : CurrentEventData.Instigator;
@@ -193,8 +196,6 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 			ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(Player->GetObjectPoolingComponent()->GetActor(ThrownObjectClass));
 			ThrownObject->SetActorLocationAndRotation(Location, Rotator);
 			ThrownObject->SetAbilityInfo(AbilityData, GetAbilityLevel());
-			// 추후 데이터화 예정
-			const float KnockBackPower = 300.0f;
 			ThrownObject->Throw(Player, const_cast<AActor*>(Target), ThrowSpeed, Straight, KnockBackPower);
 
 			if (i == SpawnCount - 1)
