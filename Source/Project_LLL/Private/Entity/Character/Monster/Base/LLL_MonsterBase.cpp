@@ -19,7 +19,6 @@
 #include "Constant/LLL_MeshSocketName.h"
 #include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
@@ -44,8 +43,9 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 
 	GetMesh()->SetCollisionProfileName(CP_MONSTER);
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
-	
+
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AIControllerClass = ALLL_MonsterBaseAIController::StaticClass();
 
 	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
 	DropGoldEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'"), EAssertionLevel::Check);
@@ -169,13 +169,13 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 		return;
 	}
 
-	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	if (!IsValid(MonsterBaseAnimInstance) || IsDOT)
+	ULLL_BaseCharacterAnimInstance* AnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	if (!IsValid(AnimInstance) || IsDOT)
 	{
 		return;
 	}
 
-	MonsterBaseAnimInstance->StopAllMontages(1.0f);
+	AnimInstance->StopAllMontages(1.0f);
 	if ( GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_STATE_COLLIDE_OTHER) && IsValid(MonsterBaseDataAsset->KnockBackCollideMontage))
 	{
 		FVector HitDirection = (GetActorLocation() - GetLastCollideLocation()).GetSafeNormal2D();
@@ -243,8 +243,8 @@ void ALLL_MonsterBase::Dead()
 	
 	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
 
-	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = CastChecked<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	MonsterBaseAnimInstance->StopAllMontages(1.0f);
+	ULLL_BaseCharacterAnimInstance* AnimInstance = CastChecked<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance->StopAllMontages(1.0f);
 	
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
 	MonsterBaseAIController->StopLogic("Monster Is Dead");
