@@ -59,9 +59,6 @@ void ULLL_DisplaySettingWidget::NativeConstruct()
 	
 	VSyncCheckBox->OnCheckStateChanged.AddDynamic(this, &ULLL_DisplaySettingWidget::ULLL_DisplaySettingWidget::ChangeVSyncState);
 	VSyncCheckBox->SetIsChecked(ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->IsVSyncEnabled());
-
-	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetFrameRateLimit(60.f);
-	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetVSyncEnabled(true);
 }
 
 void ULLL_DisplaySettingWidget::ApplyResolutionType(FString ResolutionName, ESelectInfo::Type Info)

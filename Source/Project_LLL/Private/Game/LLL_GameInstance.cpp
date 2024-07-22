@@ -74,9 +74,6 @@ void ULLL_GameInstance::Init()
 	GetWorld()->AddParameterCollectionInstance(PlayerMPC, true);
 	GetWorld()->AddParameterCollectionInstance(PostProcessMPC, true);
 
-	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetFrameRateLimit(60.f);
-	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetVSyncEnabled(true);
-
 	GetSubsystem<ULLL_MapSoundSubsystem>()->SetFModParameterDataArray(FModParameterData);
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
 		GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
