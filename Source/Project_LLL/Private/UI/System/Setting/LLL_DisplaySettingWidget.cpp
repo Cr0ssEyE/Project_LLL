@@ -45,7 +45,17 @@ void ULLL_DisplaySettingWidget::NativeConstruct()
 		UseWindowButton->OnClicked.Broadcast();
 	}
 
-	
+	MaxFrameRateComboBox->ClearOptions();
+	for (auto MaximumFrameRate : TEnumRange<EMaximumFrameRate>())
+	{
+		const uint32 FrameRate = static_cast<uint32>(MaximumFrameRate);
+		MaxFrameRateComboBox->AddOption(FString::FromInt(FrameRate));
+	}
+	MaxFrameRateComboBox->OnSelectionChanged.AddDynamic(this, &ULLL_DisplaySettingWidget::ApplyMaxFrameRateValue);
+
+	const uint32 FrameRate = ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->GetFrameRateLimit();
+	MaxFrameRateComboBox->SetSelectedOption(FString::FromInt(FrameRate));
+	MaxFrameRateComboBox->OnSelectionChanged.Broadcast(MaxFrameRateComboBox->GetSelectedOption(),  ESelectInfo::Type::OnMouseClick);
 	
 	VSyncCheckBox->OnCheckStateChanged.AddDynamic(this, &ULLL_DisplaySettingWidget::ULLL_DisplaySettingWidget::ChangeVSyncState);
 	VSyncCheckBox->SetIsChecked(ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->IsVSyncEnabled());
@@ -64,6 +74,7 @@ void ULLL_DisplaySettingWidget::ApplyResolutionType(FString ResolutionName, ESel
 	FResolutionValueHelper ResolutionValueHelper;
 	uint32 ScreenWidthValue = FCString::Atoi(*ResolutionValueHelper.ResolutionValues[ResolutionComboBox->GetSelectedIndex()].Key);
 	uint32 ScreenHeightValue = FCString::Atoi(*ResolutionValueHelper.ResolutionValues[ResolutionComboBox->GetSelectedIndex()].Value);
+	
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SaveScreenResolutionString(ResolutionName);
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetScreenResolution(FIntPoint(ScreenWidthValue, ScreenHeightValue));
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->ApplySettings(false);
@@ -91,17 +102,17 @@ void ULLL_DisplaySettingWidget::ApplyWindowScreen()
 
 void ULLL_DisplaySettingWidget::ApplyMaxFrameRateValue(FString FrameRateString, ESelectInfo::Type Info)
 {
+	if(FrameRateString.IsEmpty())
+	{
+		return;
+	}
 	
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetFrameRateLimit(FCString::Atoi(*FrameRateString));
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->ApplySettings(true);
 }
 
 void ULLL_DisplaySettingWidget::ChangeVSyncState(bool IsChecked)
 {
-	if (VSyncCheckBox->IsChecked())
-	{
-		ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetVSyncEnabled(true);
-	}
-	else
-	{
-		ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetVSyncEnabled(false);
-	}
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetVSyncEnabled(VSyncCheckBox->IsChecked());
+	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->ApplySettings(true);
 }
