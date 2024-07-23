@@ -10,7 +10,8 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MeshSocketName.h"
-#include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
+#include "DataAsset/Global/LLL_GlobalNiagaraDataAsset.h"
+#include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Ability/Character/Monster/LLL_MGA_SetFallableState.h"
@@ -103,12 +104,12 @@ void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FV
 	
 	GetWorldSettings()->SetTimeDilation(FallTimeDilation);
 	CustomTimeDilation = 1.f / GetWorldSettings()->TimeDilation;
-	UNiagaraSystem* WallCrashNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->InvisibleWallCrashNiagaraSystem;
+	UNiagaraSystem* WallCrashNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->InvisibleWallCrashNiagaraSystem;
 	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), WallCrashNiagaraSystem, HitLocation, HitNormal.Rotation());
 	NiagaraComponent->SetCustomTimeDilation(CustomTimeDilation);
 	AddNiagaraComponent(NiagaraComponent);
 
-	UNiagaraSystem* TrailNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->FallTrailNiagaraSystem;
+	UNiagaraSystem* TrailNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->FallTrailNiagaraSystem;
 	UNiagaraFunctionLibrary::SpawnSystemAttached(TrailNiagaraSystem, Monster->GetMesh(), SOCKET_CHEST, FVector::Zero(), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	
 	FTimerHandle DilationTimerHandle;
@@ -147,7 +148,7 @@ void ALLL_FallableWallGimmick::FallOutStart(AActor* Actor, FVector HitNormal)
 	}));
 
 	FTimerHandle DilationTimerHandle;
-	float FallVFXDelay = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->FallExplosionDelayTime;
+	float FallVFXDelay = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->FallExplosionDelayTime;
 	GetWorldTimerManager().SetTimer(DilationTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]
 	{
 		if (!IsValid(GetWorld()) || !IsValid(Monster))
@@ -183,7 +184,7 @@ void ALLL_FallableWallGimmick::SpawnFallExplosionVFX(ALLL_MonsterBase* Monster)
 	FVector FallOutVFXLocation = FallOutVFXDirection * FVector(ViewportY, ViewportX, 1.f) + PlayerCharacter->GetActorLocation();
 	FRotator FallOutVFXRotation = (FallOutVFXLocation - PlayerCharacter->GetActorLocation()).GetSafeNormal().Rotation();
 		
-	UNiagaraSystem* ExplosionNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetShareableNiagaraDataAsset()->FallExplosionNiagaraSystem;
+	UNiagaraSystem* ExplosionNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->FallExplosionNiagaraSystem;
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionNiagaraSystem, FallOutVFXLocation, FallOutVFXRotation);
 }
 

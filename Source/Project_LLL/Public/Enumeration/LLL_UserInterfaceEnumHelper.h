@@ -57,27 +57,6 @@ enum class EMaximumFrameRate : uint8
 };
 ENUM_RANGE_BY_VALUES(EMaximumFrameRate, EMaximumFrameRate::THIRTY, EMaximumFrameRate::SIXTY, EMaximumFrameRate::SEVEN_FIVE, EMaximumFrameRate::OH_TWO, EMaximumFrameRate::OH_FF);
 
-USTRUCT(BlueprintType)
-struct FEMaximumFrameRateHelper
-{
-	GENERATED_BODY()
-	
-	FEMaximumFrameRateHelper()
-	{
-		MaximumFrameRates.Emplace(30);	// THIRTY
-		MaximumFrameRates.Emplace(60); // SIXTY
-		MaximumFrameRates.Emplace(75); // SEVEN_FIVE
-		MaximumFrameRates.Emplace(120); // OH_TWO
-		MaximumFrameRates.Emplace(144); // OH_FF
-
-		EnumPath = TEXT("/Script/Project_LLL.EMaximumFrameRate");
-	}
-
-	TArray<uint8> MaximumFrameRates;
-
-	FString EnumPath;
-};
-
 UENUM(BlueprintType)
 enum class EGraphicQuality : uint8
 {

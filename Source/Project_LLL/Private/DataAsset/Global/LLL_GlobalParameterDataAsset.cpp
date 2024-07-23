@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "DataAsset/LLL_GlobalParameterDataAsset.h"
+#include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
 
 ULLL_GlobalParameterDataAsset::ULLL_GlobalParameterDataAsset():
 	FallEventTimeDilation(0.1f),

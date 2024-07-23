@@ -4,12 +4,12 @@
 #include "Game/LLL_GameInstance.h"
 
 #include "Constant/LLL_FilePath.h"
-#include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Interface/LLL_FModInterface.h"
 #include "Game/LLL_MapSoundSubsystem.h"
-#include "Util/LLL_ConstructorHelper.h"
+#include "DataAsset/Global/LLL_GlobalNiagaraDataAsset.h"
+#include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
 #include "Materials/MaterialParameterCollection.h"
-#include "Util/Save/LLL_CustomGameUserSettings.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 ULLL_GameInstance::ULLL_GameInstance()
 {
@@ -18,7 +18,7 @@ ULLL_GameInstance::ULLL_GameInstance()
 	RewardDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_REWARD_DATA_TABLE, EAssertionLevel::Check);
 	StringDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_STRING_DATA, EAssertionLevel::Check);
 
-	ShareableNiagaraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_ShareableNiagaraDataAsset>(PATH_SHAREABLE_NIAGARA_EFFECTS, EAssertionLevel::Check);
+	GlobalNiagaraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_GlobalNiagaraDataAsset>(PATH_GLOBAL_NIAGARA_EFFECT_DATA, EAssertionLevel::Check);
 	GlobalParametersDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_GlobalParameterDataAsset>(PATH_GLOBAL_PARAMETERS_DATA, EAssertionLevel::Check);
 	
 	MonsterMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_MONSTER_MPC, EAssertionLevel::Check);
