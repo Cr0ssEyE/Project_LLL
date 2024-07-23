@@ -32,6 +32,16 @@ enum class ERewardCategory : uint8
 	MaxHP
 };
 
+// 로비 관련
+UENUM(BlueprintType)
+enum class ELobbyCustomPointType : uint8
+{
+	InteractionCharacter,
+	InteractionObject,
+	Housing,
+	EnumEnd UMETA(Hidden)
+};
+
 // FMOD 관련
 UENUM(BlueprintType)
 enum class EFModParameter : uint8

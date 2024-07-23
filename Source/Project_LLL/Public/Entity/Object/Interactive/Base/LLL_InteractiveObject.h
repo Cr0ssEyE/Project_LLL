@@ -33,9 +33,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UBoxComponent> InteractOnlyCollisionBox;
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	uint8 bIsEnabled : 1;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	uint8 bIsOnceEventOnly : 1;
 };
