@@ -37,6 +37,9 @@
 // 몬스터 투사체 관련
 #define PATH_THROWN_MAGIC_DATA TEXT("/Script/Project_LLL.LLL_ThrownMagicDataAsset'/Game/DataAsset/DA_ThrownMagic.DA_ThrownMagic'")
 
+// 몬스터 어빌리티 오브젝트 관련
+#define PATH_SHOCKWAVE_DATA TEXT("/Script/Project_LLL.LLL_ShockwaveDataAsset'/Game/DataAsset/DA_Shockwave.DA_Shockwave'")
+
 // 오브젝트 관련
 #define PATH_INTERACTIVE_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_InteractiveObjectData'/Game/DataAsset/DA_InteractiveObject.DA_InteractiveObject'")
 #define PATH_BREAKABLE_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_Statue.SM_Statue'")

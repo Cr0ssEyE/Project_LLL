@@ -21,6 +21,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	void Shockwave() const;
+	
+protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_ManOfStrengthDataAsset> ManOfStrengthDataAsset;
 };

@@ -20,7 +20,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
+
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BossMonsterDataAsset> BossMonsterDataAsset;
 };
