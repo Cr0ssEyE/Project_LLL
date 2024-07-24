@@ -11,6 +11,8 @@
 class ULLL_InteractiveObjectDataAsset;
 class UBoxComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInteractionDelegate);
+
 UCLASS()
 class PROJECT_LLL_API ALLL_InteractiveObject : public ALLL_BaseObject, public ILLL_InteractiveEntityInterface
 {
@@ -21,6 +23,9 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	virtual void InteractiveEvent() override;
+
+public:
+	FInteractionDelegate InteractionDelegate;
 	
 protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;

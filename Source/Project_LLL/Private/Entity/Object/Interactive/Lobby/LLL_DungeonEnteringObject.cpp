@@ -11,9 +11,8 @@ ALLL_DungeonEnteringObject::ALLL_DungeonEnteringObject()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-// Called when the game starts or when spawned
-void ALLL_DungeonEnteringObject::BeginPlay()
+void ALLL_DungeonEnteringObject::InteractiveEvent()
 {
-	Super::BeginPlay();
+	Super::InteractiveEvent();
 	
 }

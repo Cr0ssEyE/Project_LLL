@@ -693,21 +693,27 @@ void ALLL_PlayerBase::CharacterUnDissolveBegin()
 	{
 		CharacterDissolveActor->SetActorTransform(GetTransform());
 	}
-
+	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() + GetMesh()->GetRelativeLocation().Z);
 	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PullUpDissolveActor);
 }
 
 void ALLL_PlayerBase::PullUpDissolveActor()
 {
-	const FTransform DissolveEndTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
-	if (CharacterDissolveActor->GetActorLocation().Z >= GetMesh()->GetComponentLocation().Z + DissolveEndTransform.GetLocation().Z)
+	if (!IsValid(CharacterDissolveActor))
 	{
+		return;
+	}
+	
+	const FTransform DissolveEndTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
+	if (CharacterDissolveActor->GetActorLocation().Z >= DissolveEndTransform.GetLocation().Z + GetMesh()->GetRelativeLocation().Z)
+	{
+		CharacterDissolveActor->Destroy();
 		DissolveCompleteDelegate.Broadcast(false);
 		return;
 	}
 	
-	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() + FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
+	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() + FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed * 2.f));
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PullUpDissolveActor);
 }
 

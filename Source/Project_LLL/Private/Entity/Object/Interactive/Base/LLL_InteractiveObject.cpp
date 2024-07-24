@@ -72,6 +72,8 @@ void ALLL_InteractiveObject::InteractiveEvent()
 		}
 	}
 #endif
+
+	InteractionDelegate.Broadcast();
 }
 
 

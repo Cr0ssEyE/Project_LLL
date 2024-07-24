@@ -13,4 +13,10 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PermanentEnhancementWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	virtual void NativeConstruct() override;
+
+protected:
+	
 };
