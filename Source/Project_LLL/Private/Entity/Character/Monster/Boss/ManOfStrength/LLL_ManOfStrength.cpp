@@ -41,3 +41,19 @@ void ALLL_ManOfStrength::Shockwave() const
 #endif
 	}
 }
+
+void ALLL_ManOfStrength::AttackInApnea() const
+{
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MAN_OF_STRENGTH_ATTACK_IN_APNEA)))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (DebugGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 무호흡 연타"), *GetName()));
+			}
+		}
+#endif
+	}
+}

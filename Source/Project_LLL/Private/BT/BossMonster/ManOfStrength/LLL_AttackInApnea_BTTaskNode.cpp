@@ -1,18 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BT/BossMonster/ManOfStrength/LLL_Shockwave_BTTaskNode.h"
+#include "BT/BossMonster/ManOfStrength/LLL_AttackInApnea_BTTaskNode.h"
 
 #include "AIController.h"
 #include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
 
-ULLL_Shockwave_BTTaskNode::ULLL_Shockwave_BTTaskNode()
+ULLL_AttackInApnea_BTTaskNode::ULLL_AttackInApnea_BTTaskNode()
 {
-	NodeName = TEXT("Shockwave");
+	NodeName = TEXT("Attack In Apnea");
 	bNotifyTick = true;
 }
 
-EBTNodeResult::Type ULLL_Shockwave_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type ULLL_AttackInApnea_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
@@ -24,12 +24,12 @@ EBTNodeResult::Type ULLL_Shockwave_BTTaskNode::ExecuteTask(UBehaviorTreeComponen
 		return EBTNodeResult::Failed;
 	}
 
-	ManOfStrength->Shockwave();
+	ManOfStrength->AttackInApnea();
 
 	return EBTNodeResult::InProgress;
 }
 
-void ULLL_Shockwave_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+void ULLL_AttackInApnea_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 

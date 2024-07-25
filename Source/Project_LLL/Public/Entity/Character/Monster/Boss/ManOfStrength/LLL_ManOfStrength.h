@@ -23,6 +23,7 @@ protected:
 
 public:
 	void Shockwave() const;
+	void AttackInApnea() const;
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
