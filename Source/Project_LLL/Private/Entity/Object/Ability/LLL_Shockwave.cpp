@@ -6,6 +6,8 @@
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Attribute/Object/Ability/LLL_ShockwaveAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
@@ -34,7 +36,8 @@ void ALLL_Shockwave::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	DrawDebugCircle(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius(), 16, FColor::Yellow, false, 0.1f, 0, 0, FVector::RightVector, FVector::ForwardVector);
+	DrawDebugCircle(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius(), 16, FColor::Yellow, false, 0, 0, 0, FVector::RightVector, FVector::ForwardVector);
+	DrawDebugCircle(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius() - ShockwaveAttributeSet->GetThickness() * 2, 16, FColor::Yellow, false, 0, 0, 0, FVector::RightVector, FVector::ForwardVector);
 
 	FVector Scale = GetActorScale3D();
 	Scale += FVector(ShockwaveAttributeSet->GetSpeed() * DeltaSeconds);
@@ -45,5 +48,18 @@ void ALLL_Shockwave::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
+	if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OtherActor))
+	{
+		if (CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance())->IsDashing())
+		{
+			return;
+		}
+	}
+	
+	if (GetDistanceTo(OtherActor) < OverlapCollisionSphere->GetScaledSphereRadius() - ShockwaveAttributeSet->GetThickness())
+	{
+		return;
+	}
+	
 	DamageToOverlapActor(OtherActor);
 }

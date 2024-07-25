@@ -16,8 +16,12 @@ class PROJECT_LLL_API ULLL_ShockwaveAttributeSet : public ULLL_AbilityObjectAttr
 
 public:
 	ATTRIBUTE_ACCESSORS(ULLL_ShockwaveAttributeSet, Speed);
+	ATTRIBUTE_ACCESSORS(ULLL_ShockwaveAttributeSet, Thickness);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData Speed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData Thickness;
 };
