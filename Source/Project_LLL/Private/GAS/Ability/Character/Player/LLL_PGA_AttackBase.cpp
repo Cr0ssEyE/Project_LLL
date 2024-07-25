@@ -103,34 +103,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 		PlayerCharacter->SetCurrentCombo(CurrentComboAction);
 	}
 	
-	// 하예찬 예외처리 안
-	const TArray<UNiagaraComponent*> TempNiagaraComponents = PlayerCharacter->GetNiagaraComponents();
-	for (auto TempNiagaraComponent : TempNiagaraComponents)
-	{
-		if (!IsValid(TempNiagaraComponent))
-		{
-			continue;
-		}
-
-		for (auto Notify : AttackAnimMontage->Notifies)
-		{
-			ULLL_AnimNotify_Niagara* NiagaraEffectNotify = Cast<ULLL_AnimNotify_Niagara>(Notify.Notify);
-			if (!IsValid(NiagaraEffectNotify))
-			{
-				continue;
-			}
-
-			const UFXSystemComponent* SpawnedEffect = NiagaraEffectNotify->GetSpawnedEffect();
-			if (IsValid(SpawnedEffect) && !SpawnedEffect->IsGarbageEliminationEnabled() && SpawnedEffect == TempNiagaraComponent)
-			{
-				TempNiagaraComponent->DestroyComponent();
-				PlayerCharacter->GetNiagaraComponents().Remove(TempNiagaraComponent);
-			}
-		}
-	}
-
-	// 강건님 예외처리 안
-	/*if (bWasCancelled)
+	if (bWasCancelled)
 	{
 		for (auto Notify : AttackAnimMontage->Notifies)
 		{
@@ -146,7 +119,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 				NotifyComponent->DestroyComponent();
 			}
 		}
-	}*/
+	}
 	
 	GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
 	WaitTagTask->EndTask();

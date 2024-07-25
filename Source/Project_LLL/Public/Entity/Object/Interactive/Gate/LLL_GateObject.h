@@ -15,6 +15,7 @@ struct FRewardDataTable;
 class ULLL_RewardDataTable;
 class ULLL_GateDataAsset;
 class ULLL_RewardObjectDataAsset;
+
 UCLASS()
 class PROJECT_LLL_API ALLL_GateObject : public ALLL_InteractiveObject
 {
@@ -34,7 +35,10 @@ public:
 protected:
 	virtual void InteractiveEvent() override;
 	virtual void BeginPlay() override;
+	
 protected:
+	void OpenGate();
+	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMesh> GateMesh;
 
@@ -56,6 +60,4 @@ protected:
 	const FRewardDataTable* RewardData;
 
 	EAbilityType AbilityType;
-	
-	void OpenGate();
 };

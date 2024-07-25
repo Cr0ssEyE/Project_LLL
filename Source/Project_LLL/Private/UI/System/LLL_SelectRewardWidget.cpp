@@ -57,12 +57,22 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<const FAbilityDataTable*> Abi
 	TArray<TTuple<FString, FString>> WidgetInfoTexts;
 	for (const auto AbilityData : AbilityDataArray)
 	{
-		FString AbilityName = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityName, TEXT("Failed To Load Ability Name"))->Korean;
-		FString AbilityInformation = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityInformation, TEXT("Failed To Load Ability Information"))->Korean;
-		
-		// TODO: 강화 UI는 AbilityData->ChangeValue 고려하도록 개선하기
-		AbilityInformation = AbilityInformation.Replace(TEXT("[AV]"), *FString::SanitizeFloat(FMath::Abs(AbilityData->AbilityValue)));
-		AbilityInformation = AbilityInformation.Replace(TEXT("[UV]"), *FString::SanitizeFloat(FMath::Abs(AbilityData->UnchangeableValue)));
+		FString AbilityName;
+		FString AbilityInformation;
+		if (!AbilityData->AbilityName.IsEmpty() && !AbilityData->AbilityInformation.IsEmpty())
+		{
+			AbilityName = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityName, TEXT("Failed To Load Ability Name"))->Korean;
+			AbilityInformation = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityInformation, TEXT("Failed To Load Ability Information"))->Korean;
+
+			// TODO: 강화 UI는 AbilityData->ChangeValue 고려하도록 개선하기
+			AbilityInformation = AbilityInformation.Replace(TEXT("[AV]"), *FString::SanitizeFloat(FMath::Abs(AbilityData->AbilityValue)));
+			AbilityInformation = AbilityInformation.Replace(TEXT("[UV]"), *FString::SanitizeFloat(FMath::Abs(AbilityData->UnchangeableValue)));
+		}
+		else
+		{
+			AbilityName = FString::FromInt(AbilityData->ID);
+			AbilityInformation = FString::FromInt(AbilityData->ID);
+		}
 		WidgetInfoTexts.Emplace(TTuple<FString, FString>(AbilityName, AbilityInformation));
 	}
 	

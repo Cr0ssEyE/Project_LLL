@@ -95,7 +95,7 @@ void ALLL_GateObject::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	InteractOnlyCollisionBox->SetBoxExtent(FVector(200.0f, 200.0f, 300.f));
+	InteractOnlyCollisionBox->SetBoxExtent(FVector(InteractiveObjectDataAsset->InteractOnlyCollisionBoxExtent));
 	InteractOnlyCollisionBox->SetRelativeLocation(FVector(0, 0, 300.f));
 }
 

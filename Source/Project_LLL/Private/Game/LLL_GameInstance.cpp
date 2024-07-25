@@ -6,7 +6,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_ShareableNiagaraDataAsset.h"
 #include "Interface/LLL_FModInterface.h"
-#include "System/MapSound/LLL_MapSoundManager.h"
+#include "Game/LLL_MapSoundSubsystem.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Util/Save/LLL_CustomGameUserSettings.h"
@@ -26,7 +26,7 @@ ULLL_GameInstance::ULLL_GameInstance()
 	PostProcessMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_POSTPROCESS_MPC, EAssertionLevel::Check);
 	
 	CustomTimeDilation = 1.f;
-	CustomTimeDilationInterpSpeed = 15.f;
+	CustomTimeDilationInterpSpeed = TIME_DILATION_INTERP_SPEED;
 }
 
 void ULLL_GameInstance::Init()
@@ -75,6 +75,11 @@ void ULLL_GameInstance::Init()
 
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetFrameRateLimit(60.f);
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetVSyncEnabled(true);
+
+	GetSubsystem<ULLL_MapSoundSubsystem>()->SetFModParameterDataArray(FModParameterData);
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
+		GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
+	}));
 }
 
 void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)
@@ -85,26 +90,6 @@ void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actor
 
 		SetActorsCustomTimeDilationRecursive(Actors, InCustomTimeDilation);
 	}
-}
-
-void ULLL_GameInstance::SetMapSoundManagerBattleParameter(float Value) const
-{
-	if (!IsValid(MapSoundManager))
-	{
-		return;
-	}
-
-	MapSoundManager->SetBattleParameter(Value);
-}
-
-void ULLL_GameInstance::SetMapSoundManagerPauseParameter(float Value) const
-{
-	if (!IsValid(MapSoundManager))
-	{
-		return;
-	}
-
-	MapSoundManager->SetPauseParameter(Value);
 }
 
 void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation)
@@ -136,10 +121,7 @@ void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Act
 		}
 	}
 
-	if (IsValid(MapSoundManager))
-	{
-		MapSoundManager->SetPitch(CustomTimeDilation);
-	}
+	GetSubsystem<ULLL_MapSoundSubsystem>()->SetBulletTimeParameterValue(CustomTimeDilation);
 
 	for (auto Actor : SucceedActors)
 	{

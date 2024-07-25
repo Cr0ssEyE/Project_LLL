@@ -17,8 +17,12 @@ class PROJECT_LLL_API ULLL_ThrownObjectAttributeSet : public ULLL_ObjectAttribut
 
 public:
 	ATTRIBUTE_ACCESSORS(ULLL_ThrownObjectAttributeSet, HideTimer);
+	ATTRIBUTE_ACCESSORS(ULLL_ThrownObjectAttributeSet, CurveSize);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData HideTimer;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData CurveSize;
 };

@@ -51,4 +51,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Texture", DisplayName = "강화 보상 텍스쳐")
 	TObjectPtr<UTexture> EnhanceTexture;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Texture", DisplayName = "텍스쳐 높이")
+	float TextureHeight;
 };

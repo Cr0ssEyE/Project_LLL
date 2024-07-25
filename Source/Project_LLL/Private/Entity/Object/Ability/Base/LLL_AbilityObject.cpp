@@ -28,7 +28,7 @@ void ALLL_AbilityObject::BeginPlay()
 
 	AbilityObjectDataAsset = Cast<ULLL_AbilityObjectDataAsset>(BaseObjectDataAsset);
 
-	SetOwner(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	SetOwner(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
 	OverlapCollisionBox->SetBoxExtent(AbilityObjectDataAsset->OverlapCollisionSize);
 
 	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]

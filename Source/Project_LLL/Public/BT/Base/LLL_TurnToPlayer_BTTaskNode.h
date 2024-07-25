@@ -6,6 +6,8 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "LLL_TurnToPlayer_BTTaskNode.generated.h"
 
+#define ROTATION_RATE_YAW_DEVIDE_NUM 36.0f
+
 /**
  * 
  */

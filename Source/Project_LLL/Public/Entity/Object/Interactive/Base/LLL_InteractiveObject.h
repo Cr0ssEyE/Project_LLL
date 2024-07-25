@@ -8,6 +8,7 @@
 #include "Interface/LLL_InteractiveEntityInterface.h"
 #include "LLL_InteractiveObject.generated.h"
 
+class ULLL_InteractiveObjectDataAsset;
 class UBoxComponent;
 
 UCLASS()
@@ -26,6 +27,9 @@ protected:
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 	
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<const ULLL_InteractiveObjectDataAsset> InteractiveObjectDataAsset;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UBoxComponent> InteractOnlyCollisionBox;
 	

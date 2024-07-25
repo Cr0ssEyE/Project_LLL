@@ -44,6 +44,26 @@ void ALLL_ThrownObject::BeginPlay()
 	FModAudioComponent->SetEvent(ThrownObjectDataAsset->FModEvent);
 }
 
+void ALLL_ThrownObject::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (IsActivated() && !bIsStraight)
+	{
+		if (bTargetIsDead && FVector::Distance(GetActorLocation(), TargetDeadLocation) <= TargetCapsuleRadius)
+		{
+			Deactivate();
+		}
+
+		const FVector TargetLocation = bTargetIsDead ? TargetDeadLocation : Target->GetActorLocation();
+		const FVector Direction = TargetLocation - GetActorLocation();
+		const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
+		SetActorRotation(FMath::RInterpTo(GetActorRotation(), Rotation, DeltaSeconds, CurveSpeed));
+		CurveSpeed += 1.0f / CurveSize;
+		ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
+	}
+}
+
 void ALLL_ThrownObject::Activate()
 {
 	bIsActivated = true;
@@ -53,6 +73,9 @@ void ALLL_ThrownObject::Activate()
 	ProjectileMovementComponent->Activate();
 	SetActorHiddenInGame(false);
 	AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
+
+	CurveSize = ThrownObjectAttributeSet->GetCurveSize();
+	CurveSpeed = 1.0f / ThrownObjectAttributeSet->GetCurveSize();
 }
 
 void ALLL_ThrownObject::Deactivate()
@@ -75,10 +98,18 @@ void ALLL_ThrownObject::Deactivate()
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProjectileMovementComponent->Deactivate();
 	SetActorHiddenInGame(true);
+
+	ALLL_BaseCharacter* TargetCharacter = Cast<ALLL_BaseCharacter>(Target);
+	if (IsValid(TargetCharacter) && TargetCharacter->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_ThrownObject::TargetDeadHandle))
+	{
+		TargetCharacter->CharacterDeadDelegate.RemoveDynamic(this, &ALLL_ThrownObject::TargetDeadHandle);
+	}
+	bTargetIsDead = false;
+
 	GetWorldTimerManager().ClearTimer(HideTimerHandle);
 }
 
-void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed)
+void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower)
 {
 	SetOwner(NewOwner);
 	Target = NewTarget;
@@ -111,7 +142,26 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 			}
 		}
 	}
+
+	ALLL_BaseCharacter* TargetCharacter = Cast<ALLL_BaseCharacter>(Target);
+	if (IsValid(TargetCharacter))
+	{
+		TargetCapsuleRadius = TargetCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius();
+
+		if (!TargetCharacter->CheckCharacterIsDead())
+		{
+			TargetCharacter->CharacterDeadDelegate.AddDynamic(this, &ALLL_ThrownObject::TargetDeadHandle);
+		}
+		else
+		{
+			TargetDeadLocation = Target->GetActorLocation();
+			bTargetIsDead = true;
+		}
+	}
 	
+	bIsStraight = Straight;
+	KnockBackPower = InKnockBackPower;
+
 	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_ThrownObject::Deactivate, ThrownObjectAttributeSet->GetHideTimer(), false);
 }
 
@@ -136,6 +186,20 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 			}
 		}
 	}
+
+	if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Other))
+	{
+		const FVector AvatarLocation = GetActorLocation();
+		const FVector LaunchDirection = (Other->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
+		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
+		KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
+	}
 	
 	Deactivate();
+}
+
+void ALLL_ThrownObject::TargetDeadHandle(ALLL_BaseCharacter* Character)
+{
+	TargetDeadLocation = Character->GetActorLocation();
+	bTargetIsDead = true;
 }

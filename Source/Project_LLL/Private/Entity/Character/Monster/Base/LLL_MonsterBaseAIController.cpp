@@ -11,6 +11,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 
 void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 {
@@ -33,11 +34,10 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	}));
 }
 
-void ALLL_MonsterBaseAIController::SetPlayer() const
+void ALLL_MonsterBaseAIController::SetPlayer(ALLL_PlayerBase* Player) const
 {
-	if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
+	if (IsValid(Player) && !IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
 	{
-		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 		if (IsValid(Player))
 		{
 			BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
@@ -71,6 +71,8 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 		}
 
 		BrainComponent->StartLogic();
-		SetPlayer();
+
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+		SetPlayer(Player);
 	}
 }
