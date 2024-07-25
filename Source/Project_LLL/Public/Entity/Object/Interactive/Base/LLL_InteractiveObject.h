@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataAsset/LLL_InteractiveObjectDataAsset.h"
 #include "Entity/Object/Base/LLL_BaseObject.h"
 #include "GameFramework/Actor.h"
 #include "Interface/LLL_InteractiveEntityInterface.h"
@@ -22,8 +23,12 @@ public:
 	ALLL_InteractiveObject();
 	
 	virtual void Tick(float DeltaTime) override;
+	
+public:
 	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
-
+	FORCEINLINE bool CheckUseCustomDisplayText() const { return InteractiveObjectDataAsset->bUseCustomDisplayName; }
+	FORCEINLINE FString GetCustomDisplayText() const { return InteractiveObjectDataAsset->CustomDisplayTextString; }
+	
 public:
 	FInteractionDelegate OnInteractionDelegate;
 	

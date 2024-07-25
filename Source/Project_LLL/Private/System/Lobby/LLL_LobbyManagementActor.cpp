@@ -5,14 +5,17 @@
 
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
+#include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_LevelNames.h"
 #include "DataAsset/Lobby/LLL_LobbyDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Object/Interactive/Lobby/LLL_DungeonEnteringObject.h"
 #include "Entity/Object/Interactive/Lobby/LLL_WorldTreeObject.h"
+#include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/Lobby/LLL_LobbyCustomPoint.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 // Sets default values
 ALLL_LobbyManagementActor::ALLL_LobbyManagementActor()
@@ -20,7 +23,7 @@ ALLL_LobbyManagementActor::ALLL_LobbyManagementActor()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	
+	LobbyDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_LobbyDataAsset>(PATH_LOBBY_DATA, EAssertionLevel::Check);
 }
 
 // Called when the game starts or when spawned
@@ -45,6 +48,7 @@ void ALLL_LobbyManagementActor::BeginPlay()
 		Settings.bHideHud = false;
 		Settings.bDisableMovementInput = true;
 		Settings.bDisableLookAtInput = true;
+		Settings.FinishCompletionStateOverride = EMovieSceneCompletionModeOverride::ForceKeepState;
 		
 		LobbySequenceActor->PlaybackSettings = Settings;
 		LobbySequenceActor->SetSequence(LobbyDataAsset->LobbyEnterSequence);
@@ -176,7 +180,7 @@ void ALLL_LobbyManagementActor::PlayerEnteringDungeon()
 
 void ALLL_LobbyManagementActor::OnDungeonEnterCompleted()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), LEVEL_MAIN);
+	UGameplayStatics::OpenLevel(GetWorld(), LEVEL_TEST);
 }
 
 void ALLL_LobbyManagementActor::WorldTreeInteractionEvent()

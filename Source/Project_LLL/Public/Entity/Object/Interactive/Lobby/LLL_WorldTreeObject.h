@@ -6,6 +6,8 @@
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "LLL_WorldTreeObject.generated.h"
 
+class ULLL_PermanentEnhancementWidget;
+
 UCLASS()
 class PROJECT_LLL_API ALLL_WorldTreeObject : public ALLL_InteractiveObject
 {
@@ -21,5 +23,11 @@ protected:
 
 protected:
 	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
+
+	void SetUpWidgetInfo(ULLL_PermanentEnhancementWidget& PermanentEnhancementWidget);
+	
+protected:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ULLL_PermanentEnhancementWidget> PermanentEnhancementWidgetClass;
 	
 };
