@@ -6,6 +6,7 @@
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_LobbyManagementActor.generated.h"
 
+class ALevelSequenceActor;
 enum class ELobbyCustomPointType : uint8;
 class ULLL_LobbyDataAsset;
 class ALLL_WorldTreeObject;
@@ -29,20 +30,27 @@ protected:
 	void SetUpDefaultLobby();
 	void SetUpLobbyByGameProgress();
 	void SetUpLobbyByEventProgress();
-	void PlayerBeginEnter();
 	
 protected:
 	UFUNCTION()
 	void UpdateLobbyHousing(ELobbyCustomPointType PointType, uint32 PointID);
-	
-	UFUNCTION()
-	void EnteringDungeon();
 
 	UFUNCTION()
 	void WorldTreeInteractionEvent();
+
+	// 시퀀스 관련
+protected:
+	UFUNCTION()
+	void PlayerBeginEnter();
 	
 	UFUNCTION()
 	void PlayerEnterComplete(bool IsDrop = false);
+
+	UFUNCTION()
+	void PlayerEnteringDungeon();
+	
+	UFUNCTION()
+	void OnDungeonEnterCompleted();
 	
 protected:
 	UPROPERTY()
@@ -62,5 +70,7 @@ protected:
 	TObjectPtr<ALLL_WorldTreeObject> WorldTreeObject;
 	
 protected:
+	UPROPERTY()
+	TObjectPtr<ALevelSequenceActor> LobbySequenceActor;
 	
 };

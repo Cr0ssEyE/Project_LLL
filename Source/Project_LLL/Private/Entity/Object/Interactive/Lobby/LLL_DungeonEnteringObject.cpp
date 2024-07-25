@@ -11,8 +11,8 @@ ALLL_DungeonEnteringObject::ALLL_DungeonEnteringObject()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ALLL_DungeonEnteringObject::InteractiveEvent()
+void ALLL_DungeonEnteringObject::InteractiveEvent(AActor* InteractedActor)
 {
-	Super::InteractiveEvent();
+	Super::InteractiveEvent(InteractedActor);
 	
 }

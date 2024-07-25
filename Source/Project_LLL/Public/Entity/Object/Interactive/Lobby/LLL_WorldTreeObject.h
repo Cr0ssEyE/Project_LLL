@@ -18,5 +18,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+protected:
+	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 	
 };

@@ -61,7 +61,7 @@ void ALLL_InteractiveObject::Tick(float DeltaTime)
 #endif
 }
 
-void ALLL_InteractiveObject::InteractiveEvent()
+void ALLL_InteractiveObject::InteractiveEvent(AActor* InteractedActor)
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
@@ -73,7 +73,7 @@ void ALLL_InteractiveObject::InteractiveEvent()
 	}
 #endif
 
-	InteractionDelegate.Broadcast();
+	OnInteractionDelegate.Broadcast();
 }
 
 

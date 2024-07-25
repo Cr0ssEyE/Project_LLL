@@ -22,10 +22,10 @@ public:
 	ALLL_InteractiveObject();
 	
 	virtual void Tick(float DeltaTime) override;
-	virtual void InteractiveEvent() override;
+	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 
 public:
-	FInteractionDelegate InteractionDelegate;
+	FInteractionDelegate OnInteractionDelegate;
 	
 protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;

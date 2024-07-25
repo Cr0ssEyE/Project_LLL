@@ -102,10 +102,11 @@ void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data)
 	}
 }
 
-void ALLL_RewardObject::InteractiveEvent()
+void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 {
-	Super::InteractiveEvent();
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
+	Super::InteractiveEvent(InteractedActor);
+	
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(InteractedActor);
 	ULLL_PlayerGoldComponent* PlayerGoldComponent = Player->GetGoldComponent();
 	
 	FGameplayEffectContextHandle EffectContextHandle = Player->GetAbilitySystemComponent()->MakeEffectContext();

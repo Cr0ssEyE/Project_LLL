@@ -3,6 +3,10 @@
 
 #include "System/Lobby/LLL_LobbyManagementActor.h"
 
+#include "LevelSequenceActor.h"
+#include "LevelSequencePlayer.h"
+#include "Constant/LLL_LevelNames.h"
+#include "DataAsset/Lobby/LLL_LobbyDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Object/Interactive/Lobby/LLL_DungeonEnteringObject.h"
@@ -33,7 +37,23 @@ void ALLL_LobbyManagementActor::BeginPlay()
 	SetUpLobbyByGameProgress();
 	SetUpLobbyByEventProgress();
 
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_LobbyManagementActor::PlayerBeginEnter);
+	if (!IsValid(LobbySequenceActor))
+	{
+		LobbySequenceActor = GetWorld()->SpawnActorDeferred<ALevelSequenceActor>(ALevelSequenceActor::StaticClass(), FTransform::Identity);
+		FMovieSceneSequencePlaybackSettings Settings;
+		Settings.bAutoPlay = false;
+		Settings.bHideHud = false;
+		Settings.bDisableMovementInput = true;
+		Settings.bDisableLookAtInput = true;
+		
+		LobbySequenceActor->PlaybackSettings = Settings;
+		LobbySequenceActor->SetSequence(LobbyDataAsset->LobbyEnterSequence);
+		LobbySequenceActor->GetSequencePlayer()->OnFinished.AddDynamic(this, &ALLL_LobbyManagementActor::PlayerBeginEnter);
+
+		LobbySequenceActor->FinishSpawning(FTransform::Identity);
+	}
+	
+	LobbySequenceActor->GetSequencePlayer()->Play();
 }
 
 void ALLL_LobbyManagementActor::SetUpDefaultLobby()
@@ -71,7 +91,7 @@ void ALLL_LobbyManagementActor::SetUpDefaultLobby()
 
 	if (IsValid(DungeonEnteringObject))
 	{
-		DungeonEnteringObject->InteractionDelegate.AddDynamic(this, &ALLL_LobbyManagementActor::EnteringDungeon);
+		DungeonEnteringObject->OnInteractionDelegate.AddDynamic(this, &ALLL_LobbyManagementActor::PlayerEnteringDungeon);
 	}
 	
 	if (!IsValid(WorldTreeObject))
@@ -81,7 +101,7 @@ void ALLL_LobbyManagementActor::SetUpDefaultLobby()
 
 	if (IsValid(WorldTreeObject))
 	{
-		WorldTreeObject->InteractionDelegate.AddDynamic(this, &ALLL_LobbyManagementActor::WorldTreeInteractionEvent);
+		WorldTreeObject->OnInteractionDelegate.AddDynamic(this, &ALLL_LobbyManagementActor::WorldTreeInteractionEvent);
 	}
 }
 
@@ -97,6 +117,11 @@ void ALLL_LobbyManagementActor::SetUpLobbyByEventProgress()
 
 void ALLL_LobbyManagementActor::PlayerBeginEnter()
 {
+	if (LobbySequenceActor->GetSequencePlayer()->OnFinished.IsAlreadyBound(this, &ALLL_LobbyManagementActor::PlayerBeginEnter))
+	{
+		LobbySequenceActor->GetSequencePlayer()->OnFinished.RemoveDynamic(this, &ALLL_LobbyManagementActor::PlayerBeginEnter);
+	}
+	
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (!Player->DissolveCompleteDelegate.IsAlreadyBound(this, &ALLL_LobbyManagementActor::PlayerEnterComplete))
 	{
@@ -128,9 +153,30 @@ void ALLL_LobbyManagementActor::UpdateLobbyHousing(ELobbyCustomPointType PointTy
 	// 로비 상호작용 관련 요소 추가
 }
 
-void ALLL_LobbyManagementActor::EnteringDungeon()
+void ALLL_LobbyManagementActor::PlayerEnteringDungeon()
 {
 	// 던전 입장 연출
+	if (!IsValid(LobbySequenceActor))
+	{
+		LobbySequenceActor = GetWorld()->SpawnActorDeferred<ALevelSequenceActor>(ALevelSequenceActor::StaticClass(), FTransform::Identity);
+		FMovieSceneSequencePlaybackSettings Settings;
+		Settings.bAutoPlay = false;
+		Settings.bHideHud = false;
+		Settings.bDisableMovementInput = true;
+		Settings.bDisableLookAtInput = true;
+		
+		LobbySequenceActor->PlaybackSettings = Settings;
+		LobbySequenceActor->FinishSpawning(FTransform::Identity);
+	}
+
+	LobbySequenceActor->SetSequence(LobbyDataAsset->DungeonEnterSequence);
+	LobbySequenceActor->GetSequencePlayer()->OnFinished.AddDynamic(this, &ALLL_LobbyManagementActor::OnDungeonEnterCompleted);
+	LobbySequenceActor->GetSequencePlayer()->Play();
+}
+
+void ALLL_LobbyManagementActor::OnDungeonEnterCompleted()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), LEVEL_MAIN);
 }
 
 void ALLL_LobbyManagementActor::WorldTreeInteractionEvent()

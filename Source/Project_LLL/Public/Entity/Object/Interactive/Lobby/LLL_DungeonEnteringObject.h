@@ -15,7 +15,7 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_DungeonEnteringObject();
 
-	virtual void InteractiveEvent() override;
+	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 	
 protected:
 	

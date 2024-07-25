@@ -15,3 +15,9 @@ void ALLL_WorldTreeObject::BeginPlay()
 	
 }
 
+void ALLL_WorldTreeObject::InteractiveEvent(AActor* InteractedActor)
+{
+	Super::InteractiveEvent(InteractedActor);
+	
+}
+
