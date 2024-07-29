@@ -9,13 +9,15 @@
 #include "DataTable/LLL_StringDataTable.h"
 #include "LLL_GameInstance.generated.h"
 
+#define TIME_DILATION_INTERP_SPEED 15.0f
+
 /**
  * 
  */
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStageEncountedDelegate);
 
-class ALLL_MapSoundManager;
+class ULLL_MapSoundSubsystem;
 class ULLL_ShareableNiagaraDataAsset;
 
 UCLASS()
@@ -31,9 +33,6 @@ public:
 	FStageEncountedDelegate EncountedDelegate;
 	
 public:
-	FORCEINLINE ALLL_MapSoundManager* GetMapSoundManager() const { return MapSoundManager; }
-	FORCEINLINE void SetMapSoundManager(ALLL_MapSoundManager* InMapSoundManager) { MapSoundManager = InMapSoundManager; }
-	
 	// 데이터 테이블 Getter
 	FORCEINLINE TArray<const FAbilityDataTable*> GetAbilityDataTable() const { return AbilityData; }
 	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterData; }
@@ -54,8 +53,6 @@ public:
 	
 public:
 	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
-	void SetMapSoundManagerBattleParameter(float Value) const;
-	void SetMapSoundManagerPauseParameter(float Value) const;
 
 protected:
 	void SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation);
@@ -101,9 +98,6 @@ protected:
 	TObjectPtr<const UDataTable> StringDataTable;
 
 	TArray<const FStringDataTable*> StringData;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ALLL_MapSoundManager> MapSoundManager;
 	
 protected:
 	UPROPERTY(VisibleAnywhere)

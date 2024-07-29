@@ -23,7 +23,7 @@ void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 
 	ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(RangedMonster->GetObjectPoolingComponent()->GetActor(RangedMonsterDataAsset->ThrownObjectClass));
 
-	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 	if (IsValid(Player))

@@ -7,6 +7,7 @@
 #include "AbilitySystemGlobals.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "FMODAmbientSound.h"
 #include "GameplayAbilitiesModule.h"
 #include "GameplayAbilitySpec.h"
 #include "LevelSequenceActor.h"
@@ -35,6 +36,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "Game/LLL_MapSoundSubsystem.h"
 #include "GAS/ASC/LLL_PlayerASC.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
@@ -225,7 +227,7 @@ void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)
 				continue;
 			}
 
-			SetParameter(FModParameter, static_cast<float>(DamagedEventParameterProperty.Value));
+			SetOnceParameterByTupleValue(FModParameter, static_cast<float>(DamagedEventParameterProperty.Value));
 		}
 	}
 	else if (FModParameter == EFModParameter::PlayerWalkMaterialParameter)
@@ -238,12 +240,12 @@ void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)
 				continue;
 			}
 
-			SetParameter(FModParameter, static_cast<float>(StepEventParameterProperty.Value));
+			SetOnceParameterByTupleValue(FModParameter, static_cast<float>(StepEventParameterProperty.Value));
 		}
 	}
 	else if (FModParameter == EFModParameter::PlayerAttackCountParameter || FModParameter == EFModParameter::PlayerAttackHitCountParameter)
 	{
-		SetParameter(FModParameter, CurrentCombo - 1);
+		SetOnceParameterByTupleValue(FModParameter, CurrentCombo - 1);
 	}
 }
 
@@ -652,6 +654,7 @@ void ALLL_PlayerBase::Dead()
 	DeadSequenceActor->FinishSpawning(FTransform::Identity);
 
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayerDeadEvent();
 }
 
 void ALLL_PlayerBase::DropDissolveActor()

@@ -12,7 +12,6 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_FModPlayHelper.h"
-#include "Util/LLL_NiagaraInfoStruct.h"
 
 bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCueParameters& Parameters) const
 {

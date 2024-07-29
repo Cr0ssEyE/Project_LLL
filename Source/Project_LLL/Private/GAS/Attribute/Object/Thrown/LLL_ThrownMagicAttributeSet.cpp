@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Attribute/Object/Thrown/LLL_MagicAttributeSet.h"
+#include "GAS/Attribute/Object/Thrown/LLL_ThrownMagicAttributeSet.h"
 

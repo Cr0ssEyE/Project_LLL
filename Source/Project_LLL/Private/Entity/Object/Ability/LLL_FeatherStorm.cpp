@@ -39,7 +39,7 @@ void ALLL_FeatherStorm::BeginPlay()
 
 void ALLL_FeatherStorm::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	Super::NotifyActorBeginCursorOver();
+	Super::NotifyActorBeginOverlap(OtherActor);
 	
 	GetWorldTimerManager().SetTimer(KeepDamageHandle, FTimerDelegate::CreateWeakLambda(this, [&, OtherActor]{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();

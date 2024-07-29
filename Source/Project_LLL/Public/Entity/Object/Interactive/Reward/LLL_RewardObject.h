@@ -24,11 +24,8 @@ public:
 	ALLL_RewardObject();
 
 	virtual void InteractiveEvent() override;
-
 	virtual void BeginPlay() override;
-
 	virtual void ApplyProductEvent() override;
-
 	virtual void SetInformation(const FRewardDataTable* Data);
 
 	FOnInteractionDelegate InteractionDelegate;

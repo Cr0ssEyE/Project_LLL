@@ -34,7 +34,7 @@
 #define PATH_CLAW_BASIC_DATA TEXT("/Script/Project_LLL.LLL_ClawBasicDataAsset'/Game/DataAsset/DA_ClawBasic.DA_ClawBasic'")
 
 // 몬스터 투사체 관련
-#define PATH_MAGIC_DATA TEXT("/Script/Project_LLL.LLL_MagicDataAsset'/Game/DataAsset/DA_Magic.DA_Magic'")
+#define PATH_THROWN_MAGIC_DATA TEXT("/Script/Project_LLL.LLL_ThrownMagicDataAsset'/Game/DataAsset/DA_ThrownMagic.DA_ThrownMagic'")
 
 // 오브젝트 관련
 #define PATH_INTERACTIVE_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_InteractiveObjectData'/Game/DataAsset/DA_InteractiveObject.DA_InteractiveObject'")
@@ -56,6 +56,7 @@
 #define PATH_REWARD_OBJECT_TEST_DATA TEXT("/Script/Project_LLL.LLL_RewardObjectDataAsset'/Game/DataAsset/DA_RewardObject.DA_RewardObject'")
 #define PATH_TUTORIAL_MAP_DATA TEXT("/Script/Project_LLL.LLL_TutorialMapDataAsset'/Game/DataAsset/DA_TutorialMap.DA_TutorialMap'")
 #define PATH_SKILL_GAUGE_EFFECT TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/Character/Player/Status/BPGE_Player_FullSkillGauge.BPGE_Player_FullSkillGauge_C'")
+#define PATH_MAP_SOUND_SUBSYSTEM_DATA TEXT("/Script/Project_LLL.LLL_MapSoundSubsystemDataAsset'/Game/DataAsset/DA_MapSoundSubsystem.DA_MapSoundSubsystem'")
 
 // UI 관련
 #define PATH_REWARD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Reward/WBP_SelectRewordWidget.WBP_SelectRewordWidget_C'")

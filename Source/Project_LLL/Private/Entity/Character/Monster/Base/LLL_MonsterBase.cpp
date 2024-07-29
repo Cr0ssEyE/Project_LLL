@@ -153,7 +153,7 @@ void ALLL_MonsterBase::SetFModParameter(EFModParameter FModParameter)
 				continue;
 			}
 
-			SetParameter(FModParameter, static_cast<float>(StepEventParameterProperty.Value));
+			SetOnceParameterByTupleValue(FModParameter, static_cast<float>(StepEventParameterProperty.Value));
 		}
 	}
 }
@@ -250,7 +250,7 @@ void ALLL_MonsterBase::Dead()
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
 
-	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
 	if (IsValid(PlayerBase))
 	{
 		FVector ImpulseDirection = GetActorLocation() - PlayerBase->GetActorLocation();
@@ -382,12 +382,12 @@ void ALLL_MonsterBase::RecognizePlayerToAroundMonster() const
 	
 	const float ClusterRecognizeRadius = MonsterAttributeSet->GetClusterRecognizeRadius();
 	
-	GetWorld()->SweepMultiByProfile(
+	GetWorld()->SweepMultiByChannel(
 		HitResults,
 		GetActorLocation(),
 		GetActorLocation(),
 		FQuat::Identity,
-		CP_MONSTER,
+		ECC_ENEMY,
 		FCollisionShape::MakeSphere(ClusterRecognizeRadius),
 		Params
 		);
@@ -399,8 +399,9 @@ void ALLL_MonsterBase::RecognizePlayerToAroundMonster() const
 		{
 			if (const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitResult.GetActor()))
 			{
-				ALLL_MonsterBaseAIController* MonsterAIController = CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController());
-				MonsterAIController->SetPlayer();
+				const ALLL_MonsterBaseAIController* MonsterAIController = CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController());
+				ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+				MonsterAIController->SetPlayer(Player);
 				DebugColor = FColor::Green;
 			}
 		}
@@ -492,7 +493,7 @@ void ALLL_MonsterBase::DropGold(const FGameplayTag tag, int32 data)
 {
 	const float GoldData = DropGoldAttributeSet->GetDropGoldStat();
 
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
 	for (UActorComponent* ChildComponent : Player->GetComponents())
 	{
 		ULLL_PlayerGoldComponent* GoldComponent = Cast<ULLL_PlayerGoldComponent>(ChildComponent);
