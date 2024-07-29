@@ -87,7 +87,7 @@ void ULLL_MGA_SetFallableState::EndAbility(const FGameplayAbilitySpecHandle Hand
 		Monster->GetActorLocation(),
 		FQuat::Identity,
 		ECC_WALL_ONLY,
-		FCollisionShape::MakeSphere(10.f),
+		FCollisionShape::MakeSphere(Monster->GetCapsuleComponent()->GetUnscaledCapsuleRadius()),
 		Params
 		);
 

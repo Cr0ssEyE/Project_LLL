@@ -4,6 +4,7 @@
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 
 #include "Components/WidgetComponent.h"
+#include "Constant/LLL_GeneralConstants.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
@@ -44,7 +45,7 @@ void ULLL_PlayerUIManager::BeginPlay()
 	if(IsValid(SelectRewardWidgetClass))
 	{
 		SelectRewardWidget = CastChecked<ULLL_SelectRewardWidget>(CreateWidget(GetWorld(), SelectRewardWidgetClass));
-		SelectRewardWidget->AddToViewport(1);
+		SelectRewardWidget->AddToViewport(UI_LAYER_FIRST);
 		SelectRewardWidget->SetVisibility(ESlateVisibility::Hidden);
 		SelectRewardWidget->SetIsEnabled(false);
 	}
@@ -52,40 +53,40 @@ void ULLL_PlayerUIManager::BeginPlay()
 	if(IsValid(CharacterStatusWidgetClass))
 	{
 		CharacterStatusWidget = CastChecked<ULLL_CharacterStatusWidget>(CreateWidget(GetWorld(), CharacterStatusWidgetClass));
-		CharacterStatusWidget->AddToViewport(3);
+		CharacterStatusWidget->AddToViewport(UI_LAYER_THIRD);
 	}
 
 	if (IsValid(MainEruriaInfoWidgetClass))
 	{
 		MainEruriaInfoWidget = CastChecked<ULLL_MainEruriaInfoWidget>(CreateWidget(GetWorld(), MainEruriaInfoWidgetClass));
-		MainEruriaInfoWidget->AddToViewport(3);
+		MainEruriaInfoWidget->AddToViewport(UI_LAYER_THIRD);
 	}
 	
 	if(IsValid(InventoryWidgetClass))
 	{
 		InventoryWidget = CastChecked<ULLL_InventoryWidget>(CreateWidget(GetWorld(), InventoryWidgetClass));
-		InventoryWidget->AddToViewport(2);
+		InventoryWidget->AddToViewport(UI_LAYER_SECOND);
 		InventoryWidget->SetIsEnabled(false);
 	}
 
 	if(IsValid(InteractionWidgetClass))
 	{
 		InteractionWidget = CastChecked<ULLL_InteractionWidget>(CreateWidget(GetWorld(), InteractionWidgetClass));
-		InteractionWidget->AddToViewport();
+		InteractionWidget->AddToViewport(UI_LAYER_FIRST);
 		InteractionWidget->SetIsEnabled(false);
 	}
 	
 	if(IsValid(ComboWidgetClass))
 	{
 		ComboWidget = CastChecked<ULLL_PlayerComboWidget>(CreateWidget(GetWorld(), ComboWidgetClass));
-		ComboWidget->AddToViewport();
+		ComboWidget->AddToViewport(UI_LAYER_FIRST);
 		ComboWidget->SetComboText(0);
 	}
 
 	if(IsValid(GamePauseWidgetClass))
 	{
 		GamePauseWidget = CastChecked<ULLL_GamePauseWidget>(CreateWidget(GetWorld(), GamePauseWidgetClass));
-		GamePauseWidget->AddToViewport(99);
+		GamePauseWidget->AddToViewport(UI_LAYER_ALWAYS_TOP);
 		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
 		GamePauseWidget->SetIsEnabled(false);
 	}

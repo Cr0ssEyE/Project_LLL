@@ -7,6 +7,7 @@
 #include "Components/CheckBox.h"
 #include "Components/ProgressBar.h"
 #include "Components/Slider.h"
+#include "Constant/LLL_GeneralConstants.h"
 #include "Util/Save/LLL_CustomGameUserSettings.h"
 
 void ULLL_SoundSettingWidget::NativeConstruct()
@@ -57,7 +58,7 @@ void ULLL_SoundSettingWidget::ApplyMasterSliderValue(const float Value)
 	MasterVolumeProgressBar->SetPercent(Value);
 	FMOD::Studio::System* StudioSystem = IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime);
 	FMOD::Studio::Bus* MasterBus;
-	StudioSystem->getBus("bus:/", &MasterBus);
+	StudioSystem->getBus(FMOD_MASTER_BUS, &MasterBus);
 	MasterBus->setVolume(Value);
 	
 	ULLL_CustomGameUserSettings::GetCustomGameUserSettings()->SetMasterSoundVolume(Value);

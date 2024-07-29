@@ -7,7 +7,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "Constant/LLL_MaterialParameterName.h"
+#include "..\..\..\..\..\Public\Constant\LLL_GraphicParameterNames.h"
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Kismet/GameplayStatics.h"

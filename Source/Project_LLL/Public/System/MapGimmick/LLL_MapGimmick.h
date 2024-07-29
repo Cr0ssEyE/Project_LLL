@@ -76,7 +76,7 @@ protected:
 	TObjectPtr<ULLL_PlayerSpawnPointComponent> PlayerSpawnPointComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<ULLL_SequencerComponent> SequencerPlayComponent;
+	TObjectPtr<ULLL_SequencerComponent> RoomSequencerPlayComponent;
 	
 	uint8 Seed;
 	
@@ -199,5 +199,5 @@ protected:
 	void PlayerSetHidden(UNiagaraComponent* InNiagaraComponent);
 
 	UFUNCTION()
-	void PlaySequenceComponent();
+	void PlayEncounterSequence();
 };

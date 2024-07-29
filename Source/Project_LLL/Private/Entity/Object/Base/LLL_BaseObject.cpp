@@ -7,6 +7,7 @@
 #include "FMODAudioComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Constant/LLL_GeneralConstants.h"
 
 ALLL_BaseObject::ALLL_BaseObject()
 {
@@ -51,7 +52,7 @@ void ALLL_BaseObject::SetDefaultInformation()
 	{
 		BaseMesh->SetStaticMesh(BaseObjectDataAsset->StaticMesh);
 		BaseMesh->SetRelativeScale3D(BaseObjectDataAsset->MeshScale);
-		BaseMesh->SetBoundsScale(100.f);
+		BaseMesh->SetBoundsScale(ACTOR_DEFAULT_BOUNDS);
 	}
 }
 
