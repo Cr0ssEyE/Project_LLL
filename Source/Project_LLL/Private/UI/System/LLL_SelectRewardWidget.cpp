@@ -5,6 +5,7 @@
 
 #include "Components/Image.h"
 #include "Components/RichTextBlock.h"
+#include "Constant/LLL_GeneralConstants.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
@@ -63,10 +64,10 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<const FAbilityDataTable*> Abi
 		{
 			AbilityName = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityName, TEXT("Failed To Load Ability Name"))->Korean;
 			AbilityInformation = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityInformation, TEXT("Failed To Load Ability Information"))->Korean;
-
+		
 			// TODO: 강화 UI는 AbilityData->ChangeValue 고려하도록 개선하기
-			AbilityInformation = AbilityInformation.Replace(TEXT("[AV]"), *FString::SanitizeFloat(FMath::Abs(AbilityData->AbilityValue)));
-			AbilityInformation = AbilityInformation.Replace(TEXT("[UV]"), *FString::SanitizeFloat(FMath::Abs(AbilityData->UnchangeableValue)));
+			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_ABILITY_VALUE, *FString::SanitizeFloat(FMath::Abs(AbilityData->AbilityValue)));
+			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_UNCHANGEABLE_VALUE, *FString::SanitizeFloat(FMath::Abs(AbilityData->UnchangeableValue)));
 		}
 		else
 		{

@@ -13,13 +13,14 @@
 #include "MovieSceneSequencePlaybackSettings.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Constant/LLL_AnimMontageSlotName.h"
+#include "..\..\..\..\Public\Constant\LLL_AnimRelationNames.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "Constant/LLL_MaterialParameterName.h"
+#include "..\..\..\..\Public\Constant\LLL_GraphicParameterNames.h"
+#include "Constant/LLL_GeneralConstants.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
@@ -106,7 +107,7 @@ void ALLL_PlayerBase::BeginPlay()
 		{
 			Camera->SetOrthoWidth(CameraDataAsset->CameraDistance);
 			Camera->SetUpdateOrthoPlanes(CameraDataAsset->bUseUpdateOrthoPlanes);
-			SpringArm->TargetArmLength = 1000.f;
+			SpringArm->TargetArmLength = CameraDataAsset->OrthographicSpringArmDistance;
 			if (CameraDataAsset->bUseConstraintAspectRatio)
 			{
 				Camera->SetConstraintAspectRatio(CameraDataAsset->bUseConstraintAspectRatio);
@@ -127,7 +128,7 @@ void ALLL_PlayerBase::BeginPlay()
 		}
 		else
 		{
-			SpringArm->TargetArmLength = CameraDataAsset->SpringArmDistance;
+			SpringArm->TargetArmLength = CameraDataAsset->PerspectiveSpringArmDistance;
 			Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
 		}
 		
@@ -152,7 +153,7 @@ void ALLL_PlayerBase::BeginPlay()
 			}
 		}
 	}
-	GetMesh()->SetCustomDepthStencilValue(4);
+	GetMesh()->SetCustomDepthStencilValue(STENCIL_VALUE_PLAYER);
 	
 	ULLL_PlayerChaseActionWidget* ChaseActionWidget = PlayerUIManager->GetChaseActionWidget();
 	ChaseActionGaugeWidgetComponent->SetWidget(ChaseActionWidget);
@@ -658,7 +659,7 @@ void ALLL_PlayerBase::Dead()
 		GetActorLocation(),
 		FQuat::Identity,
 		CP_BULLET_TIME_INFLUENCED,
-		FCollisionShape::MakeBox(FVector(10000.f, 10000.f, 1000.f)),
+		FCollisionShape::MakeBox(FVector(PLAYER_AROUND_SWEEP_RANGE, PLAYER_AROUND_SWEEP_RANGE, PLAYER_AROUND_SWEEP_RANGE)),
 		Params
 		);
 
@@ -686,7 +687,7 @@ void ALLL_PlayerBase::Dead()
 
 void ALLL_PlayerBase::DropDissolveActor()
 {
-	if (DeadSequenceDissolveActor->GetActorLocation().Z < GetMesh()->GetComponentLocation().Z - 100.f)
+	if (DeadSequenceDissolveActor->GetActorLocation().Z < GetMesh()->GetComponentLocation().Z + PlayerDataAsset->DissolveActorFallStopLocation)
 	{
 		return;
 	}

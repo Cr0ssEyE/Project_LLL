@@ -6,6 +6,7 @@
 #include "GameFramework/GameUserSettings.h"
 #include "LLL_CustomGameUserSettings.generated.h"
 
+enum class EMaximumFrameRate : uint8;
 /**
  * 
  */

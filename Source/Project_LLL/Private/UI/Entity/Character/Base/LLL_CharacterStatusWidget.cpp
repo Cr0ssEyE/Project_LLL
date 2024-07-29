@@ -4,7 +4,7 @@
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
 
 #include "Components/ProgressBar.h"
-#include "Constant/LLL_MaterialParameterName.h"
+#include "..\..\..\..\..\Public\Constant\LLL_GraphicParameterNames.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 
 void ULLL_CharacterStatusWidget::NativeConstruct()

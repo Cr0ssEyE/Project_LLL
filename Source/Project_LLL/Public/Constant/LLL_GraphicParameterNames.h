@@ -15,3 +15,12 @@
 
 // 나이아가라 파라미터 이름
 #define NS_MARK_COUNT TEXT("MarkCount")
+
+
+/* 커스텀 스텐실 값
+ * 툰 셰이딩이 적용 되는 대상: 2의 배수
+ * 불릿타임에 영향을 받지 않는 대상: 4 이상의 값
+*/
+
+#define STENCIL_VALUE_TOON_BASE 2
+#define STENCIL_VALUE_PLAYER 4

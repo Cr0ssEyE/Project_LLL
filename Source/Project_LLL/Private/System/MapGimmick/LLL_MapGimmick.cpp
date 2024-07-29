@@ -123,9 +123,9 @@ void ALLL_MapGimmick::CreateMap()
 			}
 		}
 
-		if (!IsValid(SequencerPlayComponent))
+		if (!IsValid(RoomSequencerPlayComponent))
 		{
-			SequencerPlayComponent = Cast<ULLL_SequencerComponent>(ChildComponent);
+			RoomSequencerPlayComponent = Cast<ULLL_SequencerComponent>(ChildComponent);
 		}
 		
 		if (!IsValid(PlayerSpawnPointComponent))
@@ -231,7 +231,7 @@ void ALLL_MapGimmick::OnInteractionGate(const FRewardDataTable* Data)
 	}
 	ShoppingMapComponent = nullptr;
 	PlayerSpawnPointComponent = nullptr;
-	SequencerPlayComponent = nullptr;
+	RoomSequencerPlayComponent = nullptr;
 
 	
 	RoomActor->Destroy();
@@ -368,9 +368,9 @@ void ALLL_MapGimmick::PlayerTeleport()
 		return;
 	}
 
-	if (IsValid(SequencerPlayComponent))
+	if (IsValid(RoomSequencerPlayComponent) && RoomSequencerPlayComponent->CheckRoomEncounteredSequence())
 	{
-		PlaySequenceComponent();
+		PlayEncounterSequence();
 		return;
 	}
 	
@@ -403,9 +403,9 @@ void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
 	FadeOutSequencePlayer->RestoreState();
 }
 
-void ALLL_MapGimmick::PlaySequenceComponent()
+void ALLL_MapGimmick::PlayEncounterSequence()
 {
-	GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->EncountedDelegate.Broadcast();
+	GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->EncounteredDelegate.Broadcast(RoomSequencerPlayComponent->GetRoomEncounterSequenceID());
 }
 
 

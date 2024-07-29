@@ -5,12 +5,12 @@
 #include "CoreMinimal.h"
 #include "NiagaraSystem.h"
 #include "Engine/DataAsset.h"
-#include "LLL_ShareableNiagaraDataAsset.generated.h"
+#include "LLL_GlobalNiagaraDataAsset.generated.h"
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_ShareableNiagaraDataAsset : public UDataAsset
+class PROJECT_LLL_API ULLL_GlobalNiagaraDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 
