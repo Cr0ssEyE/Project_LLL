@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_ThrownFeatherDataAsset.h"
-#include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "LLL_ThrownFeather.generated.h"
 

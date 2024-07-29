@@ -55,6 +55,8 @@ public:
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
 	void StartChargeFeather();
+	void AddRangeFeatherTargets(AActor* Target);
+	TArray<AActor*> GetRangeFeatherTargetsAndClear();
 
 public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
@@ -151,6 +153,7 @@ private:
 	int32 CurrentCombo;
 	int32 ChargedFeatherCount;
 	FTimerHandle ChargeFeatherTimerHandle;
+	TArray<AActor*> RangeFeatherTargets;
 
 	// 상태 관련 함수
 protected:

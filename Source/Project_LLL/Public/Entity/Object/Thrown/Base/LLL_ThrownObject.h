@@ -9,6 +9,7 @@
 #include "Interface/LLL_ObjectPoolingObjectInterface.h"
 #include "LLL_ThrownObject.generated.h"
 
+class ALLL_BaseCharacter;
 class ULLL_ThrownObjectAttributeSet;
 class UProjectileMovementComponent;
 

@@ -7,7 +7,6 @@
 #include "AbilitySystemGlobals.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "FMODAmbientSound.h"
 #include "GameplayAbilitiesModule.h"
 #include "GameplayAbilitySpec.h"
 #include "LevelSequenceActor.h"
@@ -306,6 +305,18 @@ void ALLL_PlayerBase::StartChargeFeather()
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 완료")));
 		}
 	}), 1.0f, true);
+}
+
+void ALLL_PlayerBase::AddRangeFeatherTargets(AActor* Target)
+{
+	RangeFeatherTargets.Emplace(Target);
+}
+
+TArray<AActor*> ALLL_PlayerBase::GetRangeFeatherTargetsAndClear()
+{
+	TArray<AActor*> TempRangeFeatherTargets = RangeFeatherTargets;
+	RangeFeatherTargets.Empty();
+	return TempRangeFeatherTargets;
 }
 
 FVector ALLL_PlayerBase::CheckMouseLocation()
