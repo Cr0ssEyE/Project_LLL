@@ -7,20 +7,19 @@
 #include "AbilitySystemGlobals.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "FMODAmbientSound.h"
 #include "GameplayAbilitiesModule.h"
 #include "GameplayAbilitySpec.h"
 #include "LevelSequenceActor.h"
 #include "MovieSceneSequencePlaybackSettings.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "..\..\..\..\Public\Constant\LLL_AnimRelationNames.h"
+#include "Constant/LLL_AnimRelationNames.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "..\..\..\..\Public\Constant\LLL_GraphicParameterNames.h"
+#include "Constant/LLL_GraphicParameterNames.h"
 #include "Constant/LLL_GeneralConstants.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
@@ -29,7 +28,6 @@
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
-#include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -40,9 +38,7 @@
 #include "Game/LLL_MapSoundSubsystem.h"
 #include "GAS/ASC/LLL_PlayerASC.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
-#include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 #include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
 
@@ -56,7 +52,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	
 	PlayerCharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
-	SkillAttributeSet = CreateDefaultSubobject<ULLL_PlayerSkillAttributeSet>(TEXT("SkillAttributeSet"));
 	AbnormalStatusAttributeSet = CreateDefaultSubobject<ULLL_AbnormalStatusAttributeSet>(TEXT("AbnormalStatusAttributeSet"));
 	
 	ChaseActionGaugeWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("ChaseActionGaugeWidgetComponent"));
@@ -136,10 +131,6 @@ void ALLL_PlayerBase::BeginPlay()
 		SpringArm->SetRelativeRotation(CameraDataAsset->SpringArmAngle);
 	}
 
-	
-	ChaseHandActor = Cast<ALLL_PlayerChaseHand>(GetWorld()->SpawnActor(ALLL_PlayerChaseHand::StaticClass()));
-	ChaseHandActor->SetOwner(this);
-
 	PlayerUIManager = CastChecked<ULLL_PlayerUIManager>(CharacterUIManager);
 	
 	if(IsValid(ASC))
@@ -155,15 +146,6 @@ void ALLL_PlayerBase::BeginPlay()
 		}
 	}
 	GetMesh()->SetCustomDepthStencilValue(STENCIL_VALUE_PLAYER);
-	
-	ULLL_PlayerChaseActionWidget* ChaseActionWidget = PlayerUIManager->GetChaseActionWidget();
-	ChaseActionGaugeWidgetComponent->SetWidget(ChaseActionWidget);
-	ChaseActionGaugeWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
-	ChaseActionGaugeWidgetComponent->SetRelativeLocation(PlayerDataAsset->ChaseActionGaugeLocation);
-	ChaseActionGaugeWidgetComponent->SetDrawSize(PlayerDataAsset->ChaseActionGaugeSize);
-	ChaseActionGaugeWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	ChaseActionGaugeWidgetComponent->SetTickWhenOffscreen(true);
-	ChaseActionWidget->SetCircleProgressBarValue(1.0f);
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -199,8 +181,6 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::SetMoveInputPressed, false);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction, EAbilityInputName::Skill);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->ControlChaseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::ChaseAction, EAbilityInputName::Chase);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
@@ -370,12 +350,6 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	CameraRotation.Pitch = CameraRotation.Roll = 0.f;
 	MoveDirection = CameraRotation.RotateVector(FVector(MoveInputValue.X, MoveInputValue.Y, 0.f));
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
-	
-	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_PLAYER_STATE_CHASE_PROGRESS))
-	{
-		return;
-	}
-
 	AddMovementInput(MoveDirection, 1.f);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -626,12 +600,12 @@ void ALLL_PlayerBase::Dead()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	
-	GetWorld()->SweepMultiByProfile(
+	GetWorld()->SweepMultiByChannel(
 		HitResults,
 		GetActorLocation(),
 		GetActorLocation(),
 		FQuat::Identity,
-		CP_BULLET_TIME_INFLUENCED,
+		ECC_ENTITY_CHECK,
 		FCollisionShape::MakeBox(FVector(BIG_SCALE_SCALAR, BIG_SCALE_SCALAR, BIG_SCALE_SCALAR)),
 		Params
 		);
