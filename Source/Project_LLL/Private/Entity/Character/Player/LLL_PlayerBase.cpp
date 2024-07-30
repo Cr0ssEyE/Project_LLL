@@ -146,6 +146,7 @@ void ALLL_PlayerBase::BeginPlay()
 		}
 	}
 	GetMesh()->SetCustomDepthStencilValue(STENCIL_VALUE_PLAYER);
+	StartCameraMoveToCursor();
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)

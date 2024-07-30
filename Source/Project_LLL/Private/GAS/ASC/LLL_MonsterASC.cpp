@@ -6,6 +6,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "Interface/LLL_KnockBackInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -54,7 +55,15 @@ void ULLL_MonsterASC::OnFallableTagAdded(const FGameplayTag Tag, int32 count)
 	{
 		if (TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_FALLABLE)))
 		{
-			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("낙하 상태로 전환 %s"), *Tag.GetTagName().ToString()));
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+			if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+			{
+				if (DebugGameInstance->CheckMonsterHitCheckDebug() || DebugGameInstance->CheckMonsterCollisionDebug())
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("낙하 상태로 전환 %s"), *Tag.GetTagName().ToString()));
+				}
+			}
+#endif
 		}
 	}
 }
