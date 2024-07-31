@@ -10,7 +10,7 @@ void ULLL_PermanentEnhancementWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	bIsFocusable = true;
+	SetIsFocusable(true);
 }
 
 FReply ULLL_PermanentEnhancementWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
