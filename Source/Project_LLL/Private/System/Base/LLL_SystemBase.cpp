@@ -4,10 +4,18 @@
 #include "System/Base/LLL_SystemBase.h"
 
 #include "FMODAudioComponent.h"
+#include "NiagaraComponent.h"
 
 ALLL_SystemBase::ALLL_SystemBase()
 {
-	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
+	PrimaryActorTick.bCanEverTick = true;
 	
+	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	FModAudioComponent->SetupAttachment(RootComponent);
+}
+
+void ALLL_SystemBase::AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
+{
+	NiagaraComponents.Remove(nullptr);
+	NiagaraComponents.Emplace(InNiagaraComponent);
 }

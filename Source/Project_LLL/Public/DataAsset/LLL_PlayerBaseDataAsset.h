@@ -6,6 +6,10 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
+class ULevelSequence;
+enum class EPlayerDamagedTypeParameter : uint8;
+enum class EMonsterId : uint8;
+class ULLL_MainEruriaInfoWidget;
 enum class EPlayerWalkMaterialParameter : uint8;
 enum class EPlayerFootstepsSurface : uint8;
 class ULLL_SkillWidget;
@@ -19,6 +23,7 @@ class ULLL_PlayerAnimInstance;
 class ULLL_SelectRewardWidget;
 class UInputAction;
 class UInputMappingContext;
+class UNiagaraSystem;
 class ULLL_PlayerChaseActionWidget;
 class ULLL_PlayerComboWidget;
 
@@ -49,6 +54,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "추격 쿨타임 UI")
 	TSubclassOf<ULLL_PlayerChaseActionWidget> ChaseActionWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "메인 이누리아 UI")
+	TSubclassOf<ULLL_MainEruriaInfoWidget> MainEruriaInfoWidgetClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "추격 쿨타임 UI 위치")
 	FVector ChaseActionGaugeLocation;
@@ -61,6 +69,18 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
 	TObjectPtr<UAnimMontage> DeadAnimMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 연출 시퀀서")
+	TObjectPtr<ULevelSequence> DeadSequencer;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 연출용 디졸브 액터")
+	TSubclassOf<AActor> DeadSequenceDissolveActor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "디졸브 액터 낙하 속도")
+	float DissolveActorFallSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "디졸브 액터 정지 위치(플레이어 위치 기준)")
+	float DissolveActorFallStopLocation;
+	
 	// 입력 이벤트 관련
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "입력 어빌리티")
@@ -89,9 +109,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "상호작용 입력 키")
 	TObjectPtr<UInputAction> InteractionInputAction;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "상호작용 대상 전환 키")
-	TObjectPtr<UInputAction> InteractiveTargetChangeInputAction;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "인벤토리 입력 키")
 	TObjectPtr<UInputAction> InventoryInputAction;
 
@@ -101,4 +118,14 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
 	TMap<TEnumAsByte<EPhysicalSurface>, EPlayerWalkMaterialParameter> StepEventParameterProperties;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "피격 이벤트 파라미터 속성")
+	TMap<int32, EPlayerDamagedTypeParameter> DamagedEventParameterProperties;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "PP", DisplayName = "PP HPLow 파라미터 최대값")
+	float HPLowScalarMaxValue;
+
+	UPROPERTY(EditDefaultsOnly, Category = "PP", DisplayName = "PP HPLow 파라미터 최소값")
+	float HPLowScalarLowValue;
 };

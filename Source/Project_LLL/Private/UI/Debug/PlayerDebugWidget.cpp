@@ -7,7 +7,8 @@
 #include "Components/Button.h"
 #include "Components/CheckBox.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 void UPlayerDebugWidget::NativeConstruct()
 {
@@ -15,52 +16,52 @@ void UPlayerDebugWidget::NativeConstruct()
 	
 	PlayerMovementCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerMovementCheckBoxEvent);
 	PlayerDashCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerDashCheckBoxEvent);
-	PlayerWireActionCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent);
+	PlayerChaseActionCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent);
 	PlayerSkillCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerSkillCheckBoxEvent);
 
 	PlayerFillHealthButton->OnClicked.AddDynamic(this, &UPlayerDebugWidget::PlayerFillHealthButtonEvent);
-	PlayerCoolDownResetButton->OnClicked.AddDynamic(this, &UPlayerDebugWidget::PlayerCoolDownResetButtonEvent);
+	PlayerInvincibleCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerInvincibleCheckBoxEvent);
 }
 
 void UPlayerDebugWidget::PlayerMovementCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerMovementDebug(PlayerMovementCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerMovementDebug(PlayerMovementCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerDashCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerDashDebug(PlayerDashCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerDashDebug(PlayerDashCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerChaseActionDebug(PlayerWireActionCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerChaseActionDebug(PlayerChaseActionCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerSkillCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerSkillDebug(PlayerSkillCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerSkillDebug(PlayerSkillCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::CharacterHitCheckCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerHitCheckDebug(CharacterHitCheckCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerHitCheckDebug(CharacterHitCheckCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::CharacterAttackCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerAttackDebug(CharacterAttackCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerAttackDebug(CharacterAttackCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::CharacterCollisionCheckBoxEvent(bool value)
 {
-	GetWorld()->GetGameInstanceChecked<UProtoGameInstance>()->SetPlayerCollisionDebug(CharacterCollisionCheckBox->IsChecked());
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerCollisionDebug(CharacterCollisionCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::PlayerFillHealthButtonEvent()
 {
 	// TODO: 플레이어 클래스 만들고 처리
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if(!IsValid(Player))
 	{
 		return;
@@ -81,26 +82,7 @@ void UPlayerDebugWidget::PlayerFillHealthButtonEvent()
 	}
 }
 
-void UPlayerDebugWidget::PlayerCoolDownResetButtonEvent()
+void UPlayerDebugWidget::PlayerInvincibleCheckBoxEvent(bool value)
 {
-	// TODO: 플레이어 클래스 만들고 처리
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	if(!IsValid(Player))
-	{
-		return;
-	}
-
-	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
-	if(!IsValid(ASC))
-	{
-		return;
-	}
-	
-	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-	EffectContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ResetCoolDownEffect, 1.0, EffectContextHandle);
-	if(EffectSpecHandle.IsValid())
-	{
-		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-	}
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerInvincibleMode(PlayerInvincibleCheckBox->IsChecked());
 }

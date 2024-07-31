@@ -38,16 +38,20 @@ AActor* ULLL_ObjectPoolingComponent::GetActor(UClass* Class)
 {
 	for (AActor* Actor : Actors)
 	{
-		ILLL_ObjectPoolingObjectInterface* ObjectPoolingObjectInterface = CastChecked<ILLL_ObjectPoolingObjectInterface>(Actor);
-		if (!ObjectPoolingObjectInterface->IsActivated())
+		if (Actor->GetClass() == Class)
 		{
-			ObjectPoolingObjectInterface->Activate();
-			return Actor;
+			ILLL_ObjectPoolingObjectInterface* ObjectPoolingObjectInterface = CastChecked<ILLL_ObjectPoolingObjectInterface>(Actor);
+			if (!ObjectPoolingObjectInterface->IsActivated())
+			{
+				ObjectPoolingObjectInterface->Activate();
+				return Actor;
+			}
 		}
 	}
 
 	AActor* NewActor = GetWorld()->SpawnActor(Class);
 	Actors.Emplace(NewActor);
+	CastChecked<ILLL_ObjectPoolingObjectInterface>(NewActor)->Activate();
 	return NewActor;
 }
 

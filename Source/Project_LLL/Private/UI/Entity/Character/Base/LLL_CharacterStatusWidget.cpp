@@ -4,6 +4,7 @@
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
 
 #include "Components/ProgressBar.h"
+#include "..\..\..\..\..\Public\Constant\LLL_GraphicParameterNames.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 
 void ULLL_CharacterStatusWidget::NativeConstruct()
@@ -33,8 +34,8 @@ void ULLL_CharacterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeS
 
 		CurrentHealthBarPercent = CurrentHealthBarPercent = 1.f;
 		HealthGaugeBar->SetWidgetStyle(NewWidgetStyle);
-		HealthBarDynamicMaterial->SetScalarParameterValue(TEXT("TopProgress"), 1.f);
-		HealthBarDynamicMaterial->SetScalarParameterValue(TEXT("BottomProgress"), 1.f);
+		HealthBarDynamicMaterial->SetScalarParameterValue(UI_PROGRESS_TOP, 1.f);
+		HealthBarDynamicMaterial->SetScalarParameterValue(UI_PROGRESS_BOTTOM, 1.f);
 	}
 	
 	const float MaxHealth = CharacterAttributeSet->GetMaxHealth();
@@ -49,7 +50,7 @@ void ULLL_CharacterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeS
 	if (CurrentHealthBarPercent != UpdateHealthValue)
 	{
 		CurrentHealthBarPercent = UpdateHealthValue;
-		HealthBarDynamicMaterial->SetScalarParameterValue(TEXT("TopProgress"), CurrentHealthBarPercent);
+		HealthBarDynamicMaterial->SetScalarParameterValue(UI_PROGRESS_TOP, CurrentHealthBarPercent);
 		CurrentSemiHealthBarPercent = 1.f - CurrentHealthBarPercent;
 		GetWorld()->GetTimerManager().SetTimer(MaterialAnimTimerHandle, this, &ULLL_CharacterStatusWidget::UpdateFillMaterial, 0.01f, true);
 	}
@@ -61,11 +62,11 @@ void ULLL_CharacterStatusWidget::UpdateFillMaterial()
 	if (CurrentSemiHealthBarPercent <= 0.f)
 	{
 		CurrentSemiHealthBarPercent = 0.f;
-		HealthBarDynamicMaterial->SetScalarParameterValue(TEXT("BottomProgress"), CurrentSemiHealthBarPercent);
+		HealthBarDynamicMaterial->SetScalarParameterValue(UI_PROGRESS_BOTTOM, CurrentSemiHealthBarPercent);
 		HealthGaugeBar->SetPercent(CurrentHealthBarPercent);
 		MaterialAnimTimerHandle.Invalidate();
 		return;
+		
 	}
-	
-	HealthBarDynamicMaterial->SetScalarParameterValue(TEXT("BottomProgress"), CurrentSemiHealthBarPercent);
+	HealthBarDynamicMaterial->SetScalarParameterValue(UI_PROGRESS_BOTTOM, CurrentSemiHealthBarPercent);
 }

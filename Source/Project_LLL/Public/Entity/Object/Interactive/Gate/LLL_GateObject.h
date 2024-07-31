@@ -8,10 +8,13 @@
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "LLL_GateObject.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateInteractionDelegate, FRewardDataTable*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateInteractionDelegate, const FRewardDataTable*);
 
 struct FRewardDataTable;
 class ULLL_RewardDataTable;
+class ULLL_GateDataAsset;
+class ULLL_RewardObjectDataAsset;
+
 UCLASS()
 class PROJECT_LLL_API ALLL_GateObject : public ALLL_InteractiveObject
 {
@@ -19,28 +22,37 @@ class PROJECT_LLL_API ALLL_GateObject : public ALLL_InteractiveObject
 
 public:
 	ALLL_GateObject();
-
-	FORCEINLINE void GateEnable() { bIsGateEnabled = true; }
-	FORCEINLINE FRewardDataTable* GetRewardData() const { return RewardData; }
+	
+	FORCEINLINE const FRewardDataTable* GetRewardData() const { return RewardData; }
 	
 	FOnGateInteractionDelegate GateInteractionDelegate;
 
-	void SetGateInformation(FRewardDataTable* Data);
+	void SetGateInformation(const FRewardDataTable* Data);
+	void SetActivate();
 	
 protected:
 	virtual void InteractiveEvent() override;
-
+	virtual void BeginPlay() override;
+	
+protected:
+	void OpenGate();
+	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMesh> GateMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UStaticMeshComponent> TextureMeshComponent;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UStaticMesh> RewardTextureMesh;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<const ULLL_RewardObjectDataAsset> RewardObjectDataAsset;
 
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsGateEnabled : 1;
 	
-	FRewardDataTable* RewardData;
+	const FRewardDataTable* RewardData;
 
 	EAbilityType AbilityType;
-	
-	void OpenGate();
-
-	void StartDestroy();
 };

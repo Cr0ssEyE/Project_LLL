@@ -22,38 +22,68 @@ class PROJECT_LLL_API ALLL_MonsterBase : public ALLL_BaseCharacter, public ILLL_
 public:
 	ALLL_MonsterBase();
 	
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaSeconds) override;
-	
-protected:
-	virtual void Dead() override;
-	
-public:
-	void Attack() const;
-	void Charge() const;
-	virtual void Damaged() override;
-
-	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
-	virtual void ApplyStackedKnockBack() override;
+	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
+	FORCEINLINE void SetCharging(bool IsCharging) { bIsCharging = IsCharging; }
 	
 	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
-	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
+	FORCEINLINE bool IsCharging() const { return bIsCharging; }
+	FORCEINLINE int32 GetId() const { return Id; }
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
+	virtual void InitAttributeSet() override;
+	virtual void SetFModParameter(EFModParameter FModParameter) override;
+	
+public:
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
+	virtual void Dead() override;
+	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
+	virtual void ApplyStackedKnockBack() override;
+
+	void Attack() const;
+	void Charge() const;
+	void RecognizePlayerToAroundMonster() const;
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterBaseDataAsset> MonsterBaseDataAsset;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<ULLL_MonsterAttributeSet> MonsterAttributeSet;
+
+	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UWidgetComponent> MonsterStatusWidgetComponent;
 
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> MaskMeshComponent;
+
 	FVector StackedKnockBackVelocity;
-	
 	float StackedKnockBackedPower;
+	int32 Id;
+	uint8 bIsCharging : 1;
 	
 public:
 	UFUNCTION()
 	void ToggleAIHandle(bool value);
 
+	// 이펙트 관련
+public:
+	void UpdateMarkVFX(uint8 NewCount = 0, uint8 MaxCount = 0);
+	void UpdateBleedingVFX(bool ActiveState = true);
+	void UpdateMonsterHitVFX();
+	
+	// 이펙트 관련
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraComponent> MarkVFXComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraComponent> BleedingVFXComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UMaterialInstanceDynamic> HitEffectOverlayMaterialInstance;
+	
 //gold section
 public:
 	virtual void DropGold(const FGameplayTag tag, int32 data) override;

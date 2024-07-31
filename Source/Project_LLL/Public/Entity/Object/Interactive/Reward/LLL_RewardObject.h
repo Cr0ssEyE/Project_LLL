@@ -8,6 +8,8 @@
 #include "Interface/LLL_ProductObjectInterface.h"
 #include "LLL_RewardObject.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnInteractionDelegate);
+
 class ULLL_SelectRewardWidget;
 class ULLL_ProductObjectPriceWidget;
 class UWidgetComponent;
@@ -22,16 +24,21 @@ public:
 	ALLL_RewardObject();
 
 	virtual void InteractiveEvent() override;
-
 	virtual void BeginPlay() override;
-
 	virtual void ApplyProductEvent() override;
+	virtual void SetInformation(const FRewardDataTable* Data);
 
-	virtual void SetInformation(FRewardDataTable* Data);
+	FOnInteractionDelegate InteractionDelegate;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMesh> RewardMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UStaticMeshComponent> TextureMeshComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UStaticMesh> RewardTextureMesh;
 
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsProduct;
@@ -52,5 +59,5 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_ProductObjectPriceWidget> PriceWidget;
 	
-	FRewardDataTable* RewardData;
+	const FRewardDataTable* RewardData;
 };

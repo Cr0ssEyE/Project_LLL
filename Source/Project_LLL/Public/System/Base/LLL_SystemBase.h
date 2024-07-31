@@ -4,21 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interface/LLL_FModInterface.h"
+#include "Interface/LLL_NiagaraInterface.h"
 #include "LLL_SystemBase.generated.h"
 
 class UFMODAudioComponent;
 
 UCLASS()
-class PROJECT_LLL_API ALLL_SystemBase : public AActor
+class PROJECT_LLL_API ALLL_SystemBase : public AActor, public ILLL_FModInterface, public ILLL_NiagaraInterface
 {
 	GENERATED_BODY()
 
 public:
 	ALLL_SystemBase();
 	
-	FORCEINLINE UFMODAudioComponent* GetFModAudioComponent() const { return FModAudioComponent; }
+	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
+	FORCEINLINE virtual TArray<UNiagaraComponent*> GetNiagaraComponents() const { return NiagaraComponents; }
+
+protected:
+	virtual void SetFModParameter(EFModParameter FModParameter) override {}
+	virtual void AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
 
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UFMODAudioComponent> FModAudioComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UNiagaraComponent>> NiagaraComponents;
 };

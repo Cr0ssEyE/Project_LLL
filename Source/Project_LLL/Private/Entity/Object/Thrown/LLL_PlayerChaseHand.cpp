@@ -11,10 +11,11 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_GraphicParameterNames.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "DataAsset/LLL_PlayerChaseHandDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Game/ProtoGameInstance.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/LLL_PlayerChaseHandAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -30,6 +31,7 @@ ALLL_PlayerChaseHand::ALLL_PlayerChaseHand()
 	HandMesh->SetSkeletalMesh(ThrownObjectDataAsset->SkeletalMesh);
 	HandMesh->SetRelativeScale3D(ThrownObjectDataAsset->MeshScale);
 	HandMesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+	HandMesh->SetCustomDepthStencilValue(STENCIL_VALUE_PLAYER);
 	
 	// 이후 BeginPlay에서 InitEffect를 통해 실제 사용하는 값으로 초기화 해준다. 해당 매직넘버는 비정상적인 동작 방지용
 	HandCollision->SetSphereRadius(50.f);
@@ -61,6 +63,8 @@ void ALLL_PlayerChaseHand::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ThrownObjectAttributeSet = PlayerChaseHandAttributeSet;
+	
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, 1.f, true);
 }
 
@@ -107,9 +111,9 @@ void ALLL_PlayerChaseHand::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other,
 	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(ProtoGameInstance->CheckPlayerChaseActionDebug())
+		if(DebugGameInstance->CheckPlayerChaseActionDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("벽과 충돌 체크")));
 		}

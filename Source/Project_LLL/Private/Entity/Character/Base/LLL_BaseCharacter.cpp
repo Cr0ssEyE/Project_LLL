@@ -8,31 +8,27 @@
 #include "FMODAudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
-#include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "DataTable/LLL_FModParameterDataTable.h"
-#include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Constant/LLL_GeneralConstants.h"
+#include "Constant/LLL_GraphicParameterNames.h"
+#include "Game/LLL_GameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
-#include "Util/LLL_ConstructorHelper.h"
-#include "Util/LLL_ExecuteCueHelper.h"
+#include "Util/LLL_FModPlayHelper.h"
 
-// Sets default values
 ALLL_BaseCharacter::ALLL_BaseCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
 	bIsDead = false;
 
 	ASC = CreateDefaultSubobject<ULLL_BaseASC>(TEXT("AbilitySystem"));
-	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	
+	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	FModAudioComponent->SetupAttachment(RootComponent);
 
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	bIsSpawned = false;
-#endif
+	Level = 1;
 }
 
 void ALLL_BaseCharacter::PostLoad()
@@ -59,15 +55,8 @@ void ALLL_BaseCharacter::PostInitializeComponents()
 
 void ALLL_BaseCharacter::SetDefaultInformation()
 {
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(bIsSpawned)
-	{
-		return;
-	}
-#endif
-
 	GetMesh()->SetRenderCustomDepth(true);
-	GetMesh()->SetCustomDepthStencilValue(1);
+	GetMesh()->SetCustomDepthStencilValue(STENCIL_VALUE_TOON_BASE);
 	
 	if (IsValid(CharacterDataAsset))
 	{
@@ -77,7 +66,8 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		GetMesh()->SetRelativeScale3D(CharacterDataAsset->MeshSize);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -CharacterDataAsset->CollisionSize.X));
-
+		GetMesh()->SetBoundsScale(ACTOR_DEFAULT_BOUNDS);
+		
 		UClass* AnimBlueprint = CharacterDataAsset->AnimInstance.LoadSynchronous();
 		if (IsValid(AnimBlueprint))
 		{
@@ -91,14 +81,9 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationRoll = false;
-		
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		bIsSpawned = true;
-#endif
 	}
 }
 
-// Called when the game starts or when spawned
 void ALLL_BaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -127,25 +112,11 @@ void ALLL_BaseCharacter::BeginPlay()
 			}
 		}
 
-		// GE 기반으로 자신의 어트리뷰트 초기화
-		ASC->AddSpawnedAttribute(CharacterAttributeSet);
-		
-		// TODO: 각 캐릭터 별로 테이블로 초기화 하도록 구현하기. 방법은 노션 https://abit.ly/6mlijv 및 LLL_PlayerBase 참고
-		if (IsValid(CharacterDataAsset->InitEffect))
-		{
-			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-			EffectContextHandle.AddSourceObject(this);
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(CharacterDataAsset->InitEffect, 1.0, EffectContextHandle);
-			if(EffectSpecHandle.IsValid())
-			{
-				ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-			}
-		}
-
 		UpdateWidgetDelegate.Broadcast();
 	}
 
 	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
+		InitAttributeSet();
 		const ULLL_CharacterAttributeSetBase* CharacterAttributeSetBase = CastChecked<ULLL_CharacterAttributeSetBase>(ASC->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
 		GetCharacterMovement()->MaxAcceleration = CharacterAttributeSetBase->GetAccelerateSpeed();
 		GetCharacterMovement()->GroundFriction = CharacterAttributeSetBase->GetGroundFriction();
@@ -153,36 +124,47 @@ void ALLL_BaseCharacter::BeginPlay()
 	}));
 }
 
-// Called every frame
-void ALLL_BaseCharacter::Tick(float DeltaTime)
+void ALLL_BaseCharacter::InitAttributeSet()
 {
-	Super::Tick(DeltaTime);
+	UE_LOG(LogTemp, Log, TEXT("%s 어트리뷰트 초기화 리스트"), *GetName())
 
+	TArray<UAttributeSet*> SpawnedAttributes = ASC->GetSpawnedAttributes();
+	for (const auto SpawnedAttribute : SpawnedAttributes)
+	{
+		UE_LOG(LogTemp, Log, TEXT("- %s"), *SpawnedAttribute->GetName())
+	}
+}
+
+void ALLL_BaseCharacter::AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
+{
+	NiagaraComponents.Remove(nullptr);
+	NiagaraComponents.Emplace(InNiagaraComponent);
 }
 
 void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	if (HitLocation.Z >= GetActorLocation().Z)
+	if (HitLocation.Z < GetActorLocation().Z)
 	{
-		OtherActorCollidedDelegate.Broadcast(this, Other);
-
-		const ECollisionResponse WallResponse = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
-		const ECollisionResponse FieldResponse = Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD);
-	
-		if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
-		{
-			FGameplayEventData PayloadData;
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
-		}
+		return;
 	}
-}
 
-void ALLL_BaseCharacter::Damaged()
-{
-	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DamagedCueTag);
+	LastCollideLocation = HitLocation;
+	LastCollideLocation.Z = GetActorLocation().Z;
 	
+	OtherActorCollidedDelegate.Broadcast(this, Other);
+
+	const ECollisionResponse WallResponse = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
+	const ECollisionResponse FieldResponse = Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD);
+	
+	if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
+	{
+		FGameplayEventData PayloadData;
+		PayloadData.Instigator = Other;
+		
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
+	}
 }
 
 void ALLL_BaseCharacter::Dead()
@@ -196,5 +178,19 @@ void ALLL_BaseCharacter::Dead()
 
 	CharacterDeadDelegate.Broadcast(this);
 
-	FLLL_ExecuteCueHelper::ExecuteCue(this, CharacterDataAsset->DeadCueTag);
+	ASC->CancelAbilities();
+}
+
+void ALLL_BaseCharacter::SetOnceParameterByTupleValue(EFModParameter FModParameter, float value) const
+{
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	{
+		if (FModParameterData.Parameter != FModParameter)
+		{
+			continue;
+		}
+
+		FModAudioComponent->SetParameter(FModParameterData.Name, value);
+	}
 }

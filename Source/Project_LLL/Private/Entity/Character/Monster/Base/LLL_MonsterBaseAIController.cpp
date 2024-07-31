@@ -10,6 +10,8 @@
 #include "DataAsset/LLL_MonsterBaseDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 
 void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 {
@@ -32,14 +34,30 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	}));
 }
 
+void ALLL_MonsterBaseAIController::SetPlayer(ALLL_PlayerBase* Player) const
+{
+	if (IsValid(Player) && !IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
+	{
+		if (IsValid(Player))
+		{
+			BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
+		}
+	}
+}
+
+void ALLL_MonsterBaseAIController::StopLogic(const FString& Reason) const
+{
+	BrainComponent->StopLogic(Reason);
+	
+	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+	Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
+}
+
 void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
 	{
-		BrainComponent->StopLogic("Monster Is Damaged");
-
-		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
-		Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
+		StopLogic(TEXT("Monster Is Damaged"));
 	}
 }
 
@@ -47,18 +65,14 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
 	{
-		if (!Monster->CheckCharacterIsDead())
+		if (Monster->CheckCharacterIsDead())
 		{
-			BrainComponent->StartLogic();
-
-			if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
-			{
-				ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-				if (IsValid(Player))
-				{
-					BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
-				}
-			}
+			return;
 		}
+
+		BrainComponent->StartLogic();
+
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+		SetPlayer(Player);
 	}
 }

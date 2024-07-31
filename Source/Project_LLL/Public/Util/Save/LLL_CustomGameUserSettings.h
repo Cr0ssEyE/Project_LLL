@@ -6,6 +6,7 @@
 #include "GameFramework/GameUserSettings.h"
 #include "LLL_CustomGameUserSettings.generated.h"
 
+enum class EMaximumFrameRate : uint8;
 /**
  * 
  */
@@ -36,6 +37,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE float GetSFXSoundVolume() const { return SFXSoundVolume; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool GetMasterSoundIgnored() const { return bMasterSoundIgnore; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool GetBGMSoundIgnored() const { return bBGMSoundIgnore; }
+	
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool GetSFXSoundIgnored() const { return bSFXSoundIgnore; }
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetMasterSoundVolume(float Value) { MasterSoundVolume = Value; }
@@ -46,6 +56,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetSFXSoundVolume(float Value) { SFXSoundVolume = Value; }
 
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetMasterSoundIgnored(bool Value) { bMasterSoundIgnore = Value; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetBGMSoundIgnored(bool Value) { bBGMSoundIgnore = Value; }
+	
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetSFXSoundIgnored(bool Value) { bSFXSoundIgnore = Value; }
+	
 	// 그래픽
 public:
 	UFUNCTION(BlueprintCallable)
@@ -101,6 +120,15 @@ protected:
 
 	UPROPERTY(Config, SaveGame)
 	float SFXSoundVolume;
+
+	UPROPERTY(Config, SaveGame)
+	uint8 bMasterSoundIgnore : 1;
+
+	UPROPERTY(Config, SaveGame)
+	uint8 bBGMSoundIgnore : 1;
+
+	UPROPERTY(Config, SaveGame)
+	uint8 bSFXSoundIgnore : 1;
 
 protected:
 	UPROPERTY(Config, SaveGame)

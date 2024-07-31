@@ -3,13 +3,15 @@
 
 #include "GAS/Ability/Character/Player/SkillSystem/LLL_PGA_Skill_BulletTime.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "Constant/LLL_CollisionChannel.h"
-#include "Game/ProtoGameInstance.h"
+#include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_GeneralConstants.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/ASC/LLL_BaseASC.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 #include "Interface/LLL_KnockBackInterface.h"
 
@@ -24,7 +26,7 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	const ULLL_PlayerSkillAttributeSet* PlayerSkillAttributeSet = Cast<ULLL_PlayerSkillAttributeSet>(GetCurrentActorInfo()->AbilitySystemComponent->GetAttributeSet(ULLL_PlayerSkillAttributeSet::StaticClass()));
+	const ULLL_PlayerSkillAttributeSet* PlayerSkillAttributeSet = Cast<ULLL_PlayerSkillAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerSkillAttributeSet::StaticClass()));
 	if (IsValid(PlayerSkillAttributeSet) && IsValid(BulletTimeActivateSequence))
 	{
 		ActorSpawnedDelegateHandle = GetWorld()->AddOnActorSpawnedHandler(WorldActorSpawnedDelegate.CreateUObject(this, &ULLL_PGA_Skill_BulletTime::OnBulletTimeEffectedActorSpawnCheck));
@@ -44,6 +46,9 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 		}
 
 		TraceBulletTimeEffectedActors();
+		FGameplayEventData EventData;
+		EventData.InstigatorTags.AddTag(TAG_GAS_PLAYER_BULLET_TIME_START);
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_BULLET_TIME_START, EventData);
 		BulletTimeActivateSequenceActor->GetSequencePlayer()->Play();
 
 		GetWorld()->GetTimerManager().SetTimer(AbilityDurationTimerHandle, this, &ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack, SkillDuration, false);
@@ -51,9 +56,9 @@ void ULLL_PGA_Skill_BulletTime::ActivateAbility(const FGameplayAbilitySpecHandle
 	else
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if(const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckPlayerSkillDebug())
+			if (DebugGameInstance->CheckPlayerSkillDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("불릿타임 스킬 발동 취소됨. 시퀀스 또는 어트리뷰트 셋 접근 유효하지 않음")));
 			}
@@ -70,6 +75,10 @@ void ULLL_PGA_Skill_BulletTime::EndAbility(const FGameplayAbilitySpecHandle Hand
 	{
 		BulletTimeEndedCallBack();
 	}
+
+	FGameplayEventData EventData;
+	EventData.InstigatorTags.AddTag(TAG_GAS_PLAYER_BULLET_TIME_END);
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_BULLET_TIME_END, EventData);
 	GetWorld()->RemoveOnActorSpawnedHandler(ActorSpawnedDelegateHandle);
 	ActorSpawnedDelegateHandle.Reset();
 	
@@ -80,8 +89,7 @@ void ULLL_PGA_Skill_BulletTime::EndAbility(const FGameplayAbilitySpecHandle Hand
 void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 {
 	TArray<FHitResult> HitResults;
-	FCollisionQueryParams Params;
-	FVector SweepLocation = GetCurrentActorInfo()->AvatarActor->GetActorLocation();
+	const FVector SweepLocation = GetCurrentActorInfo()->AvatarActor->GetActorLocation();
 
 	// 귀찮아서 매직넘버 처리.
 	GetWorld()->SweepMultiByProfile(
@@ -90,16 +98,15 @@ void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 		SweepLocation,
 		FQuat::Identity,
 		CP_BULLET_TIME_INFLUENCED,
-		FCollisionShape::MakeBox(FVector(10000.f, 10000.f, 1000.f)),
-		Params
+		FCollisionShape::MakeBox(FVector(BIG_SCALE_SCALAR, BIG_SCALE_SCALAR, BIG_SCALE_SCALAR))
 		);
 
 	if (HitResults.IsEmpty())
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const UProtoGameInstance* ProtoGameInstance = Cast<UProtoGameInstance>(GetWorld()->GetGameInstance()))
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckPlayerSkillDebug())
+			if (DebugGameInstance->CheckPlayerSkillDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("불릿타임 스킬에 어떤 액터도 영향받지 않음")));
 			}
@@ -109,15 +116,23 @@ void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 		return;
 	}
 
+	TArray<AActor*> HitActors;
 	for (auto HitResult : HitResults)
 	{
-		BulletTimeEffectedActors.Emplace(HitResult.GetActor());
-		HitResult.GetActor()->CustomTimeDilation = WorldDecelerationRate;
+		AActor* HitActor = HitResult.GetActor();
+		BulletTimeEffectedActors.Emplace(HitActor);
+		HitActors.Emplace(HitActor);
 	}
+	CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance())->SetActorsCustomTimeDilation(HitActors, WorldDecelerationRate);
 }
 
 void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 {
+	if (!IsValid(GetWorld()))
+	{
+		return;
+	}
+	
 	if (GetWorld()->GetTimerManager().IsTimerActive(AbilityDurationTimerHandle))
 	{
 		AbilityDurationTimerHandle.Invalidate();
@@ -162,23 +177,24 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 	FGameplayAbilityTargetDataHandle TargetDataHandle;
 	TargetDataHandle.Add(ActorArray);
 
-	ULLL_BaseASC* LLLASC = CastChecked<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked());
-	if (LLLASC->TryActivateAbilitiesByTag(FGameplayTagContainer(KnockBackCollideCheckTag)))
+	if (ULLL_BaseASC* BaseAsc = CastChecked<ULLL_BaseASC>(GetAbilitySystemComponentFromActorInfo_Checked()); BaseAsc->TryActivateAbilitiesByTag(FGameplayTagContainer(KnockBackCollideCheckTag)))
 	{
-		LLLASC->ReceiveTargetData(this, TargetDataHandle);
+		BaseAsc->ReceiveTargetData(this, TargetDataHandle);
 	}
-	
+
+	TArray<AActor*> EffectedActors;
 	for (auto Actor : BulletTimeEffectedActors)
 	{
 		if (Actor.IsValid())
 		{
-			Actor.Get()->CustomTimeDilation = 1.0f;
+			EffectedActors.Emplace(Actor.Get());
 			if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor.Get()))
 			{
 				KnockBackActor->ApplyStackedKnockBack();
 			}
 		}
 	}
+	CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance())->SetActorsCustomTimeDilation(EffectedActors, 1.0f);
 	
 	BulletTimeEffectedActors.Empty();
 	
@@ -187,6 +203,11 @@ void ULLL_PGA_Skill_BulletTime::BulletTimeEndedCallBack()
 
 void ULLL_PGA_Skill_BulletTime::OnBulletTimeEffectedActorSpawnCheck(AActor* Actor)
 {
+	if (!IsValid(GetWorld()))
+	{
+		return;
+	}
+	
 	const ECollisionResponse Response = Actor->GetComponentsCollisionResponseToChannel(ECC_ENTITY_CHECK);
 	if (Response != ECR_Ignore)
 	{

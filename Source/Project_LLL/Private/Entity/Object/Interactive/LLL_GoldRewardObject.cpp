@@ -5,8 +5,9 @@
 
 #include "DataTable/LLL_RewardDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Kismet/GameplayStatics.h"
 
-void ALLL_GoldRewardObject::SetInformation(FRewardDataTable* Data)
+void ALLL_GoldRewardObject::SetInformation(const FRewardDataTable* Data)
 {
 	Super::SetInformation(Data);
 
@@ -18,7 +19,7 @@ void ALLL_GoldRewardObject::InteractiveEvent()
 {
 	Super::InteractiveEvent();
 
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
 	ULLL_PlayerGoldComponent* PlayerGoldComponent = Player->GetGoldComponent();
 	PlayerGoldComponent->IncreaseMoney(RewardValue);
 }

@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "LLL_MonsterBaseAIController.generated.h"
 
+class ALLL_PlayerBase;
 class ALLL_BaseCharacter;
 class ALLL_MonsterBase;
 class ULLL_MonsterBaseDataAsset;
@@ -21,6 +22,11 @@ class PROJECT_LLL_API ALLL_MonsterBaseAIController : public AAIController
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
+public:
+	void SetPlayer(ALLL_PlayerBase* Player) const;
+	void StopLogic(const FString& Reason) const;
+
+protected:
 	UFUNCTION()
 	void StartDamagedHandle(UAnimMontage* Montage);
 

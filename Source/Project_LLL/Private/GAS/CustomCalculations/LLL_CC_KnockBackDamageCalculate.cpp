@@ -23,9 +23,9 @@ float ULLL_CC_KnockBackDamageCalculate::CalculateBaseMagnitude_Implementation(co
 	}
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	
-	const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerAttributeSet, KnockBackAmplifyValueRowHandle.Eval(Spec.GetLevel(), TEXT("Error!!!"))) * 0.1f;
+	const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerAttributeSet, KnockBackAmplifyValueRowHandle.Eval(Spec.GetLevel(), TEXT("Error!!!")));
 	const float MainKnockBackRate = PlayerAttributeSet->GetKnockBackRate();
-	const float SubKnockBackRate = bUsePowKnockBackRate? PlayerAttributeSet->GetKnockBackRate() : 1.f;
+	const float SubKnockBackRate = bUsePowKnockBackRate ? PlayerAttributeSet->GetKnockBackRate() : 1.f;
 
 	Result = KnockBackPower * MainKnockBackRate * SubKnockBackRate;
 	return Result;

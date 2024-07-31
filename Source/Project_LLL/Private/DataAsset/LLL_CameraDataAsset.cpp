@@ -3,13 +3,21 @@
 
 #include "DataAsset/LLL_CameraDataAsset.h"
 
-ULLL_CameraDataAsset::ULLL_CameraDataAsset()
+ULLL_CameraDataAsset::ULLL_CameraDataAsset() :
+	ProjectionType(ECameraProjectionMode::Orthographic),
+	CameraFOV(45.f),
+	PerspectiveSpringArmDistance(3000.f),
+	bUseConstraintAspectRatio(false),
+	AspectRatio(1.77778f),
+	CameraDistance(3000.f),
+	SpringArmAngle(-45.f, -45.f, 0.f),
+	bUseAutoCalculate(false),
+	AutoPlaneShift(0),
+	bUseUpdateOrthoPlanes(false),
+	OrthographicNearClipDistance(-3000),
+	OrthographicFarClipDistance(10000000),
+	OrthographicSpringArmDistance(1000.f),
+	CameraCursorTrackingSpeed(500),
+	CameraCursorTrackingLength(0)
 {
-	ProjectionType = ECameraProjectionMode::Orthographic;
-	CameraFOV = 40.f;
-	SpringArmDistance = 3000.f;
-	CameraDistance = 3000.f;
-	OrthographicNearClipDistance = -2500.f;
-	OrthographicFarClipDistance = 30000.f;
-	SpringArmAngle = FRotator(-45.f, -45.f, 0.f);
 }
