@@ -17,7 +17,7 @@ void ULLL_MGA_AttackInApnea::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		return;
 	}
 
-	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackInApneaMontage, 1.0f, TEXT("1"));
+	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackInApneaMontage"), AttackInApneaMontage, 1.0f, TEXT("1"));
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_MGA_AttackInApnea::SecondAttack);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_MGA_AttackInApnea::SecondAttack);
 	PlayMontageTask->ReadyForActivation();

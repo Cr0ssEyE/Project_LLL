@@ -5,10 +5,8 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
+#include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
 
 ULLL_SnapOtherMonster_BTTaskNode::ULLL_SnapOtherMonster_BTTaskNode()
 {
@@ -18,24 +16,28 @@ ULLL_SnapOtherMonster_BTTaskNode::ULLL_SnapOtherMonster_BTTaskNode()
 
 EBTNodeResult::Type ULLL_SnapOtherMonster_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-	ALLL_MonsterBase* OtherMonster = Cast<ALLL_MonsterBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_OTHER_MONSTER));
-	if (IsValid(OtherMonster) && !OtherMonster->CheckCharacterIsDead())
-	{
-		// Todo : 추후 데이터화 예정
-		const FName SocketName = TEXT("hand_rSocket");
-		if (!Monster->GetMesh()->DoesSocketExist(SocketName))
-		{
-			UE_LOG(LogTemp, Log, TEXT("소켓이 존재하지 않습니다"))
-			return EBTNodeResult::Failed;
-		}
+	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-		CastChecked<ALLL_MonsterBaseAIController>(OtherMonster->GetController())->StopLogic(TEXT("Snapped"));
-		OtherMonster->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		OtherMonster->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		OtherMonster->AttachToComponent(Monster->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
-		return EBTNodeResult::Succeeded;
+	const ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(OwnerComp.GetAIOwner()->GetPawn());
+	if (!ManOfStrength)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("힘 있는 자가 아닙니다"));
+		
+		return EBTNodeResult::Failed;
 	}
-	
-	return EBTNodeResult::Failed;
+
+	ManOfStrength->SnapOtherMonster();
+
+	return EBTNodeResult::InProgress;
+}
+
+void ULLL_SnapOtherMonster_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+{
+	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
+	const ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(OwnerComp.GetAIOwner()->GetPawn());
+	if (ManOfStrength && !ManOfStrength->IsAttacking())
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 }

@@ -24,6 +24,7 @@ protected:
 public:
 	void Shockwave() const;
 	void AttackInApnea() const;
+	void SnapOtherMonster() const;
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
