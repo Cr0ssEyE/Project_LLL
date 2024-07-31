@@ -10,6 +10,7 @@ ULLL_AttackInApnea_BTTaskNode::ULLL_AttackInApnea_BTTaskNode()
 {
 	NodeName = TEXT("Attack In Apnea");
 	bNotifyTick = true;
+	AttackNum = 0;
 }
 
 EBTNodeResult::Type ULLL_AttackInApnea_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -23,8 +24,9 @@ EBTNodeResult::Type ULLL_AttackInApnea_BTTaskNode::ExecuteTask(UBehaviorTreeComp
 		
 		return EBTNodeResult::Failed;
 	}
-
+	
 	ManOfStrength->AttackInApnea();
+	AttackNum = 1;
 
 	return EBTNodeResult::InProgress;
 }
@@ -32,10 +34,20 @@ EBTNodeResult::Type ULLL_AttackInApnea_BTTaskNode::ExecuteTask(UBehaviorTreeComp
 void ULLL_AttackInApnea_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-
+	
 	const ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(OwnerComp.GetAIOwner()->GetPawn());
 	if (ManOfStrength && !ManOfStrength->IsAttacking())
 	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		// Todo : 추후 데이터화 예정
+		if (AttackNum == 4)
+		{
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		}
+		else
+		{
+			ManOfStrength->AttackInApnea();
+		}
+
+		AttackNum++;
 	}
 }

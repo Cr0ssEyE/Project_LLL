@@ -35,6 +35,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData3);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData4);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData5);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData6);
 
 protected:
 	virtual void CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data);
@@ -87,4 +88,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MonsterData5;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData6;
 };

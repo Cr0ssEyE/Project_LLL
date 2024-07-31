@@ -5,7 +5,8 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Constant/LLL_BlackBoardKeyNames.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
@@ -23,13 +24,13 @@ EBTNodeResult::Type ULLL_MoveTo_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
-	if (!IsValid(Player))
+	FVector TargetLocation;
+	if (!GetTargetLocation(OwnerComp, TargetLocation))
 	{
-		return NodeResult;
+		return EBTNodeResult::Failed;
 	}
-
-	const FVector Direction = Player->GetActorLocation() - Monster->GetActorLocation();
+	
+	const FVector Direction = TargetLocation - Monster->GetActorLocation();
 	const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
 	if (Monster->GetActorRotation().Equals(Rotation, MonsterAttributeSet->GetFieldOfView() / 2.0f))
 	{
@@ -43,19 +44,41 @@ void ULLL_MoveTo_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 	
-	ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(MonsterBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-	
-	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
-	if (!IsValid(PlayerBase))
+	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+
+	FVector TargetLocation;
+	if (!GetTargetLocation(OwnerComp, TargetLocation))
 	{
 		return;
 	}
-
-	const FVector Direction = PlayerBase->GetActorLocation() - MonsterBase->GetActorLocation();
+	
+	const FVector Direction = TargetLocation - Monster->GetActorLocation();
 	const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
 	const float TurnSpeed = MonsterAttributeSet->GetTurnSpeed();
-	FRotator CalculatedRotation = FMath::RInterpTo(MonsterBase->GetActorRotation(), Rotation, GetWorld()->GetDeltaSeconds(), TurnSpeed);
+	FRotator CalculatedRotation = FMath::RInterpTo(Monster->GetActorRotation(), Rotation, GetWorld()->GetDeltaSeconds(), TurnSpeed);
 	CalculatedRotation.Pitch = 0.0f;
-	MonsterBase->SetActorRotation(CalculatedRotation);
+	Monster->SetActorRotation(CalculatedRotation);
+}
+
+bool ULLL_MoveTo_BTTaskNode::GetTargetLocation(UBehaviorTreeComponent& OwnerComp, FVector& OutTargetLocation) const
+{
+	if (BlackboardKey.SelectedKeyType == UBlackboardKeyType_Object::StaticClass())
+	{
+		UObject* KeyValue = OwnerComp.GetBlackboardComponent()->GetValue<UBlackboardKeyType_Object>(BlackboardKey.GetSelectedKeyID());
+		AActor* TargetActor = Cast<AActor>(KeyValue);
+		if (IsValid(TargetActor))
+		{
+			const ALLL_BaseCharacter* Character = Cast<ALLL_BaseCharacter>(TargetActor);
+			if (IsValid(Character) && Character->CheckCharacterIsDead())
+			{
+				return false;
+			}
+			OutTargetLocation = TargetActor->GetActorLocation();
+			return true;
+		}
+		return false;
+	}
+	OutTargetLocation = OwnerComp.GetBlackboardComponent()->GetValue<UBlackboardKeyType_Vector>(BlackboardKey.GetSelectedKeyID());
+	return true;
 }
