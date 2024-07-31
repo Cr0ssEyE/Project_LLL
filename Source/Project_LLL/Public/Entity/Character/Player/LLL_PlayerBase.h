@@ -27,6 +27,8 @@ class UCameraComponent;
 class UInputAction;
 class UWidgetComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDissolveCompleteDelegate, bool, IsDrop);
+
 /**
  * 
  */
@@ -54,6 +56,8 @@ public:
 	void AddInteractiveObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
+	void CharacterUnDissolveBegin();
+	
 public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
 	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
@@ -77,6 +81,9 @@ public:
 public:
 	void StartCameraMoveToCursor(ALLL_PlayerController* PlayerController = nullptr);
 	void PauseCameraMoveToCursor();
+
+public:
+	FDissolveCompleteDelegate DissolveCompleteDelegate;
 	
 protected:
 	void TurnToMouseCursor();
@@ -150,6 +157,8 @@ private:
 	// 상태 관련 함수
 protected:
 	void DropDissolveActor();
+
+	void PullUpDissolveActor();
 	
 	UFUNCTION()
 	void DeadMotionEndedHandle();
@@ -159,7 +168,7 @@ protected:
 	uint8 bIsMoveInputPressed : 1;
 
 	UPROPERTY()
-	TObjectPtr<AActor> DeadSequenceDissolveActor;
+	TObjectPtr<AActor> CharacterDissolveActor;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly)

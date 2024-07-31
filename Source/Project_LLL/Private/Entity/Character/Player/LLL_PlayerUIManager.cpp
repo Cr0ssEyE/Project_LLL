@@ -3,12 +3,11 @@
 
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 
-#include "Components/WidgetComponent.h"
+#include "Blueprint/GameViewportSubsystem.h"
 #include "Constant/LLL_GeneralConstants.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/Entity/Character/Player/LLL_InteractionWidget.h"
 #include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
@@ -16,7 +15,6 @@
 #include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
 #include "UI/Entity/Character/Player/LLL_PlayerComboWidget.h"
 #include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
-#include "UI/Entity/Character/Player/LLL_SkillWidget.h"
 #include "UI/System/LLL_GamePauseWidget.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 
@@ -95,6 +93,10 @@ void ULLL_PlayerUIManager::BeginPlay()
 	{
 		ChaseActionWidget = CastChecked<ULLL_PlayerChaseActionWidget>(CreateWidget(GetWorld(), ChaseActionWidgetClass));
 	}
+
+	UGameViewportSubsystem* ViewportSubsystem = UGameViewportSubsystem::Get(GetWorld());
+	ViewportSubsystem->OnWidgetAdded.AddUObject(this, &ULLL_PlayerUIManager::ManageOnWidgetAdded);
+	ViewportSubsystem->OnWidgetRemoved.AddUObject(this, &ULLL_PlayerUIManager::ManageOnWidgetRemoved);
 }
 
 void ULLL_PlayerUIManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -106,6 +108,11 @@ void ULLL_PlayerUIManager::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void ULLL_PlayerUIManager::TogglePauseWidget(bool IsDead) const
 {
+	if (IsValid(FocusedWidget) && !Cast<ULLL_GamePauseWidget>(FocusedWidget))
+	{
+		return;
+	}
+	
 	if(GamePauseWidget->GetIsEnabled())
 	{
 		bool IsUniquePopup = SelectRewardWidget->GetIsEnabled();
@@ -159,7 +166,15 @@ void ULLL_PlayerUIManager::DisableInteractionWidget() const
 void ULLL_PlayerUIManager::UpdateInteractionWidget(const ALLL_InteractiveObject* CurrentObject, int Num) const
 {
 	// InteractionWidget->RenderNextInteractionPanel(static_cast<bool>(Num));
-	InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
+	if (CurrentObject->CheckUseCustomDisplayText())
+	{
+		InteractionWidget->SetInfoText(CurrentObject->GetCustomDisplayText());
+	}
+	else
+	{
+		InteractionWidget->SetInfoText(TEXT(""));
+		// InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
+	}
 }
 
 void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
@@ -192,5 +207,21 @@ void ULLL_PlayerUIManager::UpdateWidget()
 	const ULLL_PlayerStatusWidget* PlayerStatusWidget = CastChecked<ULLL_PlayerStatusWidget>(CharacterStatusWidget);
 	PlayerStatusWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
 	Super::UpdateWidget();
+}
+
+void ULLL_PlayerUIManager::ManageOnWidgetAdded(UWidget* Widget, ULocalPlayer* Player)
+{
+	if (Cast<ILLL_FocusWidgetInterface>(Widget))
+	{
+		FocusedWidget = Widget;
+	}
+}
+
+void ULLL_PlayerUIManager::ManageOnWidgetRemoved(UWidget* Widget)
+{
+	if (Cast<ILLL_FocusWidgetInterface>(Widget))
+	{
+		FocusedWidget = nullptr;
+	}
 }
 

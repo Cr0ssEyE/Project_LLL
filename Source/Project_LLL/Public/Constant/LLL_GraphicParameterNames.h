@@ -18,6 +18,8 @@
 // 나이아가라 파라미터 이름
 #define NS_MARK_COUNT TEXT("MarkCount")
 
+// 플레이어 관련
+#define PLAYER_CHARACTER_DISSOLVE TEXT("PlayerCharacterDissolve")
 
 /* 커스텀 스텐실 값
  * 툰 셰이딩이 적용 되는 대상: 2의 배수

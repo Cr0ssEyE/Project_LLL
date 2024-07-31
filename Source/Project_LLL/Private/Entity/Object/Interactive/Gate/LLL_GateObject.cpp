@@ -79,14 +79,14 @@ void ALLL_GateObject::SetActivate()
 	TextureMeshComponent->SetVisibility(true);
 }
 
-void ALLL_GateObject::InteractiveEvent()
+void ALLL_GateObject::InteractiveEvent(AActor* InteractedActor)
 {
 	if(!bIsGateEnabled)
 	{
 		return;
 	}
 	
-	Super::InteractiveEvent();
+	Super::InteractiveEvent(InteractedActor);
 	
 	OpenGate();
 }
