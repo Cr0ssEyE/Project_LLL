@@ -11,8 +11,6 @@
 #define TAG_GAS_STATUS_BLEEDING FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding"))
 #define TAG_GAS_STATUS_BLEEDING_BASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding.FromBaseAttack"))
 #define TAG_GAS_STATUS_BLEEDING_DASH_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding.FromDash"))
-#define TAG_GAS_STATUS_MARKED FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Marked"))
-#define TAG_GAS_STATUS_TARGETED FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Targeted"))
 #define TAG_GAS_STATE_KNOCKBACKED FGameplayTag::RequestGameplayTag(FName("Character.State.IsKnockBacked"))
 #define TAG_GAS_STATE_COLLIDE_OTHER FGameplayTag::RequestGameplayTag(FName("Character.State.CollideOther"))
 
@@ -34,9 +32,6 @@
 // 플레이어 공격 효과 관련 게임플레이 태그
 #define TAG_GAS_ABNORMAL_STATUS FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus"))
 #define TAG_GAS_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Bleeding"))
-#define TAG_GAS_MARK FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Mark"))
-#define TAG_GAS_TARGETING FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Targeting"))
-#define TAG_GAS_MARK_STACK FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Mark.Stack"))
 
 // 플레이어 부가 효과 구분용 게임플레이 태그
 #define TAG_GAS_PERKS_ATTACK FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Attack")
