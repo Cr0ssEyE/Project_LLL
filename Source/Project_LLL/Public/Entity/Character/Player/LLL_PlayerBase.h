@@ -190,6 +190,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float ScalarValue;
 
+protected:
 	UPROPERTY(VisibleAnywhere)
 	float LastSentDamage;
 };

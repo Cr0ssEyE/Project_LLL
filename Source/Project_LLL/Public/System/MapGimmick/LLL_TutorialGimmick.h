@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTable/LLL_RewardDataTable.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_TutorialGimmick.generated.h"
 
@@ -65,7 +66,7 @@ protected:
 
 	uint8 bIsActiveDash : 1;
 	
-	void OnInteractionGate();
+	void OnInteractionGate(const FRewardDataTable* RewardData);
 
 	UFUNCTION()
 	void RewardDestroyed(AActor* DestroyedActor);
