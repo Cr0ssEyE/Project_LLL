@@ -24,6 +24,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Game/LLL_GameInstance.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Game/LLL_MapSoundSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/MapGimmick/Components/LLL_SequencerComponent.h"
@@ -43,6 +44,24 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 	FadeInSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
 
 	Seed = 0;
+}
+
+FStageInfoData ALLL_MapGimmick::MakeStageInfoData()
+{
+	FStageInfoData StageInfoData;
+	StageInfoData.Seed = Seed;
+	StageInfoData.RoomNumber = RoomNumber;
+	for (auto Gate : Gates)
+	{
+		ALLL_GateObject* GateObject = Gate.Get();
+		if (!IsValid(GateObject))
+		{
+			continue;
+		}
+		StageInfoData.GatesRewardID.Emplace(GateObject->GetRewardData()->ID);
+	}
+	
+	return StageInfoData;
 }
 
 void ALLL_MapGimmick::OnConstruction(const FTransform& Transform)
@@ -97,6 +116,7 @@ void ALLL_MapGimmick::BeginPlay()
 
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayAMB();
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->RegisterMapGimmick(this);
 }
 
 void ALLL_MapGimmick::CreateMap()

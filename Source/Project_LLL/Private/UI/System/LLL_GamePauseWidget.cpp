@@ -138,11 +138,11 @@ void ULLL_GamePauseWidget::OnAnimationFinished_Implementation(const UWidgetAnima
 
 	if (LastClickButton == ExitButton && Animation == FadeAnim)
 	{
-		ULLL_GameProgressManageSubSystem* SubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-		ULLL_SaveGameData* CurrentSaveGameData = SubSystem->GetCurrentSaveGameData();
+		ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+		ULLL_SaveGameData* CurrentSaveGameData = GameProgressSubSystem->GetCurrentSaveGameData();
 		if (IsValid(CurrentSaveGameData))
 		{
-			CurrentSaveGameData->LastPlayLevelName = *GetWorld()->GetCurrentLevel()->GetName();
+			CurrentSaveGameData->LastPlayedLevelName = *GetWorld()->GetCurrentLevel()->GetName();
 		}
 	
 		UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);

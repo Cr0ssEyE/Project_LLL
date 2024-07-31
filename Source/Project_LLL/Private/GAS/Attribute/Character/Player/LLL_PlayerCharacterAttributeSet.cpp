@@ -20,6 +20,25 @@ TargetingCorrectionRadius(100.f)
 	
 }
 
+FPlayerCharacterStatusData ULLL_PlayerCharacterAttributeSet::MakeCharacterStatusData() const
+{
+	FPlayerCharacterStatusData CharacterStatusData;
+	CharacterStatusData.MaxHealth = MaxHealth.GetBaseValue();
+	CharacterStatusData.CurrentHealth = CurrentHealth.GetCurrentValue();
+	CharacterStatusData.OffensePower = OffensePower.GetBaseValue();
+	CharacterStatusData.MoveSpeed = MoveSpeed.GetBaseValue();
+	CharacterStatusData.AttackSpeed = AttackSpeed.GetBaseValue();
+	CharacterStatusData.CriticalChance = CriticalChance.GetBaseValue();
+	CharacterStatusData.CriticalAmplify = CriticalAmplify.GetBaseValue();
+	CharacterStatusData.MaxDashCount = MaxDashCount.GetBaseValue();
+	CharacterStatusData.DashDistance = DashDistance.GetBaseValue();
+	CharacterStatusData.KnockBackPower = KnockBackPower.GetBaseValue();
+	CharacterStatusData.KnockBackRate = KnockBackRate.GetBaseValue();
+	CharacterStatusData.KnockBackOffensePowerRate = KnockBackOffensePowerRate.GetBaseValue();
+	
+	return CharacterStatusData;
+}
+
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())

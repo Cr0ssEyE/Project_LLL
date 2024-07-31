@@ -27,6 +27,31 @@ class UNiagaraComponent;
 DECLARE_DELEGATE(FOnStageChangedDelegate);
 
 USTRUCT(BlueprintType)
+struct FStageInfoData
+{
+	GENERATED_BODY()
+	
+public:
+	FStageInfoData():
+	Seed(0),
+	RoomNumber(0)
+	{
+		
+	}
+
+public:
+	UPROPERTY()
+	uint32 Seed;
+	
+	UPROPERTY()
+	uint32 RoomNumber;
+
+	UPROPERTY()
+	TArray<uint8> GatesRewardID;
+	
+};
+
+USTRUCT(BlueprintType)
 struct FStageChangedDelegateWrapper
 {
 	GENERATED_BODY()
@@ -44,6 +69,9 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_MapGimmick();
 
+public:
+	FStageInfoData MakeStageInfoData();
+	
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void PostInitializeComponents() override;
@@ -51,8 +79,6 @@ protected:
 
 public:
 	FORCEINLINE ALLL_MonsterSpawner* GetMonsterSpawner() const { return MonsterSpawner; }
-	
-	// Stage Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage")
 	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
@@ -193,7 +219,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
 	TObjectPtr<UNiagaraComponent> PlayerTeleportNiagara;
-	
+
+protected:
 	UFUNCTION()
 	void FadeIn();
 
