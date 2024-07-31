@@ -33,8 +33,9 @@ protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
 public:
+	FORCEINLINE TArray<ULLL_MonsterSpawnPointComponent*> GetSpawnPoints() const { return SpawnPoints; }
+	
 	void SpawnMonster();
-
 	FStartSpawnDelegate StartSpawnDelegate;
 	
 private:

@@ -17,6 +17,8 @@ class PROJECT_LLL_API ULLL_PlayerCharacterAttributeSet : public ULLL_CharacterAt
 public:
 	ULLL_PlayerCharacterAttributeSet();
 
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, LowHealthPercentage);
+	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxAttackActionCount);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, BaseAttackDamageAmplifyByOther);
 	
@@ -57,6 +59,11 @@ protected:
 
 protected:
 	void TryStartComboManagement(const FGameplayEffectModCallbackData& Data);
+
+	// 스테이터스 관련
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData LowHealthPercentage;
 	
 	// 일반 공격 관련
 protected:

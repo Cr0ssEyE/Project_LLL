@@ -20,7 +20,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UBoxComponent> Trigger;
