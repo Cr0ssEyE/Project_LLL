@@ -16,4 +16,7 @@ class PROJECT_LLL_API ULLL_MGA_CatchMonster : public ULLL_CharacterGameplayAbili
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "소켓 이름")
+	FName SocketName;
 };

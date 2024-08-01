@@ -10,6 +10,7 @@
 #include "Interface/LLL_KnockBackInterface.h"
 #include "LLL_MonsterBase.generated.h"
 
+class UProjectileMovementComponent;
 class ULLL_MonsterAttributeSet;
 /**
  * 
@@ -28,12 +29,14 @@ public:
 	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
 	FORCEINLINE int32 GetId() const { return Id; }
+	FORCEINLINE UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovementComponent; }
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void InitAttributeSet() override;
 	virtual void SetFModParameter(EFModParameter FModParameter) override;
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	
 public:
 	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
@@ -44,8 +47,6 @@ public:
 	void Attack() const;
 	void Charge() const;
 	void RecognizePlayerToAroundMonster() const;
-	void Snapped() const;
-	void Threw() const;
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -59,6 +60,9 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> MaskMeshComponent;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
 
 	FVector StackedKnockBackVelocity;
 	float StackedKnockBackedPower;
