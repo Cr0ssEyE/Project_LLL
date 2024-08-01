@@ -8,8 +8,8 @@
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 ULLL_ThrowOtherMonster_BTTaskNode::ULLL_ThrowOtherMonster_BTTaskNode()
@@ -32,15 +32,11 @@ EBTNodeResult::Type ULLL_ThrowOtherMonster_BTTaskNode::ExecuteTask(UBehaviorTree
 		float Speed = 1000.0f;
 		OtherMonster->SetOwner(nullptr);
 		OtherMonster->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		OtherMonster->GetMesh()->SetEnableGravity(false);
-		OtherMonster->GetCapsuleComponent()->SetEnableGravity(false);
-		OtherMonster->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		OtherMonster->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		OtherMonster->GetMesh()->SetCollisionProfileName(CP_THREW_MONSTER);
 		OtherMonster->GetCapsuleComponent()->SetCollisionProfileName(CP_THREW_MONSTER);
-		OtherMonster->GetProjectileMovementComponent()->Activate();
-		OtherMonster->GetProjectileMovementComponent()->MaxSpeed = Speed;
-		OtherMonster->GetProjectileMovementComponent()->Velocity = Direction * OtherMonster->GetProjectileMovementComponent()->MaxSpeed;
+		UCharacterMovementComponent* CharacterMovementComponent = CastChecked<UCharacterMovementComponent>(OtherMonster->GetMovementComponent());
+		CharacterMovementComponent->MovementMode = MOVE_Flying;
+		CharacterMovementComponent->Velocity = Direction * Speed;
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_OTHER_MONSTER, nullptr);
 
 		UE_LOG(LogTemp, Log, TEXT("%s 놓기"), *OtherMonster->GetName())

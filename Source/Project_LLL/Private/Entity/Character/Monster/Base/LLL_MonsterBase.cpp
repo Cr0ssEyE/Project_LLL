@@ -67,16 +67,6 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	BleedingVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BleedingStatusEffect"));
 	BleedingVFXComponent->SetupAttachment(RootComponent);
 	BleedingVFXComponent->SetAutoActivate(false);
-	
-	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-	if (IsValid(ProjectileMovementComponent))
-	{
-		ProjectileMovementComponent->bShouldBounce = false;
-		ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
-		ProjectileMovementComponent->InitialSpeed = 0.0f;
-		ProjectileMovementComponent->bRotationFollowsVelocity = true;
-		ProjectileMovementComponent->Deactivate();
-	}
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -131,14 +121,6 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	// 잡혔을때 중력을 끄고 피직스 시뮬레이터 끄고 콜리젼도 비활성화하는데도 자꾸 떨어져서 원인을 모르겠음
-	// 임시 방편으로 이렇게 해둠
-	// Todo : 추후 개선 필요
-	if (Cast<ALLL_ManOfStrength>(GetOwner()))
-	{
-		SetActorRelativeLocation(FVector::ZeroVector);
-	}
-
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -188,10 +170,11 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 	ULLL_MonsterBaseAnimInstance* MonsterAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetCharacterAnimInstance());
 	if (IsValid(MonsterAnimInstance) && MonsterAnimInstance->IsSnapped())
 	{
-		GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		ProjectileMovementComponent->Deactivate();
+		CastChecked<UCharacterMovementComponent>(GetMovementComponent())->MovementMode = MOVE_Walking;
+		GetMesh()->SetCollisionProfileName(CP_MONSTER);
+		GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 		MonsterAnimInstance->SetSnapped(false);
+		CastChecked<ALLL_MonsterBaseAIController>(GetController())->StartLogic();
 	}
 }
 

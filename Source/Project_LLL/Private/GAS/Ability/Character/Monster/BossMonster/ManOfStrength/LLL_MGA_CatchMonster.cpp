@@ -10,6 +10,8 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 
 void ULLL_MGA_CatchMonster::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -28,10 +30,7 @@ void ULLL_MGA_CatchMonster::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		}
 
 		CastChecked<ALLL_MonsterBaseAIController>(OtherMonster->GetController())->StopLogic(TEXT("Snapped"));
-		OtherMonster->GetMesh()->SetEnableGravity(false);
-		OtherMonster->GetCapsuleComponent()->SetEnableGravity(false);
-		OtherMonster->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		OtherMonster->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		CastChecked<UCharacterMovementComponent>(OtherMonster->GetMovementComponent())->MovementMode = MOVE_None;
 		OtherMonster->GetMesh()->SetCollisionProfileName(CP_NO_COLLISION);
 		OtherMonster->GetCapsuleComponent()->SetCollisionProfileName(CP_NO_COLLISION);
 		CastChecked<ULLL_MonsterBaseAnimInstance>(OtherMonster->GetCharacterAnimInstance())->SetSnapped(true);
