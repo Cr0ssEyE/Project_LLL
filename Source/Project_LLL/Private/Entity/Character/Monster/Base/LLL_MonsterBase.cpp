@@ -19,6 +19,7 @@
 #include "Constant/LLL_MeshSocketName.h"
 #include "DataAsset/Global/LLL_GlobalNiagaraDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
@@ -117,6 +118,14 @@ void ALLL_MonsterBase::BeginPlay()
 void ALLL_MonsterBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	// 잡혔을때 중력을 끄고 피직스 시뮬레이터 끄고 콜리젼도 비활성화하는데도 자꾸 떨어져서 원인을 모르겠음
+	// 임시 방편으로 이렇게 해둠
+	// Todo : 추후 개선 필요
+	if (CastChecked<ULLL_MonsterBaseAnimInstance>(GetCharacterAnimInstance())->IsSnapped())
+	{
+		SetActorRelativeLocation(FVector::ZeroVector);
+	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
@@ -422,6 +431,28 @@ void ALLL_MonsterBase::RecognizePlayerToAroundMonster() const
 		}
 	}
 #endif
+}
+
+void ALLL_MonsterBase::Snapped() const
+{
+	CastChecked<ALLL_MonsterBaseAIController>(GetController())->StopLogic(TEXT("Snapped"));
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//GetMesh()->SetEnableGravity(false);
+	//GetMesh()->SetSimulatePhysics(false);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//GetCapsuleComponent()->SetEnableGravity(false);
+	//GetCapsuleComponent()->SetSimulatePhysics(false);
+	CastChecked<ULLL_MonsterBaseAnimInstance>(GetCharacterAnimInstance())->SetSnapped(true);
+}
+
+void ALLL_MonsterBase::Threw() const
+{
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//GetMesh()->SetEnableGravity(true);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//GetCapsuleComponent()->SetEnableGravity(true);
+	CastChecked<ULLL_MonsterBaseAnimInstance>(GetCharacterAnimInstance())->SetSnapped(false);
+	CastChecked<ALLL_MonsterBaseAIController>(GetController())->StartLogic();
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)

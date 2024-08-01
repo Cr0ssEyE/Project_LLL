@@ -44,6 +44,8 @@ public:
 	void Attack() const;
 	void Charge() const;
 	void RecognizePlayerToAroundMonster() const;
+	void Snapped() const;
+	void Threw() const;
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
