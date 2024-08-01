@@ -98,7 +98,7 @@ void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 		SweepLocation,
 		FQuat::Identity,
 		CP_BULLET_TIME_INFLUENCED,
-		FCollisionShape::MakeBox(FVector(PLAYER_AROUND_SWEEP_RANGE, PLAYER_AROUND_SWEEP_RANGE, PLAYER_AROUND_SWEEP_RANGE))
+		FCollisionShape::MakeBox(FVector(BIG_SCALE_SCALAR, BIG_SCALE_SCALAR, BIG_SCALE_SCALAR))
 		);
 
 	if (HitResults.IsEmpty())

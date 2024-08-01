@@ -79,7 +79,6 @@ void ALLL_MapGimmick::BeginPlay()
 	RewardData = RewardGimmick->GetRewardData(0);
 
 	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,MapDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, MapDataAsset->ParticleScale, false, false);
-	PlayerTeleportNiagara->OnSystemFinished.AddDynamic(this, &ALLL_MapGimmick::PlayerSetHidden);
 	//Sequence Section
 	FMovieSceneSequencePlaybackSettings Settings;
 	Settings.bAutoPlay = false;
@@ -91,6 +90,7 @@ void ALLL_MapGimmick::BeginPlay()
 
 	SequenceActorPtr = FadeOutSequenceActor;
 	FadeOutSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
+	FadeOutSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::SetupGateData);
 	
 	RandomMap();
 	CreateMap();
@@ -136,9 +136,8 @@ void ALLL_MapGimmick::CreateMap()
 		const ULLL_GateSpawnPointComponent* SpawnPoint = Cast<ULLL_GateSpawnPointComponent>(ChildComponent);
 		if (IsValid(SpawnPoint))
 		{
-			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(MapDataAsset->Gate, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
-			Gate->FadeOutDelegate.AddUObject(this, &ALLL_MapGimmick::PlayerTeleport);
 			RewardGimmick->SetRewardToGate(Gate);
 			Gates.Add(Gate);
 		}
@@ -224,17 +223,8 @@ void ALLL_MapGimmick::AllGatesDestroy()
 void ALLL_MapGimmick::OnInteractionGate(const FRewardDataTable* Data)
 {
 	RewardData = Data;
-	RoomChildActors.Empty();
-	if(IsValid(ShoppingMapComponent))
-	{
-		ShoppingMapComponent->DeleteProducts();
-	}
-	ShoppingMapComponent = nullptr;
-	PlayerSpawnPointComponent = nullptr;
-	RoomSequencerPlayComponent = nullptr;
-
-	
-	RoomActor->Destroy();
+	bIsNextGateInteracted = true;
+	PlayerTeleport();
 }
 
 void ALLL_MapGimmick::EnableAllGates()
@@ -243,6 +233,27 @@ void ALLL_MapGimmick::EnableAllGates()
 	{
 		Gate->SetActivate();
 	}
+}
+
+void ALLL_MapGimmick::SetupGateData()
+{
+	if (!bIsNextGateInteracted)
+	{
+		return;
+	}
+
+	RoomChildActors.Empty();
+	if(IsValid(ShoppingMapComponent))
+	{
+		ShoppingMapComponent->DeleteProducts();
+	}
+	ShoppingMapComponent = nullptr;	
+	PlayerSpawnPointComponent = nullptr;
+	RoomSequencerPlayComponent = nullptr;
+	
+	RoomActor->Destroy();
+	
+	bIsNextGateInteracted = false;
 }
 
 void ALLL_MapGimmick::SetState(EStageState InNewState)
@@ -354,11 +365,15 @@ void ALLL_MapGimmick::SetRewardWidget()
 void ALLL_MapGimmick::FadeIn()
 {
 	FadeInSequencePlayer->Play();
+
+	FTimerHandle FadeTeleportTimerHandle;
+	GetWorldTimerManager().SetTimer(FadeTeleportTimerHandle, this, &ALLL_MapGimmick::PlayerSetHidden, MapDataAsset->TeleportFadeOutDelay);
 }
 
 void ALLL_MapGimmick::FadeOut()
 {
 	FadeOutSequencePlayer->Play();
+	PlayerSetHidden();
 }
 
 void ALLL_MapGimmick::PlayerTeleport()
@@ -378,9 +393,15 @@ void ALLL_MapGimmick::PlayerTeleport()
 	Player->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
 	PlayerTeleportNiagara->ActivateSystem();
+
+	if (bIsNextGateInteracted)
+	{
+		FTimerHandle FadeTeleportTimerHandle;
+		GetWorldTimerManager().SetTimer(FadeTeleportTimerHandle, this, &ALLL_MapGimmick::FadeOut, MapDataAsset->TeleportFadeOutDelay);
+	}
 }
 
-void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
+void ALLL_MapGimmick::PlayerSetHidden()
 {
 	if (!IsValid(GetWorld()) || !IsValid(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
@@ -388,7 +409,7 @@ void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
 	}
 	
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (Player->IsHidden())
+	if (Player->IsHidden() && !bIsNextGateInteracted)
 	{
 		
 		Player->SetActorHiddenInGame(false);
@@ -397,7 +418,6 @@ void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
 	else
 	{
 		Player->SetActorHiddenInGame(true);
-		FadeOut();
 	}
 	FadeInSequencePlayer->RestoreState();
 	FadeOutSequencePlayer->RestoreState();

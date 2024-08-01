@@ -34,6 +34,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "파티클")
 	TObjectPtr<UNiagaraSystem> Particle;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "파티클 위치")
+	FVector ParticleLocation;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "파티클 사이즈", meta=(DisplayPriority=1))
 	FVector ParticleScale = FVector::OneVector;
 	

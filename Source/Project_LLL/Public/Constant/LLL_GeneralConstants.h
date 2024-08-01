@@ -6,8 +6,8 @@
  * 주석을 통해 용도 명시 권장
 */
 
-// 플레이어 근처 "충분한" 범위 탐지용
-#define PLAYER_AROUND_SWEEP_RANGE 10000.f
+#define BIG_SCALE_SCALAR 10000.f
+#define MIDDLE_SCALE_SCALAR 1000.f
 
 // 플레이어 UI 뷰포트 레이어
 #define UI_LAYER_BOTTOM 0

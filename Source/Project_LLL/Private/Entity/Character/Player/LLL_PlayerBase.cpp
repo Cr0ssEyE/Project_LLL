@@ -605,7 +605,7 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 
 	ActivatePPLowHP();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DeactivatePPLowHP);
-	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= 0.3f)
+	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= PlayerCharacterAttributeSet->GetLowHealthPercentage())
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PlayLowHPAnimation);
 	}
@@ -659,7 +659,7 @@ void ALLL_PlayerBase::Dead()
 		GetActorLocation(),
 		FQuat::Identity,
 		CP_BULLET_TIME_INFLUENCED,
-		FCollisionShape::MakeBox(FVector(PLAYER_AROUND_SWEEP_RANGE, PLAYER_AROUND_SWEEP_RANGE, PLAYER_AROUND_SWEEP_RANGE)),
+		FCollisionShape::MakeBox(FVector(BIG_SCALE_SCALAR, BIG_SCALE_SCALAR, BIG_SCALE_SCALAR)),
 		Params
 		);
 
@@ -706,7 +706,7 @@ void ALLL_PlayerBase::DeactivatePPLowHP()
 {
 	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(GetGameInstance());
 	const UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
-	ScalarValue += GetWorld()->GetDeltaSeconds() / 3;
+	ScalarValue += GetWorld()->GetDeltaSeconds();
 	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOWHP_RADIUS, ScalarValue);
 	if (ScalarValue <= PlayerDataAsset->HPLowScalarMaxValue)
 	{
@@ -727,12 +727,12 @@ void ALLL_PlayerBase::PlayLowHPAnimation()
 	ULLL_PlayerStatusWidget* StateWidget = Cast<ULLL_PlayerStatusWidget>(PlayerUIManager->GetCharacterStatusWidget());
 	StateWidget->PlayLowHPAnimation();
 	FTimerHandle LowHPHandle;
-	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= 0.3f && !bIsLowHP)
+	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= PlayerCharacterAttributeSet->GetLowHealthPercentage() && !bIsLowHP)
 	{
 		bIsLowHP = true;
 		GetWorld()->GetTimerManager().SetTimer(LowHPHandle, this, &ALLL_PlayerBase::PlayLowHPAnimation, 1.0f, true);
 	}
-	else if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() > 0.3f)
+	else if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() > PlayerCharacterAttributeSet->GetLowHealthPercentage())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(LowHPHandle);
 	}
