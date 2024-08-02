@@ -33,8 +33,8 @@ struct FStageInfoData
 	
 public:
 	FStageInfoData():
-	Seed(0),
-	RoomNumber(0)
+	Seed(UINT32_MAX),
+	RoomNumber(UINT32_MAX)
 	{
 		
 	}
@@ -107,9 +107,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_SequencerComponent> RoomSequencerPlayComponent;
 	
-	uint8 Seed;
+	uint32 Seed;
 
 protected:
+	UFUNCTION()
+	void LoadLastSessionMap(FStageInfoData StageInfoData);
+	
 	UFUNCTION()
 	void CreateMap();
 
@@ -120,14 +123,8 @@ protected:
 	void ChangeMap(AActor* DestroyedActor);
 
 private:
-	UPROPERTY()
-	uint8 GateIndex;
-
 	UPROPERTY(VisibleAnywhere)
-	uint8 RoomNumber;
-
-	UPROPERTY(VisibleAnywhere)
-	uint8 CurrentRoomNumber;
+	uint32 CurrentRoomNumber;
 
 // Gate Section
 protected:

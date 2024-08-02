@@ -31,7 +31,7 @@ public:
 	ULLL_GameInstance();
 
 	virtual void Init() override;
-
+	
 	FStageEncounteredDelegate EncounteredDelegate;
 	
 public:

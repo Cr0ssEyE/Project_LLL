@@ -50,7 +50,7 @@ FStageInfoData ALLL_MapGimmick::MakeStageInfoData()
 {
 	FStageInfoData StageInfoData;
 	StageInfoData.Seed = Seed;
-	StageInfoData.RoomNumber = RoomNumber;
+	StageInfoData.RoomNumber = CurrentRoomNumber;
 	for (auto Gate : Gates)
 	{
 		ALLL_GateObject* GateObject = Gate.Get();
@@ -110,13 +110,49 @@ void ALLL_MapGimmick::BeginPlay()
 	SequenceActorPtr = FadeOutSequenceActor;
 	FadeOutSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
 	FadeOutSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::SetupGateData);
-	
-	RandomMap();
-	CreateMap();
 
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayAMB();
 	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->RegisterMapGimmick(this);
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->OnLastSessionLoaded.AddDynamic(this, &ALLL_MapGimmick::LoadLastSessionMap);
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->LoadLastSessionMapData();
+	// 델리게이트를 통해 마지막 세션 정보를 받아온 뒤, 세션 정보를 기반으로 진행도 초기화
+}
+
+void ALLL_MapGimmick::LoadLastSessionMap(FStageInfoData StageInfoData)
+{
+	if (GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->OnLastSessionLoaded.IsAlreadyBound(this, &ALLL_MapGimmick::LoadLastSessionMap))
+	{
+		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->OnLastSessionLoaded.RemoveDynamic(this, &ALLL_MapGimmick::LoadLastSessionMap);
+	}
+
+	Seed = StageInfoData.Seed;
+	CurrentRoomNumber = StageInfoData.RoomNumber;
+	// StageInfoData->GatesRewardID;
+
+	// = 마지막 세션이 플레이 도중이 아님
+	if (Seed == UINT32_MAX || CurrentRoomNumber == UINT32_MAX)
+	{
+		RandomMap();
+	}
+	else
+	{
+		if (CurrentRoomNumber == MapDataAsset->StoreRoom)
+		{
+			RoomClass = MapDataAsset->Store;
+		}
+		else if (CurrentRoomNumber > MapDataAsset->MaximumRoom)
+		{
+			RoomClass = MapDataAsset->Boss;
+			GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->StopBGM();
+		}
+		else
+		{
+			RoomClass = MapDataAsset->Rooms[Seed];
+		}
+	}
+	
+	CreateMap();
 }
 
 void ALLL_MapGimmick::CreateMap()
@@ -184,7 +220,8 @@ void ALLL_MapGimmick::CreateMap()
 		}
 		SetState(EStageState::READY);
 	}
-	
+
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->SaveGameProgressInfo();
 	// TODO: Player loaction change 
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 	Player->SetActorEnableCollision(true);

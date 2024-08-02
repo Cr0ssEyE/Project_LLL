@@ -6,6 +6,8 @@
 #include "Constant/LLL_GameplayInfo.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
+#include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
+#include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 ULLL_GameProgressManageSubSystem::ULLL_GameProgressManageSubSystem()
@@ -49,6 +51,12 @@ void ULLL_GameProgressManageSubSystem::InitializeGameProgressInfo(ULLL_SaveGameD
 	// Do Something
 }
 
+void ULLL_GameProgressManageSubSystem::InitializeSessionMapData() const
+{
+	FStageInfoData CurrentStageInfoData;
+	CurrentSaveGameData->StageInfoData = CurrentStageInfoData;
+}
+
 void ULLL_GameProgressManageSubSystem::SaveGameProgressInfo()
 {
 	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()))
@@ -61,6 +69,45 @@ void ULLL_GameProgressManageSubSystem::SaveGameProgressInfo()
 	SaveLastSessionPlayerData();
 	
 	UGameplayStatics::SaveGameToSlot(CurrentSaveGameData, CurrentSaveGameData->SaveFileName, CurrentSaveGameData->SaveFileIndex);
+	OnSaveCompleted.Broadcast();
+}
+
+void ULLL_GameProgressManageSubSystem::LoadGameProgressInfo()
+{
+	
+}
+
+void ULLL_GameProgressManageSubSystem::LoadLastSessionMapData()
+{
+	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()) || !IsValid(CurrentInstanceMapGimmick.Get()))
+	{
+		return;
+	}
+
+	if (GetLastPlayedLevelName() == LEVEL_LOBBY)
+	{
+		// 로비 관련 처리
+		return;
+	}
+
+	OnLastSessionLoaded.Broadcast(CurrentSaveGameData->StageInfoData);
+}
+
+void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
+{
+	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()))
+	{
+		return;
+	}
+
+	if (GetLastPlayedLevelName() == LEVEL_LOBBY)
+	{
+		// 로비 관련 처리
+		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->SetActorLocation(CurrentSaveGameData->LobbyLastStandingLocation);
+		return;
+	}
+	
+	OnLastSessionPlayerDataLoaded.Broadcast();
 }
 
 void ULLL_GameProgressManageSubSystem::SavePermanentData()
@@ -71,19 +118,37 @@ void ULLL_GameProgressManageSubSystem::SavePermanentData()
 void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 {
 	// = Lobby
-	ALLL_MapGimmick* MapGimmick = CurrentInstanceMapGimmick.Get();
-	if (!IsValid(MapGimmick))
+	if (!IsValid(GetWorld()))
 	{
-		// 로비의 현재 플레이어 위치 저장
 		return;
 	}
+	
+	CurrentSaveGameData->LastPlayedLevelName = *GetWorld()->GetCurrentLevel()->GetName();
+	
+	ALLL_MapGimmick* MapGimmick = CurrentInstanceMapGimmick.Get();
+	FStageInfoData CurrentStageInfoData;
+	if (IsValid(MapGimmick))
+	{
+		CurrentStageInfoData = MapGimmick->MakeStageInfoData();
+	}
 
-	FStageInfoData CurrentStageInfoData = MapGimmick->MakeStageInfoData();
 	CurrentSaveGameData->StageInfoData = CurrentStageInfoData;
 }
 
 void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 {
+	// 로비인 경우 위치 정보만 저장
+	if (GetLastPlayedLevelName() == LEVEL_LOBBY)
+	{
+		CurrentSaveGameData->LobbyLastStandingLocation = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation();
+		return;
+	}
+	
+	if (!IsValid(CurrentInstanceMapGimmick.Get()))
+	{
+		return;
+	}
+	
 	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	UAbilitySystemComponent* PlayerASC = PlayerCharacter->GetAbilitySystemComponent();
 	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
@@ -91,21 +156,26 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 	// 어빌리티 정보 저장
 	TArray<int32> AcquiredEruriasID;
 	TMap<int32, int32> AcquiredEruriasStackCount;
-	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
 	
-	PlayerASC->GetAllAbilities(AbilitySpecHandles);
-	for (auto AbilitySpecHandle : AbilitySpecHandles)
+	FActiveGameplayEffectsContainer EffectsContainer = PlayerASC->GetActiveGameplayEffects();
+	TArray<FGameplayEffectSpec> EffectSpecs;
+	EffectsContainer.GetAllActiveGameplayEffectSpecs(EffectSpecs);
+	
+	for (auto EffectSpec : EffectSpecs)
 	{
-		FGameplayAbilitySpec* AbilitySpec = PlayerASC->FindAbilitySpecFromHandle(AbilitySpecHandle);
-		ULLL_PGA_RewardAbilityBase* RewardAbility = Cast<ULLL_PGA_RewardAbilityBase>(AbilitySpec->Ability);
-		if (!IsValid(RewardAbility))
+		if (!EffectSpec.Def->FindComponent(ULLL_GE_GiveAbilityComponent::StaticClass()))
+		{
+			continue;
+		}
+		const ULLL_ExtendedGameplayEffect* RewardAbilityContainerEffect = Cast<ULLL_ExtendedGameplayEffect>(EffectSpec.Def);
+		if (!IsValid(RewardAbilityContainerEffect))
 		{
 			continue;
 		}
 
-		AcquiredEruriasID.Emplace(RewardAbility->GetAbilityData()->ID);
+		AcquiredEruriasID.Emplace(RewardAbilityContainerEffect->GetAbilityData()->ID);
 		// 레벨로 했을 때 정상 작동 하는지 체크 필요
-		AcquiredEruriasStackCount.Emplace(RewardAbility->GetAbilityData()->ID, RewardAbility->GetAbilityLevel());
+		AcquiredEruriasStackCount.Emplace(RewardAbilityContainerEffect->GetAbilityData()->ID, EffectSpec.GetLevel());
 	}
 
 	CurrentSaveGameData->AcquiredEruriasID = AcquiredEruriasID;
@@ -115,6 +185,6 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 	FPlayerCharacterStatusData PlayerCharacterStatusData = PlayerCharacterAttributeSet->MakeCharacterStatusData();
 	CurrentSaveGameData->PlayerCharacterStatusData = PlayerCharacterStatusData;
 	
-	// 재화 정보 저장
+	// 휘발성 재화 정보 저장
 	
 }

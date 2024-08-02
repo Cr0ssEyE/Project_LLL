@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Interface/LLL_FocusWidgetInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "LLL_GamePauseWidget.generated.h"
 
 class UTextBlock;
@@ -43,6 +45,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ExitButtonEvent();
 
+private:
+	UFUNCTION()
+	FORCEINLINE void OutGame() { UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false); }
+	
 protected:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void PlayResumeButtonHoverAnimation() { PlayAnimationForward(ResumeHover); }

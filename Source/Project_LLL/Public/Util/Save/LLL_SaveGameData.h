@@ -53,7 +53,7 @@ public:
 	// ID - Count
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	TMap<int32, int32> AcquiredEruriasStackCount;
-	
+
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	int32 UsedGoldAmount;
 
@@ -65,5 +65,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	int32 AcquiredGoldAppleCount;
-	
+
+	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
+	FVector LobbyLastStandingLocation;
 };

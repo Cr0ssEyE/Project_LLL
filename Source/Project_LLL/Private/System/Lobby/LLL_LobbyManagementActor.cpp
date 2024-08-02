@@ -5,6 +5,8 @@
 
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_LevelNames.h"
 #include "DataAsset/Lobby/LLL_LobbyDataAsset.h"
@@ -13,6 +15,7 @@
 #include "Entity/Object/Interactive/Lobby/LLL_DungeonEnteringObject.h"
 #include "Entity/Object/Interactive/Lobby/LLL_WorldTreeObject.h"
 #include "Game/LLL_GameInstance.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/Lobby/LLL_LobbyCustomPoint.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -30,11 +33,18 @@ ALLL_LobbyManagementActor::ALLL_LobbyManagementActor()
 void ALLL_LobbyManagementActor::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->InitializeSessionMapData();
+	
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorEnableCollision(false);
 	Player->SetActorHiddenInGame(true);
 	Player->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+	if (IsValid(LobbyDataAsset->TeleportParticle))
+	{
+		PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,LobbyDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, LobbyDataAsset->ParticleScale, false, false);
+	}
 	
 	SetUpDefaultLobby();
 	SetUpLobbyByGameProgress();
@@ -168,6 +178,7 @@ void ALLL_LobbyManagementActor::PlayerEnteringDungeon()
 		Settings.bHideHud = false;
 		Settings.bDisableMovementInput = true;
 		Settings.bDisableLookAtInput = true;
+		Settings.FinishCompletionStateOverride = EMovieSceneCompletionModeOverride::ForceKeepState;
 		
 		LobbySequenceActor->PlaybackSettings = Settings;
 		LobbySequenceActor->FinishSpawning(FTransform::Identity);
@@ -176,6 +187,12 @@ void ALLL_LobbyManagementActor::PlayerEnteringDungeon()
 	LobbySequenceActor->SetSequence(LobbyDataAsset->DungeonEnterSequence);
 	LobbySequenceActor->GetSequencePlayer()->OnFinished.AddDynamic(this, &ALLL_LobbyManagementActor::OnDungeonEnterCompleted);
 	LobbySequenceActor->GetSequencePlayer()->Play();
+
+	if (IsValid(PlayerTeleportNiagara))
+	{
+		PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
+		PlayerTeleportNiagara->ActivateSystem();
+	}
 }
 
 void ALLL_LobbyManagementActor::OnDungeonEnterCompleted()
