@@ -3,11 +3,13 @@
 
 #include "BT/BossMonster/ManOfStrength/LLL_ThrowOtherMonster_BTTaskNode.h"
 
+#include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -22,26 +24,26 @@ EBTNodeResult::Type ULLL_ThrowOtherMonster_BTTaskNode::ExecuteTask(UBehaviorTree
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	ALLL_MonsterBase* OtherMonster = Cast<ALLL_MonsterBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_OTHER_MONSTER));
-	if (IsValid(OtherMonster) && !OtherMonster->CheckCharacterIsDead())
+	const ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(OwnerComp.GetAIOwner()->GetPawn());
+	if (!ManOfStrength)
 	{
-		FVector PlayerLocation = CastChecked<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER))->GetActorLocation();
-		FVector Direction = (PlayerLocation - OtherMonster->GetActorLocation()).GetSafeNormal();
-
-		// Todo : 추후 데이터화 예정
-		float Speed = 1000.0f;
-		OtherMonster->SetOwner(nullptr);
-		OtherMonster->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		OtherMonster->GetMesh()->SetCollisionProfileName(CP_THREW_MONSTER);
-		OtherMonster->GetCapsuleComponent()->SetCollisionProfileName(CP_THREW_MONSTER);
-		UCharacterMovementComponent* CharacterMovementComponent = CastChecked<UCharacterMovementComponent>(OtherMonster->GetMovementComponent());
-		CharacterMovementComponent->MovementMode = MOVE_Flying;
-		CharacterMovementComponent->Velocity = Direction * Speed;
-		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_OTHER_MONSTER, nullptr);
-
-		UE_LOG(LogTemp, Log, TEXT("%s 놓기"), *OtherMonster->GetName())
-		return EBTNodeResult::Succeeded;
+		UE_LOG(LogTemp, Warning, TEXT("힘 있는 자가 아닙니다"));
+		
+		return EBTNodeResult::Failed;
 	}
+
+	ManOfStrength->ThrowOtherMonster();
 	
-	return EBTNodeResult::Failed;
+	return EBTNodeResult::InProgress;
+}
+
+void ULLL_ThrowOtherMonster_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+{
+	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
+	const ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(OwnerComp.GetAIOwner()->GetPawn());
+	if (ManOfStrength && !ManOfStrength->IsAttacking())
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 }

@@ -36,13 +36,12 @@ void ULLL_MGA_CatchMonster::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		CastChecked<ULLL_MonsterBaseAnimInstance>(OtherMonster->GetCharacterAnimInstance())->SetSnapped(true);
 		OtherMonster->AttachToComponent(Monster->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
 		OtherMonster->SetOwner(Monster);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("몬스터 잡기 실패"))
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+
+		UE_LOG(LogTemp, Log, TEXT("%s 잡기"), *OtherMonster->GetName())
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("%s 잡기"), *OtherMonster->GetName())
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	UE_LOG(LogTemp, Log, TEXT("몬스터 잡기 실패"))
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }
