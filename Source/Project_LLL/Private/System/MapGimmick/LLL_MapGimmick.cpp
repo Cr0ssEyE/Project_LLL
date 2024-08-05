@@ -221,7 +221,7 @@ void ALLL_MapGimmick::CreateMap()
 		SetState(EStageState::READY);
 	}
 
-	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->SaveGameProgressInfo();
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
 	// TODO: Player loaction change 
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 	Player->SetActorEnableCollision(true);

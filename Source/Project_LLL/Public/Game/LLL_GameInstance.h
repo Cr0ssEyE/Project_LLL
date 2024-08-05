@@ -31,6 +31,7 @@ public:
 	ULLL_GameInstance();
 
 	virtual void Init() override;
+	virtual void InitDataTables();
 	
 	FStageEncounteredDelegate EncounteredDelegate;
 	
@@ -59,7 +60,7 @@ public:
 
 protected:
 	void SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation);
-	
+
 	// 머티리얼 파라미터 컬렉션 
 protected:
 	UPROPERTY(VisibleAnywhere)

@@ -8,6 +8,7 @@
 #include "Util/Save/LLL_SaveGameData.h"
 #include "LLL_GameProgressManageSubSystem.generated.h"
 
+class ULLL_ExtendedGameplayEffect;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLastSessionMapDataLoaded, FStageInfoData, StageInfoData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLastSessionPlayerInfoLoaded);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveCompleted);
@@ -35,6 +36,7 @@ public:
 	void InitializeSessionMapData() const;
 	
 	// 게임 진행도 저장
+	void BeginSaveGame();
 	void SaveGameProgressInfo();
 
 	// 게임 진행도 가져오기
@@ -59,12 +61,20 @@ private:
 	void SavePermanentData();
 	void SaveLastSessionMapData();
 	void SaveLastSessionPlayerData();
-	
+
+private:
+	UFUNCTION()
+	void LoadLastSessionPlayerEruriaEffect(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID);
+
 private:
 	UPROPERTY()
 	TObjectPtr<ULLL_SaveGameData> CurrentSaveGameData;
 
 	UPROPERTY()
 	TWeakObjectPtr<ALLL_MapGimmick> CurrentInstanceMapGimmick;
-	
+
+private:
+	uint8 bIsSavePermanentDataCompleted : 1;
+	uint8 bIsSaveMapDataCompleted : 1;
+	uint8 bIsSaveUserDataCompleted : 1;
 };

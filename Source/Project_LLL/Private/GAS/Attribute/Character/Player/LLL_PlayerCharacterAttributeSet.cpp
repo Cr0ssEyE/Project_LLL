@@ -39,6 +39,22 @@ FPlayerCharacterStatusData ULLL_PlayerCharacterAttributeSet::MakeCharacterStatus
 	return CharacterStatusData;
 }
 
+void ULLL_PlayerCharacterAttributeSet::InitializeSavedStatusData(const FPlayerCharacterStatusData* CharacterStatusData)
+{
+	MaxHealth.SetBaseValue(CharacterStatusData->MaxHealth);
+	CurrentHealth.SetCurrentValue(CharacterStatusData->CurrentHealth);
+	OffensePower.SetBaseValue(CharacterStatusData->OffensePower);
+	MoveSpeed.SetBaseValue(CharacterStatusData->MoveSpeed);
+	AttackSpeed.SetBaseValue(CharacterStatusData->AttackSpeed);
+	CriticalChance.SetBaseValue(CharacterStatusData->CriticalChance);
+	CriticalAmplify.SetBaseValue(CharacterStatusData->CriticalAmplify);
+	MaxDashCount.SetBaseValue(CharacterStatusData->MaxDashCount);
+	DashDistance.SetBaseValue(CharacterStatusData->DashDistance);
+	KnockBackPower.SetBaseValue(CharacterStatusData->KnockBackPower);
+	KnockBackRate.SetBaseValue(CharacterStatusData->KnockBackRate);
+	KnockBackOffensePowerRate.SetBaseValue(CharacterStatusData->KnockBackOffensePowerRate);
+}
+
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())

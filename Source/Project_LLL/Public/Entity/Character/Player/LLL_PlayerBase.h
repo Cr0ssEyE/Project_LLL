@@ -8,6 +8,7 @@
 #include "DataAsset/LLL_CameraDataAsset.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
@@ -52,6 +53,7 @@ public:
 	
 	// 외부 접근용
 public:
+	FORCEINLINE void InitAttributeSetBySave(const FPlayerCharacterStatusData* CharacterStatusData) const { PlayerCharacterAttributeSet->InitializeSavedStatusData(CharacterStatusData); }
 	// TODO: GAS로 전환
 	void AddInteractiveObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);

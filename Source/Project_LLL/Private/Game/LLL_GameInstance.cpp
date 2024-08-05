@@ -34,6 +34,22 @@ void ULLL_GameInstance::Init()
 {
 	Super::Init();
 
+	InitDataTables();
+
+	GetWorld()->AddParameterCollectionInstance(MonsterMPC, true);
+	GetWorld()->AddParameterCollectionInstance(ObjectMPC, true);
+	GetWorld()->AddParameterCollectionInstance(PlayerMPC, true);
+	GetWorld()->AddParameterCollectionInstance(PostProcessMPC, true);
+	
+	GetSubsystem<ULLL_MapSoundSubsystem>()->SetFModParameterDataArray(FModParameterData);
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]
+	{
+		GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
+	}));
+}
+
+void ULLL_GameInstance::InitDataTables()
+{
 	TArray<FFModParameterDataTable*> LoadDataArray;
 	FModParameterDataTable->GetAllRows<FFModParameterDataTable>(TEXT("Failed To Load FMod Parameter Name Data Tables"), LoadDataArray);
 
@@ -68,16 +84,6 @@ void ULLL_GameInstance::Init()
 	{
 		StringData.Add(LoadStringData);
 	}
-
-	GetWorld()->AddParameterCollectionInstance(MonsterMPC, true);
-	GetWorld()->AddParameterCollectionInstance(ObjectMPC, true);
-	GetWorld()->AddParameterCollectionInstance(PlayerMPC, true);
-	GetWorld()->AddParameterCollectionInstance(PostProcessMPC, true);
-	
-	GetSubsystem<ULLL_MapSoundSubsystem>()->SetFModParameterDataArray(FModParameterData);
-	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
-		GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
-	}));
 }
 
 void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)
@@ -143,4 +149,6 @@ void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Act
 		SetActorsCustomTimeDilationRecursive(Actors, InCustomTimeDilation);
 	}));
 }
+
+
 

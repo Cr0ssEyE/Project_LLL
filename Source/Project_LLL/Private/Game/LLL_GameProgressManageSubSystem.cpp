@@ -5,12 +5,16 @@
 
 #include "Constant/LLL_GameplayInfo.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
+#include "Game/LLL_AbilityManageSubSystem.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Util/LLL_AbilityDataHelper.h"
 
-ULLL_GameProgressManageSubSystem::ULLL_GameProgressManageSubSystem()
+ULLL_GameProgressManageSubSystem::ULLL_GameProgressManageSubSystem() :
+	bIsSavePermanentDataCompleted(false),
+	bIsSaveMapDataCompleted(false),
+	bIsSaveUserDataCompleted(false)
 {
 	
 }
@@ -57,7 +61,7 @@ void ULLL_GameProgressManageSubSystem::InitializeSessionMapData() const
 	CurrentSaveGameData->StageInfoData = CurrentStageInfoData;
 }
 
-void ULLL_GameProgressManageSubSystem::SaveGameProgressInfo()
+void ULLL_GameProgressManageSubSystem::BeginSaveGame()
 {
 	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()))
 	{
@@ -67,9 +71,21 @@ void ULLL_GameProgressManageSubSystem::SaveGameProgressInfo()
 	SavePermanentData();
 	SaveLastSessionMapData();
 	SaveLastSessionPlayerData();
-	
-	UGameplayStatics::SaveGameToSlot(CurrentSaveGameData, CurrentSaveGameData->SaveFileName, CurrentSaveGameData->SaveFileIndex);
-	OnSaveCompleted.Broadcast();
+
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_GameProgressManageSubSystem::SaveGameProgressInfo);
+}
+
+void ULLL_GameProgressManageSubSystem::SaveGameProgressInfo()
+{
+	if (bIsSaveMapDataCompleted && bIsSaveUserDataCompleted && bIsSavePermanentDataCompleted)
+	{
+		UGameplayStatics::SaveGameToSlot(CurrentSaveGameData, CurrentSaveGameData->SaveFileName, CurrentSaveGameData->SaveFileIndex);
+		OnSaveCompleted.Broadcast();
+		
+		return;
+	}
+
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_GameProgressManageSubSystem::SaveGameProgressInfo);
 }
 
 void ULLL_GameProgressManageSubSystem::LoadGameProgressInfo()
@@ -95,36 +111,62 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionMapData()
 
 void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 {
-	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()))
+	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()) || !IsValid(PlayerCharacter))
 	{
 		return;
 	}
-
+	
 	if (GetLastPlayedLevelName() == LEVEL_LOBBY)
 	{
 		// 로비 관련 처리
-		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->SetActorLocation(CurrentSaveGameData->LobbyLastStandingLocation);
+		PlayerCharacter->SetActorLocation(CurrentSaveGameData->LobbyLastStandingLocation);
 		return;
+	}
+
+	PlayerCharacter->InitAttributeSetBySave(&CurrentSaveGameData->PlayerCharacterStatusData);
+	PlayerCharacter->GetGoldComponent()->IncreaseMoney(CurrentSaveGameData->CurrentGoldAmount);
+	
+	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
+	TArray<int32> PlayerAcquiredEruriasID = CurrentSaveGameData->AcquiredEruriasID;
+
+	for (auto EruriaID : PlayerAcquiredEruriasID)
+	{
+		FAsyncLoadEffectByIDDelegate AsyncLoadEffectDelegate;
+		AsyncLoadEffectDelegate.AddDynamic(this, &ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEruriaEffect);
+		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, EruriaID, EEffectAccessRange::None);
 	}
 	
 	OnLastSessionPlayerDataLoaded.Broadcast();
 }
 
+void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEruriaEffect(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID)
+{
+	TArray<const FAbilityDataTable*> EqualAbilities = FLLL_AbilityDataHelper::ApplyEruriaEffect(GetWorld(), LoadedEffects, EffectID);
+	if (!EqualAbilities.IsEmpty())
+	{
+		for (auto EqualAbility : EqualAbilities)
+		{
+			CastChecked<ULLL_GameInstance>(GetGameInstance())->GetAbilityDataTable().Remove(EqualAbility);
+		}
+	}
+}
+
 void ULLL_GameProgressManageSubSystem::SavePermanentData()
 {
 	// 영구 저장 계열 데이터. 게임 진행도, 세계수 강화, NPC 대화 진척도 등
+	bIsSavePermanentDataCompleted = true;
 }
 
 void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 {
-	// = Lobby
 	if (!IsValid(GetWorld()))
 	{
 		return;
 	}
 	
-	CurrentSaveGameData->LastPlayedLevelName = *GetWorld()->GetCurrentLevel()->GetName();
-	
+	CurrentSaveGameData->LastPlayedLevelName = *GetWorld()->GetName();
+	// GetWorld()->GetName();
 	ALLL_MapGimmick* MapGimmick = CurrentInstanceMapGimmick.Get();
 	FStageInfoData CurrentStageInfoData;
 	if (IsValid(MapGimmick))
@@ -133,7 +175,9 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 	}
 
 	CurrentSaveGameData->StageInfoData = CurrentStageInfoData;
-}
+
+	bIsSaveMapDataCompleted = true;
+}	
 
 void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 {
@@ -157,9 +201,8 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 	TArray<int32> AcquiredEruriasID;
 	TMap<int32, int32> AcquiredEruriasStackCount;
 	
-	FActiveGameplayEffectsContainer EffectsContainer = PlayerASC->GetActiveGameplayEffects();
 	TArray<FGameplayEffectSpec> EffectSpecs;
-	EffectsContainer.GetAllActiveGameplayEffectSpecs(EffectSpecs);
+	PlayerASC->GetAllActiveGameplayEffectSpecs(EffectSpecs);
 	
 	for (auto EffectSpec : EffectSpecs)
 	{
@@ -186,5 +229,6 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 	CurrentSaveGameData->PlayerCharacterStatusData = PlayerCharacterStatusData;
 	
 	// 휘발성 재화 정보 저장
-	
+
+	bIsSaveUserDataCompleted = true;
 }

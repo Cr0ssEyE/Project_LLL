@@ -117,6 +117,7 @@ public:
 
 public:
 	FPlayerCharacterStatusData MakeCharacterStatusData() const;
+	void InitializeSavedStatusData(const FPlayerCharacterStatusData* CharacterStatusData);
 	
 protected:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;

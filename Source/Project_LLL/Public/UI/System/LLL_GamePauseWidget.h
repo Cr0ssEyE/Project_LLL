@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Constant/LLL_LevelNames.h"
 #include "Interface/LLL_FocusWidgetInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -46,6 +47,9 @@ protected:
 	void ExitButtonEvent();
 
 private:
+	UFUNCTION()
+	FORCEINLINE void OpenTitle() { UGameplayStatics::OpenLevel(this, LEVEL_TITLE); }
+	
 	UFUNCTION()
 	FORCEINLINE void OutGame() { UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false); }
 	

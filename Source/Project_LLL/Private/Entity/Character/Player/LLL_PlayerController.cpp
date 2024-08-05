@@ -4,6 +4,7 @@
 #include "Entity/Character/Player/LLL_PlayerController.h"
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Kismet/GameplayStatics.h"
 
 ALLL_PlayerController::ALLL_PlayerController()
@@ -27,6 +28,7 @@ void ALLL_PlayerController::OnPossess(APawn* InPawn)
 	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->StartCameraMoveToCursor(this);
+		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->LoadLastSessionPlayerData();
 	}
 }
 
