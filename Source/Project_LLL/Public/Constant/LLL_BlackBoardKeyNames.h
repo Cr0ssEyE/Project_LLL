@@ -13,5 +13,8 @@
 #define BBKEY_RETREAT_POS TEXT("RetreatPos")
 #define BBKEY_RETREAT_POS_IS_VALID TEXT("RetreatPosIsValid")
 
+// 보스 몬스터 전용
+#define BBKEY_PATTERN TEXT("Pattern")
+
 // 힘 있는 자 전용
 #define BBKEY_OTHER_MONSTER TEXT("OtherMonster")

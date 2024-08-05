@@ -23,7 +23,7 @@ EBTNodeResult::Type ULLL_DetectOtherMonster_BTTaskNode::ExecuteTask(UBehaviorTre
 	Params.AddIgnoredActor(Monster);
 
 	// Todo : 추후 데이터화 예정
-	const float SnapRadius = 2000.0f;
+	const float DetectRadius = 2000.0f;
 	
 	GetWorld()->SweepMultiByChannel(
 		HitResults,
@@ -31,7 +31,7 @@ EBTNodeResult::Type ULLL_DetectOtherMonster_BTTaskNode::ExecuteTask(UBehaviorTre
 		Monster->GetActorLocation(),
 		FQuat::Identity,
 		ECC_ENEMY,
-		FCollisionShape::MakeSphere(SnapRadius),
+		FCollisionShape::MakeSphere(DetectRadius),
 		Params
 		);
 
@@ -41,11 +41,11 @@ EBTNodeResult::Type ULLL_DetectOtherMonster_BTTaskNode::ExecuteTask(UBehaviorTre
 		if (IsValid(OtherMonster) && !OtherMonster->CheckCharacterIsDead())
 		{
 			OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_OTHER_MONSTER, OtherMonster);
-			DrawDebugSphere(GetWorld(), Monster->GetActorLocation(), SnapRadius, 16, FColor::Green, false, 2.0f);
+			DrawDebugSphere(GetWorld(), Monster->GetActorLocation(), DetectRadius, 16, FColor::Green, false, 2.0f);
 			return EBTNodeResult::Succeeded;
 		}
 	}
 	
-	DrawDebugSphere(GetWorld(), Monster->GetActorLocation(), SnapRadius, 16, FColor::Red, false, 2.0f);
+	DrawDebugSphere(GetWorld(), Monster->GetActorLocation(), DetectRadius, 16, FColor::Red, false, 2.0f);
 	return EBTNodeResult::Failed;
 }
