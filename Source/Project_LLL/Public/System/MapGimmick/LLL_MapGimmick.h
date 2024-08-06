@@ -79,6 +79,7 @@ protected:
 
 public:
 	FORCEINLINE ALLL_MonsterSpawner* GetMonsterSpawner() const { return MonsterSpawner; }
+	
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage")
 	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
@@ -150,7 +151,8 @@ protected:
 
 	UPROPERTY()
 	TMap<EStageState, FStageChangedDelegateWrapper> StateChangeActions;
-	
+
+	uint8 bIsFirstLoad : 1;
 protected:
 	void SetState(EStageState InNewState);
 	

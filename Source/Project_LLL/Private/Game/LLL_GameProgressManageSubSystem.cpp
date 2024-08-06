@@ -97,6 +97,14 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionMapData()
 {
 	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()) || !IsValid(CurrentInstanceMapGimmick.Get()))
 	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (GetWorld()->GetName() == LEVEL_TEST)
+		{
+			const FStageInfoData TempStageInfoData;
+			OnLastSessionLoaded.Broadcast(TempStageInfoData);
+			return;
+		}
+#endif
 		return;
 	}
 
@@ -166,7 +174,6 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 	}
 	
 	CurrentSaveGameData->LastPlayedLevelName = *GetWorld()->GetName();
-	// GetWorld()->GetName();
 	ALLL_MapGimmick* MapGimmick = CurrentInstanceMapGimmick.Get();
 	FStageInfoData CurrentStageInfoData;
 	if (IsValid(MapGimmick))
@@ -229,6 +236,6 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 	CurrentSaveGameData->PlayerCharacterStatusData = PlayerCharacterStatusData;
 	
 	// 휘발성 재화 정보 저장
-
+	CurrentSaveGameData->CurrentGoldAmount = PlayerCharacter->GetGoldComponent()->GetMoney();
 	bIsSaveUserDataCompleted = true;
 }

@@ -7,6 +7,7 @@
 #include "Constant/LLL_GeneralConstants.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/Entity/Character/Player/LLL_InteractionWidget.h"
@@ -97,6 +98,8 @@ void ULLL_PlayerUIManager::BeginPlay()
 	UGameViewportSubsystem* ViewportSubsystem = UGameViewportSubsystem::Get(GetWorld());
 	ViewportSubsystem->OnWidgetAdded.AddUObject(this, &ULLL_PlayerUIManager::ManageOnWidgetAdded);
 	ViewportSubsystem->OnWidgetRemoved.AddUObject(this, &ULLL_PlayerUIManager::ManageOnWidgetRemoved);
+
+	CastChecked<ALLL_PlayerController>(PlayerCharacter->GetController())->SetWidgetInitialized();
 }
 
 void ULLL_PlayerUIManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

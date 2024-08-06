@@ -7,9 +7,10 @@
 #include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Kismet/GameplayStatics.h"
 
-ALLL_PlayerController::ALLL_PlayerController()
+ALLL_PlayerController::ALLL_PlayerController():
+	bIsCharacterInitialized(false),
+	bIsWidgetInitialized(false)
 {
-	
 }
 
 void ALLL_PlayerController::BeginPlay()
@@ -28,7 +29,7 @@ void ALLL_PlayerController::OnPossess(APawn* InPawn)
 	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->StartCameraMoveToCursor(this);
-		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->LoadLastSessionPlayerData();
+		WaitPlayerCharacterInitialize();
 	}
 }
 
@@ -51,4 +52,14 @@ void ALLL_PlayerController::SetUIInputMode(const TSharedPtr<SWidget>& FocusWidge
 	
 	DisableInput(this);
 	SetInputMode(UIOnlyInputMode);
+}
+
+void ALLL_PlayerController::WaitPlayerCharacterInitialize()
+{
+	if (bIsCharacterInitialized && bIsWidgetInitialized)
+	{
+		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->LoadLastSessionPlayerData();
+		return;
+	}
+	GetWorldTimerManager().SetTimerForNextTick(this ,&ALLL_PlayerController::WaitPlayerCharacterInitialize);
 }

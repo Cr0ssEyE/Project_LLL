@@ -44,6 +44,7 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 	FadeInSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
 
 	Seed = 0;
+	bIsFirstLoad = true;
 }
 
 FStageInfoData ALLL_MapGimmick::MakeStageInfoData()
@@ -221,11 +222,17 @@ void ALLL_MapGimmick::CreateMap()
 		SetState(EStageState::READY);
 	}
 
-	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
+	// 처음으로 맵을 생성하거나 로드하는 경우 세이브 스킵
+	if (!bIsFirstLoad)
+	{
+		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
+	}
+	bIsFirstLoad = false;
+	
 	// TODO: Player loaction change 
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 	Player->SetActorEnableCollision(true);
-	FadeIn();
+	FadeIn();	
 }
 
 void ALLL_MapGimmick::RandomMap()

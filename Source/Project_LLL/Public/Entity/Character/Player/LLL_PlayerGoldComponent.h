@@ -23,7 +23,7 @@ public:
 	FOnPlayerMoneyChangedDelegate FOnMoneyChanged;
 	void IncreaseMoney(const float InMoney);
 	void DecreaseMoney(const float OutMoney);
-	FORCEINLINE const float GetMoney() { return Money; }
+	FORCEINLINE float GetMoney() const { return Money; }
 	void SetGoldWidgetVisibility(bool Value);
 
 protected:
