@@ -3,26 +3,17 @@
 
 #include "System/Reward/LLL_RewardGimmick.h"
 
-#include "AbilitySystemBlueprintLibrary.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Game/LLL_DebugGameInstance.h"
-#include "AbilitySystemComponent.h"
 #include "Algo/RandomShuffle.h"
-#include "Constant/LLL_AbilityRealNumbers.h"
-#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
-#include "GameplayEffectComponents/AssetTagsGameplayEffectComponent.h"
-#include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
-#include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetArrayLibrary.h"
-#include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
-#include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
+#include "Util/LLL_AbilityDataHelper.h"
 
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick() :
@@ -295,7 +286,7 @@ void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbility
 	if (IsValid(AbilityManageSubSystem))
 	{
 		//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
-		FAsyncLoadEffectDelegate AsyncLoadEffectDelegate;
+		FAsyncLoadEffectByIDDelegate AsyncLoadEffectDelegate;
 		AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_RewardGimmick::ReceivePlayerEffectsHandle);
 		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, CurrentAbilityData->ID, EEffectAccessRange::None);
 	}
@@ -319,8 +310,19 @@ void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbility
 #endif
 }
 
-void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects)
+void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID)
 {
+	TArray<const FAbilityDataTable*> EqualAbilities = FLLL_AbilityDataHelper::ApplyEruriaEffect(GetWorld(), LoadedEffects, EffectID);
+	if (!EqualAbilities.IsEmpty())
+	{
+		for (auto EqualAbility : EqualAbilities)
+		{
+			AbilityData.Remove(EqualAbility);
+		}
+	}
+	
+	AbilityData.Remove(CurrentAbilityData);
+	/*
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
 	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
@@ -460,6 +462,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		}
 	}
 	AbilityData.Remove(CurrentAbilityData);
+	*/
 	// 테이블에서 중복 보상 제거 후 가중치 재계산
 	SetRewardWeight();
 	

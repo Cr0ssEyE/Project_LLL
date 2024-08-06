@@ -130,21 +130,21 @@ void ULLL_GamePauseWidget::OnAnimationFinished_Implementation(const UWidgetAnima
 		return;
 	}
 
-	if (LastClickButton == TitleButton && Animation == FadeAnim)
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	const ULLL_SaveGameData* CurrentSaveGameData = GameProgressSubSystem->GetCurrentSaveGameData();
+	if (!IsValid(CurrentSaveGameData))
 	{
-		UGameplayStatics::OpenLevel(this, LEVEL_TITLE);
 		return;
 	}
-
-	if (LastClickButton == ExitButton && Animation == FadeAnim)
-	{
-		ULLL_GameProgressManageSubSystem* SubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-		ULLL_SaveGameData* CurrentSaveGameData = SubSystem->GetCurrentSaveGameData();
-		if (IsValid(CurrentSaveGameData))
-		{
-			CurrentSaveGameData->LastPlayLevelName = *GetWorld()->GetCurrentLevel()->GetName();
-		}
 	
-		UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
+	if (LastClickButton == TitleButton && Animation == FadeAnim)
+	{
+		GameProgressSubSystem->OnSaveCompleted.AddDynamic(this, &ULLL_GamePauseWidget::OpenTitle);
+		GameProgressSubSystem->BeginSaveGame();
+	}
+	else if (LastClickButton == ExitButton && Animation == FadeAnim)
+	{
+		GameProgressSubSystem->OnSaveCompleted.AddDynamic(this, &ULLL_GamePauseWidget::OutGame);
+		GameProgressSubSystem->BeginSaveGame();
 	}
 }

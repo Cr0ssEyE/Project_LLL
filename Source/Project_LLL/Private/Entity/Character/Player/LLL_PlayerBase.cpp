@@ -7,20 +7,19 @@
 #include "AbilitySystemGlobals.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "FMODAmbientSound.h"
 #include "GameplayAbilitiesModule.h"
 #include "GameplayAbilitySpec.h"
 #include "LevelSequenceActor.h"
 #include "MovieSceneSequencePlaybackSettings.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "..\..\..\..\Public\Constant\LLL_AnimRelationNames.h"
+#include "Constant/LLL_AnimRelationNames.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "..\..\..\..\Public\Constant\LLL_GraphicParameterNames.h"
+#include "Constant/LLL_GraphicParameterNames.h"
 #include "Constant/LLL_GeneralConstants.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
@@ -164,6 +163,8 @@ void ALLL_PlayerBase::BeginPlay()
 	ChaseActionGaugeWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ChaseActionGaugeWidgetComponent->SetTickWhenOffscreen(true);
 	ChaseActionWidget->SetCircleProgressBarValue(1.0f);
+
+	CastChecked<ALLL_PlayerController>(GetController())->SetCharacterInitialized();
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -460,7 +461,7 @@ void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
 	{
 		return;
 	}
-	InteractiveObjects[SelectedInteractiveObjectNum]->InteractiveEvent();
+	InteractiveObjects[SelectedInteractiveObjectNum]->InteractiveEvent(this);
 }
 
 void ALLL_PlayerBase::InventoryAction(const FInputActionValue& Value)
@@ -651,22 +652,74 @@ void ALLL_PlayerBase::Dead()
 	}
 
 	const FTransform DissolveStartTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
-	DeadSequenceDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->DeadSequenceDissolveActor, DissolveStartTransform);
+	if (!IsValid(CharacterDissolveActor))
+	{
+		CharacterDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->CharacterDissolveActor, DissolveStartTransform);
+	}
+	else
+	{
+		CharacterDissolveActor->SetActorTransform(DissolveStartTransform);
+	}
+	
 	DeadSequenceActor->FinishSpawning(FTransform::Identity);
-
+	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayerDeadEvent();
 }
 
 void ALLL_PlayerBase::DropDissolveActor()
 {
-	if (DeadSequenceDissolveActor->GetActorLocation().Z < GetMesh()->GetComponentLocation().Z + PlayerDataAsset->DissolveActorFallStopLocation)
+	if (CharacterDissolveActor->GetActorLocation().Z < GetMesh()->GetComponentLocation().Z + PlayerDataAsset->DissolveActorFallStopLocation)
+	{
+		DissolveCompleteDelegate.Broadcast(true);
+		return;
+	}
+	
+	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
+}
+
+void ALLL_PlayerBase::CharacterUnDissolveBegin()
+{
+	if (GetMesh()->bHiddenInGame || IsHidden())
+	{
+		SetActorHiddenInGame(false);
+		GetMesh()->SetHiddenInGame(false);
+	}
+	
+	if (!IsValid(CharacterDissolveActor))
+	{
+		CharacterDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->CharacterDissolveActor, GetTransform());
+	}
+	else
+	{
+		CharacterDissolveActor->SetActorTransform(GetTransform());
+	}
+	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() + GetMesh()->GetRelativeLocation().Z);
+
+	UMaterialParameterCollection* PlayerMPC = GetGameInstance<ULLL_GameInstance>()->GetPlayerMPC();
+	GetWorld()->GetParameterCollectionInstance(PlayerMPC)->SetScalarParameterValue(PLAYER_CHARACTER_DISSOLVE, 1.f);
+	
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PullUpDissolveActor);
+}
+
+void ALLL_PlayerBase::PullUpDissolveActor()
+{
+	if (!IsValid(CharacterDissolveActor))
 	{
 		return;
 	}
 	
-	DeadSequenceDissolveActor->SetActorLocation(DeadSequenceDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
+	const FTransform DissolveEndTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
+	if (CharacterDissolveActor->GetActorLocation().Z >= DissolveEndTransform.GetLocation().Z + GetMesh()->GetRelativeLocation().Z)
+	{
+		CharacterDissolveActor->Destroy();
+		DissolveCompleteDelegate.Broadcast(false);
+		return;
+	}
+	
+	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() + FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed * 2.f));
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PullUpDissolveActor);
 }
 
 void ALLL_PlayerBase::DeadMotionEndedHandle()
@@ -680,7 +733,7 @@ void ALLL_PlayerBase::DeactivatePPLowHP()
 	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(GetGameInstance());
 	const UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
 	ScalarValue += GetWorld()->GetDeltaSeconds();
-	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOWHP_RADIUS, ScalarValue);
+	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOW_HP_RADIUS, ScalarValue);
 	if (ScalarValue <= PlayerDataAsset->HPLowScalarMaxValue)
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DeactivatePPLowHP);
@@ -692,7 +745,7 @@ void ALLL_PlayerBase::ActivatePPLowHP()
 	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(GetGameInstance());
 	const UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
 	ScalarValue = PlayerDataAsset->HPLowScalarLowValue;
-	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOWHP_RADIUS, ScalarValue);
+	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOW_HP_RADIUS, ScalarValue);
 }
 
 void ALLL_PlayerBase::PlayLowHPAnimation()

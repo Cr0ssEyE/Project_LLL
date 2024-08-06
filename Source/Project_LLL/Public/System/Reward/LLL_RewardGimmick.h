@@ -61,7 +61,7 @@ protected:
 	void ClickButtonEvent(const FAbilityDataTable* ButtonAbilityData);
 
 	UFUNCTION()
-	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects);
+	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID);
 	
 protected:
 	TArray<const FRewardDataTable*> RewardData;

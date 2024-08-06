@@ -24,6 +24,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Game/LLL_GameInstance.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Game/LLL_MapSoundSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/MapGimmick/Components/LLL_SequencerComponent.h"
@@ -43,6 +44,25 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 	FadeInSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
 
 	Seed = 0;
+	bIsFirstLoad = true;
+}
+
+FStageInfoData ALLL_MapGimmick::MakeStageInfoData()
+{
+	FStageInfoData StageInfoData;
+	StageInfoData.Seed = Seed;
+	StageInfoData.RoomNumber = CurrentRoomNumber;
+	for (auto Gate : Gates)
+	{
+		ALLL_GateObject* GateObject = Gate.Get();
+		if (!IsValid(GateObject))
+		{
+			continue;
+		}
+		StageInfoData.GatesRewardID.Emplace(GateObject->GetRewardData()->ID);
+	}
+	
+	return StageInfoData;
 }
 
 void ALLL_MapGimmick::OnConstruction(const FTransform& Transform)
@@ -91,12 +111,49 @@ void ALLL_MapGimmick::BeginPlay()
 	SequenceActorPtr = FadeOutSequenceActor;
 	FadeOutSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
 	FadeOutSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::SetupGateData);
-	
-	RandomMap();
-	CreateMap();
 
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayAMB();
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->RegisterMapGimmick(this);
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->OnLastSessionLoaded.AddDynamic(this, &ALLL_MapGimmick::LoadLastSessionMap);
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->LoadLastSessionMapData();
+	// 델리게이트를 통해 마지막 세션 정보를 받아온 뒤, 세션 정보를 기반으로 진행도 초기화
+}
+
+void ALLL_MapGimmick::LoadLastSessionMap(FStageInfoData StageInfoData)
+{
+	if (GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->OnLastSessionLoaded.IsAlreadyBound(this, &ALLL_MapGimmick::LoadLastSessionMap))
+	{
+		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->OnLastSessionLoaded.RemoveDynamic(this, &ALLL_MapGimmick::LoadLastSessionMap);
+	}
+
+	Seed = StageInfoData.Seed;
+	CurrentRoomNumber = StageInfoData.RoomNumber;
+	// StageInfoData->GatesRewardID;
+
+	// = 마지막 세션이 플레이 도중이 아님
+	if (Seed == UINT32_MAX || CurrentRoomNumber == UINT32_MAX)
+	{
+		RandomMap();
+	}
+	else
+	{
+		if (CurrentRoomNumber == MapDataAsset->StoreRoom)
+		{
+			RoomClass = MapDataAsset->Store;
+		}
+		else if (CurrentRoomNumber > MapDataAsset->MaximumRoom)
+		{
+			RoomClass = MapDataAsset->Boss;
+			GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->StopBGM();
+		}
+		else
+		{
+			RoomClass = MapDataAsset->Rooms[Seed];
+		}
+	}
+	
+	CreateMap();
 }
 
 void ALLL_MapGimmick::CreateMap()
@@ -164,11 +221,18 @@ void ALLL_MapGimmick::CreateMap()
 		}
 		SetState(EStageState::READY);
 	}
+
+	// 처음으로 맵을 생성하거나 로드하는 경우 세이브 스킵
+	if (!bIsFirstLoad)
+	{
+		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
+	}
+	bIsFirstLoad = false;
 	
 	// TODO: Player loaction change 
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 	Player->SetActorEnableCollision(true);
-	FadeIn();
+	FadeIn();	
 }
 
 void ALLL_MapGimmick::RandomMap()

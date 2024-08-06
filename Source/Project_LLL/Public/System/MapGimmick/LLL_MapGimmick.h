@@ -27,6 +27,31 @@ class UNiagaraComponent;
 DECLARE_DELEGATE(FOnStageChangedDelegate);
 
 USTRUCT(BlueprintType)
+struct FStageInfoData
+{
+	GENERATED_BODY()
+	
+public:
+	FStageInfoData():
+	Seed(UINT32_MAX),
+	RoomNumber(UINT32_MAX)
+	{
+		
+	}
+
+public:
+	UPROPERTY()
+	uint32 Seed;
+	
+	UPROPERTY()
+	uint32 RoomNumber;
+
+	UPROPERTY()
+	TArray<uint8> GatesRewardID;
+	
+};
+
+USTRUCT(BlueprintType)
 struct FStageChangedDelegateWrapper
 {
 	GENERATED_BODY()
@@ -44,6 +69,9 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_MapGimmick();
 
+public:
+	FStageInfoData MakeStageInfoData();
+	
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void PostInitializeComponents() override;
@@ -52,7 +80,6 @@ protected:
 public:
 	FORCEINLINE ALLL_MonsterSpawner* GetMonsterSpawner() const { return MonsterSpawner; }
 	
-	// Stage Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage")
 	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
@@ -81,9 +108,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_SequencerComponent> RoomSequencerPlayComponent;
 	
-	uint8 Seed;
+	uint32 Seed;
 
 protected:
+	UFUNCTION()
+	void LoadLastSessionMap(FStageInfoData StageInfoData);
+	
 	UFUNCTION()
 	void CreateMap();
 
@@ -94,14 +124,8 @@ protected:
 	void ChangeMap(AActor* DestroyedActor);
 
 private:
-	UPROPERTY()
-	uint8 GateIndex;
-
 	UPROPERTY(VisibleAnywhere)
-	uint8 RoomNumber;
-
-	UPROPERTY(VisibleAnywhere)
-	uint8 CurrentRoomNumber;
+	uint32 CurrentRoomNumber;
 
 // Gate Section
 protected:
@@ -127,7 +151,8 @@ protected:
 
 	UPROPERTY()
 	TMap<EStageState, FStageChangedDelegateWrapper> StateChangeActions;
-	
+
+	uint8 bIsFirstLoad : 1;
 protected:
 	void SetState(EStageState InNewState);
 	
@@ -193,7 +218,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
 	TObjectPtr<UNiagaraComponent> PlayerTeleportNiagara;
-	
+
+protected:
 	UFUNCTION()
 	void FadeIn();
 

@@ -137,6 +137,7 @@ void ULLL_TitleScreenWidget::OpenIntroLevel()
 void ULLL_TitleScreenWidget::OpenSavedLevel()
 {
 	const FName LastPlayedLevelName = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetLastPlayedLevelName();
+	UE_LOG(LogTemp, Log, TEXT("레벨 이동: %s"), *LastPlayedLevelName.ToString());
 	UGameplayStatics::OpenLevel(this, LastPlayedLevelName);
 }
 

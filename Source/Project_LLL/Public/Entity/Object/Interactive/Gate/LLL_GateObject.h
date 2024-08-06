@@ -31,7 +31,7 @@ public:
 	void SetActivate();
 	
 protected:
-	virtual void InteractiveEvent() override;
+	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 	virtual void BeginPlay() override;
 	
 protected:

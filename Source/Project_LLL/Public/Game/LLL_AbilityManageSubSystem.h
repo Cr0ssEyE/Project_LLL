@@ -18,7 +18,8 @@ class ALLL_BaseObject;
 class ALLL_MonsterBase;
 class ALLL_PlayerBase;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAsyncLoadEffectDelegate, TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>&, LoadedEffects);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAsyncLoadEffectByIDDelegate, TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>&, LoadedEffects, const int32, EffectID);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAsyncLoadEffectByTagDelegate, TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>&, LoadedEffects, const FGameplayTagContainer&, EffectTag);
 
 /**
   어빌리티 관련 기능을 수행하는 서브시스템
@@ -37,8 +38,8 @@ public:
 
 	// 어빌리티 OR 스탯 부여 이펙트 비동기 로딩
 public:
-	void ASyncLoadEffectsByTag(FAsyncLoadEffectDelegate Delegate, EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, const EEffectAccessRange AccessRange, bool TagHasMatching = false);
-	void ASyncLoadEffectsByID(FAsyncLoadEffectDelegate Delegate, EEffectOwnerType Owner, int32 ID, const EEffectAccessRange AccessRange);
+	void ASyncLoadEffectsByTag(FAsyncLoadEffectByTagDelegate Delegate, EEffectOwnerType Owner, const FGameplayTagContainer& EffectTag, const EEffectAccessRange AccessRange, bool TagHasMatching = false);
+	void ASyncLoadEffectsByID(FAsyncLoadEffectByIDDelegate Delegate, EEffectOwnerType Owner, int32 ID, const EEffectAccessRange AccessRange);
 
 private:
 	/** 플레이어에게 게임 진행 도중 일시적으로 어빌리티 OR 스탯을 부여하기 위해 사용하는 이펙트 모음. ex: 보상 \n

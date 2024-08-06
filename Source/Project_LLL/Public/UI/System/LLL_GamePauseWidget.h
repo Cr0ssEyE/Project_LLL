@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Constant/LLL_LevelNames.h"
+#include "Interface/LLL_FocusWidgetInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "LLL_GamePauseWidget.generated.h"
 
 class UTextBlock;
@@ -15,7 +19,7 @@ class UButton;
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_GamePauseWidget : public UUserWidget
+class PROJECT_LLL_API ULLL_GamePauseWidget : public UUserWidget, public ILLL_FocusWidgetInterface
 {
 	GENERATED_BODY()
 
@@ -42,6 +46,13 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ExitButtonEvent();
 
+private:
+	UFUNCTION()
+	FORCEINLINE void OpenTitle() { UGameplayStatics::OpenLevel(this, LEVEL_TITLE); }
+	
+	UFUNCTION()
+	FORCEINLINE void OutGame() { UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false); }
+	
 protected:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void PlayResumeButtonHoverAnimation() { PlayAnimationForward(ResumeHover); }

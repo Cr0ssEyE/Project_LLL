@@ -8,6 +8,7 @@
 #include "DataAsset/LLL_CameraDataAsset.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
@@ -26,6 +27,8 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 class UWidgetComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDissolveCompleteDelegate, bool, IsDrop);
 
 /**
  * 
@@ -50,10 +53,13 @@ public:
 	
 	// 외부 접근용
 public:
+	FORCEINLINE void InitAttributeSetBySave(const FPlayerCharacterStatusData* CharacterStatusData) const { PlayerCharacterAttributeSet->InitializeSavedStatusData(CharacterStatusData); }
 	// TODO: GAS로 전환
 	void AddInteractiveObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
+	void CharacterUnDissolveBegin();
+	
 public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
 	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
@@ -77,6 +83,9 @@ public:
 public:
 	void StartCameraMoveToCursor(ALLL_PlayerController* PlayerController = nullptr);
 	void PauseCameraMoveToCursor();
+
+public:
+	FDissolveCompleteDelegate DissolveCompleteDelegate;
 	
 protected:
 	void TurnToMouseCursor();
@@ -150,6 +159,8 @@ private:
 	// 상태 관련 함수
 protected:
 	void DropDissolveActor();
+
+	void PullUpDissolveActor();
 	
 	UFUNCTION()
 	void DeadMotionEndedHandle();
@@ -159,7 +170,7 @@ protected:
 	uint8 bIsMoveInputPressed : 1;
 
 	UPROPERTY()
-	TObjectPtr<AActor> DeadSequenceDissolveActor;
+	TObjectPtr<AActor> CharacterDissolveActor;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly)

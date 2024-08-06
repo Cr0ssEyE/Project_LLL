@@ -23,7 +23,7 @@ class PROJECT_LLL_API ALLL_RewardObject : public ALLL_InteractiveObject, public 
 public:
 	ALLL_RewardObject();
 
-	virtual void InteractiveEvent() override;
+	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 	virtual void BeginPlay() override;
 	virtual void ApplyProductEvent() override;
 	virtual void SetInformation(const FRewardDataTable* Data);

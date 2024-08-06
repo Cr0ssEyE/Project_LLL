@@ -22,4 +22,14 @@ public:
 	
 	void SetGameInputMode();
 	void SetUIInputMode(const TSharedPtr<SWidget>& FocusWidget = nullptr);
+
+public:
+	FORCEINLINE void SetCharacterInitialized() { bIsCharacterInitialized = true; }
+	FORCEINLINE void SetWidgetInitialized() { bIsWidgetInitialized = true; }
+protected:
+	void WaitPlayerCharacterInitialize();
+
+protected:
+	uint8 bIsCharacterInitialized : 1;
+	uint8 bIsWidgetInitialized : 1;
 };
