@@ -28,6 +28,7 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	}), MonsterAttributeSet->GetChargeTimer(), false);
 
 	Monster->SetCharging(true);
+	UE_LOG(LogTemp, Log, TEXT("%f"), MonsterAttributeSet->GetChargeTimer())
 }
 
 void ULLL_MGA_Charge::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

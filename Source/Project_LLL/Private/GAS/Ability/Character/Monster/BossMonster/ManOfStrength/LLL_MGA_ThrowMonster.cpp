@@ -9,8 +9,10 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Util/LLL_MathHelper.h"
 
 void ULLL_MGA_ThrowMonster::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -21,27 +23,34 @@ void ULLL_MGA_ThrowMonster::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	ALLL_MonsterBase* OtherMonster = Cast<ALLL_MonsterBase>(MonsterAIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_OTHER_MONSTER));
 	if (IsValid(OtherMonster) && !OtherMonster->CheckCharacterIsDead())
 	{
+		const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(MonsterAIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+
 		FVector FloorStartLocation = OtherMonster->GetActorLocation();
 		FloorStartLocation.Z = 0.0f;
-		const FVector PlayerLocation = CastChecked<ALLL_PlayerBase>(MonsterAIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER))->GetActorLocation();
-		FVector FloorEndLocation = PlayerLocation;
+		// Todo : 추후 데이터화 예정
+		const float PredictionRate = 0.5f;
+		const FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(Monster, Player, PlayerAttributeSet->GetMoveSpeed(), PredictionRate);
+		FVector FloorEndLocation = PredictedLocation;
 		FloorEndLocation.Z = 0.0f;
 		const FVector FloorDirection = (FloorEndLocation - FloorStartLocation).GetSafeNormal();
 		const float FloorDistance = FVector::Distance(FloorStartLocation, FloorEndLocation);
 		FVector TargetLocation = FloorStartLocation + FloorDirection * FloorDistance * 2.0f;
-		TargetLocation.Z = PlayerLocation.Z;
+		TargetLocation.Z = PredictedLocation.Z;
 		const FVector Direction = (TargetLocation - OtherMonster->GetActorLocation()).GetSafeNormal();
 
 		// Todo : 추후 데이터화 예정
 		float Speed = 3000.0f;
-		OtherMonster->SetOwner(nullptr);
 		OtherMonster->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		CastChecked<ULLL_MonsterBaseAnimInstance>(OtherMonster->GetCharacterAnimInstance())->SetSnapped(false);
 		OtherMonster->GetMesh()->SetCollisionProfileName(CP_THREW_MONSTER);
 		OtherMonster->GetCapsuleComponent()->SetCollisionProfileName(CP_THREW_MONSTER);
 		UCharacterMovementComponent* CharacterMovementComponent = CastChecked<UCharacterMovementComponent>(OtherMonster->GetMovementComponent());
 		CharacterMovementComponent->MovementMode = MOVE_Flying;
 		CharacterMovementComponent->Velocity = Direction * Speed;
 		MonsterAIController->GetBlackboardComponent()->SetValueAsObject(BBKEY_OTHER_MONSTER, nullptr);
+
+		OtherMonster->SetOwner(Monster);
 
 		UE_LOG(LogTemp, Log, TEXT("%s 던지기"), *OtherMonster->GetName())
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

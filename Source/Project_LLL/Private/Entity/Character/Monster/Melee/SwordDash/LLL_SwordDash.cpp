@@ -108,14 +108,14 @@ void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
 
 void ALLL_SwordDash::Dash() const
 {
-	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_SWORD_DASH_DASH)))
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_DASH)))
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if (DebugGameInstance->CheckMonsterAttackDebug())
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 대시 수행"), *GetName()));
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 대시"), *GetName()));
 			}
 		}
 #endif

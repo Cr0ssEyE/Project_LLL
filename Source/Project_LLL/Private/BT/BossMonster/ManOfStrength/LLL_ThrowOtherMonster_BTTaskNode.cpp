@@ -5,14 +5,8 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Constant/LLL_BlackBoardKeyNames.h"
-#include "Constant/LLL_CollisionChannel.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 
 ULLL_ThrowOtherMonster_BTTaskNode::ULLL_ThrowOtherMonster_BTTaskNode()
 {

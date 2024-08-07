@@ -17,7 +17,7 @@ void ULLL_MGA_CatchMonster::ActivateAbility(const FGameplayAbilitySpecHandle Han
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
 	ALLL_MonsterBaseAIController* MonsterAIController = CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController());
 	ALLL_MonsterBase* OtherMonster = Cast<ALLL_MonsterBase>(MonsterAIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_OTHER_MONSTER));
 	if (IsValid(OtherMonster) && !OtherMonster->CheckCharacterIsDead())
@@ -35,7 +35,6 @@ void ULLL_MGA_CatchMonster::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		OtherMonster->GetCapsuleComponent()->SetCollisionProfileName(CP_NO_COLLISION);
 		CastChecked<ULLL_MonsterBaseAnimInstance>(OtherMonster->GetCharacterAnimInstance())->SetSnapped(true);
 		OtherMonster->AttachToComponent(Monster->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
-		OtherMonster->SetOwner(Monster);
 
 		UE_LOG(LogTemp, Log, TEXT("%s 잡기"), *OtherMonster->GetName())
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

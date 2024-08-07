@@ -108,6 +108,9 @@ void ALLL_MonsterBase::BeginPlay()
 		BleedingVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
 	}
 	
+	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
+	MonsterBaseAIController->StopLogic("Before Initialize");
+	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -142,6 +145,9 @@ void ALLL_MonsterBase::InitAttributeSet()
 
 	const int32 Data = Id * 100 + Level;
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_MONSTER, Data, true);
+
+	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
+	MonsterBaseAIController->StartLogic();
 }
 
 void ALLL_MonsterBase::SetFModParameter(EFModParameter FModParameter)
@@ -167,14 +173,36 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	ULLL_MonsterBaseAnimInstance* MonsterAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetCharacterAnimInstance());
-	if (IsValid(MonsterAnimInstance) && MonsterAnimInstance->IsSnapped())
+	UCharacterMovementComponent* CharacterMovementComponent = CastChecked<UCharacterMovementComponent>(GetMovementComponent());
+	if (CharacterMovementComponent->MovementMode == MOVE_Flying)
 	{
-		CastChecked<UCharacterMovementComponent>(GetMovementComponent())->MovementMode = MOVE_Walking;
+		CharacterMovementComponent->MovementMode = MOVE_Walking;
 		GetMesh()->SetCollisionProfileName(CP_MONSTER);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
-		MonsterAnimInstance->SetSnapped(false);
 		CastChecked<ALLL_MonsterBaseAIController>(GetController())->StartLogic();
+
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+	
+		const ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(GetOwner());
+		if (IsValid(ManOfStrength))
+		{
+			const ULLL_ManOfStrengthDataAsset* ManOfStrengthDataAsset = CastChecked<ULLL_ManOfStrengthDataAsset>(ManOfStrength->GetCharacterDataAsset());
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->ThrowDamageEffect, ManOfStrength->GetCharacterLevel(), EffectContextHandle);
+			if (EffectSpecHandle.IsValid())
+			{
+				// Todo : 추후 데이터화 예정
+				const float OffencePower = 10.0f;
+				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
+				if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other))
+				{
+					UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *Other->GetName())
+					ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
+				}
+			}
+		}
+		
+		SetOwner(nullptr);
 	}
 }
 

@@ -71,9 +71,7 @@
 #define TAG_GAS_MONSTER_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Attack"))
 #define TAG_GAS_MONSTER_CHARGE FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Charge"))
 #define TAG_GAS_MONSTER_FALLABLE FGameplayTag::RequestGameplayTag(FName("Character.Monster.State.Fallable"))
-
-// 소드 대시 게임플레이 태그
-#define TAG_GAS_SWORD_DASH_DASH FGameplayTag::RequestGameplayTag(FName("Character.Monster.Melee.SwordDash.Action.Dash"))
+#define TAG_GAS_MONSTER_DASH FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Dash"))
 
 // 힘 있는 자 게임플레이 태그
 #define TAG_GAS_MAN_OF_STRENGTH_SHOCKWAVE FGameplayTag::RequestGameplayTag(FName("Character.Monster.Boss.ManOfStrength.Action.Shockwave"))

@@ -26,8 +26,8 @@ void ULLL_MGA_AttackInApnea::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	Monster->SetAttacking(true);
 
 	// Todo : 추후 데이터화 예정
-	const float DashSpeed = 1000.0f;
 	const float DashDistance = 200.0f;
+	const float DashSpeed = 1000.0f;
 	const FVector DashLocation = Monster->GetActorLocation() + Monster->GetActorForwardVector() * DashDistance;
 	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("AttackInApnea"), DashLocation, DashDistance / DashSpeed / Monster->CustomTimeDilation, nullptr, nullptr);
 	MoveToLocationTask->ReadyForActivation();

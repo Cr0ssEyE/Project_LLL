@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/Ability/Character/Monster/MeleeMonster/SwordDash/LLL_MGA_Dash.h"
+#include "GAS/Ability/Character/Monster/Base/LLL_MGA_Dash.h"
 
 #include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
 #include "Components/CapsuleComponent.h"
@@ -18,6 +18,7 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_DASH);
+	Monster->GetMesh()->SetCollisionProfileName(CP_MONSTER_DASH);
 	Monster->GetMovementComponent()->Velocity = FVector::Zero();
 	
 	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
@@ -52,7 +53,7 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	FVector DashLocation = SweepEndLocation;
 	if (StaticResult.GetActor())
 	{
-		if (PlayerResult.GetActor())
+		if (PlayerResult.GetActor() && !bPassPlayer)
 		{
 			const float StaticDistance = Monster->GetDistanceTo(StaticResult.GetActor());
 			const float PlayerDistance = Monster->GetDistanceTo(PlayerResult.GetActor());
@@ -66,7 +67,7 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			DashLocation = StaticResult.Location;
 		}
 	}
-	else if (PlayerResult.GetActor())
+	else if (PlayerResult.GetActor() && !bPassPlayer)
 	{
 		DashLocation = PlayerResult.Location;
 	}
@@ -77,7 +78,7 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, MonsterAttributeSet->GetMonsterData1() / MonsterAttributeSet->GetMonsterData6() / Monster->CustomTimeDilation, nullptr, nullptr);
 	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &ULLL_MGA_Dash::OnCompleteCallBack);
 	MoveToLocationTask->ReadyForActivation();
-	
+
 	BP_ApplyGameplayEffectToOwner(DashEffect);
 }
 
@@ -85,6 +86,7 @@ void ULLL_MGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 {
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
+	Monster->GetMesh()->SetCollisionProfileName(CP_MONSTER);
 
 	ILLL_DashMonsterInterface* DashMonster = CastChecked<ILLL_DashMonsterInterface>(Monster);
 	DashMonster->SetDashing(false);

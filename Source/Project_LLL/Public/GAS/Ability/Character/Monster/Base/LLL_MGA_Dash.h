@@ -21,4 +21,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<UGameplayEffect> DashEffect;
+
+	UPROPERTY(EditAnywhere, Category = "GAS")
+	uint8 bPassPlayer : 1;
 };
