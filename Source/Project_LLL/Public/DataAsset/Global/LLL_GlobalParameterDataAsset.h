@@ -29,4 +29,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Global|KnockBack", DisplayName = "낙사 요구 속도값")
 	float FallRequiredVelocityLength;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Global|KnockBack", DisplayName = "몬스터 무게당 감속량(*)")
+	float DecreaseVelocityPerWeight;
 };
