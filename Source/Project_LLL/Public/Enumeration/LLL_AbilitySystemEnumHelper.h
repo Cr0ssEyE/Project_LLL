@@ -10,8 +10,6 @@ UENUM(BlueprintType)
 enum class EAbilityInputName : uint8
 {
 	Attack UMETA(Displayname="공격"),
-	Skill UMETA(Displayname="스킬"),
-	Chase UMETA(Displayname="추격"),
 	Dash UMETA(Displayname="회피")
 };
 
@@ -49,7 +47,6 @@ enum class EEffectDamageEventType : uint8
 {
 	None UMETA(Displayname="피해 X"),
 	BaseAttack UMETA(Displayname="기본 공격"),
-	ChaseAttack UMETA(Displayname="추격"),
 	Eruria UMETA(Displayname="이누리아"),
 	AbnormalStatus UMETA(Displayname="상태이상"),
 	Skill UMETA(Displayname="스킬") // 현재는 스킬 자체에 피해를 가하는 기능이 없지만 추가 개발 상황 고려
@@ -79,9 +76,7 @@ enum class EAbilityPart : uint8
 {
 	Common,
 	Attack,
-	Chase,
-	Dash,
-	ComboSkill
+	Dash
 };
 
 UENUM(BlueprintType)

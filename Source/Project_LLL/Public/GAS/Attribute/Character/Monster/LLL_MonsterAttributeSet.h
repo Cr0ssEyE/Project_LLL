@@ -15,6 +15,8 @@ class PROJECT_LLL_API ULLL_MonsterAttributeSet : public ULLL_CharacterAttributeS
 	GENERATED_BODY()
 	
 public:
+	ULLL_MonsterAttributeSet();
+	
 	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
@@ -27,6 +29,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, ChargeTimer);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackCoolDown);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FieldOfView);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, Weight);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FindPatrolPosRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, DestroyTimer);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, ClusterRecognizeRadius);
@@ -65,6 +68,9 @@ protected:
 	FGameplayAttributeData FieldOfView;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData Weight;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData FindPatrolPosRadius;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
@@ -73,6 +79,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ClusterRecognizeRadius;
 
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MonsterData1;
 	

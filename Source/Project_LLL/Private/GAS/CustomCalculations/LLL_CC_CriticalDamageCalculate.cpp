@@ -25,10 +25,6 @@ float ULLL_CC_CriticalDamageCalculate::CalculateBaseMagnitude_Implementation(con
 	{
 		DamageAmplifyValue = PlayerAttributeSet->GetBaseAttackDamageAmplifyByOther();
 	}
-	else if (EffectTagContainer.HasTag(TAG_GAS_ATTACK_HIT_CHECK_CHASE))
-	{
-		DamageAmplifyValue = PlayerAttributeSet->GetChaseAttackDamageAmplifyByOther();
-	}
 	
 	Result = FLLL_MathHelper::CalculateCriticalDamage(PlayerAttributeSet, PlayerAttributeSet->GetOffensePower() * DamageAmplifyValue);
 	

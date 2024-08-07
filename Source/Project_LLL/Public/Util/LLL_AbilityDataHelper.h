@@ -25,20 +25,6 @@ public:
 			UE_LOG(LogTemp, Log, TEXT("%f Period 값 변경"), EffectSpec->GetPeriod());
 			return;
 		}
-
-		if (RewardAbility->AbilityTags.HasTag(TAG_GAS_MARK))
-		{
-			EffectSpec->bDurationLocked = false;
-			EffectSpec->SetDuration(AbnormalStatusAttributeSet->GetMarkStatusDuration(), true);
-			return;
-		}
-
-		if (RewardAbility->AbilityTags.HasTag(TAG_GAS_TARGETING))
-		{
-			EffectSpec->bDurationLocked = false;
-			EffectSpec->SetDuration(AbnormalStatusAttributeSet->GetTargetingStatusDuration(), true);
-			return;
-		}
 	}
 
 	static bool SpawnAbilityObject(const ULLL_PGA_RewardAbilityBase* OwnerAbility, const TSubclassOf<ALLL_AbilityObject>& AbilityObjectClass, FGameplayEventData EventData = FGameplayEventData(), EEffectApplyTarget AbilityObjectLocationTarget = EEffectApplyTarget::Self)

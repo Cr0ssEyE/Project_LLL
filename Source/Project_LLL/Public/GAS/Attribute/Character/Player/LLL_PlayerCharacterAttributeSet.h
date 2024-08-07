@@ -37,28 +37,20 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackOffensePowerRate);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FalloutablePower);
 
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseAttackDamageAmplifyByOther);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseActionDamageAmplify);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseActionKnockBackAmplify);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseCoolDown);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseReduceCoolDownPerHit);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MinChargeAttackRange);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxChargeAttackRange);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MinChargeAttackDamage);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxChargeAttackDamage);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MinChargeAttackKnockBackPower);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxChargeAttackKnockBackPower);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxChargeAttackChargingTime);
 	
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CurrentComboCount);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxComboCount);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MultiplyComboCountWhenHit);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MultiplyComboCountPerTime);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxComboKeepingDuration);
-	
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherMoveSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, TargetingCorrectionRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ImpulseStrength);
-
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, bIsComboTimerElapsed);
 	
 protected:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
-
-protected:
-	void TryStartComboManagement(const FGameplayEffectModCallbackData& Data);
 
 	// 스테이터스 관련
 protected:
@@ -100,23 +92,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DashInvincibleTime;
-
-	// 추격 관련
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData ChaseAttackDamageAmplifyByOther;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData ChaseActionDamageAmplify;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData ChaseActionKnockBackAmplify;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData ChaseCoolDown;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData ChaseReduceCoolDownPerHit;
 	
 	// 넉백 관련
 protected:
@@ -131,34 +106,38 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData FalloutablePower;
-	
-	// 콤보 관련
+
+	// 차지 공격 관련
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData CurrentComboCount;
+	FGameplayAttributeData MinChargeAttackRange;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MaxComboCount;
+	FGameplayAttributeData MaxChargeAttackRange;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MultiplyComboCountWhenHit;
+	FGameplayAttributeData MinChargeAttackDamage;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MultiplyComboCountPerTime;
-	
+	FGameplayAttributeData MaxChargeAttackDamage;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MaxComboKeepingDuration;
+	FGameplayAttributeData MinChargeAttackKnockBackPower;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MaxChargeAttackKnockBackPower;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MaxChargeAttackChargingTime;
 	
 	// 기타 효과 관련
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData FeatherMoveSpeed;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData TargetingCorrectionRadius;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ImpulseStrength;
-	
-	// 메타 어트리뷰트
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData bIsComboTimerElapsed;
 };

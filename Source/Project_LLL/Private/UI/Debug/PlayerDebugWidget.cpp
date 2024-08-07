@@ -16,8 +16,6 @@ void UPlayerDebugWidget::NativeConstruct()
 	
 	PlayerMovementCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerMovementCheckBoxEvent);
 	PlayerDashCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerDashCheckBoxEvent);
-	PlayerChaseActionCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent);
-	PlayerSkillCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerSkillCheckBoxEvent);
 
 	PlayerFillHealthButton->OnClicked.AddDynamic(this, &UPlayerDebugWidget::PlayerFillHealthButtonEvent);
 	PlayerInvincibleCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerInvincibleCheckBoxEvent);
@@ -31,16 +29,6 @@ void UPlayerDebugWidget::PlayerMovementCheckBoxEvent(bool value)
 void UPlayerDebugWidget::PlayerDashCheckBoxEvent(bool value)
 {
 	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerDashDebug(PlayerDashCheckBox->IsChecked());
-}
-
-void UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent(bool value)
-{
-	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerChaseActionDebug(PlayerChaseActionCheckBox->IsChecked());
-}
-
-void UPlayerDebugWidget::PlayerSkillCheckBoxEvent(bool value)
-{
-	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerSkillDebug(PlayerSkillCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::CharacterHitCheckCheckBoxEvent(bool value)

@@ -25,7 +25,6 @@
 #define PATH_THREATENING_DEATH_DATA TEXT("/Script/Project_LLL.LLL_ThreateningDeathDataAsset'/Game/DataAsset/DA_ThreateningDeath.DA_ThreateningDeath'")
 
 // 플레이어 투사체 관련
-#define PATH_PLAYER_CHASE_HAND_DATA TEXT("/Script/Project_LLL.LLL_PlayerChaseHandDataAsset'/Game/DataAsset/DA_PlayerChaseHand.DA_PlayerChaseHand'")
 #define PATH_THROWN_FEATHER_DATA TEXT("/Script/Project_LLL.LLL_ThrownFeatherDataAsset'/Game/DataAsset/DA_ThrownFeather.DA_ThrownFeather'")
 
 // 몬스터 캐릭터 관련
@@ -57,7 +56,6 @@
 #define PATH_REWARD_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_CornerFrame.SM_CornerFrame'")
 #define PATH_REWARD_OBJECT_TEST_DATA TEXT("/Script/Project_LLL.LLL_RewardObjectDataAsset'/Game/DataAsset/DA_RewardObject.DA_RewardObject'")
 #define PATH_TUTORIAL_MAP_DATA TEXT("/Script/Project_LLL.LLL_TutorialMapDataAsset'/Game/DataAsset/DA_TutorialMap.DA_TutorialMap'")
-#define PATH_SKILL_GAUGE_EFFECT TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/Character/Player/Status/BPGE_Player_FullSkillGauge.BPGE_Player_FullSkillGauge_C'")
 #define PATH_MAP_SOUND_SUBSYSTEM_DATA TEXT("/Script/Project_LLL.LLL_MapSoundSubsystemDataAsset'/Game/DataAsset/DA_MapSoundSubsystem.DA_MapSoundSubsystem'")
 
 // UI 관련

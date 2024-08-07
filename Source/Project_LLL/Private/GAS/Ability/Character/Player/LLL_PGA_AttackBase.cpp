@@ -54,10 +54,6 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 
 	FGameplayTagContainer OwnedTagsContainer;
 	GetAbilitySystemComponentFromActorInfo_Checked()->GetOwnedGameplayTags(OwnedTagsContainer);
-	if (OwnedTagsContainer.HasTag(TAG_GAS_PLAYER_STATE_CHASE_THREW))
-	{
-		CurrentComboAction = 1;
-	}
 	
 	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackAnimMontage, PlayerAttributeSet->GetAttackSpeed(), *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
 	MontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
@@ -166,10 +162,6 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 	{
 		FGameplayTagContainer OwnedTagsContainer;
 		GetAbilitySystemComponentFromActorInfo_Checked()->GetOwnedGameplayTags(OwnedTagsContainer);
-		if (OwnedTagsContainer.HasTag(TAG_GAS_PLAYER_STATE_CHASE_THREW))
-		{
-			CurrentComboAction = 1;
-		}
 		
 		if(CurrentComboAction == MaxAttackAction)
 		{
