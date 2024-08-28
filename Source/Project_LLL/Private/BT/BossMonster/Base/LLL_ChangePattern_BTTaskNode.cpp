@@ -19,7 +19,7 @@ EBTNodeResult::Type ULLL_ChangePattern_BTTaskNode::ExecuteTask(UBehaviorTreeComp
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	const ALLL_BossMonster* BossMonster = CastChecked<ALLL_BossMonster>(OwnerComp.GetAIOwner()->GetPawn());
+	ALLL_BossMonster* BossMonster = CastChecked<ALLL_BossMonster>(OwnerComp.GetAIOwner()->GetPawn());
 	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(BossMonster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 	const float MaxHealth = MonsterAttributeSet->GetMaxHealth();
 	const float CurrentHealth = MonsterAttributeSet->GetCurrentHealth();
@@ -47,8 +47,9 @@ EBTNodeResult::Type ULLL_ChangePattern_BTTaskNode::ExecuteTask(UBehaviorTreeComp
 	}
 
 	//const uint8 Pattern = FMath::RandRange(FirstPattern, LastPattern);
-	const uint8 Pattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_ApneaInAttack);
+	const uint8 Pattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_Dash);
 	OwnerComp.GetBlackboardComponent()->SetValueAsEnum(BBKEY_PATTERN, Pattern);
+	BossMonster->SetChargeMontageKey(static_cast<EBossMonsterPattern>(Pattern));
 
 	return EBTNodeResult::Succeeded;
 }

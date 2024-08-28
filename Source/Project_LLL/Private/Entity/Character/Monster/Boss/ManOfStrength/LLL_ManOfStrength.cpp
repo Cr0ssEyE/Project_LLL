@@ -35,6 +35,27 @@ void ALLL_ManOfStrength::BeginPlay()
 	ManOfStrengthDataAsset = Cast<ULLL_ManOfStrengthDataAsset>(BossMonsterDataAsset);
 }
 
+void ALLL_ManOfStrength::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (DebugGameInstance->CheckMonsterAttackDebug())
+		{
+			if (bIsDashing)
+			{
+				const FVector Location = DashDamageRangeBox->GetComponentLocation();
+				const FVector Extent = DashDamageRangeBox->GetScaledBoxExtent();
+				const FQuat Quat = DashDamageRangeBox->GetComponentQuat();
+				DrawDebugBox(GetWorld(), Location, Extent, Quat, FColor::Blue, false, 2.0f);
+			}
+		}
+	}
+#endif
+}
+
 void ALLL_ManOfStrength::InitAttributeSet()
 {
 	Super::InitAttributeSet();
@@ -92,7 +113,7 @@ void ALLL_ManOfStrength::Dash()
 	}
 }
 
-void ALLL_ManOfStrength::Shockwave() const
+void ALLL_ManOfStrength::Shockwave()
 {
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MAN_OF_STRENGTH_SHOCKWAVE)))
 	{
@@ -111,8 +132,8 @@ void ALLL_ManOfStrength::Shockwave() const
 void ALLL_ManOfStrength::AttackInApnea()
 {
 	// Todo : 추후 데이터화 예정
-	DashDistance = 300.0f;
-	DashSpeed = 2000.0f;
+	DashDistance = 350.0f;
+	DashSpeed = 1500.0f;
 	
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MAN_OF_STRENGTH_ATTACK_IN_APNEA)))
 	{

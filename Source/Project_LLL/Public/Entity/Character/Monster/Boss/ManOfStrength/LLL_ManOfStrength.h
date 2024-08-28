@@ -25,6 +25,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void InitAttributeSet() override;
 
 protected:
@@ -37,7 +38,7 @@ public:
 	FORCEINLINE virtual float GetDashSpeed() const override { return DashSpeed; }
 
 public:
-	void Shockwave() const;
+	void Shockwave();
 	void AttackInApnea();
 	void SnapOtherMonster() const;
 	void ThrowOtherMonster() const;

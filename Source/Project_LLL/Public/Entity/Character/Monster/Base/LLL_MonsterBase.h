@@ -24,7 +24,7 @@ public:
 	ALLL_MonsterBase();
 	
 	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
-	FORCEINLINE void SetCharging(bool IsCharging) { bIsCharging = IsCharging; }
+	FORCEINLINE void SetCharging(const bool IsCharging) { bIsCharging = IsCharging; }
 	
 	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }

@@ -7,6 +7,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "LLL_BossMonster.generated.h"
 
+enum class EBossMonsterPattern : uint8;
 /**
  * 
  */
@@ -18,9 +19,15 @@ class PROJECT_LLL_API ALLL_BossMonster : public ALLL_MonsterBase
 public:
 	ALLL_BossMonster();
 
+	FORCEINLINE void SetChargeMontageKey(const EBossMonsterPattern InChargeMontageKey) { ChargeMontageKey = InChargeMontageKey; }
+	FORCEINLINE EBossMonsterPattern GetChargeMontageKey() const { return ChargeMontageKey; }
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BossMonsterDataAsset> BossMonsterDataAsset;
+
+	UPROPERTY()
+	EBossMonsterPattern ChargeMontageKey;
 };
