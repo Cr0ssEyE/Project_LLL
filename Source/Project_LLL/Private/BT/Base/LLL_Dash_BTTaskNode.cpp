@@ -16,7 +16,7 @@ EBTNodeResult::Type ULLL_Dash_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& Ow
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	const ILLL_DashMonsterInterface* DashMonster = Cast<ILLL_DashMonsterInterface>(OwnerComp.GetAIOwner()->GetPawn());
+	ILLL_DashMonsterInterface* DashMonster = Cast<ILLL_DashMonsterInterface>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!DashMonster)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("대시할 수 있는 몬스터가 아닙니다"));

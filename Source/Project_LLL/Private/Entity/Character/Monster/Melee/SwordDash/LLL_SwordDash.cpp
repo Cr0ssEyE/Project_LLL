@@ -106,7 +106,7 @@ void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
-void ALLL_SwordDash::Dash() const
+void ALLL_SwordDash::Dash()
 {
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_DASH)))
 	{
@@ -120,4 +120,14 @@ void ALLL_SwordDash::Dash() const
 		}
 #endif
 	}
+}
+
+float ALLL_SwordDash::GetDashDistance() const
+{
+	return MonsterAttributeSet->GetMonsterData1();
+}
+
+float ALLL_SwordDash::GetDashSpeed() const
+{
+	return MonsterAttributeSet->GetMonsterData6();
 }

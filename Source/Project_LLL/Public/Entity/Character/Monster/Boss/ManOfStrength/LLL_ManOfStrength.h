@@ -31,11 +31,14 @@ protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
 public:
-	virtual void Dash() const override;
+	virtual void Dash() override;
+
+	FORCEINLINE virtual float GetDashDistance() const override { return DashDistance; }
+	FORCEINLINE virtual float GetDashSpeed() const override { return DashSpeed; }
 
 public:
 	void Shockwave() const;
-	void AttackInApnea() const;
+	void AttackInApnea();
 	void SnapOtherMonster() const;
 	void ThrowOtherMonster() const;
 	
@@ -48,4 +51,10 @@ protected:
 
 	UPROPERTY()
 	uint8 bIsDashing : 1;
+	
+	UPROPERTY()
+	float DashDistance;
+	
+	UPROPERTY()
+	float DashSpeed;
 };

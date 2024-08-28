@@ -17,16 +17,15 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+	ILLL_DashMonsterInterface* DashMonster = CastChecked<ILLL_DashMonsterInterface>(Monster);
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_DASH);
 	Monster->GetMesh()->SetCollisionProfileName(CP_MONSTER_DASH);
 	Monster->GetMovementComponent()->Velocity = FVector::Zero();
-	
-	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 
 	FHitResult StaticResult;
 	FHitResult PlayerResult;
 	const FVector SweepStartLocation = Monster->GetActorLocation();
-	const FVector SweepEndLocation = SweepStartLocation + Monster->GetActorForwardVector() * MonsterAttributeSet->GetMonsterData1();
+	const FVector SweepEndLocation = SweepStartLocation + Monster->GetActorForwardVector() * DashMonster->GetDashDistance();
 	const FQuat SweepQuat = Monster->GetActorQuat();
 	constexpr ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
 	constexpr ECollisionChannel PlayerTraceChannel = ECC_PLAYER_CHECK;
@@ -72,10 +71,9 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		DashLocation = PlayerResult.Location;
 	}
 
-	ILLL_DashMonsterInterface* DashMonster = CastChecked<ILLL_DashMonsterInterface>(Monster);
 	DashMonster->SetDashing(true);
 	
-	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, MonsterAttributeSet->GetMonsterData1() / MonsterAttributeSet->GetMonsterData6() / Monster->CustomTimeDilation, nullptr, nullptr);
+	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, DashMonster->GetDashDistance() / DashMonster->GetDashSpeed() / Monster->CustomTimeDilation, nullptr, nullptr);
 	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &ULLL_MGA_Dash::OnCompleteCallBack);
 	MoveToLocationTask->ReadyForActivation();
 

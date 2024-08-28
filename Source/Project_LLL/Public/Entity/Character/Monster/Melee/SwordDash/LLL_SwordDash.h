@@ -32,7 +32,10 @@ public:
 	FORCEINLINE virtual void SetDashing(bool IsDashing) override { bIsDashing = IsDashing; }
 	FORCEINLINE virtual bool IsDashing() const override { return bIsDashing; }
 	
-	virtual void Dash() const override;
+	virtual void Dash() override;
+	
+	virtual float GetDashDistance() const override;
+	virtual float GetDashSpeed() const override;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
