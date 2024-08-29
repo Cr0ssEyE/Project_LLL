@@ -61,7 +61,7 @@ void ALLL_ManOfStrength::InitAttributeSet()
 	Super::InitAttributeSet();
 
 	// Todo : 추후 데이터화 예정
-	const float DashDamageRange = 1000.0f;
+	const float DashDamageRange = 600.0f;
 	DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), DashDamageRange, DashDamageRange));
 }
 
