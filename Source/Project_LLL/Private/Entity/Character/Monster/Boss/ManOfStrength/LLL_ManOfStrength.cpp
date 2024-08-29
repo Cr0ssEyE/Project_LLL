@@ -97,7 +97,7 @@ void ALLL_ManOfStrength::NotifyActorBeginOverlap(AActor* OtherActor)
 void ALLL_ManOfStrength::Dash()
 {
 	// Todo : 추후 데이터화 예정
-	DashDistance = 1500.0f;
+	DashDistance = 1200.0f;
 	DashSpeed = 1800.0f;
 	
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_DASH)))

@@ -8,6 +8,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Object/Ability/LLL_ShockwaveAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
@@ -36,9 +37,17 @@ void ALLL_Shockwave::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	DrawDebugCircle(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius(), 16, FColor::Yellow, false, 0, 0, 0, FVector::RightVector, FVector::ForwardVector);
-	DrawDebugCircle(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius() - ShockwaveAttributeSet->GetThickness() * 2, 16, FColor::Yellow, false, 0, 0, 0, FVector::RightVector, FVector::ForwardVector);
-
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (DebugGameInstance->CheckMonsterAttackDebug())
+		{
+			DrawDebugCircle(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius(), 16, FColor::Yellow, false, 0, 0, 0, FVector::RightVector, FVector::ForwardVector);
+			DrawDebugCircle(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius() - ShockwaveAttributeSet->GetThickness() * 2, 16, FColor::Yellow, false, 0, 0, 0, FVector::RightVector, FVector::ForwardVector);
+		}
+	}
+#endif
+	
 	FVector Scale = GetActorScale3D();
 	Scale += FVector(ShockwaveAttributeSet->GetSpeed() * DeltaSeconds);
 	SetActorScale3D(Scale);
