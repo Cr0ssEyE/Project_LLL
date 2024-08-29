@@ -124,7 +124,7 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 
 void ULLL_PGA_OnTriggerActivate::SpawnAbilityObject()
 {
-	FLLL_AbilityDataHelper::SpawnAbilityObject(this, AbilityObjectClass, CurrentEventData, AbilityObjectLocationTarget);
+	FLLL_AbilityDataHelper::SpawnAbilityObject(this, AbilityObjectClass, CurrentEventData, AbilityObjectLocationTarget, AbilityObjectOffsetLocation);
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

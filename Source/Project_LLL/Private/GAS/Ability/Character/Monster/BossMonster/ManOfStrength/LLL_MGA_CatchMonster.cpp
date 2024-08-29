@@ -34,7 +34,7 @@ void ULLL_MGA_CatchMonster::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		OtherMonster->GetMesh()->SetCollisionProfileName(CP_NO_COLLISION);
 		OtherMonster->GetCapsuleComponent()->SetCollisionProfileName(CP_NO_COLLISION);
 		CastChecked<ULLL_MonsterBaseAnimInstance>(OtherMonster->GetCharacterAnimInstance())->SetSnapped(true);
-		OtherMonster->AttachToComponent(Monster->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+		OtherMonster->AttachToComponent(Monster->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
 
 		UE_LOG(LogTemp, Log, TEXT("%s 잡기"), *OtherMonster->GetName())
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

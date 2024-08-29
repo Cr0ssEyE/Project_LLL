@@ -23,4 +23,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "생성 위치")
 	EEffectApplyTarget AbilityObjectLocationTarget;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "상대 위치")
+	FVector OffsetLocation;
 };

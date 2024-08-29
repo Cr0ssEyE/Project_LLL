@@ -96,8 +96,9 @@ void ALLL_ManOfStrength::NotifyActorBeginOverlap(AActor* OtherActor)
 
 void ALLL_ManOfStrength::Dash()
 {
-	DashDistance = MonsterAttributeSet->GetMonsterData1();
-	DashSpeed = MonsterAttributeSet->GetMonsterData6();
+	// Todo : 추후 데이터화 예정
+	DashDistance = 1500.0f;
+	DashSpeed = 1800.0f;
 	
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_DASH)))
 	{
@@ -132,7 +133,7 @@ void ALLL_ManOfStrength::Shockwave()
 void ALLL_ManOfStrength::AttackInApnea()
 {
 	// Todo : 추후 데이터화 예정
-	DashDistance = 350.0f;
+	DashDistance = 500.0f;
 	DashSpeed = 1500.0f;
 	
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MAN_OF_STRENGTH_ATTACK_IN_APNEA)))

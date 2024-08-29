@@ -46,8 +46,8 @@ EBTNodeResult::Type ULLL_ChangePattern_BTTaskNode::ExecuteTask(UBehaviorTreeComp
 		LastPattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_ApneaInAttack);
 	}
 
-	//const uint8 Pattern = FMath::RandRange(FirstPattern, LastPattern);
-	const uint8 Pattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_Dash);
+	const uint8 Pattern = FMath::RandRange(FirstPattern, LastPattern);
+	//const uint8 Pattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_Dash);
 	OwnerComp.GetBlackboardComponent()->SetValueAsEnum(BBKEY_PATTERN, Pattern);
 	BossMonster->SetChargeMontageKey(static_cast<EBossMonsterPattern>(Pattern));
 

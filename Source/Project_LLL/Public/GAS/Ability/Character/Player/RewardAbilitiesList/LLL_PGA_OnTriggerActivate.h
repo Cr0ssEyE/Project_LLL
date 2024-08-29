@@ -55,6 +55,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS|SpawnObject", DisplayName = "생성하는 오브젝트 기준 위치", meta =(EditCondition = "bUseSpawnAbilityObject == true", EditConditionHides))
 	EEffectApplyTarget AbilityObjectLocationTarget;
 	
+	UPROPERTY(EditAnywhere, Category = "GAS|SpawnObject", DisplayName = "상대 위치", meta =(EditCondition = "bUseSpawnAbilityObject == true", EditConditionHides))
+	FVector AbilityObjectOffsetLocation;;
+	
 	// Thrown
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "투사체 생성 여부")

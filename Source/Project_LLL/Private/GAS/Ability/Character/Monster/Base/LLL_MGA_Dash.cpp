@@ -4,6 +4,7 @@
 #include "GAS/Ability/Character/Monster/Base/LLL_MGA_Dash.h"
 
 #include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDash.h"
@@ -72,12 +73,21 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	}
 
 	DashMonster->SetDashing(true);
-	
+
 	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, DashMonster->GetDashDistance() / DashMonster->GetDashSpeed() / Monster->CustomTimeDilation, nullptr, nullptr);
 	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &ULLL_MGA_Dash::OnCompleteCallBack);
 	MoveToLocationTask->ReadyForActivation();
+	
+	if (IsValid(DashMontage))
+	{
+		UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("DashMontage"), DashMontage, 1.0f);
+		PlayMontageTask->ReadyForActivation();
+	}
 
-	BP_ApplyGameplayEffectToOwner(DashEffect);
+	if (IsValid(DashEffect))
+	{
+		BP_ApplyGameplayEffectToOwner(DashEffect);
+	}
 }
 
 void ULLL_MGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
