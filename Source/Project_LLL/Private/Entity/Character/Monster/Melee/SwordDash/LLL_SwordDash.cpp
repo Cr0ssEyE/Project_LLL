@@ -63,7 +63,7 @@ void ALLL_SwordDash::Tick(float DeltaSeconds)
 				const FVector Location = DashDamageRangeBox->GetComponentLocation();
 				const FVector Extent = DashDamageRangeBox->GetScaledBoxExtent();
 				const FQuat Quat = DashDamageRangeBox->GetComponentQuat();
-				DrawDebugBox(GetWorld(), Location, Extent, Quat, FColor::Blue, false, 2.0f);
+				DrawDebugBox(GetWorld(), Location, Extent, Quat, FColor::Blue, false, 0.1f);
 			}
 		}
 	}
