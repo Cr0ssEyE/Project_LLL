@@ -68,6 +68,7 @@ void ALLL_MonsterSpawner::BeginPlay()
 	if (bSpawnByOwnerMonsterHealth)
 	{
 		SetOwner(OwnerMonster);
+		OwnerMonster->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::OwnerMonsterDeadHandle);
 		OwnerMonster->TakeDamageDelegate.AddDynamic(this, &ALLL_MonsterSpawner::OwnerMonsterDamagedHandle);
 	}
 }
@@ -171,6 +172,11 @@ void ALLL_MonsterSpawner::MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter)
 			Destroy();
 		}
 	}
+}
+
+void ALLL_MonsterSpawner::OwnerMonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter)
+{
+	Destroy();
 }
 
 void ALLL_MonsterSpawner::OwnerMonsterDamagedHandle(bool IsDOT)

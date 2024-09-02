@@ -43,6 +43,9 @@ private:
 	void MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter);
 
 	UFUNCTION()
+	void OwnerMonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter);
+	
+	UFUNCTION()
 	void OwnerMonsterDamagedHandle(bool IsDOT);
 
 	UPROPERTY(VisibleDefaultsOnly)
