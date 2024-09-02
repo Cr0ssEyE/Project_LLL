@@ -13,8 +13,6 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
-	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-
 	if (bIsBossMonster)
 	{
 		const ALLL_BossMonster* BossMonster = CastChecked<ALLL_BossMonster>(Monster);
@@ -41,7 +39,7 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	FTimerHandle ChargeTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(ChargeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-	}), MonsterAttributeSet->GetChargeTimer(), false);
+	}), Monster->GetChargeTimer(), false);
 
 	Monster->SetCharging(true);
 }

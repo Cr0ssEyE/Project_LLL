@@ -36,6 +36,14 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData4);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData5);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData6);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData7);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData8);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData9);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData10);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData11);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData12);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData13);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData14);
 
 protected:
 	virtual void CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data);
@@ -91,4 +99,28 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MonsterData6;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData7;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData8;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData9;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData10;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData11;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData12;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData13;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData14;
 };

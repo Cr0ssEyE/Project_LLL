@@ -3,11 +3,14 @@
 
 #include "Entity/Character/Monster/Boss/Base/LLL_BossMonster.h"
 
+#include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Entity/Character/Monster/Boss/Base/LLL_BossMonsterAIController.h"
 
 ALLL_BossMonster::ALLL_BossMonster()
 {
 	AIControllerClass = ALLL_BossMonsterAIController::StaticClass();
+
+	AttributeInitId = ATTRIBUTE_INIT_BOSS;
 }
 
 void ALLL_BossMonster::BeginPlay()

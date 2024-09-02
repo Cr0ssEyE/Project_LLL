@@ -38,13 +38,15 @@ protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	
 public:
+	virtual void Charge();
 	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
 	virtual void Dead() override;
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	virtual void ApplyStackedKnockBack() override;
+	
+	virtual float GetChargeTimer() const;
 
 	void Attack() const;
-	void Charge() const;
 	void RecognizePlayerToAroundMonster() const;
 	void ShowHitEffect();
 	
@@ -65,6 +67,7 @@ protected:
 	float StackedKnockBackedPower;
 	int32 Id;
 	uint8 bIsCharging : 1;
+	FName AttributeInitId;
 	
 public:
 	UFUNCTION()

@@ -67,6 +67,8 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	BleedingVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BleedingStatusEffect"));
 	BleedingVFXComponent->SetupAttachment(RootComponent);
 	BleedingVFXComponent->SetAutoActivate(false);
+
+	AttributeInitId = ATTRIBUTE_INIT_MONSTER;
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -144,7 +146,7 @@ void ALLL_MonsterBase::InitAttributeSet()
 	Super::InitAttributeSet();
 
 	const int32 Data = Id * 100 + Level;
-	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_MONSTER, Data, true);
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, AttributeInitId, Data, true);
 
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
 	MonsterBaseAIController->StartLogic();
@@ -203,6 +205,22 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 		}
 		
 		SetOwner(nullptr);
+	}
+}
+
+void ALLL_MonsterBase::Charge()
+{
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE)))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (DebugGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
+			}
+		}
+#endif
 	}
 }
 
@@ -376,6 +394,11 @@ void ALLL_MonsterBase::ApplyStackedKnockBack()
 	ResetKnockBackStack();
 }
 
+float ALLL_MonsterBase::GetChargeTimer() const
+{
+	return MonsterAttributeSet->GetChargeTimer();
+}
+
 void ALLL_MonsterBase::Attack() const
 {
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK)))
@@ -386,22 +409,6 @@ void ALLL_MonsterBase::Attack() const
 			if (DebugGameInstance->CheckMonsterAttackDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
-			}
-		}
-#endif
-	}
-}
-
-void ALLL_MonsterBase::Charge() const
-{
-	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE)))
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (DebugGameInstance->CheckMonsterAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
 			}
 		}
 #endif

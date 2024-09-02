@@ -3,14 +3,18 @@
 
 #include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
 
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_Monster_Id.h"
 #include "DataAsset/LLL_ManOfStrengthDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Enumeration/LLL_BossMonsterPatternEnumHelper.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -19,9 +23,7 @@ ALLL_ManOfStrength::ALLL_ManOfStrength()
 {
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_ManOfStrengthDataAsset>(PATH_MAN_OF_STRENGTH_DATA, EAssertionLevel::Check);
 
-	//임시로 다른 몬스터 데이터 들고오기
-	//추후 변경 예정
-	Id = ID_SWORD_DASH;
+	Id = ID_MAN_OF_STRENGTH;
 	
 	DashDamageRangeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	DashDamageRangeBox->SetCollisionProfileName(CP_INTERACTION);
@@ -60,8 +62,7 @@ void ALLL_ManOfStrength::InitAttributeSet()
 {
 	Super::InitAttributeSet();
 
-	// Todo : 추후 데이터화 예정
-	const float DashDamageRange = 600.0f;
+	const float DashDamageRange = MonsterAttributeSet->GetMonsterData3();
 	DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), DashDamageRange, DashDamageRange));
 }
 
@@ -94,11 +95,35 @@ void ALLL_ManOfStrength::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
+void ALLL_ManOfStrength::Charge()
+{
+	AAIController* AIController = CastChecked<AAIController>(GetController());
+	switch (static_cast<EBossMonsterPattern>(AIController->GetBlackboardComponent()->GetValueAsEnum(BBKEY_PATTERN)))
+	{
+	case EBossMonsterPattern::ManOfStrength_Dash:
+		ChargeTimer = MonsterAttributeSet->GetChargeTimer();
+		break;
+		
+	case EBossMonsterPattern::ManOfStrength_Shockwave:
+		ChargeTimer = MonsterAttributeSet->GetMonsterData4();
+		break;
+		
+	case EBossMonsterPattern::ManOfStrength_SnapOtherMonster:
+		ChargeTimer = MonsterAttributeSet->GetMonsterData14();
+		break;
+		
+	case EBossMonsterPattern::ManOfStrength_ApneaInAttack:
+		ChargeTimer = MonsterAttributeSet->GetMonsterData9();
+		break;
+	}
+	
+	Super::Charge();
+}
+
 void ALLL_ManOfStrength::Dash()
 {
-	// Todo : 추후 데이터화 예정
-	DashDistance = 1200.0f;
-	DashSpeed = 1800.0f;
+	DashDistance = MonsterAttributeSet->GetMonsterData1();
+	DashSpeed = MonsterAttributeSet->GetMonsterData2();
 	
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_DASH)))
 	{
@@ -132,9 +157,8 @@ void ALLL_ManOfStrength::Shockwave()
 
 void ALLL_ManOfStrength::AttackInApnea()
 {
-	// Todo : 추후 데이터화 예정
-	DashDistance = 300.0f;
-	DashSpeed = 1800.0f;
+	DashDistance = MonsterAttributeSet->GetMonsterData5();
+	DashSpeed = MonsterAttributeSet->GetMonsterData6();
 	
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MAN_OF_STRENGTH_ATTACK_IN_APNEA)))
 	{

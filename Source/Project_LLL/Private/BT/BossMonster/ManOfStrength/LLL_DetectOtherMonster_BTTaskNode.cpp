@@ -8,6 +8,8 @@
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Game/LLL_DebugGameInstance.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 
 ULLL_DetectOtherMonster_BTTaskNode::ULLL_DetectOtherMonster_BTTaskNode()
 {
@@ -17,13 +19,12 @@ ULLL_DetectOtherMonster_BTTaskNode::ULLL_DetectOtherMonster_BTTaskNode()
 EBTNodeResult::Type ULLL_DetectOtherMonster_BTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
-
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+	const float DetectRadius = MonsterAttributeSet->GetMonsterData11();
+	
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(Monster);
-
-	// Todo : 추후 데이터화 예정
-	const float DetectRadius = 2000.0f;
 	
 	GetWorld()->SweepMultiByChannel(
 		HitResults,
@@ -35,17 +36,33 @@ EBTNodeResult::Type ULLL_DetectOtherMonster_BTTaskNode::ExecuteTask(UBehaviorTre
 		Params
 		);
 
+	FColor DebugColor = FColor::Red;
+	bool Detected = false;
 	for (auto HitResult : HitResults)
 	{
 		ALLL_MonsterBase* OtherMonster = Cast<ALLL_MonsterBase>(HitResult.GetActor());
 		if (IsValid(OtherMonster) && !OtherMonster->CheckCharacterIsDead())
 		{
 			OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_OTHER_MONSTER, OtherMonster);
-			DrawDebugSphere(GetWorld(), Monster->GetActorLocation(), DetectRadius, 16, FColor::Green, false, 2.0f);
-			return EBTNodeResult::Succeeded;
+			DebugColor =  FColor::Green;
+			Detected = true;
 		}
 	}
 	
-	DrawDebugSphere(GetWorld(), Monster->GetActorLocation(), DetectRadius, 16, FColor::Red, false, 2.0f);
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (DebugGameInstance->CheckMonsterAttackDebug())
+		{
+			DrawDebugSphere(GetWorld(), Monster->GetActorLocation(), DetectRadius, 16, DebugColor, false, 2.0f);
+		}
+	}
+#endif
+
+	if (Detected)
+	{
+		return EBTNodeResult::Succeeded;
+	}
+	
 	return EBTNodeResult::Failed;
 }

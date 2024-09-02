@@ -21,7 +21,11 @@ public:
 	ALLL_ManOfStrength();
 	
 	FORCEINLINE virtual void SetDashing(bool IsDashing) override { bIsDashing = IsDashing; }
+	
 	FORCEINLINE virtual bool IsDashing() const override { return bIsDashing; }
+	virtual float GetDashDistance() const override { return DashDistance; }
+	virtual float GetDashSpeed() const override { return DashSpeed; }
+	virtual float GetChargeTimer() const override { return ChargeTimer; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -32,12 +36,9 @@ protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
 public:
+	virtual void Charge() override;
 	virtual void Dash() override;
 
-	FORCEINLINE virtual float GetDashDistance() const override { return DashDistance; }
-	FORCEINLINE virtual float GetDashSpeed() const override { return DashSpeed; }
-
-public:
 	void Shockwave();
 	void AttackInApnea();
 	void SnapOtherMonster() const;
@@ -50,12 +51,10 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UBoxComponent> DashDamageRangeBox;
 
-	UPROPERTY()
+	UPROPERTY(VisibleDefaultsOnly)
 	uint8 bIsDashing : 1;
 	
-	UPROPERTY()
 	float DashDistance;
-	
-	UPROPERTY()
 	float DashSpeed;
+	float ChargeTimer;
 };

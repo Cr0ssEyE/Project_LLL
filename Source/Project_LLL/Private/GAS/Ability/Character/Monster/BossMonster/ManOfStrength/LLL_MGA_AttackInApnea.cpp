@@ -5,20 +5,22 @@
 
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 
 void ULLL_MGA_AttackInApnea::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	int32 AttackCount = 4;
+	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+	int32 AttackCount = MonsterAttributeSet->GetMonsterData7();
 	
 	if (!IsValid(AttackInApneaStartMontage))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s 어빌리티에 몽타주가 없음"), *GetName())
 		return;
 	}
-
-	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+	
 	Monster->PlayAnimMontage(AttackInApneaStartMontage);
 	
 	FTimerHandle AttackInApneaStartTimerHandle;
