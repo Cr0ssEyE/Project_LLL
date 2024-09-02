@@ -209,6 +209,9 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 {
 	Super::Damaged(Attacker, IsDOT);
+	
+	ShowHitEffect();
+	RecognizePlayerToAroundMonster();
 
 	if (bIsAttacking)
 	{
@@ -248,23 +251,6 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 		TempNiagaraComponent->DestroyComponent();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
-
-	if (!IsValid(HitEffectOverlayMaterialInstance))
-	{
-		HitEffectOverlayMaterialInstance = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
-		GetMesh()->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
-		for (auto ChildComponent : GetMesh()->GetAttachChildren())
-		{
-			if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ChildComponent))
-			{
-				StaticMeshComponent->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
-			}
-		}
-	}
-
-	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 1.f);
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
-	RecognizePlayerToAroundMonster();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
@@ -468,6 +454,25 @@ void ALLL_MonsterBase::RecognizePlayerToAroundMonster() const
 		}
 	}
 #endif
+}
+
+void ALLL_MonsterBase::ShowHitEffect()
+{
+	if (!IsValid(HitEffectOverlayMaterialInstance))
+	{
+		HitEffectOverlayMaterialInstance = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
+		GetMesh()->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
+		for (auto ChildComponent : GetMesh()->GetAttachChildren())
+		{
+			if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ChildComponent))
+			{
+				StaticMeshComponent->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
+			}
+		}
+	}
+
+	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 1.f);
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)

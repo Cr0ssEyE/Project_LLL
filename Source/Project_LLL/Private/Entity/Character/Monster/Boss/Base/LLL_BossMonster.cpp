@@ -16,3 +16,9 @@ void ALLL_BossMonster::BeginPlay()
 
 	BossMonsterDataAsset = Cast<ULLL_BossMonsterDataAsset>(MonsterBaseDataAsset);
 }
+
+void ALLL_BossMonster::Damaged(AActor* Attacker, bool IsDOT)
+{
+	ShowHitEffect();
+	RecognizePlayerToAroundMonster();
+}

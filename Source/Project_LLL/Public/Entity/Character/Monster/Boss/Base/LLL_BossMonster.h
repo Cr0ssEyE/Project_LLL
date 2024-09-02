@@ -25,6 +25,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+protected:
+	virtual void Damaged(AActor* Attacker, bool IsDOT) override;
+
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BossMonsterDataAsset> BossMonsterDataAsset;
 

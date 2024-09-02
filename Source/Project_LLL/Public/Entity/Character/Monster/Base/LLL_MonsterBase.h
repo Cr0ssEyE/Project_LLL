@@ -46,6 +46,7 @@ public:
 	void Attack() const;
 	void Charge() const;
 	void RecognizePlayerToAroundMonster() const;
+	void ShowHitEffect();
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
