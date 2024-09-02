@@ -42,6 +42,9 @@ private:
 	UFUNCTION()
 	void MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter);
 
+	UFUNCTION()
+	void OwnerMonsterDamagedHandle(bool IsDOT);
+
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_MonsterSpawnerDataAsset> MonsterSpawnerDataAsset;
 	
@@ -71,4 +74,16 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	int32 LastGroup;
+
+	UPROPERTY(EditAnywhere)
+	uint8 bSpawnByOwnerMonsterHealth : 1;
+
+	UPROPERTY(EditAnywhere, meta=(EditCondition = "bSpawnByOwnerMonsterHealth == true", EditConditionHides))
+	TObjectPtr<ALLL_MonsterBase> OwnerMonster;
+	
+	UPROPERTY(EditAnywhere, meta=(EditCondition = "bSpawnByOwnerMonsterHealth == true", EditConditionHides))
+	float SpawnStartHealthRate;
+
+	UPROPERTY(EditAnywhere, meta=(EditCondition = "bSpawnByOwnerMonsterHealth == true", EditConditionHides))
+	float HealthRateSpawnOffset;
 };
