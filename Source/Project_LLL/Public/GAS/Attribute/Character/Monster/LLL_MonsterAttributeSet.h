@@ -56,6 +56,7 @@ public:
 	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ThrowSpeed, MonsterData11);
 	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, OtherMonsterDetectRange, MonsterData12);
 	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, PredictionRate, MonsterData13);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ThrowOffencePower, MonsterData14);
 
 protected:
 	virtual void CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data);
