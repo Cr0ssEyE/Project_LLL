@@ -11,5 +11,5 @@ enum class EBossMonsterPattern : uint8
 	ManOfStrength_Shockwave,
 	ManOfStrength_Dash,
 	ManOfStrength_SnapOtherMonster,
-	ManOfStrength_ApneaInAttack
+	ManOfStrength_AttackInApnea
 };

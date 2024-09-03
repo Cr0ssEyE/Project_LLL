@@ -13,7 +13,7 @@ void ULLL_MGA_AttackInApnea::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
 	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-	int32 AttackCount = MonsterAttributeSet->GetMonsterData7();
+	int32 AttackCount = MonsterAttributeSet->GetManOfStrengthAttackInApneaAttackCount();
 	
 	if (!IsValid(AttackInApneaStartMontage))
 	{

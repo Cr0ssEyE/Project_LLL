@@ -30,7 +30,7 @@ void ULLL_MGA_ThrowMonster::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 		FVector FloorStartLocation = OtherMonster->GetActorLocation();
 		FloorStartLocation.Z = 0.0f;
-		const float PredictionRate = MonsterAttributeSet->GetMonsterData12();
+		const float PredictionRate = MonsterAttributeSet->GetManOfStrengthPredictionRate();
 		const FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(Monster, Player, PlayerAttributeSet->GetMoveSpeed(), PredictionRate);
 		FVector FloorEndLocation = PredictedLocation;
 		FloorEndLocation.Z = 0.0f;
@@ -40,7 +40,7 @@ void ULLL_MGA_ThrowMonster::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		TargetLocation.Z = PredictedLocation.Z;
 		const FVector Direction = (TargetLocation - OtherMonster->GetActorLocation()).GetSafeNormal();
 		
-		float Speed = MonsterAttributeSet->GetMonsterData10();
+		float Speed = MonsterAttributeSet->GetManOfStrengthThrowSpeed();
 		OtherMonster->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		CastChecked<ULLL_MonsterBaseAnimInstance>(OtherMonster->GetCharacterAnimInstance())->SetSnapped(false);
 		OtherMonster->GetMesh()->SetCollisionProfileName(CP_THREW_MONSTER);

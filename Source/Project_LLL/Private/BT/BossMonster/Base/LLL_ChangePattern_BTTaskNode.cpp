@@ -43,7 +43,7 @@ EBTNodeResult::Type ULLL_ChangePattern_BTTaskNode::ExecuteTask(UBehaviorTreeComp
 	else if (HealthRate <= 30.0f)
 	{
 		FirstPattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_Dash);
-		LastPattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_ApneaInAttack);
+		LastPattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_AttackInApnea);
 	}
 
 	const uint8 Pattern = FMath::RandRange(FirstPattern, LastPattern);

@@ -34,7 +34,8 @@ public:
 	
 	virtual void Dash() override;
 	
-	virtual float GetDashDistance() const override;
+	virtual float GetMaxDashDistance() const override;
+	virtual float GetMinDashDistance() const override;
 	virtual float GetDashSpeed() const override;
 
 protected:

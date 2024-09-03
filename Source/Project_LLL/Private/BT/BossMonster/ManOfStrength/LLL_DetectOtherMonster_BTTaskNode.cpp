@@ -20,7 +20,7 @@ EBTNodeResult::Type ULLL_DetectOtherMonster_BTTaskNode::ExecuteTask(UBehaviorTre
 {
 	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-	const float DetectRadius = MonsterAttributeSet->GetMonsterData11();
+	const float DetectRadius = MonsterAttributeSet->GetManOfStrengthOtherMonsterDetectRange();
 	
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params;

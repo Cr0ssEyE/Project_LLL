@@ -23,7 +23,8 @@ public:
 	FORCEINLINE virtual void SetDashing(bool IsDashing) override { bIsDashing = IsDashing; }
 	
 	FORCEINLINE virtual bool IsDashing() const override { return bIsDashing; }
-	virtual float GetDashDistance() const override { return DashDistance; }
+	virtual float GetMaxDashDistance() const override { return DashDistance; }
+	virtual float GetMinDashDistance() const override { return DashDistance; }
 	virtual float GetDashSpeed() const override { return DashSpeed; }
 	virtual float GetChargeTimer() const override { return ChargeTimer; }
 
@@ -39,7 +40,7 @@ public:
 	virtual void Charge() override;
 	virtual void Dash() override;
 
-	void Shockwave();
+	void Shockwave() const;
 	void AttackInApnea();
 	void SnapOtherMonster() const;
 	void ThrowOtherMonster() const;

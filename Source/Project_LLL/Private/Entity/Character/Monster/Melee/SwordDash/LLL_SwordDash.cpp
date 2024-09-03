@@ -73,8 +73,9 @@ void ALLL_SwordDash::Tick(float DeltaSeconds)
 void ALLL_SwordDash::InitAttributeSet()
 {
 	Super::InitAttributeSet();
-	
-	DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), MonsterAttributeSet->GetMonsterData4(), MonsterAttributeSet->GetMonsterData4()));
+
+	const float DashDamageRange = MonsterAttributeSet->GetSwordDashDashDamageRange();
+	DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), DashDamageRange, DashDamageRange));
 }
 
 void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -122,12 +123,17 @@ void ALLL_SwordDash::Dash()
 	}
 }
 
-float ALLL_SwordDash::GetDashDistance() const
+float ALLL_SwordDash::GetMaxDashDistance() const
 {
-	return MonsterAttributeSet->GetMonsterData1();
+	return MonsterAttributeSet->GetSwordDashMaxDashDistance();
+}
+
+float ALLL_SwordDash::GetMinDashDistance() const
+{
+	return MonsterAttributeSet->GetSwordDashMinDashDistance();
 }
 
 float ALLL_SwordDash::GetDashSpeed() const
 {
-	return MonsterAttributeSet->GetMonsterData6();
+	return MonsterAttributeSet->GetSwordDashDashSpeed();
 }

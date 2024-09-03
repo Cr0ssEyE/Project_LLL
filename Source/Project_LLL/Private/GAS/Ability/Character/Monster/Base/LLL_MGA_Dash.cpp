@@ -26,7 +26,7 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	FHitResult StaticResult;
 	FHitResult PlayerResult;
 	const FVector SweepStartLocation = Monster->GetActorLocation();
-	const FVector SweepEndLocation = SweepStartLocation + Monster->GetActorForwardVector() * DashMonster->GetDashDistance();
+	const FVector SweepEndLocation = SweepStartLocation + Monster->GetActorForwardVector() * DashMonster->GetMaxDashDistance();
 	const FQuat SweepQuat = Monster->GetActorQuat();
 	constexpr ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
 	constexpr ECollisionChannel PlayerTraceChannel = ECC_PLAYER_CHECK;
@@ -58,9 +58,18 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			const float StaticDistance = Monster->GetDistanceTo(StaticResult.GetActor());
 			const float PlayerDistance = Monster->GetDistanceTo(PlayerResult.GetActor());
 
-			DashLocation = (StaticDistance <= PlayerDistance) ? StaticResult.Location : PlayerResult.Location;
-
-			// Todo : 최소 돌진 거리 처리 로직 구현 필요
+			if (StaticDistance <= PlayerDistance)
+			{
+				DashLocation = StaticResult.Location;
+			}
+			else if (PlayerDistance < DashMonster->GetMinDashDistance())
+			{
+				DashLocation = SweepStartLocation + Monster->GetActorForwardVector() * DashMonster->GetMinDashDistance();
+			}
+			else
+			{
+				DashLocation = PlayerResult.Location;
+			}
 		}
 		else
 		{
@@ -69,12 +78,20 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	}
 	else if (PlayerResult.GetActor() && !bPassPlayer)
 	{
-		DashLocation = PlayerResult.Location;
+		const float PlayerDistance = Monster->GetDistanceTo(PlayerResult.GetActor());
+		if (PlayerDistance < DashMonster->GetMinDashDistance())
+		{
+			DashLocation = SweepStartLocation + Monster->GetActorForwardVector() * DashMonster->GetMinDashDistance();
+		}
+		else
+		{
+			DashLocation = PlayerResult.Location;
+		}
 	}
 
 	DashMonster->SetDashing(true);
 
-	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, DashMonster->GetDashDistance() / DashMonster->GetDashSpeed() / Monster->CustomTimeDilation, nullptr, nullptr);
+	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, DashMonster->GetMaxDashDistance() / DashMonster->GetDashSpeed() / Monster->CustomTimeDilation, nullptr, nullptr);
 	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &ULLL_MGA_Dash::OnCompleteCallBack);
 	MoveToLocationTask->ReadyForActivation();
 	

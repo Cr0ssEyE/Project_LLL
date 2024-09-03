@@ -182,25 +182,19 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 		GetMesh()->SetCollisionProfileName(CP_MONSTER);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 		CastChecked<ALLL_MonsterBaseAIController>(GetController())->StartLogic();
-
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
 	
 		const ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(GetOwner());
-		if (IsValid(ManOfStrength))
+		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Other);
+		if (IsValid(ManOfStrength) && IsValid(Player))
 		{
 			const ULLL_ManOfStrengthDataAsset* ManOfStrengthDataAsset = CastChecked<ULLL_ManOfStrengthDataAsset>(ManOfStrength->GetCharacterDataAsset());
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->ThrowDamageEffect, ManOfStrength->GetCharacterLevel(), EffectContextHandle);
-			if (EffectSpecHandle.IsValid())
+			
+			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+			EffectContextHandle.AddSourceObject(this);
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->ThrowDamageEffect, Level, EffectContextHandle);
+			if(EffectSpecHandle.IsValid())
 			{
-				// Todo : 추후 데이터화 예정
-				const float OffencePower = 10.0f;
-				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
-				if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other))
-				{
-					UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *Other->GetName())
-					ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
-				}
+				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());
 			}
 		}
 		

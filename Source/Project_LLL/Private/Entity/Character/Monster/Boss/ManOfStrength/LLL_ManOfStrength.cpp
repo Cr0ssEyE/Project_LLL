@@ -62,7 +62,7 @@ void ALLL_ManOfStrength::InitAttributeSet()
 {
 	Super::InitAttributeSet();
 
-	const float DashDamageRange = MonsterAttributeSet->GetMonsterData3();
+	const float DashDamageRange = MonsterAttributeSet->GetManOfStrengthDashDamageRange();
 	DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), DashDamageRange, DashDamageRange));
 }
 
@@ -105,15 +105,14 @@ void ALLL_ManOfStrength::Charge()
 		break;
 		
 	case EBossMonsterPattern::ManOfStrength_Shockwave:
-		ChargeTimer = MonsterAttributeSet->GetMonsterData4();
+		ChargeTimer = MonsterAttributeSet->GetManOfStrengthShockwaveChargeTimer();
 		break;
 		
 	case EBossMonsterPattern::ManOfStrength_SnapOtherMonster:
-		ChargeTimer = MonsterAttributeSet->GetMonsterData14();
 		break;
 		
-	case EBossMonsterPattern::ManOfStrength_ApneaInAttack:
-		ChargeTimer = MonsterAttributeSet->GetMonsterData9();
+	case EBossMonsterPattern::ManOfStrength_AttackInApnea:
+		ChargeTimer = MonsterAttributeSet->GetManOfStrengthAttackInApneaChargeTimer();
 		break;
 	}
 	
@@ -122,8 +121,8 @@ void ALLL_ManOfStrength::Charge()
 
 void ALLL_ManOfStrength::Dash()
 {
-	DashDistance = MonsterAttributeSet->GetMonsterData1();
-	DashSpeed = MonsterAttributeSet->GetMonsterData2();
+	DashDistance = MonsterAttributeSet->GetManOfStrengthDashDistance();
+	DashSpeed = MonsterAttributeSet->GetManOfStrengthDashSpeed();
 	
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_DASH)))
 	{
@@ -139,7 +138,7 @@ void ALLL_ManOfStrength::Dash()
 	}
 }
 
-void ALLL_ManOfStrength::Shockwave()
+void ALLL_ManOfStrength::Shockwave() const
 {
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MAN_OF_STRENGTH_SHOCKWAVE)))
 	{
@@ -157,8 +156,8 @@ void ALLL_ManOfStrength::Shockwave()
 
 void ALLL_ManOfStrength::AttackInApnea()
 {
-	DashDistance = MonsterAttributeSet->GetMonsterData5();
-	DashSpeed = MonsterAttributeSet->GetMonsterData6();
+	DashDistance = MonsterAttributeSet->GetManOfStrengthAttackInApneaDashDistance();
+	DashSpeed = MonsterAttributeSet->GetManOfStrengthAttackInApneaDashSpeed();
 	
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MAN_OF_STRENGTH_ATTACK_IN_APNEA)))
 	{
