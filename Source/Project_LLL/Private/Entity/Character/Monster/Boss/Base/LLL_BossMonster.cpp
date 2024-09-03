@@ -18,6 +18,8 @@ void ALLL_BossMonster::BeginPlay()
 	Super::BeginPlay();
 
 	BossMonsterDataAsset = Cast<ULLL_BossMonsterDataAsset>(MonsterBaseDataAsset);
+	
+	CurrentHavePatterns = BossMonsterDataAsset->DefaultPatterns;
 }
 
 void ALLL_BossMonster::Damaged(AActor* Attacker, bool IsDOT)

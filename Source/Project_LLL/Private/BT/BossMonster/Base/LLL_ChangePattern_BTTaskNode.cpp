@@ -25,31 +25,36 @@ EBTNodeResult::Type ULLL_ChangePattern_BTTaskNode::ExecuteTask(UBehaviorTreeComp
 	const float CurrentHealth = MonsterAttributeSet->GetCurrentHealth();
 	const float HealthRate = CurrentHealth / MaxHealth * 100.0f;
 
-	uint8 FirstPattern = 0;
-	uint8 LastPattern = 0;
+	const ULLL_BossMonsterDataAsset* BossMonsterDataAsset = CastChecked<ULLL_BossMonsterDataAsset>(BossMonster->GetCharacterDataAsset());
+	TArray<EBossMonsterPattern> CurrentHavePatterns = BossMonster->GetCurrentHavePatterns();
 
-	// Todo : 다른 보스 몬스터의 패턴 확장성을 위한 개선 필요
-	// Todo : 추후 데이터화 예정
-	if (HealthRate <= 100.0f && HealthRate > 70.0f)
+	for (auto AddPattern : BossMonsterDataAsset->AddPatterns)
 	{
-		FirstPattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_Shockwave);
-		LastPattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_Dash);
+		if (HealthRate <= AddPattern.Key && !CurrentHavePatterns.Contains(AddPattern.Value))
+		{
+			CurrentHavePatterns.Emplace(AddPattern.Value);
+		}
 	}
-	else if (HealthRate <= 70.0f && HealthRate > 30.0f)
+	
+	for (auto RemovePattern : BossMonsterDataAsset->RemovePatterns)
 	{
-		FirstPattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_Shockwave);
-		LastPattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_SnapOtherMonster);
-	}
-	else if (HealthRate <= 30.0f)
-	{
-		FirstPattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_Dash);
-		LastPattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_AttackInApnea);
+		if (HealthRate <= RemovePattern.Key && CurrentHavePatterns.Contains(RemovePattern.Value))
+		{
+			CurrentHavePatterns.Remove(RemovePattern.Value);
+		}
 	}
 
-	const uint8 Pattern = FMath::RandRange(FirstPattern, LastPattern);
-	//const uint8 Pattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_Dash);
-	OwnerComp.GetBlackboardComponent()->SetValueAsEnum(BBKEY_PATTERN, Pattern);
-	BossMonster->SetChargeMontageKey(static_cast<EBossMonsterPattern>(Pattern));
+	BossMonster->SetCurrentHavePatterns(CurrentHavePatterns);
 
-	return EBTNodeResult::Succeeded;
+	if (CurrentHavePatterns.Num() > 0)
+	{
+		uint8 Pattern = static_cast<uint8>(CurrentHavePatterns[FMath::RandRange(0, CurrentHavePatterns.Num() - 1)]);
+		//const uint8 Pattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_Dash);
+		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(BBKEY_PATTERN, Pattern);
+		BossMonster->SetChargeMontageKey(static_cast<EBossMonsterPattern>(Pattern));
+		return EBTNodeResult::Succeeded;
+	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("패턴이 존재하지 않습니다"))
+	return EBTNodeResult::Failed;
 }
