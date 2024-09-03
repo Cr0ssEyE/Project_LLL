@@ -34,7 +34,7 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BossMonsterDataAsset> BossMonsterDataAsset;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleDefaultsOnly)
 	EBossMonsterPattern ChargeMontageKey;
 
 	UPROPERTY(VisibleAnywhere)

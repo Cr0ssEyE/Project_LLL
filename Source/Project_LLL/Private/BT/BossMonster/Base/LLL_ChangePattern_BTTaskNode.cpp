@@ -48,8 +48,14 @@ EBTNodeResult::Type ULLL_ChangePattern_BTTaskNode::ExecuteTask(UBehaviorTreeComp
 
 	if (CurrentHavePatterns.Num() > 0)
 	{
-		uint8 Pattern = static_cast<uint8>(CurrentHavePatterns[FMath::RandRange(0, CurrentHavePatterns.Num() - 1)]);
-		//const uint8 Pattern = static_cast<uint8>(EBossMonsterPattern::ManOfStrength_Dash);
+		uint8 Pattern;
+		
+		do
+		{
+			Pattern = static_cast<uint8>(CurrentHavePatterns[FMath::RandRange(0, CurrentHavePatterns.Num() - 1)]);
+		}
+		while (CurrentHavePatterns.Num() != 1 && Pattern == OwnerComp.GetBlackboardComponent()->GetValueAsEnum(BBKEY_PATTERN));
+		
 		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(BBKEY_PATTERN, Pattern);
 		BossMonster->SetChargeMontageKey(static_cast<EBossMonsterPattern>(Pattern));
 		return EBTNodeResult::Succeeded;
