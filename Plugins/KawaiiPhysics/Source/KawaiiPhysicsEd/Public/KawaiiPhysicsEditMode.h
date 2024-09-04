@@ -1,31 +1,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UnrealWidget.h"
-#include "KawaiiPhysicsEditModeBase.h"
 #include "AnimNodeEditMode.h"
 #include "AnimGraphNode_KawaiiPhysics.h"
 #include "AnimNode_KawaiiPhysics.h"
 
-#if	ENGINE_MAJOR_VERSION == 5
 #define UE_WIDGET UE::Widget
-#endif
 
 class FEditorViewportClient;
 class FPrimitiveDrawInterface;
 class USkeletalMeshComponent;
 struct FViewportClick;
 
-#if	ENGINE_MAJOR_VERSION == 5
 class FKawaiiPhysicsEditMode : public FAnimNodeEditMode
-#else
-class FKawaiiPhysicsEditMode : public FKawaiiPhysicsEditModeBase
-#endif
 {
 public:
-
 	FKawaiiPhysicsEditMode();
-	
+
 	/** IAnimNodeEditMode interface */
 	virtual void EnterMode(class UAnimGraphNode_Base* InEditorNode, struct FAnimNode_Base* InRuntimeNode) override;
 	virtual void ExitMode() override;
@@ -38,28 +29,35 @@ public:
 
 	/** FEdMode interface */
 	virtual void Render(const FSceneView* View, FViewport* Viewport, FPrimitiveDrawInterface* PDI) override;
-	virtual bool HandleClick(FEditorViewportClient* InViewportClient, HHitProxy* HitProxy, const FViewportClick& Click) override;
+	virtual bool HandleClick(FEditorViewportClient* InViewportClient, HHitProxy* HitProxy,
+	                         const FViewportClick& Click) override;
 	virtual bool GetCustomDrawingCoordinateSystem(FMatrix& InMatrix, void* InData) override;
-	virtual bool InputKey(FEditorViewportClient* InViewportClient, FViewport* InViewport, FKey InKey, EInputEvent InEvent) override;
+	virtual bool InputKey(FEditorViewportClient* InViewportClient, FViewport* InViewport, FKey InKey,
+	                      EInputEvent InEvent) override;
 	virtual bool ShouldDrawWidget() const override;
-	virtual void DrawHUD(FEditorViewportClient* ViewportClient, FViewport* Viewport, const FSceneView* View, FCanvas* Canvas) override;
-
+	virtual void DrawHUD(FEditorViewportClient* ViewportClient, FViewport* Viewport, const FSceneView* View,
+	                     FCanvas* Canvas) override;
 
 protected:
 	void OnExternalNodePropertyChange(FPropertyChangedEvent& InPropertyEvent);
 	FDelegateHandle NodePropertyDelegateHandle;
-	
+
 	void OnLimitDataAssetPropertyChange(FPropertyChangedEvent& InPropertyEvent);
+	bool IsSelectAnimNodeCollision() const;
 	FDelegateHandle LimitsDataAssetPropertyDelegateHandle;
-	
+
 private:
+	void RenderModifyBones(FPrimitiveDrawInterface* PDI) const;
+	void RenderLimitAngle(FPrimitiveDrawInterface* PDI) const;
 
 	/** Render each collisions */
 	void RenderSphericalLimits(FPrimitiveDrawInterface* PDI) const;
 	void RenderCapsuleLimit(FPrimitiveDrawInterface* PDI) const;
+	void RenderBoxLimit(FPrimitiveDrawInterface* PDI) const;
 	void RenderPlanerLimit(FPrimitiveDrawInterface* PDI);
 
 	void RenderBoneConstraint(FPrimitiveDrawInterface* PDI) const;
+	void RenderExternalForces(FPrimitiveDrawInterface* PDI) const;
 
 	/** Helper function for GetWidgetLocation() and joint rendering */
 	FVector GetWidgetLocation(ECollisionLimitType CollisionType, int32 Index) const;
@@ -75,10 +73,10 @@ private:
 	FCollisionLimitBase* GetSelectCollisionLimitGraph() const;
 
 	/** Draw text func for DrawHUD */
-	void DrawTextItem(FText Text, FCanvas* Canvas, float X, float& Y, float FontHeight);
-	void Draw3DTextItem(FText Text, FCanvas* Canvas, const FSceneView* View, const FViewport* Viewport, FVector Location);
+	void DrawTextItem(const FText& Text, FCanvas* Canvas, float X, float& Y, float FontHeight);
+	void Draw3DTextItem(const FText& Text, FCanvas* Canvas, const FSceneView* View, const FViewport* Viewport,
+	                    FVector Location);
 
-private:
 	/** Cache the typed nodes */
 	struct FAnimNode_KawaiiPhysics* RuntimeNode;
 	UAnimGraphNode_KawaiiPhysics* GraphNode;
@@ -86,8 +84,11 @@ private:
 	/** The current bone selection mode */
 	ECollisionLimitType SelectCollisionType = ECollisionLimitType::None;
 	int32 SelectCollisionIndex = -1;
-	bool SelectCollisionIsFromDataAsset;
+	ECollisionSourceType SelectCollisionSourceType = ECollisionSourceType::AnimNode;
 
 	// storing current widget mode 
 	mutable UE_WIDGET::EWidgetMode CurWidgetMode;
+
+	// physics asset body material
+	TObjectPtr<UMaterialInstanceDynamic> PhysicsAssetBodyMaterial;
 };
