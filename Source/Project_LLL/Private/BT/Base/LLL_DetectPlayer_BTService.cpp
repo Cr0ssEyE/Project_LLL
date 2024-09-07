@@ -59,8 +59,8 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 
 	if (DetectPlayer && !Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER)))
 	{
-		Monster->RecognizePlayerToAroundMonster();
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_PLAYER, Player);
+		Monster->RecognizePlayerToAroundMonster();
 	}
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW, IsInFieldOfView);
 

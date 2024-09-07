@@ -292,6 +292,34 @@ void ALLL_PlayerBase::RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObje
 	}
 }
 
+void ALLL_PlayerBase::StartChargeFeather()
+{
+	ChargedFeatherCount = 1;
+	GetWorldTimerManager().ClearTimer(ChargeFeatherTimerHandle);
+	GetWorldTimerManager().SetTimer(ChargeFeatherTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		ChargedFeatherCount++;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
+		// 추후 데이터화 예정
+		if (ChargedFeatherCount == 10)
+		{
+			GetWorldTimerManager().PauseTimer(ChargeFeatherTimerHandle);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 완료")));
+		}
+	}), 1.0f, true);
+}
+
+void ALLL_PlayerBase::AddRangeFeatherTargets(AActor* Target)
+{
+	RangeFeatherTargets.Emplace(Target);
+}
+
+TArray<AActor*> ALLL_PlayerBase::GetRangeFeatherTargetsAndClear()
+{
+	TArray<AActor*> TempRangeFeatherTargets = RangeFeatherTargets;
+	RangeFeatherTargets.Empty();
+	return TempRangeFeatherTargets;
+}
+
 FVector ALLL_PlayerBase::CheckMouseLocation()
 {
 	const APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);

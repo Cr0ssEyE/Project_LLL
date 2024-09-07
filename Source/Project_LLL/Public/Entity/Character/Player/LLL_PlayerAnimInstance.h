@@ -20,6 +20,7 @@ class PROJECT_LLL_API ULLL_PlayerAnimInstance : public ULLL_BaseCharacterAnimIns
 
 public:
 	FORCEINLINE void SetDash(bool IsDashing) { bIsDashing = IsDashing; }
+	FORCEINLINE bool IsDashing() const { return bIsDashing; }
 
 	FDeadMotionEndedDelegate DeadMotionEndedDelegate;
 	

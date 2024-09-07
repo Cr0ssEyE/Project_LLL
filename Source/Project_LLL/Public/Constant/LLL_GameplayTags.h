@@ -75,9 +75,15 @@
 // 소드 대시 게임플레이 태그
 #define TAG_GAS_SWORD_DASH_DASH FGameplayTag::RequestGameplayTag(FName("Character.Monster.Melee.SwordDash.Action.Dash"))
 
+// 힘 있는 자 게임플레이 태그
+#define TAG_GAS_MAN_OF_STRENGTH_SHOCKWAVE FGameplayTag::RequestGameplayTag(FName("Character.Monster.Boss.ManOfStrength.Action.Shockwave"))
+#define TAG_GAS_MAN_OF_STRENGTH_ATTACK_IN_APNEA FGameplayTag::RequestGameplayTag(FName("Character.Monster.Boss.ManOfStrength.Action.AttackInApnea"))
+
 // 시스템 게임플레이 태그
 #define TAG_GAS_SYSTEM_DROP_GOLD FGameplayTag::RequestGameplayTag(FName("System.Drop.Gold"))
 #define TAG_GAS_HAVE_FEATHER_AMPLIFICATION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.FeatherAmplification"))
+#define TAG_GAS_HAVE_CHARGED_FEATHER FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.ChargedFeather"))
+#define TAG_GAS_HAVE_CIRCULAR_FEATHER FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.CircularFeather"))
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))

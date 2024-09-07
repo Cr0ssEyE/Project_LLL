@@ -55,5 +55,7 @@ void ULLL_MoveTo_BTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	const FVector Direction = PlayerBase->GetActorLocation() - MonsterBase->GetActorLocation();
 	const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
 	const float TurnSpeed = MonsterAttributeSet->GetTurnSpeed();
-	MonsterBase->SetActorRotation(FMath::RInterpTo(MonsterBase->GetActorRotation(), Rotation, GetWorld()->GetDeltaSeconds(), TurnSpeed));
+	FRotator CalculatedRotation = FMath::RInterpTo(MonsterBase->GetActorRotation(), Rotation, GetWorld()->GetDeltaSeconds(), TurnSpeed);
+	CalculatedRotation.Pitch = 0.0f;
+	MonsterBase->SetActorRotation(CalculatedRotation);
 }

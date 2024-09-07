@@ -33,29 +33,14 @@ void ALLL_ThrownFeather::BeginPlay()
 	ThrownObjectAttributeSet = ThrownFeatherAttributeSet;
 
 	HitCollisionBox->SetBoxExtent(ThrownFeatherDataAsset->HitCollisionSize);
-	
-	CurveSize = ThrownFeatherAttributeSet->GetCurveSize();
-	CurveSpeed = 1.0f / CurveSize;
+
+	ChaseFeatherThrowAngleOffset = ThrownFeatherDataAsset->ChaseFeatherThrowAngleOffset;
+	ChaseFeatherThrowAngleRandomMultiply = ThrownFeatherDataAsset->ChaseFeatherThrowAngleRandomMultiply;
 }
 
 void ALLL_ThrownFeather::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	if (IsActivated())
-	{
-		if (bTargetIsDead && FVector::Distance(GetActorLocation(), TargetDeadLocation) <= TargetCapsuleRadius)
-		{
-			Deactivate();
-		}
-
-		const FVector TargetLocation = bTargetIsDead ? TargetDeadLocation : Target->GetActorLocation();
-		const FVector Direction = TargetLocation - GetActorLocation();
-		const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-		SetActorRotation(FMath::RInterpTo(GetActorRotation(), Rotation, DeltaSeconds, CurveSpeed));
-		CurveSpeed += 1.0f / CurveSize;
-		ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
-	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
@@ -84,39 +69,4 @@ void ALLL_ThrownFeather::Deactivate()
 	Super::Deactivate();
 	
 	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CurveSpeed = 1.0f / CurveSize;
-
-	ALLL_BaseCharacter* TargetCharacter = Cast<ALLL_BaseCharacter>(Target);
-	if (IsValid(TargetCharacter) && TargetCharacter->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_ThrownFeather::TargetDeadHandle))
-	{
-		TargetCharacter->CharacterDeadDelegate.RemoveDynamic(this, &ALLL_ThrownFeather::TargetDeadHandle);
-	}
-	bTargetIsDead = false;
-}
-
-void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed)
-{
-	Super::Throw(NewOwner, NewTarget, InSpeed);
-
-	ALLL_BaseCharacter* TargetCharacter = Cast<ALLL_BaseCharacter>(Target);
-	if (IsValid(TargetCharacter))
-	{
-		TargetCapsuleRadius = TargetCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius();
-
-		if (!TargetCharacter->CheckCharacterIsDead())
-		{
-			TargetCharacter->CharacterDeadDelegate.AddDynamic(this, &ALLL_ThrownFeather::TargetDeadHandle);
-		}
-		else
-		{
-			TargetDeadLocation = Target->GetActorLocation();
-			bTargetIsDead = true;
-		}
-	}
-}
-
-void ALLL_ThrownFeather::TargetDeadHandle(ALLL_BaseCharacter* Character)
-{
-	TargetDeadLocation = Character->GetActorLocation();
-	bTargetIsDead = true;
 }
