@@ -42,7 +42,6 @@ void ULLL_PGA_KnockBack::KnockBackTarget()
 			const float ActionAmplify = KnockBackAmplifyChangeSection.Eval(CurrentEventData.EventMagnitude, KnockBackAmplifyChangeSection.RowName.ToString());
 			const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerCharacterAttributeSet, ActionAmplify);
 			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
-			
 			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 		}
 	}

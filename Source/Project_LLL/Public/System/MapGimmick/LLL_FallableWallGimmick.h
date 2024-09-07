@@ -33,5 +33,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMeshComponent> Wall;
 
-	float WorldTimeDilationDuration;
+	float FallTimeDilation;
+	
+	float FallEventDuration;
+
+	float FallRequiredVelocityLength;
 };

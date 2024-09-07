@@ -68,7 +68,6 @@ public:
 	FORCEINLINE UCameraComponent* GetPlayerCamera() const { return Camera; }
 	FORCEINLINE USpringArmComponent* GetPlayerSpringArm() const { return SpringArm; }
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
-	FORCEINLINE ALLL_PlayerChaseHand* GetChaseHand() const { return ChaseHandActor; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
@@ -110,18 +109,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerAnimInstance> PlayerAnimInstance;
 	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ALLL_PlayerChaseHand> ChaseHandActor;
-
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_AbnormalStatusAttributeSet> AbnormalStatusAttributeSet;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_PlayerCharacterAttributeSet> PlayerCharacterAttributeSet;
 
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerSkillAttributeSet> SkillAttributeSet;
-	
 	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);
