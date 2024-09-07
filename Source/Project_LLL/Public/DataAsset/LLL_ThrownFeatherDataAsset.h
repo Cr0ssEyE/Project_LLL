@@ -17,4 +17,10 @@ class PROJECT_LLL_API ULLL_ThrownFeatherDataAsset : public ULLL_ThrownObjectData
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", DisplayName = "힛 콜리젼 사이즈")
 	FVector HitCollisionSize;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Collision", DisplayName = "추적 깃털 투척 각도")
+	float ChaseFeatherThrowAngleOffset;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Collision", DisplayName = "추적 깃털 랜덤 배율")
+	int32 ChaseFeatherThrowAngleRandomMultiply;
 };

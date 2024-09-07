@@ -71,7 +71,7 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 
 		BrainComponent->StartLogic();
 
-		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		SetPlayer(Player);
 	}
 }
