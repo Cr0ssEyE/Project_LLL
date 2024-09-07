@@ -195,7 +195,8 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 				FVector Location = Player->GetActorLocation();
 				FRotator Rotator = FRotationMatrix::MakeFromX(Target->GetActorLocation() - Player->GetActorLocation()).Rotator();
 
-				if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
+				ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(Player->GetObjectPoolingComponent()->GetActor(ThrownObjectClass));
+				if (const ALLL_ThrownFeather* ThrownFeather = Cast<ALLL_ThrownFeather>(ThrownObject))
 				{
 					if (ThrowCircular)
 					{
@@ -203,12 +204,13 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 					}
 					else
 					{
+						const float Offset = ThrownFeather->GetChaseFeatherThrowAngleOffset();
+						const int32 Multiply = ThrownFeather->GetChaseFeatherThrowAngleRandomMultiply();
+						
 						Location -= Rotator.Vector() * Player->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f;
-						Rotator += FRotator(0.0f, 180.0f + CHASE_FEATHER_THROW_ANGLE_OFFSET * (FMath::RandBool() ? 1.0f : -1.0f) * FMath::RandRange(0, 5), 0.0f);
+						Rotator += FRotator(0.0f, 180.0f + Offset * (FMath::RandBool() ? 1.0f : -1.0f) * FMath::RandRange(0, Multiply), 0.0f);
 					}
 				}
-			
-				ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(Player->GetObjectPoolingComponent()->GetActor(ThrownObjectClass));
 				ThrownObject->SetActorLocationAndRotation(Location, Rotator);
 				ThrownObject->SetAbilityInfo(AbilityData, GetAbilityLevel());
 				ThrownObject->Throw(Player, Target, ThrowSpeed, Straight, KnockBackPower);

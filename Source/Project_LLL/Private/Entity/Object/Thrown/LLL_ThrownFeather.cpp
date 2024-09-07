@@ -33,6 +33,9 @@ void ALLL_ThrownFeather::BeginPlay()
 	ThrownObjectAttributeSet = ThrownFeatherAttributeSet;
 
 	HitCollisionBox->SetBoxExtent(ThrownFeatherDataAsset->HitCollisionSize);
+
+	ChaseFeatherThrowAngleOffset = ThrownFeatherDataAsset->ChaseFeatherThrowAngleOffset;
+	ChaseFeatherThrowAngleRandomMultiply = ThrownFeatherDataAsset->ChaseFeatherThrowAngleRandomMultiply;
 }
 
 void ALLL_ThrownFeather::Tick(float DeltaSeconds)

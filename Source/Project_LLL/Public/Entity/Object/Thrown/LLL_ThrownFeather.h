@@ -20,6 +20,9 @@ class PROJECT_LLL_API ALLL_ThrownFeather : public ALLL_ThrownObject
 public:
 	ALLL_ThrownFeather();
 
+	FORCEINLINE float GetChaseFeatherThrowAngleOffset() const { return ChaseFeatherThrowAngleOffset; }
+	FORCEINLINE int32 GetChaseFeatherThrowAngleRandomMultiply() const { return ChaseFeatherThrowAngleRandomMultiply; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -34,4 +37,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_ThrownFeatherAttributeSet> ThrownFeatherAttributeSet;
+	
+	float ChaseFeatherThrowAngleOffset;
+	int32 ChaseFeatherThrowAngleRandomMultiply;
 };
