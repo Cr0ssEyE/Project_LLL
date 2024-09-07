@@ -27,6 +27,8 @@ class UCameraComponent;
 class UInputAction;
 class UWidgetComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDissolveCompleteDelegate, bool, IsDrop);
+
 /**
  * 
  */
@@ -54,6 +56,12 @@ public:
 	void AddInteractiveObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
+	void CharacterUnDissolveBegin();
+	
+	void StartChargeFeather();
+	void AddRangeFeatherTargets(AActor* Target);
+	TArray<AActor*> GetRangeFeatherTargetsAndClear();
+
 public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
 	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
@@ -64,6 +72,7 @@ public:
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
 	FORCEINLINE float GetLastSentDamage() const { return LastSentDamage; }
+	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
@@ -76,6 +85,9 @@ public:
 public:
 	void StartCameraMoveToCursor(ALLL_PlayerController* PlayerController = nullptr);
 	void PauseCameraMoveToCursor();
+
+public:
+	FDissolveCompleteDelegate DissolveCompleteDelegate;
 	
 protected:
 	void TurnToMouseCursor();
@@ -139,10 +151,15 @@ private:
 	float ToCursorRotationMultiplyValue;
 	int32 LastAttackerMonsterId;
 	int32 CurrentCombo;
+	int32 ChargedFeatherCount;
+	FTimerHandle ChargeFeatherTimerHandle;
+	TArray<AActor*> RangeFeatherTargets;
 
 	// 상태 관련 함수
 protected:
 	void DropDissolveActor();
+
+	void PullUpDissolveActor();
 	
 	UFUNCTION()
 	void DeadMotionEndedHandle();
@@ -152,7 +169,7 @@ protected:
 	uint8 bIsMoveInputPressed : 1;
 
 	UPROPERTY()
-	TObjectPtr<AActor> DeadSequenceDissolveActor;
+	TObjectPtr<AActor> CharacterDissolveActor;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly)

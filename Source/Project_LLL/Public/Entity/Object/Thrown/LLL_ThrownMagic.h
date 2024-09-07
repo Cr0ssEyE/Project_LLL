@@ -30,7 +30,7 @@ protected:
 	TObjectPtr<UBoxComponent> HitCollisionBox;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_ThrownMagicDataAsset> MagicDataAsset;
+	TObjectPtr<const ULLL_ThrownMagicDataAsset> ThrownMagicDataAsset;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_ThrownMagicAttributeSet> ThrownMagicAttributeSet;

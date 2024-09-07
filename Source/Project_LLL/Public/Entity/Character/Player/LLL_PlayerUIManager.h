@@ -7,6 +7,8 @@
 #include "Entity/Character/Base/LLL_BaseCharacterUIManager.h"
 #include "LLL_PlayerUIManager.generated.h"
 
+class UWidget;
+class ULLL_PermanentEnhancementWidget;
 class ULLL_MainEruriaInfoWidget;
 class ALLL_InteractiveObject;
 class ULLL_InteractionWidget;
@@ -43,7 +45,9 @@ public:
 	
 protected:
 	virtual void UpdateWidget() override;
-
+	virtual void ManageOnWidgetAdded(UWidget* Widget, ULocalPlayer* Player);
+	virtual void ManageOnWidgetRemoved(UWidget* Widget);
+	
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<ULLL_GamePauseWidget> GamePauseWidgetClass;
@@ -74,4 +78,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_MainEruriaInfoWidget> MainEruriaInfoWidget;
+
+protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidget> FocusedWidget;
 };

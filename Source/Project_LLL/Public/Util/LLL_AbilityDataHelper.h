@@ -27,7 +27,7 @@ public:
 		}
 	}
 
-	static bool SpawnAbilityObject(const ULLL_PGA_RewardAbilityBase* OwnerAbility, const TSubclassOf<ALLL_AbilityObject>& AbilityObjectClass, FGameplayEventData EventData = FGameplayEventData(), EEffectApplyTarget AbilityObjectLocationTarget = EEffectApplyTarget::Self)
+	static bool SpawnAbilityObject(const ULLL_CharacterGameplayAbilityBase* OwnerAbility, const TSubclassOf<ALLL_AbilityObject>& AbilityObjectClass, FGameplayEventData EventData = FGameplayEventData(), EEffectApplyTarget AbilityObjectLocationTarget = EEffectApplyTarget::Self)
 	{
 		UWorld* World = OwnerAbility->GetWorld();
 		if (!World)
@@ -46,7 +46,10 @@ public:
 		}
 	
 		ALLL_AbilityObject* AbilityObject = World->SpawnActorDeferred<ALLL_AbilityObject>(AbilityObjectClass, SpawnTransform);
-		AbilityObject->SetAbilityInfo(OwnerAbility->GetAbilityData(), OwnerAbility->GetAbilityLevel());
+		if (const ULLL_PGA_RewardAbilityBase* RewardAbility = Cast<ULLL_PGA_RewardAbilityBase>(OwnerAbility))
+		{
+			AbilityObject->SetAbilityInfo(RewardAbility->GetAbilityData(), RewardAbility->GetAbilityLevel());
+		}
 		AbilityObject->SetOwner(OwnerAbility->GetAvatarActorFromActorInfo());
 		AbilityObject->FinishSpawning(OwnerAbility->GetAvatarActorFromActorInfo()->GetActorTransform());
 

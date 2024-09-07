@@ -52,7 +52,7 @@ public:
 	TObjectPtr<ULevelSequence> DeadSequencer;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 연출용 디졸브 액터")
-	TSubclassOf<AActor> DeadSequenceDissolveActor;
+	TSubclassOf<AActor> CharacterDissolveActor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "디졸브 액터 낙하 속도")
 	float DissolveActorFallSpeed;

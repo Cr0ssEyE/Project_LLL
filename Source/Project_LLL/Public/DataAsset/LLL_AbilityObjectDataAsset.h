@@ -15,8 +15,8 @@ class PROJECT_LLL_API ULLL_AbilityObjectDataAsset : public ULLL_BaseObjectDataAs
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Collision", DisplayName = "오버랩 콜리젼 사이즈")
-	FVector OverlapCollisionSize;
+	UPROPERTY(EditDefaultsOnly, Category = "Collision", DisplayName = "오버랩 콜리젼 지름")
+	float OverlapCollisionRadius;
 
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "데미지 이펙트")
 	TSubclassOf<UGameplayEffect> DamageEffect;

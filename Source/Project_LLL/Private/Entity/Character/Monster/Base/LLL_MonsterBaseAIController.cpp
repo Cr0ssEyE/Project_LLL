@@ -36,13 +36,7 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 
 void ALLL_MonsterBaseAIController::SetPlayer(ALLL_PlayerBase* Player) const
 {
-	if (IsValid(Player) && !IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
-	{
-		if (IsValid(Player))
-		{
-			BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
-		}
-	}
+	BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
 }
 
 void ALLL_MonsterBaseAIController::StopLogic(const FString& Reason) const
@@ -72,7 +66,7 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 
 		BrainComponent->StartLogic();
 
-		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		SetPlayer(Player);
 	}
 }

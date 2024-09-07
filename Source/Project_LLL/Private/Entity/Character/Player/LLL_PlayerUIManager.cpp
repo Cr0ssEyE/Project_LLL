@@ -82,6 +82,11 @@ void ULLL_PlayerUIManager::BeginPlay()
 
 void ULLL_PlayerUIManager::TogglePauseWidget(bool IsDead) const
 {
+	if (IsValid(FocusedWidget) && !Cast<ULLL_GamePauseWidget>(FocusedWidget))
+	{
+		return;
+	}
+	
 	if(GamePauseWidget->GetIsEnabled())
 	{
 		bool IsUniquePopup = SelectRewardWidget->GetIsEnabled();
@@ -135,7 +140,15 @@ void ULLL_PlayerUIManager::DisableInteractionWidget() const
 void ULLL_PlayerUIManager::UpdateInteractionWidget(const ALLL_InteractiveObject* CurrentObject, int Num) const
 {
 	// InteractionWidget->RenderNextInteractionPanel(static_cast<bool>(Num));
-	InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
+	if (CurrentObject->CheckUseCustomDisplayText())
+	{
+		InteractionWidget->SetInfoText(CurrentObject->GetCustomDisplayText());
+	}
+	else
+	{
+		InteractionWidget->SetInfoText(TEXT(""));
+		// InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
+	}
 }
 
 void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
@@ -164,5 +177,21 @@ void ULLL_PlayerUIManager::UpdateWidget()
 	ULLL_PlayerStatusWidget* PlayerStatusWidget = CastChecked<ULLL_PlayerStatusWidget>(CharacterStatusWidget);
 	PlayerStatusWidget->UpdateWidgetView(Cast<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass())));
 	Super::UpdateWidget();
+}
+
+void ULLL_PlayerUIManager::ManageOnWidgetAdded(UWidget* Widget, ULocalPlayer* Player)
+{
+	if (Cast<ILLL_FocusWidgetInterface>(Widget))
+	{
+		FocusedWidget = Widget;
+	}
+}
+
+void ULLL_PlayerUIManager::ManageOnWidgetRemoved(UWidget* Widget)
+{
+	if (Cast<ILLL_FocusWidgetInterface>(Widget))
+	{
+		FocusedWidget = nullptr;
+	}
 }
 
