@@ -101,7 +101,7 @@ void ALLL_TutorialGimmick::FinalMapSpawn(AActor* DestroyedActor)
 		if (IsValid(GateSpawnPointComponent))
 		{
 			Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), GateSpawnPointComponent->GetComponentLocation(), GateSpawnPointComponent->GetComponentRotation());
-			Gate->FadeOutDelegate.AddUObject(this, &ALLL_TutorialGimmick::OnInteractionGate);
+			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_TutorialGimmick::OnInteractionGate);
 		}
 	}
 	FVector Vector = TutorialDataAsset->FinalStageLocation;
@@ -164,7 +164,7 @@ void ALLL_TutorialGimmick::RewardDestroyed(AActor* DestroyedActor)
 	Gate->SetActivate();
 }
 
-void ALLL_TutorialGimmick::OnInteractionGate()
+void ALLL_TutorialGimmick::OnInteractionGate(const FRewardDataTable* RewardData)
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
@@ -176,6 +176,6 @@ void ALLL_TutorialGimmick::LoadLevel(UNiagaraComponent* InNiagaraComponent)
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorHiddenInGame(true);
-	UGameplayStatics::OpenLevel(this, LEVEL_TEST);
+	UGameplayStatics::OpenLevel(this, LEVEL_LOBBY);
 }
 

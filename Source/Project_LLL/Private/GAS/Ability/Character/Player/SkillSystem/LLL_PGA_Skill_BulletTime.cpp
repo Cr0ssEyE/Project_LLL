@@ -9,6 +9,7 @@
 #include "LevelSequencePlayer.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_GeneralConstants.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
@@ -97,7 +98,7 @@ void ULLL_PGA_Skill_BulletTime::TraceBulletTimeEffectedActors()
 		SweepLocation,
 		FQuat::Identity,
 		CP_BULLET_TIME_INFLUENCED,
-		FCollisionShape::MakeBox(FVector(10000.f, 10000.f, 1000.f))
+		FCollisionShape::MakeBox(FVector(BIG_SCALE_SCALAR, BIG_SCALE_SCALAR, BIG_SCALE_SCALAR))
 		);
 
 	if (HitResults.IsEmpty())

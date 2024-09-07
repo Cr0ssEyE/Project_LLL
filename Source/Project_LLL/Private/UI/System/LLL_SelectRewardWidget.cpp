@@ -5,6 +5,7 @@
 
 #include "Components/Image.h"
 #include "Components/RichTextBlock.h"
+#include "Constant/LLL_GeneralConstants.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"

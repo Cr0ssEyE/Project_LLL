@@ -7,6 +7,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GraphicParameterNames.h"
 #include "DataAsset/LLL_GateDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
@@ -17,14 +18,13 @@
 
 ALLL_GateObject::ALLL_GateObject()
 {
-	GateDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_GateDataAsset>(PATH_GATE_DATA, EAssertionLevel::Check);
+	InteractiveObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_GateDataAsset>(PATH_GATE_DATA, EAssertionLevel::Check);
 	RewardObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_RewardObjectDataAsset>(PATH_REWARD_OBJECT_TEST_DATA, EAssertionLevel::Check);
-	GateMesh = GateDataAsset->StaticMesh;
+	GateMesh = InteractiveObjectDataAsset->StaticMesh;
 	BaseMesh->SetStaticMesh(GateMesh);
 
 	TextureMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TextureMashComponent"));
 	TextureMeshComponent->SetupAttachment(RootComponent);
-	TextureMeshComponent->SetRelativeLocation(FVector(60.0f, 60.0f, 370.0f));
 	TextureMeshComponent->SetMaterial(0, RewardObjectDataAsset->TextureMaterialInst);
 	TextureMeshComponent->SetVisibility(false);
 
@@ -44,19 +44,19 @@ void ALLL_GateObject::SetGateInformation(const FRewardDataTable* Data)
 	{
 		// 능력
 	case 1:
-		TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->AbilityTexture);
+		TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->AbilityTexture);
 		break;
 		// 재화
 	case 2:
-		TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->GoldTexture);
+		TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->GoldTexture);
 		break;
 		// 최대 체력
 	case 3:
-		TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->MaxHPTexture);
+		TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->MaxHPTexture);
 		break;
 		// 능력 강화
 	case 4:
-		TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->EnhanceTexture);
+		TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->EnhanceTexture);
 		break;
 	default:;
 	}
@@ -72,21 +72,21 @@ void ALLL_GateObject::SetActivate()
 {
 	bIsGateEnabled = true;
 	
-	if (IsValid(GateDataAsset->Particle))
+	if (IsValid(InteractiveObjectDataAsset->Particle))
 	{
-		AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
-	}
+		AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(InteractiveObjectDataAsset->Particle, RootComponent, TEXT(""), InteractiveObjectDataAsset->ParticleLocation, FRotator::ZeroRotator, InteractiveObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
+	}	
 	TextureMeshComponent->SetVisibility(true);
 }
 
-void ALLL_GateObject::InteractiveEvent()
+void ALLL_GateObject::InteractiveEvent(AActor* InteractedActor)
 {
 	if(!bIsGateEnabled)
 	{
 		return;
 	}
 	
-	Super::InteractiveEvent();
+	Super::InteractiveEvent(InteractedActor);
 	
 	OpenGate();
 }
@@ -96,18 +96,14 @@ void ALLL_GateObject::BeginPlay()
 	Super::BeginPlay();
 	
 	InteractOnlyCollisionBox->SetBoxExtent(FVector(InteractiveObjectDataAsset->InteractOnlyCollisionBoxExtent));
-	InteractOnlyCollisionBox->SetRelativeLocation(FVector(0, 0, 300.f));
 }
 
 void ALLL_GateObject::OpenGate()
 {
 	FFModInfo FModInfo;
-	FModInfo.FModEvent = GateDataAsset->ActivateEvent;
+	FModInfo.FModEvent = Cast<ULLL_GateDataAsset>(InteractiveObjectDataAsset)->ActivateEvent;
 	FLLL_FModPlayHelper::PlayFModEvent(this, FModInfo);
-	FadeOutDelegate.Broadcast();
-	FTimerHandle StageDestroyTimerHandle;
-	GetWorldTimerManager().SetTimer(StageDestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
-		GateInteractionDelegate.Broadcast(RewardData);
-	}), 5.0f, false);
+	GateInteractionDelegate.Broadcast(RewardData);
+	
 	//문 오픈 애니 및 이펙
 }

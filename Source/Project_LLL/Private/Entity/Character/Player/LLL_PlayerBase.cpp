@@ -13,13 +13,14 @@
 #include "MovieSceneSequencePlaybackSettings.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Constant/LLL_AnimMontageSlotName.h"
+#include "Constant/LLL_AnimRelationNames.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "Constant/LLL_MaterialParameterName.h"
+#include "Constant/LLL_GraphicParameterNames.h"
+#include "Constant/LLL_GeneralConstants.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
@@ -106,7 +107,7 @@ void ALLL_PlayerBase::BeginPlay()
 		{
 			Camera->SetOrthoWidth(CameraDataAsset->CameraDistance);
 			Camera->SetUpdateOrthoPlanes(CameraDataAsset->bUseUpdateOrthoPlanes);
-			SpringArm->TargetArmLength = 1000.f;
+			SpringArm->TargetArmLength = CameraDataAsset->OrthographicSpringArmDistance;
 			if (CameraDataAsset->bUseConstraintAspectRatio)
 			{
 				Camera->SetConstraintAspectRatio(CameraDataAsset->bUseConstraintAspectRatio);
@@ -127,7 +128,7 @@ void ALLL_PlayerBase::BeginPlay()
 		}
 		else
 		{
-			SpringArm->TargetArmLength = CameraDataAsset->SpringArmDistance;
+			SpringArm->TargetArmLength = CameraDataAsset->PerspectiveSpringArmDistance;
 			Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
 		}
 		
@@ -152,7 +153,7 @@ void ALLL_PlayerBase::BeginPlay()
 			}
 		}
 	}
-	GetMesh()->SetCustomDepthStencilValue(4);
+	GetMesh()->SetCustomDepthStencilValue(STENCIL_VALUE_PLAYER);
 	
 	ULLL_PlayerChaseActionWidget* ChaseActionWidget = PlayerUIManager->GetChaseActionWidget();
 	ChaseActionGaugeWidgetComponent->SetWidget(ChaseActionWidget);
@@ -486,7 +487,7 @@ void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
 	{
 		return;
 	}
-	InteractiveObjects[SelectedInteractiveObjectNum]->InteractiveEvent();
+	InteractiveObjects[SelectedInteractiveObjectNum]->InteractiveEvent(this);
 }
 
 void ALLL_PlayerBase::InventoryAction(const FInputActionValue& Value)
@@ -604,7 +605,7 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 
 	ActivatePPLowHP();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DeactivatePPLowHP);
-	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= 0.3f)
+	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= PlayerCharacterAttributeSet->GetLowHealthPercentage())
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PlayLowHPAnimation);
 	}
@@ -658,7 +659,7 @@ void ALLL_PlayerBase::Dead()
 		GetActorLocation(),
 		FQuat::Identity,
 		CP_BULLET_TIME_INFLUENCED,
-		FCollisionShape::MakeBox(FVector(10000.f, 10000.f, 1000.f)),
+		FCollisionShape::MakeBox(FVector(BIG_SCALE_SCALAR, BIG_SCALE_SCALAR, BIG_SCALE_SCALAR)),
 		Params
 		);
 
@@ -677,22 +678,74 @@ void ALLL_PlayerBase::Dead()
 	}
 
 	const FTransform DissolveStartTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
-	DeadSequenceDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->DeadSequenceDissolveActor, DissolveStartTransform);
+	if (!IsValid(CharacterDissolveActor))
+	{
+		CharacterDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->CharacterDissolveActor, DissolveStartTransform);
+	}
+	else
+	{
+		CharacterDissolveActor->SetActorTransform(DissolveStartTransform);
+	}
+	
 	DeadSequenceActor->FinishSpawning(FTransform::Identity);
-
+	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayerDeadEvent();
 }
 
 void ALLL_PlayerBase::DropDissolveActor()
 {
-	if (DeadSequenceDissolveActor->GetActorLocation().Z < GetMesh()->GetComponentLocation().Z - 100.f)
+	if (CharacterDissolveActor->GetActorLocation().Z < GetMesh()->GetComponentLocation().Z + PlayerDataAsset->DissolveActorFallStopLocation)
+	{
+		DissolveCompleteDelegate.Broadcast(true);
+		return;
+	}
+	
+	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
+}
+
+void ALLL_PlayerBase::CharacterUnDissolveBegin()
+{
+	if (GetMesh()->bHiddenInGame || IsHidden())
+	{
+		SetActorHiddenInGame(false);
+		GetMesh()->SetHiddenInGame(false);
+	}
+	
+	if (!IsValid(CharacterDissolveActor))
+	{
+		CharacterDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->CharacterDissolveActor, GetTransform());
+	}
+	else
+	{
+		CharacterDissolveActor->SetActorTransform(GetTransform());
+	}
+	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() + GetMesh()->GetRelativeLocation().Z);
+
+	UMaterialParameterCollection* PlayerMPC = GetGameInstance<ULLL_GameInstance>()->GetPlayerMPC();
+	GetWorld()->GetParameterCollectionInstance(PlayerMPC)->SetScalarParameterValue(PLAYER_CHARACTER_DISSOLVE, 1.f);
+	
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PullUpDissolveActor);
+}
+
+void ALLL_PlayerBase::PullUpDissolveActor()
+{
+	if (!IsValid(CharacterDissolveActor))
 	{
 		return;
 	}
 	
-	DeadSequenceDissolveActor->SetActorLocation(DeadSequenceDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
+	const FTransform DissolveEndTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
+	if (CharacterDissolveActor->GetActorLocation().Z >= DissolveEndTransform.GetLocation().Z + GetMesh()->GetRelativeLocation().Z)
+	{
+		CharacterDissolveActor->Destroy();
+		DissolveCompleteDelegate.Broadcast(false);
+		return;
+	}
+	
+	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() + FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed * 2.f));
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PullUpDissolveActor);
 }
 
 void ALLL_PlayerBase::DeadMotionEndedHandle()
@@ -705,7 +758,7 @@ void ALLL_PlayerBase::DeactivatePPLowHP()
 {
 	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(GetGameInstance());
 	const UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
-	ScalarValue += GetWorld()->GetDeltaSeconds() / 3;
+	ScalarValue += GetWorld()->GetDeltaSeconds();
 	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOWHP_RADIUS, ScalarValue);
 	if (ScalarValue <= PlayerDataAsset->HPLowScalarMaxValue)
 	{
@@ -726,12 +779,12 @@ void ALLL_PlayerBase::PlayLowHPAnimation()
 	ULLL_PlayerStatusWidget* StateWidget = Cast<ULLL_PlayerStatusWidget>(PlayerUIManager->GetCharacterStatusWidget());
 	StateWidget->PlayLowHPAnimation();
 	FTimerHandle LowHPHandle;
-	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= 0.3f && !bIsLowHP)
+	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= PlayerCharacterAttributeSet->GetLowHealthPercentage() && !bIsLowHP)
 	{
 		bIsLowHP = true;
 		GetWorld()->GetTimerManager().SetTimer(LowHPHandle, this, &ALLL_PlayerBase::PlayLowHPAnimation, 1.0f, true);
 	}
-	else if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() > 0.3f)
+	else if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() > PlayerCharacterAttributeSet->GetLowHealthPercentage())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(LowHPHandle);
 	}

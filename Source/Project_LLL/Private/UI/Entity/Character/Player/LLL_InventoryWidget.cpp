@@ -10,7 +10,7 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "Constant/LLL_MaterialParameterName.h"
+#include "..\..\..\..\..\Public\Constant\LLL_GraphicParameterNames.h"
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"

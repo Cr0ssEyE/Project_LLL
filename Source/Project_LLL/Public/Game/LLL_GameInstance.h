@@ -15,10 +15,12 @@
  * 
  */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStageEncountedDelegate);
+enum class ELevelSequenceType : uint8;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStageEncounteredDelegate, ELevelSequenceType, SequenceType);
 
+class ULLL_GlobalNiagaraDataAsset;
+class ULLL_GlobalParameterDataAsset;
 class ULLL_MapSoundSubsystem;
-class ULLL_ShareableNiagaraDataAsset;
 
 UCLASS()
 class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
@@ -30,7 +32,7 @@ public:
 
 	virtual void Init() override;
 
-	FStageEncountedDelegate EncountedDelegate;
+	FStageEncounteredDelegate EncounteredDelegate;
 	
 public:
 	// 데이터 테이블 Getter
@@ -49,7 +51,8 @@ public:
 
 	// 데이터 에셋
 public:
-	FORCEINLINE TObjectPtr<const ULLL_ShareableNiagaraDataAsset> GetShareableNiagaraDataAsset() const { return ShareableNiagaraDataAsset; }
+	FORCEINLINE TObjectPtr<const ULLL_GlobalNiagaraDataAsset> GetGlobalNiagaraDataAsset() const { return GlobalNiagaraDataAsset; }
+	FORCEINLINE TObjectPtr<const ULLL_GlobalParameterDataAsset> GetGlobalParametersDataAsset() const { return GlobalParametersDataAsset; }
 	
 public:
 	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
@@ -74,7 +77,10 @@ protected:
 	// 범용 데이터 에셋
 protected:
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<const ULLL_ShareableNiagaraDataAsset> ShareableNiagaraDataAsset;
+	TObjectPtr<const ULLL_GlobalNiagaraDataAsset> GlobalNiagaraDataAsset;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<const ULLL_GlobalParameterDataAsset> GlobalParametersDataAsset;
 	
 	// 데이터 테이블 변수
 protected:

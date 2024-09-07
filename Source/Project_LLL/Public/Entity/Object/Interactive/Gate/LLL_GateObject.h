@@ -9,7 +9,6 @@
 #include "LLL_GateObject.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateInteractionDelegate, const FRewardDataTable*);
-DECLARE_MULTICAST_DELEGATE(FOnFadeOutDelegate);
 
 struct FRewardDataTable;
 class ULLL_RewardDataTable;
@@ -27,13 +26,12 @@ public:
 	FORCEINLINE const FRewardDataTable* GetRewardData() const { return RewardData; }
 	
 	FOnGateInteractionDelegate GateInteractionDelegate;
-	FOnFadeOutDelegate FadeOutDelegate;
 
 	void SetGateInformation(const FRewardDataTable* Data);
 	void SetActivate();
 	
 protected:
-	virtual void InteractiveEvent() override;
+	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 	virtual void BeginPlay() override;
 	
 protected:
@@ -47,10 +45,7 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMesh> RewardTextureMesh;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<const ULLL_GateDataAsset> GateDataAsset;
-
+	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<const ULLL_RewardObjectDataAsset> RewardObjectDataAsset;
 
