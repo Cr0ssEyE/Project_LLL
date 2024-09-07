@@ -176,6 +176,6 @@ void ALLL_TutorialGimmick::LoadLevel(UNiagaraComponent* InNiagaraComponent)
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorHiddenInGame(true);
-	UGameplayStatics::OpenLevel(this, LEVEL_TEST);
+	UGameplayStatics::OpenLevel(this, LEVEL_LOBBY);
 }
 
