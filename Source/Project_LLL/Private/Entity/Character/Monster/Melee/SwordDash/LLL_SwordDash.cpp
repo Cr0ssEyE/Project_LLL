@@ -63,7 +63,7 @@ void ALLL_SwordDash::Tick(float DeltaSeconds)
 				const FVector Location = DashDamageRangeBox->GetComponentLocation();
 				const FVector Extent = DashDamageRangeBox->GetScaledBoxExtent();
 				const FQuat Quat = DashDamageRangeBox->GetComponentQuat();
-				DrawDebugBox(GetWorld(), Location, Extent, Quat, FColor::Blue, false, 2.0f);
+				DrawDebugBox(GetWorld(), Location, Extent, Quat, FColor::Blue, false, 0.1f);
 			}
 		}
 	}
@@ -73,8 +73,9 @@ void ALLL_SwordDash::Tick(float DeltaSeconds)
 void ALLL_SwordDash::InitAttributeSet()
 {
 	Super::InitAttributeSet();
-	
-	DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), MonsterAttributeSet->GetMonsterData4(), MonsterAttributeSet->GetMonsterData4()));
+
+	const float DashDamageRange = MonsterAttributeSet->GetSwordDashDashDamageRange();
+	DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), DashDamageRange, DashDamageRange));
 }
 
 void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -106,18 +107,33 @@ void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
-void ALLL_SwordDash::Dash() const
+void ALLL_SwordDash::Dash()
 {
-	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_SWORD_DASH_DASH)))
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_DASH)))
 	{
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
 			if (DebugGameInstance->CheckMonsterAttackDebug())
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 대시 수행"), *GetName()));
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 대시"), *GetName()));
 			}
 		}
 #endif
 	}
+}
+
+float ALLL_SwordDash::GetMaxDashDistance() const
+{
+	return MonsterAttributeSet->GetSwordDashMaxDashDistance();
+}
+
+float ALLL_SwordDash::GetMinDashDistance() const
+{
+	return MonsterAttributeSet->GetSwordDashMinDashDistance();
+}
+
+float ALLL_SwordDash::GetDashSpeed() const
+{
+	return MonsterAttributeSet->GetSwordDashDashSpeed();
 }

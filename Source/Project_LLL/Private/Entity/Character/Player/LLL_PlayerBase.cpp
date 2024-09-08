@@ -81,8 +81,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	// SpringArm->SetupAttachment(RootComponent);
 
 	LastCheckedMouseLocation = FVector::Zero();
-	
 	bIsLowHP = false;
+	FeatherSpawnStartTime = 0.01f;
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -281,7 +281,7 @@ void ALLL_PlayerBase::StartChargeFeather()
 	GetWorldTimerManager().SetTimer(ChargeFeatherTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		ChargedFeatherCount++;
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
-		// 추후 데이터화 예정
+		// Todo : 추후 데이터화 예정
 		if (ChargedFeatherCount == 10)
 		{
 			GetWorldTimerManager().PauseTimer(ChargeFeatherTimerHandle);

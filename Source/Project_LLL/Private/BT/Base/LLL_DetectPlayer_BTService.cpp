@@ -73,8 +73,8 @@ void ULLL_DetectPlayer_BTService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 			{
 				const FVector Direction = Monster->GetActorForwardVector();
 				const float HalfFieldOfViewRadian = FMath::DegreesToRadians(MonsterAttributeSet->GetFieldOfView() / 2.0f);
-				DrawDebugCone(GetWorld(), Monster->GetActorLocation(), Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Red, false, 0.1f);
-				DrawDebugSphere(GetWorld(), Monster->GetActorLocation(), ProximityDetectDistance, 16, FColor::Red, false, 0.1f);
+				DrawDebugCone(GetWorld(), Monster->GetActorLocation(), Direction, DetectDistance, HalfFieldOfViewRadian, HalfFieldOfViewRadian, 16, FColor::Red, false, DeltaSeconds);
+				DrawDebugSphere(GetWorld(), Monster->GetActorLocation(), ProximityDetectDistance, 16, FColor::Red, false, DeltaSeconds);
 			}
 		}
 	}

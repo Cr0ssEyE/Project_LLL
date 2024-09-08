@@ -90,16 +90,3 @@ void ULLL_MapSoundSubsystem::PlayerDeadEvent() const
 	StopBGM();
 	StopAMB();
 }
-
-void ULLL_MapSoundSubsystem::BeginDestroy()
-{
-	Super::BeginDestroy();
-
-	if (!IsValid(GetWorld()))
-	{
-		return;
-	}
-
-	StopBGM();
-	StopAMB();
-}
