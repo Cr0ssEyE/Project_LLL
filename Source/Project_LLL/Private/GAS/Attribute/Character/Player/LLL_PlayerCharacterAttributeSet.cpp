@@ -52,6 +52,9 @@ void ULLL_PlayerCharacterAttributeSet::InitializeSavedStatusData(const FPlayerCh
 	KnockBackPower.SetBaseValue(CharacterStatusData->KnockBackPower);
 	KnockBackRate.SetBaseValue(CharacterStatusData->KnockBackRate);
 	KnockBackOffensePowerRate.SetBaseValue(CharacterStatusData->KnockBackOffensePowerRate);
+
+	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
+	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }
 
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)

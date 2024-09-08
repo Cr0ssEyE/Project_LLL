@@ -228,7 +228,7 @@ void ALLL_MapGimmick::CreateMap()
 		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
 	}
 	
-	// TODO: Player loaction change 
+	// TODO: Player location change 
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 	Player->SetActorEnableCollision(true);
 	FadeIn();	

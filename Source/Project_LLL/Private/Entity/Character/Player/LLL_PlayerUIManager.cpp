@@ -79,6 +79,8 @@ void ULLL_PlayerUIManager::BeginPlay()
 		GamePauseWidget->SetVisibility(ESlateVisibility::Hidden);
 		GamePauseWidget->SetIsEnabled(false);
 	}
+
+	Cast<ALLL_PlayerController>(PlayerCharacter->GetController())->SetWidgetInitialized();
 }
 
 void ULLL_PlayerUIManager::TogglePauseWidget(bool IsDead) const

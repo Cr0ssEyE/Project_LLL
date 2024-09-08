@@ -79,6 +79,8 @@ protected:
 
 public:
 	FORCEINLINE ALLL_MonsterSpawner* GetMonsterSpawner() const { return MonsterSpawner; }
+	FORCEINLINE bool CheckShoppingRoom() const { return ShoppingMapComponent != nullptr; }
+	FORCEINLINE ULLL_ShoppingMapComponent* GetShoppingMapComponent() const { return ShoppingMapComponent; }
 	
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage")

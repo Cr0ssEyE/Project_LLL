@@ -26,6 +26,9 @@ public:
 
 	FOnShopingDelegate ShopingDelegate;
 
+public:
+	FORCEINLINE TArray<TObjectPtr<ALLL_RewardObject>> GetProductList() const { return ProductList; }
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -41,6 +44,7 @@ public:
 
 	UFUNCTION()
 	void SetDelegate();
+	
 protected:
 	UPROPERTY(EditAnywhere, Category = Product, Meta = (AllowPrivateAccess = "true"))
 	TArray<TObjectPtr<ALLL_RewardObject>> ProductList;

@@ -9,6 +9,7 @@
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Game/LLL_GameInstance.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "System/MapGimmick/Components/LLL_ProductSpawnPointComponent.h"
 
 // Sets default values for this component's properties
@@ -55,6 +56,12 @@ void ULLL_ShoppingMapComponent::SetProducts()
 {
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
 	TArray<const FRewardDataTable*> RewardData = GameInstance->GetRewardDataTable();
+	TMap<int32, int32> SavedShoppingProductList;
+	if (IsValid(GameInstance->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()))
+	{
+		SavedShoppingProductList = GameInstance->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->ShoppingProductList;
+	}
+	
 	for (USceneComponent* ChildComponent : GetOwner()->GetRootComponent()->GetAttachChildren())
 	{
 		ULLL_ProductSpawnPointComponent* SpawnPoint = Cast<ULLL_ProductSpawnPointComponent>(ChildComponent);
@@ -77,9 +84,26 @@ void ULLL_ShoppingMapComponent::SetProducts()
 				break;
 			default: ;
 			}*/
-			const FRewardDataTable* data = RewardData[FMath::RandRange(0, RewardData.Num() - 1)];
+			const uint32 Index = FMath::RandRange(0, RewardData.Num() - 1);
+			const FRewardDataTable* ProductData = nullptr;
+			// ID != 0
+			if (SavedShoppingProductList[ProductList.Num()] != 0)
+			{
+				for (const auto SavedData : RewardData)
+				{
+					if (SavedShoppingProductList[ProductList.Num()] == SavedData->ID)
+					{
+						ProductData = SavedData;
+						break;
+					}
+				}
+			}
+			else
+			{
+				ProductData = RewardData[Index];
+			}
 			Product->InteractionDelegate.AddUObject(this, & ULLL_ShoppingMapComponent::SetDelegate);
-			Product->SetInformation(data);
+			Product->SetInformation(ProductData, Index);
 			Product->ApplyProductEvent();
 			ProductList.Add(Product);
 		}

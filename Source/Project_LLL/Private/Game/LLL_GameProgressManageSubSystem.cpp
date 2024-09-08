@@ -5,10 +5,12 @@
 
 #include "Constant/LLL_GameplayInfo.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/MapGimmick/Components/LLL_ShoppingMapComponent.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
 ULLL_GameProgressManageSubSystem::ULLL_GameProgressManageSubSystem() :
@@ -212,6 +214,20 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 	if (IsValid(MapGimmick))
 	{
 		CurrentStageInfoData = MapGimmick->MakeStageInfoData();
+
+		// 상점 정보 저장
+		if (MapGimmick->CheckShoppingRoom())
+		{
+			TMap<int32, int32> ShoppingProductList;
+			uint32 ProductIndex = 0;
+			ULLL_ShoppingMapComponent* ShoppingMapComponent = MapGimmick->GetShoppingMapComponent();
+			for (auto Product : ShoppingMapComponent->GetProductList())
+			{
+				ShoppingProductList.Emplace(ProductIndex, Product->GetRewardDataIndex());
+				ProductIndex++;
+			}
+			CurrentSaveGameData->ShoppingProductList = ShoppingProductList;
+		}
 	}
 
 	CurrentSaveGameData->StageInfoData = CurrentStageInfoData;

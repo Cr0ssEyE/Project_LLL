@@ -71,10 +71,11 @@ void ALLL_RewardObject::ApplyProductEvent()
 	PriceWidget->SetPrice(Price);
 }
 
-void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data)
+void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data, const uint32 Index)
 {
 	RewardData = Data;
-
+	RewardIndex = Index;
+	
 	switch (RewardData->ID)
 	{
 			// 능력

@@ -43,7 +43,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	FStageInfoData StageInfoData;
-
+	
+	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
+	TMap<int32, int32> ShoppingProductList;
+	
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	FPlayerCharacterStatusData PlayerCharacterStatusData;
 
@@ -68,4 +71,5 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	FVector LobbyLastStandingLocation;
+
 };

@@ -26,10 +26,13 @@ public:
 	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 	virtual void BeginPlay() override;
 	virtual void ApplyProductEvent() override;
-	virtual void SetInformation(const FRewardDataTable* Data);
+	virtual void SetInformation(const FRewardDataTable* Data, const uint32 Index = 0);
 
 	FOnInteractionDelegate InteractionDelegate;
 
+public:
+	FORCEINLINE uint32 GetRewardDataIndex() const { return RewardIndex; }
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMesh> RewardMesh;
@@ -60,4 +63,6 @@ protected:
 	TObjectPtr<ULLL_ProductObjectPriceWidget> PriceWidget;
 	
 	const FRewardDataTable* RewardData;
+
+	uint8 RewardIndex;
 };
