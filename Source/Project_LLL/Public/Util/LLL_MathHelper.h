@@ -92,11 +92,11 @@ public:
 	static bool CheckFallableKnockBackPower(const UWorld* World, float KnockBackPower)
 	{
 		if (!IsValid(World))
-		{
+	{
 			return false;
 		}
 		
-		float FallableCheckPower = 500.f;
+		float FallableCheckPower = 100.f;
 		ACharacter* Character = UGameplayStatics::GetPlayerCharacter(World, 0);
 		if (!IsValid(Character))
 		{
@@ -114,7 +114,7 @@ public:
 			ensure(false);
 		}
 		
-		if (KnockBackPower > FallableCheckPower)
+		if (KnockBackPower >= FallableCheckPower)
 		{
 			return true;
 		}

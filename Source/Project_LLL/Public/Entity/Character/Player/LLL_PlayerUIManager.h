@@ -10,15 +10,12 @@
 class UWidget;
 class ULLL_PermanentEnhancementWidget;
 class ULLL_MainEruriaInfoWidget;
-class ULLL_SkillWidget;
 class ALLL_InteractiveObject;
 class ULLL_InteractionWidget;
 class ULLL_InventoryWidget;
 class ULLL_PlayerStatusWidget;
 class ULLL_GamePauseWidget;
 class ULLL_SelectRewardWidget;
-class ULLL_PlayerChaseActionWidget;
-class ULLL_PlayerComboWidget;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECT_LLL_API ULLL_PlayerUIManager : public ULLL_BaseCharacterUIManager
@@ -30,8 +27,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	
 public:	
 	void TogglePauseWidget(bool IsDead) const;
 	void ToggleInventoryWidget() const;
@@ -45,8 +41,6 @@ public:
 	FORCEINLINE ULLL_InventoryWidget* GetInventoryWidget() const { return InventoryWidget; }
 	FORCEINLINE ULLL_InteractionWidget* GetInteractionWidget() const { return InteractionWidget; }
 	FORCEINLINE ULLL_SelectRewardWidget* GetSelectRewardWidget() const { return SelectRewardWidget; }
-	FORCEINLINE ULLL_PlayerChaseActionWidget* GetChaseActionWidget() const { return ChaseActionWidget; }
-	FORCEINLINE ULLL_PlayerComboWidget* GetComboWidget() const { return ComboWidget; }
 	FORCEINLINE ULLL_MainEruriaInfoWidget* GetMainEruriaWidget() const { return MainEruriaInfoWidget; }
 	
 protected:
@@ -78,18 +72,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_SelectRewardWidget> SelectRewardWidget;
-
-	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<ULLL_PlayerComboWidget> ComboWidgetClass;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_PlayerComboWidget> ComboWidget;
-
-	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<ULLL_PlayerChaseActionWidget> ChaseActionWidgetClass;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_PlayerChaseActionWidget> ChaseActionWidget;
 
 	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<ULLL_MainEruriaInfoWidget> MainEruriaInfoWidgetClass;
