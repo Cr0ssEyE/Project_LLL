@@ -8,16 +8,18 @@
 #include "BrainComponent.h"
 #include "GameplayAbilitiesModule.h"
 #include "NiagaraComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
+#include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_GraphicParameterNames.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "DataAsset/Global/LLL_GlobalNiagaraDataAsset.h"
+#include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
@@ -42,8 +44,9 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 
 	GetMesh()->SetCollisionProfileName(CP_MONSTER);
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
-	
+
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AIControllerClass = ALLL_MonsterBaseAIController::StaticClass();
 
 	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
 	DropGoldEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'"), EAssertionLevel::Check);
@@ -167,13 +170,13 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 		return;
 	}
 
-	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = Cast<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	if (!IsValid(MonsterBaseAnimInstance) || IsDOT)
+	ULLL_BaseCharacterAnimInstance* AnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	if (!IsValid(AnimInstance) || IsDOT)
 	{
 		return;
 	}
 
-	MonsterBaseAnimInstance->StopAllMontages(1.0f);
+	AnimInstance->StopAllMontages(1.0f);
 	if ( GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_STATE_COLLIDE_OTHER) && IsValid(MonsterBaseDataAsset->KnockBackCollideMontage))
 	{
 		FVector HitDirection = (GetActorLocation() - GetLastCollideLocation()).GetSafeNormal2D();
@@ -241,8 +244,8 @@ void ALLL_MonsterBase::Dead()
 	
 	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
 
-	ULLL_MonsterBaseAnimInstance* MonsterBaseAnimInstance = CastChecked<ULLL_MonsterBaseAnimInstance>(GetMesh()->GetAnimInstance());
-	MonsterBaseAnimInstance->StopAllMontages(1.0f);
+	ULLL_BaseCharacterAnimInstance* AnimInstance = CastChecked<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance->StopAllMontages(1.0f);
 	
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
 	MonsterBaseAIController->StopLogic("Monster Is Dead");
@@ -289,6 +292,10 @@ void ALLL_MonsterBase::Dead()
 
 void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower)
 {
+	const float DecreaseVelocityByWeight = FMath::Max(0.f, (MonsterAttributeSet->GetWeight() - 1) * GetGameInstance<ULLL_GameInstance>()->GetGlobalParametersDataAsset()->DecreaseVelocityPerWeight);
+	KnockBackVelocity *= 1 - DecreaseVelocityByWeight;
+	KnockBackPower *= 1 - DecreaseVelocityByWeight;
+	
 	KnockBackVelocity.Z = 0.f;
 	if (KnockBackPower < 0.f)
 	{
@@ -305,10 +312,19 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 			const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
 			MonsterBaseAIController->StopLogic("Monster Is Fallable State");
 			CharacterAnimInstance->StopAllMontages(1.0f);
-			UE_LOG(LogTemp, Log, TEXT("낙사로 인한 BT 정지"))
+			UE_LOG(LogTemp, Log, TEXT("낙사 판정으로 인한 BT 일시 정지"))
 		}
 		GetCharacterMovement()->Velocity = FVector::Zero();
 		LaunchCharacter(KnockBackVelocity, true, true);
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (DebugGameInstance->CheckMonsterHitCheckDebug() || DebugGameInstance->CheckMonsterCollisionDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("넉백 방향 및 속도 : %f, %f, %f || %f"), KnockBackVelocity.X, KnockBackVelocity.Y, KnockBackVelocity.Z, KnockBackVelocity.Length()));
+			}
+		}
+#endif
 	}
 	else
 	{
@@ -400,7 +416,11 @@ void ALLL_MonsterBase::RecognizePlayerToAroundMonster() const
 			if (const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitResult.GetActor()))
 			{
 				const ALLL_MonsterBaseAIController* MonsterAIController = CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController());
-				ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+				ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(MonsterAIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
+				if (!IsValid(Player))
+				{
+					Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+				}
 				MonsterAIController->SetPlayer(Player);
 				DebugColor = FColor::Green;
 			}

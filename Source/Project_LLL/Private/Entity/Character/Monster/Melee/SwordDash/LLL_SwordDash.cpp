@@ -10,7 +10,6 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_Monster_Id.h"
 #include "DataAsset/LLL_SwordDashDataAsset.h"
-#include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDashAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
@@ -19,7 +18,6 @@
 ALLL_SwordDash::ALLL_SwordDash()
 {
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_SwordDashDataAsset>(PATH_SWORD_DASH_DATA, EAssertionLevel::Check);
-	AIControllerClass = ALLL_SwordDashAIController::StaticClass();
 
 	Id = ID_SWORD_DASH;
 

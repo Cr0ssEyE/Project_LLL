@@ -6,7 +6,7 @@
 #include "Base/LLL_PGA_RewardAbilityBase.h"
 #include "LLL_PGA_OnTriggerActivate.generated.h"
 
-#define FEATHER_THROW_ANGLE 10.0f
+#define CHASE_FEATHER_THROW_ANGLE_OFFSET 20.0f
 
 class ALLL_ThrownObject;
 class ALLL_AbilityObject;

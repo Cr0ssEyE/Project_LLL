@@ -26,10 +26,10 @@ void ALLL_ThrownMagic::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MagicDataAsset = Cast<ULLL_ThrownMagicDataAsset>(ThrownObjectDataAsset);
+	ThrownMagicDataAsset = Cast<ULLL_ThrownMagicDataAsset>(ThrownObjectDataAsset);
 	ThrownObjectAttributeSet = ThrownMagicAttributeSet;
 
-	HitCollisionBox->SetBoxExtent(MagicDataAsset->HitCollisionSize);
+	HitCollisionBox->SetBoxExtent(ThrownMagicDataAsset->HitCollisionSize);
 }
 
 void ALLL_ThrownMagic::Tick(float DeltaSeconds)

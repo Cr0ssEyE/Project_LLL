@@ -36,6 +36,10 @@ void ALLL_FallableWallGimmick::BeginPlay()
 	Super::BeginPlay();
 	Wall->SetCollisionProfileName(CP_INVISIBLE_WALL);
 	Wall->SetVisibility(false);
+
+	FallTimeDilation = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalParametersDataAsset()->FallEventTimeDilation;
+	FallEventDuration = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalParametersDataAsset()->FallEventDuration;
+	FallRequiredVelocityLength = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalParametersDataAsset()->FallRequiredVelocityLength;
 }
 
 void ALLL_FallableWallGimmick::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -53,9 +57,25 @@ void ALLL_FallableWallGimmick::NotifyActorBeginOverlap(AActor* OtherActor)
 	{
 		return;
 	}
+
+	FVector TargetVelocity = Monster->GetCharacterMovement()->Velocity;
+	float TargetVelocityLength = Monster->GetCharacterMovement()->Velocity.Length();
+	if(TargetVelocityLength < FallRequiredVelocityLength)
+	{
+		return;
+	}
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (DebugGameInstance->CheckMonsterHitCheckDebug() || DebugGameInstance->CheckMonsterCollisionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("오버랩 액터 속도 감지 : %f, %f, %f || %f"), TargetVelocity.X, TargetVelocity.Y, TargetVelocity.Z, TargetVelocityLength));
+		}
+	}
+#endif
 	
 	FVector OverlapDirection = Monster->GetCharacterMovement()->Velocity.GetSafeNormal2D();
-
 	if (!CheckFallable(OverlapDirection, Monster->GetActorLocation()))
 	{
 		return;
@@ -100,8 +120,6 @@ void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FV
 		return;
 	}
 	
-	const float FallTimeDilation = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalParametersDataAsset()->FallEventTimeDilation;
-	
 	GetWorldSettings()->SetTimeDilation(FallTimeDilation);
 	CustomTimeDilation = 1.f / GetWorldSettings()->TimeDilation;
 	UNiagaraSystem* WallCrashNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->InvisibleWallCrashNiagaraSystem;
@@ -119,7 +137,7 @@ void ALLL_FallableWallGimmick::FallOutBegin(AActor* Actor, FVector HitNormal, FV
 		GetWorldSettings()->SetTimeDilation(1.f);
 		CustomTimeDilation = 1.f;
 		FallOutStart(Actor, HitNormal);
-	}), GetWorldSettings()->TimeDilation, false);
+	}), FallEventDuration * GetWorldSettings()->TimeDilation, false);
 }
 
 void ALLL_FallableWallGimmick::FallOutStart(AActor* Actor, FVector HitNormal)

@@ -5,6 +5,10 @@
 
 ULLL_GlobalParameterDataAsset::ULLL_GlobalParameterDataAsset():
 	FallEventTimeDilation(0.1f),
-	DefaultFallKnockBackPower(2000.f)
+	FallEventDuration(1.f),
+	DefaultFallKnockBackPower(2000.f),
+	FallRequiredVelocityLength(1500.f),
+	DecreaseVelocityPerWeight(0.2f)
 {
+	
 }

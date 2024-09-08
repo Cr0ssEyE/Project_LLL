@@ -60,17 +60,21 @@ public:
 
 	void CharacterUnDissolveBegin();
 	
+	void StartChargeFeather();
+	void AddRangeFeatherTargets(AActor* Target);
+	TArray<AActor*> GetRangeFeatherTargetsAndClear();
+
 public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
 	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
 	FORCEINLINE UCameraComponent* GetPlayerCamera() const { return Camera; }
 	FORCEINLINE USpringArmComponent* GetPlayerSpringArm() const { return SpringArm; }
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
-	FORCEINLINE ALLL_PlayerChaseHand* GetChaseHand() const { return ChaseHandActor; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
 	FORCEINLINE float GetLastSentDamage() const { return LastSentDamage; }
+	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
@@ -107,18 +111,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_PlayerAnimInstance> PlayerAnimInstance;
 	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ALLL_PlayerChaseHand> ChaseHandActor;
-
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULLL_AbnormalStatusAttributeSet> AbnormalStatusAttributeSet;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_PlayerCharacterAttributeSet> PlayerCharacterAttributeSet;
 
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_PlayerSkillAttributeSet> SkillAttributeSet;
-	
 	// 입력 액션 관련
 private:
 	void MoveAction(const FInputActionValue& Value);
@@ -155,6 +153,9 @@ private:
 	float ToCursorRotationMultiplyValue;
 	int32 LastAttackerMonsterId;
 	int32 CurrentCombo;
+	int32 ChargedFeatherCount;
+	FTimerHandle ChargeFeatherTimerHandle;
+	TArray<AActor*> RangeFeatherTargets;
 
 	// 상태 관련 함수
 protected:

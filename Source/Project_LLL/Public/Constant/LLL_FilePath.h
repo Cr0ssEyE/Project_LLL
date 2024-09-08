@@ -23,18 +23,22 @@
 // 플레이어 어빌리티 오브젝트 관련
 #define PATH_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_FeatherStormDataAsset'/Game/DataAsset/DA_FeatherStorm.DA_FeatherStorm'")
 #define PATH_THREATENING_DEATH_DATA TEXT("/Script/Project_LLL.LLL_ThreateningDeathDataAsset'/Game/DataAsset/DA_ThreateningDeath.DA_ThreateningDeath'")
+#define PATH_RANGE_FEATHER_DETECTOR_DATA TEXT("/Script/Project_LLL.LLL_RangeFeatherDetectorDataAsset'/Game/DataAsset/DA_RangeFeatherDetector.DA_RangeFeatherDetector'")
 
 // 플레이어 투사체 관련
-#define PATH_PLAYER_CHASE_HAND_DATA TEXT("/Script/Project_LLL.LLL_PlayerChaseHandDataAsset'/Game/DataAsset/DA_PlayerChaseHand.DA_PlayerChaseHand'")
 #define PATH_THROWN_FEATHER_DATA TEXT("/Script/Project_LLL.LLL_ThrownFeatherDataAsset'/Game/DataAsset/DA_ThrownFeather.DA_ThrownFeather'")
 
 // 몬스터 캐릭터 관련
 #define PATH_SWORD_DASH_DATA TEXT("/Script/Project_LLL.LLL_SwordDashDataAsset'/Game/DataAsset/DA_SwordDash.DA_SwordDash'")
 #define PATH_STAFF_BASIC_DATA TEXT("/Script/Project_LLL.LLL_StaffBasicDataAsset'/Game/DataAsset/DA_StaffBasic.DA_StaffBasic'")
 #define PATH_CLAW_BASIC_DATA TEXT("/Script/Project_LLL.LLL_ClawBasicDataAsset'/Game/DataAsset/DA_ClawBasic.DA_ClawBasic'")
+#define PATH_MAN_OF_STRENGTH_DATA TEXT("/Script/Project_LLL.LLL_ManOfStrengthDataAsset'/Game/DataAsset/DA_ManOfStrength.DA_ManOfStrength'")
 
 // 몬스터 투사체 관련
 #define PATH_THROWN_MAGIC_DATA TEXT("/Script/Project_LLL.LLL_ThrownMagicDataAsset'/Game/DataAsset/DA_ThrownMagic.DA_ThrownMagic'")
+
+// 몬스터 어빌리티 오브젝트 관련
+#define PATH_SHOCKWAVE_DATA TEXT("/Script/Project_LLL.LLL_ShockwaveDataAsset'/Game/DataAsset/DA_Shockwave.DA_Shockwave'")
 
 // 오브젝트 관련
 #define PATH_INTERACTIVE_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_InteractiveObjectData'/Game/DataAsset/DA_InteractiveObject.DA_InteractiveObject'")
@@ -52,13 +56,12 @@
 
 // 맵 및 보상 시스템 관련
 #define PATH_MAP_DATA TEXT("/Script/Project_LLL.LLL_MapDataAsset'/Game/DataAsset/DA_Map.DA_Map'")
-#define PATH_MAP_SOUND_SUBSYSTEM_DATA TEXT("/Script/Project_LLL.LLL_MapSoundSubsystemDataAsset'/Game/DataAsset/DA_MapSoundSubsystem.DA_MapSoundSubsystem'")
 #define PATH_GATE_DATA TEXT("/Script/Project_LLL.LLL_GateDataAsset'/Game/DataAsset/DA_Gate.DA_Gate'")
 #define PATH_REWARD_DATA_TABLE TEXT("/Script/Engine.DataTable'/Game/DataTable/RewardDataTable.RewardDataTable'")
 #define PATH_REWARD_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_CornerFrame.SM_CornerFrame'")
 #define PATH_REWARD_OBJECT_TEST_DATA TEXT("/Script/Project_LLL.LLL_RewardObjectDataAsset'/Game/DataAsset/DA_RewardObject.DA_RewardObject'")
 #define PATH_TUTORIAL_MAP_DATA TEXT("/Script/Project_LLL.LLL_TutorialMapDataAsset'/Game/DataAsset/DA_TutorialMap.DA_TutorialMap'")
-#define PATH_SKILL_GAUGE_EFFECT TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/Character/Player/Status/BPGE_Player_FullSkillGauge.BPGE_Player_FullSkillGauge_C'")
+#define PATH_MAP_SOUND_SUBSYSTEM_DATA TEXT("/Script/Project_LLL.LLL_MapSoundSubsystemDataAsset'/Game/DataAsset/DA_MapSoundSubsystem.DA_MapSoundSubsystem'")
 #define PATH_LOBBY_DATA TEXT("/Script/Project_LLL.LLL_LobbyDataAsset'/Game/DataAsset/Lobby/DA_LobbyManagement.DA_LobbyManagement'")
 
 // UI 관련
