@@ -8,6 +8,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GameplayInfo.h"
 #include "Constant/LLL_LevelNames.h"
 #include "DataAsset/Lobby/LLL_LobbyDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
@@ -33,8 +34,12 @@ ALLL_LobbyManagementActor::ALLL_LobbyManagementActor()
 void ALLL_LobbyManagementActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->InitializeSessionMapData();
+
+	if (!IsValid(UGameplayStatics::LoadGameFromSlot(DEFAULT_FILE_NAME, DEFAULT_FILE_INDEX)))
+	{
+		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->CreateDefaultSaveSlot();
+	}
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->InitializeLastSessionMapData(true);
 	
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorEnableCollision(false);

@@ -29,22 +29,32 @@ public:
 	virtual void Deinitialize() override;
 	
 public:
+	UFUNCTION(BlueprintCallable)
+	void CreateDefaultSaveSlot();
+	
 	// 타이틀에서 게임 로드 했을 때 동작, 해당 데이터 기반으로 게임 초기 세팅 지정
+	UFUNCTION(BlueprintCallable)
 	void InitializeGameProgressInfo(ULLL_SaveGameData* SaveGameData = nullptr);
 
 	// 마지막 맵 정보 초기화
-	void InitializeSessionMapData() const;
+	UFUNCTION(BlueprintCallable)
+	void InitializeLastSessionMapData(bool ResetToLobby = false) const;
 	
 	// 게임 진행도 저장
+	UFUNCTION(BlueprintCallable)
 	void BeginSaveGame();
 	void SaveGameProgressInfo();
 
+public:
 	// 게임 진행도 가져오기
+	UFUNCTION(BlueprintCallable)
 	void LoadGameProgressInfo();
 
 	// 마지막으로 플레이한 세션 정보 가져오기
+	UFUNCTION(BlueprintCallable)
 	void LoadLastSessionMapData();
 
+	UFUNCTION(BlueprintCallable)
 	void LoadLastSessionPlayerData();
 	
 public:

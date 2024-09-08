@@ -36,6 +36,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Game/LLL_MapSoundSubsystem.h"
 #include "GAS/ASC/LLL_PlayerASC.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
@@ -163,8 +164,6 @@ void ALLL_PlayerBase::BeginPlay()
 	ChaseActionGaugeWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ChaseActionGaugeWidgetComponent->SetTickWhenOffscreen(true);
 	ChaseActionWidget->SetCircleProgressBarValue(1.0f);
-
-	CastChecked<ALLL_PlayerController>(GetController())->SetCharacterInitialized();
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -214,6 +213,7 @@ void ALLL_PlayerBase::InitAttributeSet()
 
 	// DefaultGame.ini의 [/Script/GameplayAbilities.AbilitySystemGlobals] 항목에 테이블 미리 추가해놔야 정상 작동함.
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, Level, true);
+	CastChecked<ALLL_PlayerController>(GetController())->SetCharacterInitialized();
 }
 
 void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)
@@ -599,6 +599,7 @@ void ALLL_PlayerBase::Dead()
 
 	// TODO: 목숨 같은거 생기면 사이에 추가하기
 	
+	GetGameInstance<ULLL_GameInstance>()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->InitializeLastSessionMapData(true);
 	DisableInput(Cast<APlayerController>(GetController()));
 	
 	PlayerAnimInstance->StopAllMontages(1.f);

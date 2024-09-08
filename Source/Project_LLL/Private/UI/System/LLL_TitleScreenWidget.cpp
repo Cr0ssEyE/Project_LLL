@@ -72,9 +72,6 @@ void ULLL_TitleScreenWidget::NewGameStartButtonEvent()
 {
 	DisableWidgetActivation();
 	
-	ULLL_SaveGameData* NewData = Cast<ULLL_SaveGameData>(UGameplayStatics::CreateSaveGameObject(ULLL_SaveGameData::StaticClass()));
-	UGameplayStatics::SaveGameToSlot(NewData, NewData->SaveFileName, NewData->SaveFileIndex);
-	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->InitializeGameProgressInfo(NewData);
 }
 
 void ULLL_TitleScreenWidget::LoadGameButtonEvent()

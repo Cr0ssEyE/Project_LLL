@@ -39,6 +39,13 @@ void ULLL_GameProgressManageSubSystem::Deinitialize()
 	Super::Deinitialize();
 }
 
+void ULLL_GameProgressManageSubSystem::CreateDefaultSaveSlot()
+{
+	ULLL_SaveGameData* NewData = Cast<ULLL_SaveGameData>(UGameplayStatics::CreateSaveGameObject(ULLL_SaveGameData::StaticClass()));
+	UGameplayStatics::SaveGameToSlot(NewData, NewData->SaveFileName, NewData->SaveFileIndex);
+	InitializeGameProgressInfo(NewData);
+}
+
 void ULLL_GameProgressManageSubSystem::InitializeGameProgressInfo(ULLL_SaveGameData* SaveGameData)
 {
 	ULLL_SaveGameData* SaveData = SaveGameData;
@@ -55,8 +62,13 @@ void ULLL_GameProgressManageSubSystem::InitializeGameProgressInfo(ULLL_SaveGameD
 	// Do Something
 }
 
-void ULLL_GameProgressManageSubSystem::InitializeSessionMapData() const
+void ULLL_GameProgressManageSubSystem::InitializeLastSessionMapData(bool ResetToLobby) const
 {
+	if (ResetToLobby)
+	{
+		CurrentSaveGameData->LastPlayedLevelName = LEVEL_LOBBY;
+	}
+	
 	FStageInfoData CurrentStageInfoData;
 	CurrentSaveGameData->StageInfoData = CurrentStageInfoData;
 }
