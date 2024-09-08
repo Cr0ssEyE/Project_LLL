@@ -603,7 +603,6 @@ void ALLL_PlayerBase::Dead()
 
 	// TODO: 목숨 같은거 생기면 사이에 추가하기
 	
-	GetGameInstance<ULLL_GameInstance>()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->InitializeLastSessionMapData(true);
 	DisableInput(Cast<APlayerController>(GetController()));
 	
 	PlayerAnimInstance->StopAllMontages(1.f);

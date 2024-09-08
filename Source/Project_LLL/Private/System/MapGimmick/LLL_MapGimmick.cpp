@@ -223,12 +223,10 @@ void ALLL_MapGimmick::CreateMap()
 	}
 
 	// 처음으로 맵을 생성하거나 로드하는 경우 세이브 스킵
-	// if (!bIsFirstLoad)
-	// {
-	// 	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
-	// }
-	// bIsFirstLoad = false;
-	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
+	if (!bIsFirstLoad)
+	{
+		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
+	}
 	
 	// TODO: Player loaction change 
 	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
@@ -486,6 +484,12 @@ void ALLL_MapGimmick::PlayerSetHidden()
 	}
 	FadeInSequencePlayer->RestoreState();
 	FadeOutSequencePlayer->RestoreState();
+
+	if (bIsFirstLoad)
+	{
+		bIsFirstLoad = false;
+		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
+	}
 }
 
 void ALLL_MapGimmick::PlayEncounterSequence()

@@ -77,6 +77,10 @@ void ULLL_GameProgressManageSubSystem::BeginSaveGame()
 {
 	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()))
 	{
+		if (IsValid(GetWorld()) && OnSaveCompleted.IsBound())
+		{
+			OnSaveCompleted.Broadcast();
+		}
 		return;
 	}
 
@@ -91,9 +95,20 @@ void ULLL_GameProgressManageSubSystem::SaveGameProgressInfo()
 {
 	if (bIsSaveMapDataCompleted && bIsSaveUserDataCompleted && bIsSavePermanentDataCompleted)
 	{
+		if (ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+		{
+			if (PlayerCharacter->CheckCharacterIsDead())
+			{
+				CurrentSaveGameData->LastPlayedLevelName = LEVEL_LOBBY;
+			}
+		}
+		
 		UGameplayStatics::SaveGameToSlot(CurrentSaveGameData, CurrentSaveGameData->SaveFileName, CurrentSaveGameData->SaveFileIndex);
 		OnSaveCompleted.Broadcast();
-		
+
+		bIsSaveMapDataCompleted = false;
+		bIsSaveUserDataCompleted = false;
+		bIsSavePermanentDataCompleted = false;
 		return;
 	}
 
@@ -120,7 +135,7 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionMapData()
 		return;
 	}
 
-	if (GetLastPlayedLevelName() == LEVEL_LOBBY)
+	if (GetLastPlayedLevelName() == LEVEL_LOBBY && GetWorld()->GetName() != LEVEL_TEST)
 	{
 		// 로비 관련 처리
 		return;
@@ -184,6 +199,12 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 	{
 		return;
 	}
+
+	if (GetLastPlayedLevelName() == LEVEL_TUTORIAL)
+	{
+		bIsSaveMapDataCompleted = true;
+		return;
+	}
 	
 	CurrentSaveGameData->LastPlayedLevelName = *GetWorld()->GetName();
 	ALLL_MapGimmick* MapGimmick = CurrentInstanceMapGimmick.Get();
@@ -201,18 +222,27 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 {
 	// 로비인 경우 위치 정보만 저장
-	if (GetLastPlayedLevelName() == LEVEL_LOBBY)
+	if (GetLastPlayedLevelName() == LEVEL_LOBBY || GetLastPlayedLevelName() == LEVEL_TUTORIAL)
 	{
 		CurrentSaveGameData->LobbyLastStandingLocation = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation();
+		bIsSaveUserDataCompleted = true;
 		return;
 	}
 	
 	if (!IsValid(CurrentInstanceMapGimmick.Get()))
 	{
+		// 예외처리 필요
+		bIsSaveUserDataCompleted = true;
 		return;
 	}
 	
 	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (PlayerCharacter->CheckCharacterIsDead())
+	{
+		bIsSaveUserDataCompleted = true;
+		return;
+	}
+	
 	UAbilitySystemComponent* PlayerASC = PlayerCharacter->GetAbilitySystemComponent();
 	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	

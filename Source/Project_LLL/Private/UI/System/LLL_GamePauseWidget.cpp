@@ -131,11 +131,6 @@ void ULLL_GamePauseWidget::OnAnimationFinished_Implementation(const UWidgetAnima
 	}
 
 	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-	const ULLL_SaveGameData* CurrentSaveGameData = GameProgressSubSystem->GetCurrentSaveGameData();
-	if (!IsValid(CurrentSaveGameData))
-	{
-		return;
-	}
 	
 	if (LastClickButton == TitleButton && Animation == FadeAnim)
 	{
