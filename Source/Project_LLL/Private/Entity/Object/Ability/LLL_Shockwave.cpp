@@ -27,10 +27,6 @@ void ALLL_Shockwave::BeginPlay()
 
 	ShockwaveDataAsset = Cast<ULLL_ShockwavetDataAsset>(AbilityObjectDataAsset);
 	AbilityObjectAttributeSet = ShockwaveAttributeSet;
-
-	FVector Location = GetActorLocation();
-	Location.Z = 1.0f;
-	SetActorLocation(Location);
 }
 
 void ALLL_Shockwave::Tick(float DeltaSeconds)
