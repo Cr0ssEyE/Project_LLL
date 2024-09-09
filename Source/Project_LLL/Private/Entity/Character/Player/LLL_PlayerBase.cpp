@@ -13,13 +13,14 @@
 #include "MovieSceneSequencePlaybackSettings.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Constant/LLL_AnimMontageSlotName.h"
+#include "Constant/LLL_AnimRelationNames.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "Constant/LLL_MaterialParameterName.h"
+#include "Constant/LLL_GraphicParameterNames.h"
+#include "Constant/LLL_GeneralConstants.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
@@ -27,7 +28,6 @@
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
-#include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -35,11 +35,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "Game/LLL_MapSoundSubsystem.h"
 #include "GAS/ASC/LLL_PlayerASC.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
-#include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 #include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
 
@@ -53,7 +52,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
 	
 	PlayerCharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
-	SkillAttributeSet = CreateDefaultSubobject<ULLL_PlayerSkillAttributeSet>(TEXT("SkillAttributeSet"));
 	AbnormalStatusAttributeSet = CreateDefaultSubobject<ULLL_AbnormalStatusAttributeSet>(TEXT("AbnormalStatusAttributeSet"));
 	
 	ChaseActionGaugeWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("ChaseActionGaugeWidgetComponent"));
@@ -83,8 +81,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	// SpringArm->SetupAttachment(RootComponent);
 
 	LastCheckedMouseLocation = FVector::Zero();
-	
 	bIsLowHP = false;
+	FeatherSpawnStartTime = 0.01f;
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -105,7 +103,7 @@ void ALLL_PlayerBase::BeginPlay()
 		{
 			Camera->SetOrthoWidth(CameraDataAsset->CameraDistance);
 			Camera->SetUpdateOrthoPlanes(CameraDataAsset->bUseUpdateOrthoPlanes);
-			SpringArm->TargetArmLength = 1000.f;
+			SpringArm->TargetArmLength = CameraDataAsset->OrthographicSpringArmDistance;
 			if (CameraDataAsset->bUseConstraintAspectRatio)
 			{
 				Camera->SetConstraintAspectRatio(CameraDataAsset->bUseConstraintAspectRatio);
@@ -126,16 +124,12 @@ void ALLL_PlayerBase::BeginPlay()
 		}
 		else
 		{
-			SpringArm->TargetArmLength = CameraDataAsset->SpringArmDistance;
+			SpringArm->TargetArmLength = CameraDataAsset->PerspectiveSpringArmDistance;
 			Camera->SetFieldOfView(CameraDataAsset->CameraFOV);
 		}
 		
 		SpringArm->SetRelativeRotation(CameraDataAsset->SpringArmAngle);
 	}
-
-	
-	ChaseHandActor = Cast<ALLL_PlayerChaseHand>(GetWorld()->SpawnActor(ALLL_PlayerChaseHand::StaticClass()));
-	ChaseHandActor->SetOwner(this);
 
 	PlayerUIManager = CastChecked<ULLL_PlayerUIManager>(CharacterUIManager);
 	
@@ -151,16 +145,8 @@ void ALLL_PlayerBase::BeginPlay()
 			}
 		}
 	}
-	GetMesh()->SetCustomDepthStencilValue(4);
-	
-	ULLL_PlayerChaseActionWidget* ChaseActionWidget = PlayerUIManager->GetChaseActionWidget();
-	ChaseActionGaugeWidgetComponent->SetWidget(ChaseActionWidget);
-	ChaseActionGaugeWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
-	ChaseActionGaugeWidgetComponent->SetRelativeLocation(PlayerDataAsset->ChaseActionGaugeLocation);
-	ChaseActionGaugeWidgetComponent->SetDrawSize(PlayerDataAsset->ChaseActionGaugeSize);
-	ChaseActionGaugeWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	ChaseActionGaugeWidgetComponent->SetTickWhenOffscreen(true);
-	ChaseActionWidget->SetCircleProgressBarValue(1.0f);
+	GetMesh()->SetCustomDepthStencilValue(STENCIL_VALUE_PLAYER);
+	StartCameraMoveToCursor();
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -196,8 +182,6 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::SetMoveInputPressed, false);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction, EAbilityInputName::Skill);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->ControlChaseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::ChaseAction, EAbilityInputName::Chase);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
@@ -225,7 +209,7 @@ void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)
 				continue;
 			}
 
-			SetParameter(FModParameter, static_cast<float>(DamagedEventParameterProperty.Value));
+			SetOnceParameterByTupleValue(FModParameter, static_cast<float>(DamagedEventParameterProperty.Value));
 		}
 	}
 	else if (FModParameter == EFModParameter::PlayerWalkMaterialParameter)
@@ -238,12 +222,12 @@ void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)
 				continue;
 			}
 
-			SetParameter(FModParameter, static_cast<float>(StepEventParameterProperty.Value));
+			SetOnceParameterByTupleValue(FModParameter, static_cast<float>(StepEventParameterProperty.Value));
 		}
 	}
 	else if (FModParameter == EFModParameter::PlayerAttackCountParameter || FModParameter == EFModParameter::PlayerAttackHitCountParameter)
 	{
-		SetParameter(FModParameter, CurrentCombo - 1);
+		SetOnceParameterByTupleValue(FModParameter, CurrentCombo - 1);
 	}
 }
 
@@ -288,6 +272,34 @@ void ALLL_PlayerBase::RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObje
 			PlayerUIManager->UpdateInteractionWidget(InteractiveObjects[SelectedInteractiveObjectNum], InteractiveObjects.Num() - 1);
 		}
 	}
+}
+
+void ALLL_PlayerBase::StartChargeFeather()
+{
+	ChargedFeatherCount = 1;
+	GetWorldTimerManager().ClearTimer(ChargeFeatherTimerHandle);
+	GetWorldTimerManager().SetTimer(ChargeFeatherTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		ChargedFeatherCount++;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
+		// Todo : 추후 데이터화 예정
+		if (ChargedFeatherCount == 10)
+		{
+			GetWorldTimerManager().PauseTimer(ChargeFeatherTimerHandle);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 완료")));
+		}
+	}), 1.0f, true);
+}
+
+void ALLL_PlayerBase::AddRangeFeatherTargets(AActor* Target)
+{
+	RangeFeatherTargets.Emplace(Target);
+}
+
+TArray<AActor*> ALLL_PlayerBase::GetRangeFeatherTargetsAndClear()
+{
+	TArray<AActor*> TempRangeFeatherTargets = RangeFeatherTargets;
+	RangeFeatherTargets.Empty();
+	return TempRangeFeatherTargets;
 }
 
 FVector ALLL_PlayerBase::CheckMouseLocation()
@@ -367,12 +379,6 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 	CameraRotation.Pitch = CameraRotation.Roll = 0.f;
 	MoveDirection = CameraRotation.RotateVector(FVector(MoveInputValue.X, MoveInputValue.Y, 0.f));
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
-	
-	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_PLAYER_STATE_CHASE_PROGRESS))
-	{
-		return;
-	}
-
 	AddMovementInput(MoveDirection, 1.f);
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -457,7 +463,7 @@ void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
 	{
 		return;
 	}
-	InteractiveObjects[SelectedInteractiveObjectNum]->InteractiveEvent();
+	InteractiveObjects[SelectedInteractiveObjectNum]->InteractiveEvent(this);
 }
 
 void ALLL_PlayerBase::InventoryAction(const FInputActionValue& Value)
@@ -575,7 +581,7 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 
 	ActivatePPLowHP();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DeactivatePPLowHP);
-	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= 0.3f)
+	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= PlayerCharacterAttributeSet->GetLowHealthPercentage())
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PlayLowHPAnimation);
 	}
@@ -623,13 +629,13 @@ void ALLL_PlayerBase::Dead()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	
-	GetWorld()->SweepMultiByProfile(
+	GetWorld()->SweepMultiByChannel(
 		HitResults,
 		GetActorLocation(),
 		GetActorLocation(),
 		FQuat::Identity,
-		CP_BULLET_TIME_INFLUENCED,
-		FCollisionShape::MakeBox(FVector(10000.f, 10000.f, 1000.f)),
+		ECC_ENTITY_CHECK,
+		FCollisionShape::MakeBox(FVector(BIG_SCALE_SCALAR, BIG_SCALE_SCALAR, BIG_SCALE_SCALAR)),
 		Params
 		);
 
@@ -648,21 +654,74 @@ void ALLL_PlayerBase::Dead()
 	}
 
 	const FTransform DissolveStartTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
-	DeadSequenceDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->DeadSequenceDissolveActor, DissolveStartTransform);
+	if (!IsValid(CharacterDissolveActor))
+	{
+		CharacterDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->CharacterDissolveActor, DissolveStartTransform);
+	}
+	else
+	{
+		CharacterDissolveActor->SetActorTransform(DissolveStartTransform);
+	}
+	
 	DeadSequenceActor->FinishSpawning(FTransform::Identity);
-
+	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayerDeadEvent();
 }
 
 void ALLL_PlayerBase::DropDissolveActor()
 {
-	if (DeadSequenceDissolveActor->GetActorLocation().Z < GetMesh()->GetComponentLocation().Z - 100.f)
+	if (CharacterDissolveActor->GetActorLocation().Z < GetMesh()->GetComponentLocation().Z + PlayerDataAsset->DissolveActorFallStopLocation)
+	{
+		DissolveCompleteDelegate.Broadcast(true);
+		return;
+	}
+	
+	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
+}
+
+void ALLL_PlayerBase::CharacterUnDissolveBegin()
+{
+	if (GetMesh()->bHiddenInGame || IsHidden())
+	{
+		SetActorHiddenInGame(false);
+		GetMesh()->SetHiddenInGame(false);
+	}
+	
+	if (!IsValid(CharacterDissolveActor))
+	{
+		CharacterDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->CharacterDissolveActor, GetTransform());
+	}
+	else
+	{
+		CharacterDissolveActor->SetActorTransform(GetTransform());
+	}
+	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() + GetMesh()->GetRelativeLocation().Z);
+
+	UMaterialParameterCollection* PlayerMPC = GetGameInstance<ULLL_GameInstance>()->GetPlayerMPC();
+	GetWorld()->GetParameterCollectionInstance(PlayerMPC)->SetScalarParameterValue(PLAYER_CHARACTER_DISSOLVE, 1.f);
+	
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PullUpDissolveActor);
+}
+
+void ALLL_PlayerBase::PullUpDissolveActor()
+{
+	if (!IsValid(CharacterDissolveActor))
 	{
 		return;
 	}
 	
-	DeadSequenceDissolveActor->SetActorLocation(DeadSequenceDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
+	const FTransform DissolveEndTransform = GetMesh()->GetSocketTransform(SOCKET_OVERHEAD);
+	if (CharacterDissolveActor->GetActorLocation().Z >= DissolveEndTransform.GetLocation().Z + GetMesh()->GetRelativeLocation().Z)
+	{
+		CharacterDissolveActor->Destroy();
+		DissolveCompleteDelegate.Broadcast(false);
+		return;
+	}
+	
+	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() + FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed * 2.f));
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PullUpDissolveActor);
 }
 
 void ALLL_PlayerBase::DeadMotionEndedHandle()
@@ -675,7 +734,7 @@ void ALLL_PlayerBase::DeactivatePPLowHP()
 {
 	const ULLL_GameInstance* GameInstance = Cast<ULLL_GameInstance>(GetGameInstance());
 	const UMaterialParameterCollection* MPC = GameInstance->GetPostProcessMPC();
-	ScalarValue += GetWorld()->GetDeltaSeconds() / 3;
+	ScalarValue += GetWorld()->GetDeltaSeconds();
 	GetWorld()->GetParameterCollectionInstance(MPC)->SetScalarParameterValue(PP_PLAYER_LOWHP_RADIUS, ScalarValue);
 	if (ScalarValue <= PlayerDataAsset->HPLowScalarMaxValue)
 	{
@@ -696,12 +755,12 @@ void ALLL_PlayerBase::PlayLowHPAnimation()
 	ULLL_PlayerStatusWidget* StateWidget = Cast<ULLL_PlayerStatusWidget>(PlayerUIManager->GetCharacterStatusWidget());
 	StateWidget->PlayLowHPAnimation();
 	FTimerHandle LowHPHandle;
-	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= 0.3f && !bIsLowHP)
+	if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() <= PlayerCharacterAttributeSet->GetLowHealthPercentage() && !bIsLowHP)
 	{
 		bIsLowHP = true;
 		GetWorld()->GetTimerManager().SetTimer(LowHPHandle, this, &ALLL_PlayerBase::PlayLowHPAnimation, 1.0f, true);
 	}
-	else if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() > 0.3f)
+	else if (PlayerCharacterAttributeSet->GetCurrentHealth() / PlayerCharacterAttributeSet->GetMaxHealth() > PlayerCharacterAttributeSet->GetLowHealthPercentage())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(LowHPHandle);
 	}

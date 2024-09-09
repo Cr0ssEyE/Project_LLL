@@ -9,6 +9,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_GeneralConstants.h"
+#include "Constant/LLL_GraphicParameterNames.h"
 #include "Game/LLL_GameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
@@ -54,7 +56,7 @@ void ALLL_BaseCharacter::PostInitializeComponents()
 void ALLL_BaseCharacter::SetDefaultInformation()
 {
 	GetMesh()->SetRenderCustomDepth(true);
-	GetMesh()->SetCustomDepthStencilValue(2);
+	GetMesh()->SetCustomDepthStencilValue(STENCIL_VALUE_TOON_BASE);
 	
 	if (IsValid(CharacterDataAsset))
 	{
@@ -64,7 +66,7 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		GetMesh()->SetRelativeScale3D(CharacterDataAsset->MeshSize);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -CharacterDataAsset->CollisionSize.X));
-		GetMesh()->SetBoundsScale(100.f);
+		GetMesh()->SetBoundsScale(ACTOR_DEFAULT_BOUNDS);
 		
 		UClass* AnimBlueprint = CharacterDataAsset->AnimInstance.LoadSynchronous();
 		if (IsValid(AnimBlueprint))
@@ -179,7 +181,7 @@ void ALLL_BaseCharacter::Dead()
 	ASC->CancelAbilities();
 }
 
-void ALLL_BaseCharacter::SetParameter(EFModParameter FModParameter, float value) const
+void ALLL_BaseCharacter::SetOnceParameterByTupleValue(EFModParameter FModParameter, float value) const
 {
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
 	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())

@@ -48,14 +48,17 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<UBoxComponent> RootBox;
+
+public:
+	FORCEINLINE ALLL_MonsterSpawner* GetMonsterSpawner() const { return MonsterSpawner; }
 	
 	// Stage Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage")
 	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UBoxComponent> RootBox;
 	
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> RoomClass;
@@ -76,10 +79,11 @@ protected:
 	TObjectPtr<ULLL_PlayerSpawnPointComponent> PlayerSpawnPointComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<ULLL_SequencerComponent> SequencerPlayComponent;
+	TObjectPtr<ULLL_SequencerComponent> RoomSequencerPlayComponent;
 	
 	uint8 Seed;
-	
+
+protected:
 	UFUNCTION()
 	void CreateMap();
 
@@ -102,27 +106,31 @@ private:
 // Gate Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Gate", Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<ALLL_GateObject> GateClass;
-
-	UPROPERTY(VisibleAnywhere, Category = "Gate", Meta = (AllowPrivateAccess = "true"))
 	TArray<TWeakObjectPtr<ALLL_GateObject>> Gates;
+
+	uint8 bIsNextGateInteracted : 1;
 	
+protected:
 	UFUNCTION()
 	void AllGatesDestroy();
 	
 	void OnInteractionGate(const FRewardDataTable* Data);
 	void EnableAllGates();
 
+	UFUNCTION()
+	void SetupGateData();
+	
 // State Section
 protected:
 	UPROPERTY(EditAnywhere, Category = "Stage", Meta = (AllowPrivateAccess = "true"))
 	EStageState CurrentState;
 
-	void SetState(EStageState InNewState);
-
 	UPROPERTY()
 	TMap<EStageState, FStageChangedDelegateWrapper> StateChangeActions;
-
+	
+protected:
+	void SetState(EStageState InNewState);
+	
 	void SetReady();
 	void SetFight();
 	void SetChooseReward();
@@ -196,8 +204,8 @@ protected:
 	void PlayerTeleport();
 	
 	UFUNCTION()
-	void PlayerSetHidden(UNiagaraComponent* InNiagaraComponent);
+	void PlayerSetHidden();
 
 	UFUNCTION()
-	void PlaySequenceComponent();
+	void PlayEncounterSequence();
 };

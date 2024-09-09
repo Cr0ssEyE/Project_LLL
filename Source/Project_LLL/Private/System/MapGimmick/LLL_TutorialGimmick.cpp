@@ -18,6 +18,7 @@
 #include "NiagaraComponent.h"
 #include "DataAsset/LLL_TutorialMapDataAsset.h"
 #include "Game/LLL_GameInstance.h"
+#include "Game/LLL_MapSoundSubsystem.h"
 #include "UI/System/LLL_TutorialWidget.h"
 
 ALLL_TutorialGimmick::ALLL_TutorialGimmick()
@@ -25,12 +26,12 @@ ALLL_TutorialGimmick::ALLL_TutorialGimmick()
 	TutorialDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_TutorialMapDataAsset>(PATH_TUTORIAL_MAP_DATA, EAssertionLevel::Check);
 	bIsActiveSkill = false; 
 	bIsActiveDash = false;
-	ChargeSkillGaugeEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(PATH_SKILL_GAUGE_EFFECT, EAssertionLevel::Check);
 }
 
 void ALLL_TutorialGimmick::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TutorialDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, TutorialDataAsset->ParticleScale, false, false);
 	PlayerTeleportNiagara->OnSystemFinished.AddDynamic(this, &ALLL_TutorialGimmick::LoadLevel);
 
@@ -41,7 +42,7 @@ void ALLL_TutorialGimmick::BeginPlay()
 		PlayerSpawnPointComponent = Cast<ULLL_PlayerSpawnPointComponent>(ChildComponent);
 		if (IsValid(PlayerSpawnPointComponent))
 		{
-			ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+			ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
 			Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
 		}
 	}
@@ -63,6 +64,9 @@ void ALLL_TutorialGimmick::BeginPlay()
 		TutorialWidget->AddToViewport();
 		TutorialWidget->SetDashTutorial();
 	}
+
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->StopBGM();
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->StopAMB();
 }
 
 void ALLL_TutorialGimmick::BeginOverlapAttackTutorial(AActor* OverlappedActor, AActor* OtherActor)
@@ -72,7 +76,7 @@ void ALLL_TutorialGimmick::BeginOverlapAttackTutorial(AActor* OverlappedActor, A
 		return;
 	}
 
-	if (OtherActor != GetWorld()->GetFirstPlayerController()->GetPawn())
+	if (OtherActor != UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn())
 	{
 		return;
 	}
@@ -87,7 +91,6 @@ void ALLL_TutorialGimmick::BeginOverlapAttackTutorial(AActor* OverlappedActor, A
 
 void ALLL_TutorialGimmick::FinalMapSpawn(AActor* DestroyedActor)
 {
-	TutorialWidget->SetChaseTutorial();
 	AActor* StageActor = GetWorld()->SpawnActor<AActor>(TutorialDataAsset->BPMap, TutorialDataAsset->FinalStageLocation, RootComponent->GetComponentRotation());
 	StageActors.Emplace(StageActor);
 	for (USceneComponent* ChildComponent : StageActor->GetRootComponent()->GetAttachChildren())
@@ -96,7 +99,7 @@ void ALLL_TutorialGimmick::FinalMapSpawn(AActor* DestroyedActor)
 		if (IsValid(GateSpawnPointComponent))
 		{
 			Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), GateSpawnPointComponent->GetComponentLocation(), GateSpawnPointComponent->GetComponentRotation());
-			Gate->FadeOutDelegate.AddUObject(this, &ALLL_TutorialGimmick::OnInteractionGate);
+			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_TutorialGimmick::OnInteractionGate);
 		}
 	}
 	FVector Vector = TutorialDataAsset->FinalStageLocation;
@@ -107,14 +110,6 @@ void ALLL_TutorialGimmick::FinalMapSpawn(AActor* DestroyedActor)
 
 void ALLL_TutorialGimmick::FinalMonsterSpawn(AActor* DestroyedActor)
 {
-	TutorialWidget->SetSkillTutorial();
-
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	FGameplayEffectContextHandle EffectContextHandle = Player->GetAbilitySystemComponent()->MakeEffectContext();
-	EffectContextHandle.AddSourceObject(Player);
-	const FGameplayEffectSpecHandle EffectSpecHandle = Player->GetAbilitySystemComponent()->MakeOutgoingSpec(ChargeSkillGaugeEffect, 1.0, EffectContextHandle);
-	Player->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-
 	FVector Vector = TutorialDataAsset->FinalStageLocation;
 	
 	Vector.Z += 150;
@@ -131,11 +126,6 @@ void ALLL_TutorialGimmick::FinalMonsterSpawn(AActor* DestroyedActor)
 		Monster->OnDestroyed.AddDynamic(this, &ALLL_TutorialGimmick::MonsterDestroyed);
 		Monsters.Emplace(Monster);
 	}
-
-	FTimerHandle SetTutorialTimerHandle;
-	GetWorldTimerManager().SetTimer(SetTutorialTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&] {
-		TutorialWidget->SetSkillChargeTutorial();
-	}), 3.0f, false);
 }
 
 void ALLL_TutorialGimmick::MonsterDestroyed(AActor* DestroyedActor)
@@ -159,10 +149,10 @@ void ALLL_TutorialGimmick::RewardDestroyed(AActor* DestroyedActor)
 	Gate->SetActivate();
 }
 
-void ALLL_TutorialGimmick::OnInteractionGate()
+void ALLL_TutorialGimmick::OnInteractionGate(const FRewardDataTable* RewardData)
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	Player->DisableInput(GetWorld()->GetFirstPlayerController());
+	Player->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
 	PlayerTeleportNiagara->ActivateSystem();
 }
@@ -171,6 +161,6 @@ void ALLL_TutorialGimmick::LoadLevel(UNiagaraComponent* InNiagaraComponent)
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorHiddenInGame(true);
-	UGameplayStatics::OpenLevel(this, LEVEL_TEST);
+	UGameplayStatics::OpenLevel(this, LEVEL_LOBBY);
 }
 

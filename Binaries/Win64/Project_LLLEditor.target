@@ -12,8 +12,8 @@
 	{
 		"MajorVersion": 5,
 		"MinorVersion": 4,
-		"PatchVersion": 2,
-		"Changelist": 33871570,
+		"PatchVersion": 3,
+		"Changelist": 34507850,
 		"CompatibleChangelist": 33043543,
 		"IsLicenseeVersion": 0,
 		"IsPromotedBuild": 0,
@@ -5502,6 +5502,14 @@
 			"Type": "SymbolFile"
 		},
 		{
+			"Path": "$(EngineDir)/Plugins/Marketplace/Developer/RiderLink/Binaries/Win64/UnrealEditor-RiderDebuggerSupport.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Marketplace/Developer/RiderLink/Binaries/Win64/UnrealEditor-RiderDebuggerSupport.pdb",
+			"Type": "SymbolFile"
+		},
+		{
 			"Path": "$(EngineDir)/Plugins/Marketplace/Developer/RiderLink/Binaries/Win64/UnrealEditor-RiderGameControl.dll",
 			"Type": "DynamicLibrary"
 		},
@@ -6963,6 +6971,26 @@
 		},
 		{
 			"Path": "$(ProjectDir)/Plugins/LDAssistant/Binaries/Win64/UnrealEditor.modules",
+			"Type": "RequiredResource"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/NiagaraUIRenderer/Binaries/Win64/UnrealEditor-NiagaraUIRenderer.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/NiagaraUIRenderer/Binaries/Win64/UnrealEditor-NiagaraUIRenderer.pdb",
+			"Type": "SymbolFile"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/NiagaraUIRenderer/Binaries/Win64/UnrealEditor-NiagaraUIRendererEditor.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/NiagaraUIRenderer/Binaries/Win64/UnrealEditor-NiagaraUIRendererEditor.pdb",
+			"Type": "SymbolFile"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/NiagaraUIRenderer/Binaries/Win64/UnrealEditor.modules",
 			"Type": "RequiredResource"
 		}
 	],
@@ -30116,6 +30144,10 @@
 			"Type": "UFS"
 		},
 		{
+			"Path": "$(ProjectDir)/Plugins/NiagaraUIRenderer/NiagaraUIRenderer.uplugin",
+			"Type": "UFS"
+		},
+		{
 			"Path": "$(ProjectDir)/Project_LLL.uproject",
 			"Type": "UFS"
 		}
@@ -30257,6 +30289,7 @@
 		"Niagara",
 		"NiagaraFluids",
 		"NiagaraSimCaching",
+		"NiagaraUIRenderer",
 		"NullSourceCodeAccess",
 		"ObjectMixer",
 		"OnlineBase",

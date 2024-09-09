@@ -11,6 +11,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 
 void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 {
@@ -33,16 +34,9 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	}));
 }
 
-void ALLL_MonsterBaseAIController::SetPlayer() const
+void ALLL_MonsterBaseAIController::SetPlayer(ALLL_PlayerBase* Player) const
 {
-	if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
-	{
-		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-		if (IsValid(Player))
-		{
-			BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
-		}
-	}
+	BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
 }
 
 void ALLL_MonsterBaseAIController::StopLogic(const FString& Reason) const
@@ -51,6 +45,11 @@ void ALLL_MonsterBaseAIController::StopLogic(const FString& Reason) const
 	
 	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
 	Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
+}
+
+void ALLL_MonsterBaseAIController::StartLogic() const
+{
+	BrainComponent->StartLogic();
 }
 
 void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
@@ -71,6 +70,8 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 		}
 
 		BrainComponent->StartLogic();
-		SetPlayer();
+
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		SetPlayer(Player);
 	}
 }

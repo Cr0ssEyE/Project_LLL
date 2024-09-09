@@ -15,10 +15,8 @@ class PROJECT_LLL_API ALLL_GoldRewardObject : public ALLL_RewardObject
 	GENERATED_BODY()
 
 public:
-
 	virtual void SetInformation(const FRewardDataTable* Data) override;
-
-	virtual void InteractiveEvent() override;
+	virtual void InteractiveEvent(AActor* InteractedActor) override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)

@@ -24,9 +24,9 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Game/LLL_GameInstance.h"
+#include "Game/LLL_MapSoundSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/MapGimmick/Components/LLL_SequencerComponent.h"
-#include "System/MapSound/LLL_MapSoundManager.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
@@ -79,7 +79,6 @@ void ALLL_MapGimmick::BeginPlay()
 	RewardData = RewardGimmick->GetRewardData(0);
 
 	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,MapDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, MapDataAsset->ParticleScale, false, false);
-	PlayerTeleportNiagara->OnSystemFinished.AddDynamic(this, &ALLL_MapGimmick::PlayerSetHidden);
 	//Sequence Section
 	FMovieSceneSequencePlaybackSettings Settings;
 	Settings.bAutoPlay = false;
@@ -91,9 +90,13 @@ void ALLL_MapGimmick::BeginPlay()
 
 	SequenceActorPtr = FadeOutSequenceActor;
 	FadeOutSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
+	FadeOutSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::SetupGateData);
 	
 	RandomMap();
 	CreateMap();
+
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayAMB();
 }
 
 void ALLL_MapGimmick::CreateMap()
@@ -106,7 +109,7 @@ void ALLL_MapGimmick::CreateMap()
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorEnableCollision(false);
 	Player->SetActorHiddenInGame(true);
-	Player->DisableInput(GetWorld()->GetFirstPlayerController());
+	Player->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	RoomActor = GetWorld()->SpawnActor<AActor>(RoomClass, RootComponent->GetComponentTransform());
 	
 	for (USceneComponent* ChildComponent : RoomActor->GetRootComponent()->GetAttachChildren())
@@ -120,9 +123,9 @@ void ALLL_MapGimmick::CreateMap()
 			}
 		}
 
-		if (!IsValid(SequencerPlayComponent))
+		if (!IsValid(RoomSequencerPlayComponent))
 		{
-			SequencerPlayComponent = Cast<ULLL_SequencerComponent>(ChildComponent);
+			RoomSequencerPlayComponent = Cast<ULLL_SequencerComponent>(ChildComponent);
 		}
 		
 		if (!IsValid(PlayerSpawnPointComponent))
@@ -133,9 +136,8 @@ void ALLL_MapGimmick::CreateMap()
 		const ULLL_GateSpawnPointComponent* SpawnPoint = Cast<ULLL_GateSpawnPointComponent>(ChildComponent);
 		if (IsValid(SpawnPoint))
 		{
-			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(ALLL_GateObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(MapDataAsset->Gate, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
-			Gate->FadeOutDelegate.AddUObject(this, &ALLL_MapGimmick::PlayerTeleport);
 			RewardGimmick->SetRewardToGate(Gate);
 			Gates.Add(Gate);
 		}
@@ -181,8 +183,7 @@ void ALLL_MapGimmick::RandomMap()
 	if (CurrentRoomNumber > MapDataAsset->MaximumRoom)
 	{
 		RoomClass = MapDataAsset->Boss;
-		const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-		GameInstance->GetMapSoundManager()->StopBGM();
+		GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->StopBGM();
 		return;
 	}
 	
@@ -222,17 +223,8 @@ void ALLL_MapGimmick::AllGatesDestroy()
 void ALLL_MapGimmick::OnInteractionGate(const FRewardDataTable* Data)
 {
 	RewardData = Data;
-	RoomChildActors.Empty();
-	if(IsValid(ShoppingMapComponent))
-	{
-		ShoppingMapComponent->DeleteProducts();
-	}
-	ShoppingMapComponent = nullptr;
-	PlayerSpawnPointComponent = nullptr;
-	SequencerPlayComponent = nullptr;
-
-	
-	RoomActor->Destroy();
+	bIsNextGateInteracted = true;
+	PlayerTeleport();
 }
 
 void ALLL_MapGimmick::EnableAllGates()
@@ -243,10 +235,31 @@ void ALLL_MapGimmick::EnableAllGates()
 	}
 }
 
+void ALLL_MapGimmick::SetupGateData()
+{
+	if (!bIsNextGateInteracted)
+	{
+		return;
+	}
+
+	RoomChildActors.Empty();
+	if(IsValid(ShoppingMapComponent))
+	{
+		ShoppingMapComponent->DeleteProducts();
+	}
+	ShoppingMapComponent = nullptr;	
+	PlayerSpawnPointComponent = nullptr;
+	RoomSequencerPlayComponent = nullptr;
+	
+	RoomActor->Destroy();
+	
+	bIsNextGateInteracted = false;
+}
+
 void ALLL_MapGimmick::SetState(EStageState InNewState)
 {
 	CurrentState = InNewState;
-
+	
 	if (StateChangeActions.Contains(InNewState))
 	{
 		StateChangeActions[CurrentState].StageDelegate.ExecuteIfBound();
@@ -262,8 +275,7 @@ void ALLL_MapGimmick::SetFight()
 {
 	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
 	
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	GameInstance->SetMapSoundManagerBattleParameter(1.0f);
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetBattleParameter(1.0f);
 }
 
 void ALLL_MapGimmick::SetChooseReward()
@@ -272,8 +284,7 @@ void ALLL_MapGimmick::SetChooseReward()
 	
 	RewardSpawn();
 
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	GameInstance->SetMapSoundManagerBattleParameter(0.0f);
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetBattleParameter(0.0f);
 }
 
 void ALLL_MapGimmick::SetChooseNext()
@@ -354,11 +365,15 @@ void ALLL_MapGimmick::SetRewardWidget()
 void ALLL_MapGimmick::FadeIn()
 {
 	FadeInSequencePlayer->Play();
+
+	FTimerHandle FadeTeleportTimerHandle;
+	GetWorldTimerManager().SetTimer(FadeTeleportTimerHandle, this, &ALLL_MapGimmick::PlayerSetHidden, MapDataAsset->TeleportFadeOutDelay);
 }
 
 void ALLL_MapGimmick::FadeOut()
 {
 	FadeOutSequencePlayer->Play();
+	PlayerSetHidden();
 }
 
 void ALLL_MapGimmick::PlayerTeleport()
@@ -368,19 +383,25 @@ void ALLL_MapGimmick::PlayerTeleport()
 		return;
 	}
 
-	if (IsValid(SequencerPlayComponent))
+	if (IsValid(RoomSequencerPlayComponent) && RoomSequencerPlayComponent->CheckRoomEncounteredSequence())
 	{
-		PlaySequenceComponent();
+		PlayEncounterSequence();
 		return;
 	}
 	
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	Player->DisableInput(GetWorld()->GetFirstPlayerController());
+	Player->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
 	PlayerTeleportNiagara->ActivateSystem();
+
+	if (bIsNextGateInteracted)
+	{
+		FTimerHandle FadeTeleportTimerHandle;
+		GetWorldTimerManager().SetTimer(FadeTeleportTimerHandle, this, &ALLL_MapGimmick::FadeOut, MapDataAsset->TeleportFadeOutDelay);
+	}
 }
 
-void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
+void ALLL_MapGimmick::PlayerSetHidden()
 {
 	if (!IsValid(GetWorld()) || !IsValid(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
@@ -388,24 +409,23 @@ void ALLL_MapGimmick::PlayerSetHidden(UNiagaraComponent* InNiagaraComponent)
 	}
 	
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (Player->IsHidden())
+	if (Player->IsHidden() && !bIsNextGateInteracted)
 	{
 		
 		Player->SetActorHiddenInGame(false);
-		Player->EnableInput(GetWorld()->GetFirstPlayerController());
+		Player->EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	}
 	else
 	{
 		Player->SetActorHiddenInGame(true);
-		FadeOut();
 	}
 	FadeInSequencePlayer->RestoreState();
 	FadeOutSequencePlayer->RestoreState();
 }
 
-void ALLL_MapGimmick::PlaySequenceComponent()
+void ALLL_MapGimmick::PlayEncounterSequence()
 {
-	GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->EncountedDelegate.Broadcast();
+	GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->EncounteredDelegate.Broadcast(RoomSequencerPlayComponent->GetRoomEncounterSequenceID());
 }
 
 

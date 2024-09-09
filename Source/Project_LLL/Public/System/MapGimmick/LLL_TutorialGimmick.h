@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTable/LLL_RewardDataTable.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_TutorialGimmick.generated.h"
 
@@ -65,7 +66,7 @@ protected:
 
 	uint8 bIsActiveDash : 1;
 	
-	void OnInteractionGate();
+	void OnInteractionGate(const FRewardDataTable* RewardData);
 
 	UFUNCTION()
 	void RewardDestroyed(AActor* DestroyedActor);
@@ -84,7 +85,4 @@ protected:
 
 	UFUNCTION()
 	void LoadLevel(UNiagaraComponent* InNiagaraComponent);
-
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "플레이어 최대 체력 증가 이펙트")
-	TSubclassOf<UGameplayEffect> ChargeSkillGaugeEffect;
 };

@@ -3,11 +3,8 @@
 
 #include "Entity/Object/Ability/LLL_FeatherStorm.h"
 
-#include "AbilitySystemComponent.h"
-#include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "Constant/LLL_FilePath.h"
-#include "Constant/LLL_GameplayTags.h"
-#include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Object/Ability/LLL_FeatherStormAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -31,7 +28,7 @@ void ALLL_FeatherStorm::BeginPlay()
 	{
 		if (DebugGameInstance->CheckPlayerAttackDebug())
 		{
-			DrawDebugBox(GetWorld(), GetActorLocation(), OverlapCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, AbilityObjectAttributeSet->GetDestroyTimer());
+			DrawDebugSphere(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius(), 16, FColor::Blue, false, AbilityObjectAttributeSet->GetDestroyTimer());
 		}
 	}
 #endif
@@ -39,23 +36,11 @@ void ALLL_FeatherStorm::BeginPlay()
 
 void ALLL_FeatherStorm::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	Super::NotifyActorBeginCursorOver();
+	Super::NotifyActorBeginOverlap(OtherActor);
 	
+	DamageToOverlapActor(OtherActor);
 	GetWorldTimerManager().SetTimer(KeepDamageHandle, FTimerDelegate::CreateWeakLambda(this, [&, OtherActor]{
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
-		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AbilityObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
-		const float OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1);
-
-		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
-		if(EffectSpecHandle.IsValid())
-		{
-			if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor))
-			{
-				UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *OtherActor->GetName())
-				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
-			}
-		}
+		DamageToOverlapActor(OtherActor);
 	}), FeatherStormAttributeSet->GetDamageTimer(), true);
 }
 

@@ -5,6 +5,7 @@
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 
 void ALLL_AbilityRewardObject::SetInformation(const FRewardDataTable* Data)
@@ -13,13 +14,13 @@ void ALLL_AbilityRewardObject::SetInformation(const FRewardDataTable* Data)
 	//매쉬 및 필수 정보 세팅
 }
 
-void ALLL_AbilityRewardObject::InteractiveEvent()
+void ALLL_AbilityRewardObject::InteractiveEvent(AActor* InteractedActor)
 {
-	Super::InteractiveEvent();
+	Super::InteractiveEvent(InteractedActor);
 	
 	//AbilityRewardInteractionDelegate->Broadcast(AbilityCategory);
 	
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(InteractedActor);
 	
 	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
 	

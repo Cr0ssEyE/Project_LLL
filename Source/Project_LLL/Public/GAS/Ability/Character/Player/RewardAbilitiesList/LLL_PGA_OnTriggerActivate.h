@@ -6,6 +6,8 @@
 #include "Base/LLL_PGA_RewardAbilityBase.h"
 #include "LLL_PGA_OnTriggerActivate.generated.h"
 
+#define CHASE_FEATHER_THROW_ANGLE_OFFSET 20.0f
+
 class ALLL_ThrownObject;
 class ALLL_AbilityObject;
 /**
@@ -52,6 +54,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "GAS|SpawnObject", DisplayName = "생성하는 오브젝트 기준 위치", meta =(EditCondition = "bUseSpawnAbilityObject == true", EditConditionHides))
 	EEffectApplyTarget AbilityObjectLocationTarget;
+	
+	UPROPERTY(EditAnywhere, Category = "GAS|SpawnObject", DisplayName = "상대 위치", meta =(EditCondition = "bUseSpawnAbilityObject == true", EditConditionHides))
+	FVector AbilityObjectOffsetLocation;;
 	
 	// Thrown
 protected:

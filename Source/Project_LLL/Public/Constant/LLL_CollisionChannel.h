@@ -29,14 +29,14 @@
 #define CP_RAGDOLL TEXT("Ragdoll")
 #define CP_PLAYER TEXT("Player")
 #define CP_PLAYER_EVADE TEXT("Player_Evade")
-#define CP_PLAYER_CHASE_HAND TEXT("Player_ChaseHand")
 #define CP_MONSTER TEXT("Monster")
 #define CP_MONSTER_FALLABLE TEXT("Monster_Fallable")
 #define CP_MONSTER_ATTACK TEXT("MonsterAttack")
 #define CP_MONSTER_DASH TEXT("MonsterDash")
 #define CP_INTERACTION TEXT("Interaction")
 #define CP_STAGE_TRIGGER TEXT("StageTrigger")
+#define CP_MONSTER_ABILITY_OBJECT TEXT("MonsterAbilityObject")
+#define CP_THREW_MONSTER TEXT("ThrewMonster")
 
 // 감지용 콜리전 프로필
-#define CP_BULLET_TIME_INFLUENCED TEXT("BulletTimeInfluencedActor")
 #define CP_MAP_SOUND_MANAGER TEXT("MapSoundManager")
