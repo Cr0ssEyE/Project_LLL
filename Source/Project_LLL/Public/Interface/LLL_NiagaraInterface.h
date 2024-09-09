@@ -24,5 +24,7 @@ class PROJECT_LLL_API ILLL_NiagaraInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintCallable)
-	virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) = 0;
+	virtual void AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent) = 0;
+
+	virtual TArray<UNiagaraComponent*> GetNiagaraComponents() const = 0;
 };

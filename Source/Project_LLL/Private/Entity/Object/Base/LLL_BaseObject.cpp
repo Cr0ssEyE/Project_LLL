@@ -91,11 +91,11 @@ void ALLL_BaseObject::BeginPlay()
 
 	if (IsValid(BaseObjectDataAsset->Particle))
 	{
-		SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
+		AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
 	}
 }
 
-void ALLL_BaseObject::SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
+void ALLL_BaseObject::AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
 {	
 	NiagaraComponents.Remove(nullptr);
 	NiagaraComponents.Emplace(InNiagaraComponent);

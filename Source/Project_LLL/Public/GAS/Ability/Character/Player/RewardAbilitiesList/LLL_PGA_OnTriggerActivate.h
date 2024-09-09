@@ -29,8 +29,8 @@ protected:
 	
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그")
-	FGameplayTag TriggerRequiredTag;
-
+	FGameplayTagContainer TriggerRequiredTags;
+	
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "액터 상태 요구 태그")
 	FGameplayTag ActorStateRequiredTag;
 	
@@ -66,9 +66,6 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "GAS|ThrownObject", DisplayName = "투사체 스폰 간격 시간", meta =(EditCondition = "bUseSpawnThrownObject == true", EditConditionHides))
 	float SpawnOffsetTime;
-
-	UPROPERTY(EditAnywhere, Category = "GAS|ThrownObject", DisplayName = "임시 데미지 초기화 이펙트", meta =(EditCondition = "bUseSpawnThrownObject == true", EditConditionHides))
-	TSubclassOf<UGameplayEffect> ResetLastSentDamageEffect;
 
 	// Tag
 protected:

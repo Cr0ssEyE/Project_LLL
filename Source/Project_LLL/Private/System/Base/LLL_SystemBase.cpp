@@ -14,7 +14,7 @@ ALLL_SystemBase::ALLL_SystemBase()
 	FModAudioComponent->SetupAttachment(RootComponent);
 }
 
-void ALLL_SystemBase::SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
+void ALLL_SystemBase::AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
 {
 	NiagaraComponents.Remove(nullptr);
 	NiagaraComponents.Emplace(InNiagaraComponent);

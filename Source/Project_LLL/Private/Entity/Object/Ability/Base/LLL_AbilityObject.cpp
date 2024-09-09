@@ -8,9 +8,9 @@
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "DataAsset/LLL_AbilityObjectDataAsset.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GameFramework/Character.h"
 #include "GAS/Attribute/Object/Ability/Base/LLL_AbilityObjectAttributeSet.h"
+#include "Util/LLL_MathHelper.h"
 
 ALLL_AbilityObject::ALLL_AbilityObject()
 {
@@ -44,18 +44,25 @@ void ALLL_AbilityObject::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-	EffectContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AbilityObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
-
-	const float OffencePower = (AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel) / static_cast<uint32>(AbilityData->AbilityValueType);
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
-	if(EffectSpecHandle.IsValid())
+	if (AbilityData->AbilityValueType == EAbilityValueType::Fixed)
 	{
-		if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor))
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AbilityObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
+		const float OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1);
+		
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
+		if(EffectSpecHandle.IsValid())
 		{
-			UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *OtherActor->GetName())
-			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
+			if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor))
+			{
+				UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *OtherActor->GetName())
+				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
+			}
 		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("어빌리티 오브젝트 스폰 과정에서 능력 수치가 Percent로 넘어오고 있습니다"))
 	}
 }

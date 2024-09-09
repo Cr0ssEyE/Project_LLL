@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LLL_MainEruriaInfoWidget.generated.h"
 
+struct FAbilityIconWrapper;
 enum class EAbilityPart : uint8;
 struct FGameplayTag;
 struct FAbilityDataTable;
@@ -58,6 +59,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 아이콘(임시)")
 	TArray<UTexture*> EruriaIConTextures;
 
+	// 3x4 AbilityType - AbilityPart
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 아이콘")
+	TArray<FAbilityIconWrapper> EnhancedEruriaIConTextures;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 레어도 색상")
 	TArray<FLinearColor> EruriaRarityColor;
 	

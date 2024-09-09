@@ -13,12 +13,24 @@
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Util/LLL_FModPlayHelper.h"
+#include "DataAsset/LLL_RewardObjectDataAsset.h"
 
 ALLL_GateObject::ALLL_GateObject()
 {
 	GateDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_GateDataAsset>(PATH_GATE_DATA, EAssertionLevel::Check);
+	RewardObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_RewardObjectDataAsset>(PATH_REWARD_OBJECT_TEST_DATA, EAssertionLevel::Check);
 	GateMesh = GateDataAsset->StaticMesh;
 	BaseMesh->SetStaticMesh(GateMesh);
+
+	TextureMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TextureMashComponent"));
+	TextureMeshComponent->SetupAttachment(RootComponent);
+	TextureMeshComponent->SetRelativeLocation(FVector(60.0f, 60.0f, 370.0f));
+	TextureMeshComponent->SetMaterial(0, RewardObjectDataAsset->TextureMaterialInst);
+	TextureMeshComponent->SetVisibility(false);
+
+	RewardTextureMesh = RewardObjectDataAsset->RewardTextureMesh;
+	TextureMeshComponent->SetStaticMesh(RewardTextureMesh);
+
 	bIsGateEnabled = false;
 }
 
@@ -30,18 +42,23 @@ void ALLL_GateObject::SetGateInformation(const FRewardDataTable* Data)
 	//데이터가 현재 확정되지 않아 임시로 Enum을 배정해서 사용중
 	switch (RewardData->ID)
 	{
-	case static_cast<int>(ERewardCategory::Gold):
+		// 능력
+	case 1:
+		TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->AbilityTexture);
 		break;
-	case static_cast<int>(ERewardCategory::Ability):
-		//능력의 경우 현재 보상 데이터 테이블에서 어떤 동물의 능력인지 구분할 수 없어 임의로 코드 작성함
-		AbilityType = static_cast<EAbilityType>(FMath::RandRange(1, 3));
+		// 재화
+	case 2:
+		TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->GoldTexture);
 		break;
-	case static_cast<int>(ERewardCategory::Enhance):
+		// 최대 체력
+	case 3:
+		TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->MaxHPTexture);
 		break;
-	case static_cast<int>(ERewardCategory::MaxHP):
+		// 능력 강화
+	case 4:
+		TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(TEXT("Texture"), RewardObjectDataAsset->EnhanceTexture);
 		break;
-	default:
-		break;
+	default:;
 	}
 	
 	//TODO: 어려움 추가 보상 관련 로직(혹시 몰라서 추가해둠)
@@ -57,8 +74,9 @@ void ALLL_GateObject::SetActivate()
 	
 	if (IsValid(GateDataAsset->Particle))
 	{
-		SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
+		AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(GateDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), GateDataAsset->ParticleLocation, FRotator::ZeroRotator, GateDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
 	}
+	TextureMeshComponent->SetVisibility(true);
 }
 
 void ALLL_GateObject::InteractiveEvent()

@@ -34,7 +34,11 @@ void ULLL_MonsterASC::BeginPlay()
 	{
 		RegisterGameplayTagEvent(TAG_GAS_MONSTER_FALLABLE).AddUObject(this, &ULLL_MonsterASC::OnFallableTagAdded);
 	}
-	
+
+	if (ALLL_MonsterBase* OwnerMonster = Cast<ALLL_MonsterBase>(GetAvatarActor()))
+	{
+		OwnerMonster->CharacterDeadDelegate.AddDynamic(this, &ULLL_MonsterASC::ClearAllTimer);
+	}
 	RegisterGameplayTagEvent(TAG_GAS_MARK_STACK, EGameplayTagEventType::AnyCountChange).AddUObject(this, &ULLL_MonsterASC::OnMarkTagAdded);
 }
 
@@ -95,7 +99,7 @@ void ULLL_MonsterASC::OnMarkTagAdded(const FGameplayTag Tag, int32 count)
 	
 	GetWorld()->GetTimerManager().SetTimer(MarkTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]()
 	{
-		if (!Monster || !IsValid(this) || !GetWorld())
+		if (!Monster || !IsValid(this) || !GetWorld() || IsGarbageEliminationEnabled())
 		{
 			return;
 		}
@@ -104,6 +108,11 @@ void ULLL_MonsterASC::OnMarkTagAdded(const FGameplayTag Tag, int32 count)
 		if (HasMatchingGameplayTag(TAG_GAS_STATUS_MARKED))
 		{
 			RemoveLooseGameplayTag(TAG_GAS_STATUS_MARKED);
+		}
+
+		if (Monster->IsGarbageEliminationEnabled())
+		{
+			return;
 		}
 		Monster->UpdateMarkVFX(0, AbnormalStatusAttributeSet->GetMaxMarkStack());
 	}), AbnormalStatusAttributeSet->GetMarkStatusDuration(), false);
@@ -159,4 +168,16 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 			Monster->UpdateBleedingVFX(false);
 		}), AbnormalStatusAttributeSet->GetBleedingStatusDuration(), false);
 	}
+}
+
+void ULLL_MonsterASC::ClearAllTimer(ALLL_BaseCharacter* Character)
+{
+	if (IsValid(GetWorld()))
+	{
+		GetWorld()->GetTimerManager().ClearTimer(MarkTimerHandle);
+		GetWorld()->GetTimerManager().ClearTimer(BleedingTimerHandle);
+	}
+	
+	MarkTimerHandle.Invalidate();
+	BleedingTimerHandle.Invalidate();
 }

@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Object/Ability/LLL_FeatherStormAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -44,8 +45,8 @@ void ALLL_FeatherStorm::NotifyActorBeginOverlap(AActor* OtherActor)
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AbilityObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
+		const float OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1);
 
-		const float OffencePower = (AbilityData->AbilityValue + AbilityData->ChangeValue * AbilityLevel) / static_cast<uint32>(AbilityData->AbilityValueType);
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
 		if(EffectSpecHandle.IsValid())
 		{

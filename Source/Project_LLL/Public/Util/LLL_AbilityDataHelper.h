@@ -22,6 +22,7 @@ public:
 			EffectSpec->bDurationLocked = false;
 			EffectSpec->SetDuration(AbnormalStatusAttributeSet->GetBleedingStatusDuration(), true);
 			EffectSpec->Period = AbnormalStatusAttributeSet->GetBleedingStatusPeriod();
+			UE_LOG(LogTemp, Log, TEXT("%f Period 값 변경"), EffectSpec->GetPeriod());
 			return;
 		}
 
@@ -60,6 +61,7 @@ public:
 	
 		ALLL_AbilityObject* AbilityObject = World->SpawnActorDeferred<ALLL_AbilityObject>(AbilityObjectClass, SpawnTransform);
 		AbilityObject->SetAbilityInfo(OwnerAbility->GetAbilityData(), OwnerAbility->GetAbilityLevel());
+		AbilityObject->SetOwner(OwnerAbility->GetAvatarActorFromActorInfo());
 		AbilityObject->FinishSpawning(OwnerAbility->GetAvatarActorFromActorInfo()->GetActorTransform());
 
 		if (AbilityObject)

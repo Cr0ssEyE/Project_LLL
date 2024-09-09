@@ -4,17 +4,18 @@
 #include "GAS/Ability/Character/Player/LLL_PGA_AttackBase.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "FMODAudioComponent.h"
+#include "AnimNotify_PlayNiagaraEffect.h"
+#include "NiagaraComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "AnimNotify/LLL_AnimNotify_Niagara.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_MonatgeSectionName.h"
-#include "DataTable/LLL_FModParameterDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
-#include "Util/LLL_FModPlayHelper.h"
+#include "Particles/ParticleSystemComponent.h"
 
 ULLL_PGA_AttackBase::ULLL_PGA_AttackBase()
 {
@@ -101,6 +102,52 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 		PlayerCharacter->SetAttacking(false);
 		PlayerCharacter->SetCurrentCombo(CurrentComboAction);
 	}
+	
+	// 하예찬 예외처리 안
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = PlayerCharacter->GetNiagaraComponents();
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
+	{
+		if (!IsValid(TempNiagaraComponent))
+		{
+			continue;
+		}
+
+		for (auto Notify : AttackAnimMontage->Notifies)
+		{
+			ULLL_AnimNotify_Niagara* NiagaraEffectNotify = Cast<ULLL_AnimNotify_Niagara>(Notify.Notify);
+			if (!IsValid(NiagaraEffectNotify))
+			{
+				continue;
+			}
+
+			const UFXSystemComponent* SpawnedEffect = NiagaraEffectNotify->GetSpawnedEffect();
+			if (IsValid(SpawnedEffect) && !SpawnedEffect->IsGarbageEliminationEnabled() && SpawnedEffect == TempNiagaraComponent)
+			{
+				TempNiagaraComponent->DestroyComponent();
+				PlayerCharacter->GetNiagaraComponents().Remove(TempNiagaraComponent);
+			}
+		}
+	}
+
+	// 강건님 예외처리 안
+	/*if (bWasCancelled)
+	{
+		for (auto Notify : AttackAnimMontage->Notifies)
+		{
+			UAnimNotify_PlayNiagaraEffect* NiagaraEffectNotify = Cast<UAnimNotify_PlayNiagaraEffect>(Notify.Notify);
+			if (!NiagaraEffectNotify)
+			{
+				continue;
+			}
+
+			UFXSystemComponent* NotifyComponent = NiagaraEffectNotify->GetSpawnedEffect();
+			if (IsValid(GetWorld()) && IsValid(PlayerCharacter) && IsValid(NotifyComponent) && !NotifyComponent->IsGarbageEliminationEnabled())
+			{
+				NotifyComponent->DestroyComponent();
+			}
+		}
+	}*/
+	
 	GetAbilitySystemComponentFromActorInfo_Checked()->CancelAbilities(new FGameplayTagContainer(TAG_GAS_ATTACK_HIT_CHECK));
 	WaitTagTask->EndTask();
 	

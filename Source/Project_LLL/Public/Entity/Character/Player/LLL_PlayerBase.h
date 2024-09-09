@@ -11,6 +11,7 @@
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
+class ALLL_PlayerController;
 class ULLL_GameInstance;
 class ULLL_AbnormalStatusAttributeSet;
 class ULLL_PlayerSkillAttributeSet;
@@ -53,25 +54,33 @@ public:
 	void AddInteractiveObject(ALLL_InteractiveObject* Object);
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
+public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
 	FORCEINLINE bool GetMoveInputPressed() const { return bIsMoveInputPressed; }
+	FORCEINLINE UCameraComponent* GetPlayerCamera() const { return Camera; }
+	FORCEINLINE USpringArmComponent* GetPlayerSpringArm() const { return SpringArm; }
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ALLL_PlayerChaseHand* GetChaseHand() const { return ChaseHandActor; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
+	FORCEINLINE float GetLastSentDamage() const { return LastSentDamage; }
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
+	FORCEINLINE void SetLastSentDamage(float InLastSentDamage) { LastSentDamage = InLastSentDamage; }
 	
 	FVector CheckMouseLocation();
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
 
+public:
+	void StartCameraMoveToCursor(ALLL_PlayerController* PlayerController = nullptr);
+	void PauseCameraMoveToCursor();
+	
 protected:
 	void TurnToMouseCursor();
 	void MoveCameraToMouseCursor();
-	void SetParameter(EFModParameter FModParameter, float value) const;
 	
 	// 카메라
 private:
@@ -180,4 +189,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	float ScalarValue;
+
+	UPROPERTY(VisibleAnywhere)
+	float LastSentDamage;
 };

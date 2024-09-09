@@ -5,18 +5,12 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
-#include "AIController.h"
-#include "AnimNotifyState_TimedNiagaraEffect.h"
-#include "BrainComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "FMODAudioComponent.h"
-#include "FMODEvent.h"
 #include "GameplayAbilitiesModule.h"
 #include "GameplayAbilitySpec.h"
 #include "LevelSequenceActor.h"
 #include "MovieSceneSequencePlaybackSettings.h"
-#include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_AnimMontageSlotName.h"
@@ -28,7 +22,9 @@
 #include "Constant/LLL_MaterialParameterName.h"
 #include "Constant/LLL_MeshSocketName.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
+#include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "Entity/Object/Thrown/LLL_PlayerChaseHand.h"
@@ -42,8 +38,6 @@
 #include "GAS/ASC/LLL_PlayerASC.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
-#include "Kismet/KismetMaterialLibrary.h"
-#include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
@@ -111,6 +105,7 @@ void ALLL_PlayerBase::BeginPlay()
 		{
 			Camera->SetOrthoWidth(CameraDataAsset->CameraDistance);
 			Camera->SetUpdateOrthoPlanes(CameraDataAsset->bUseUpdateOrthoPlanes);
+			SpringArm->TargetArmLength = 1000.f;
 			if (CameraDataAsset->bUseConstraintAspectRatio)
 			{
 				Camera->SetConstraintAspectRatio(CameraDataAsset->bUseConstraintAspectRatio);
@@ -156,7 +151,7 @@ void ALLL_PlayerBase::BeginPlay()
 			}
 		}
 	}
-	GetMesh()->SetCustomDepthStencilValue(2);
+	GetMesh()->SetCustomDepthStencilValue(4);
 	
 	ULLL_PlayerChaseActionWidget* ChaseActionWidget = PlayerUIManager->GetChaseActionWidget();
 	ChaseActionGaugeWidgetComponent->SetWidget(ChaseActionWidget);
@@ -172,7 +167,6 @@ void ALLL_PlayerBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	MoveCameraToMouseCursor();
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -236,7 +230,7 @@ void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)
 	}
 	else if (FModParameter == EFModParameter::PlayerWalkMaterialParameter)
 	{
-		const TEnumAsByte<EPhysicalSurface> SurfaceType = PlayerAnimInstance->GetSurfaceType();
+		const TEnumAsByte<EPhysicalSurface> SurfaceType = GetCharacterAnimInstance()->GetSurfaceType();
 		for (auto StepEventParameterProperty : PlayerDataAsset->StepEventParameterProperties)
 		{
 			if (SurfaceType != StepEventParameterProperty.Key)
@@ -496,6 +490,26 @@ void ALLL_PlayerBase::PlayerRotateToMouseCursor(float RotationMultiplyValue, boo
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
 }
 
+void ALLL_PlayerBase::StartCameraMoveToCursor(ALLL_PlayerController* PlayerController)
+{
+	if (PlayerController != CastChecked<ALLL_PlayerController>(GetController()))
+	{
+		return;
+	}
+
+	ASC->RemoveLooseGameplayTag(TAG_SYSTEM_CAMERA_STATE_HOLD_TARGET);
+	ASC->AddLooseGameplayTag(TAG_SYSTEM_CAMERA_STATE_FOLLOW_CURSOR);
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::MoveCameraToMouseCursor);
+}
+
+void ALLL_PlayerBase::PauseCameraMoveToCursor()
+{
+	ASC->RemoveLooseGameplayTag(TAG_SYSTEM_CAMERA_STATE_FOLLOW_CURSOR);
+	ASC->AddLooseGameplayTag(TAG_SYSTEM_CAMERA_STATE_HOLD_TARGET);
+
+	SpringArm->SetRelativeLocation(GetActorLocation());
+}
+
 void ALLL_PlayerBase::TurnToMouseCursor()
 {
 	if (GetActorRotation() == MouseDirectionRotator || !GetCharacterAnimInstance()->IsSlotActive(ANIM_SLOT_ATTACK))
@@ -510,6 +524,11 @@ void ALLL_PlayerBase::TurnToMouseCursor()
 
 void ALLL_PlayerBase::MoveCameraToMouseCursor()
 {
+	if (!ASC->HasMatchingGameplayTag(TAG_SYSTEM_CAMERA_STATE_FOLLOW_CURSOR))
+	{
+		return;
+	}
+	
 	const APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	FVector2d MouseScreenLocation;
 	FVector2d ScreenViewport;
@@ -524,27 +543,25 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	FVector CameraMoveVector = FVector(MovementDirection.X, MovementDirection.Y, 0.f);
 	CameraMoveVector = SpringArm->GetDesiredRotation().UnrotateVector(CameraMoveVector);
 	
-	CameraMoveVector *= 500.f;
+	CameraMoveVector *= CameraDataAsset->CameraCursorTrackingSpeed;
 	if (CameraMoveVector.ContainsNaN())
 	{
 		return;
 	}
-	
-	SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
-}
 
-void ALLL_PlayerBase::SetParameter(EFModParameter FModParameter, float value) const
-{
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	if (CameraDataAsset->CameraCursorTrackingLength > 0)
 	{
-		if (FModParameterData.Parameter != FModParameter)
-		{
-			continue;
-		}
-
-		FModAudioComponent->SetParameter(FModParameterData.Name, value);
+		CameraMoveVector = FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + SpringArm->GetRelativeLocation();
+		const FVector MoveRangeVector = FVector(CameraDataAsset->CameraCursorTrackingLength, CameraDataAsset->CameraCursorTrackingLength, 0.f);
+		CameraMoveVector = ClampVector(CameraMoveVector, -MoveRangeVector + GetActorLocation(), MoveRangeVector + GetActorLocation());
+		SpringArm->SetRelativeLocation(CameraMoveVector);
 	}
+	else
+	{
+		SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
+	}
+	
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::MoveCameraToMouseCursor);
 }
 
 void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
@@ -622,7 +639,7 @@ void ALLL_PlayerBase::Dead()
 		{
 			if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitResult.GetActor()))
 			{
-				Cast<AAIController>(Monster->GetController())->GetBrainComponent()->StopLogic(TEXT("PlayerDead"));
+				CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController())->StopLogic(TEXT("PlayerDead"));
 				Monster->StopAnimMontage();
 			}
 			HitResult.GetActor()->CustomTimeDilation = 0.01f;

@@ -26,6 +26,7 @@
 #include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/MapGimmick/Components/LLL_SequencerComponent.h"
+#include "System/MapSound/LLL_MapSoundManager.h"
 
 ALLL_MapGimmick::ALLL_MapGimmick()
 {
@@ -180,6 +181,8 @@ void ALLL_MapGimmick::RandomMap()
 	if (CurrentRoomNumber > MapDataAsset->MaximumRoom)
 	{
 		RoomClass = MapDataAsset->Boss;
+		const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+		GameInstance->GetMapSoundManager()->StopBGM();
 		return;
 	}
 	

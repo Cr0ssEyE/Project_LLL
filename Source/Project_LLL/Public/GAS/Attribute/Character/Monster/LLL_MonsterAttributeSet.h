@@ -15,8 +15,10 @@ class PROJECT_LLL_API ULLL_MonsterAttributeSet : public ULLL_CharacterAttributeS
 	GENERATED_BODY()
 	
 public:
+	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
-	
+
+public:
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MaxShield);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, CurrentShield);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackDistance);

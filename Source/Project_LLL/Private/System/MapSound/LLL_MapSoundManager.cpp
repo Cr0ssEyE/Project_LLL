@@ -3,12 +3,14 @@
 
 #include "System/MapSound/LLL_MapSoundManager.h"
 
-#include "FMODAudioComponent.h"
-#include "Components/BoxComponent.h"
-#include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
+
+ALLL_MapSoundManager::ALLL_MapSoundManager()
+{
+	PlayBGM = true;
+}
 
 void ALLL_MapSoundManager::SetPitch(float InPitch) const
 {
@@ -55,6 +57,12 @@ void ALLL_MapSoundManager::SetPauseParameter(float Value) const
 	}
 }
 
+void ALLL_MapSoundManager::StopBGM() const
+{
+	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
+	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
+}
+
 void ALLL_MapSoundManager::BeginPlay()
 {
 	Super::BeginPlay();
@@ -67,7 +75,10 @@ void ALLL_MapSoundManager::BeginPlay()
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->CharacterDeadDelegate.AddDynamic(this, &ALLL_MapSoundManager::PlayerDeadHandle);
 
-	BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), BGM, true);
+	if (PlayBGM)
+	{
+		BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), BGM, true);
+	}
 	AMBWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), AMB, true);
 
 	ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
@@ -83,8 +94,7 @@ void ALLL_MapSoundManager::BeginDestroy()
 		return;
 	}
 
-	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
-	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
+	StopBGM();
 	
 	UFMODBlueprintStatics::EventInstanceStop(AMBWrapper);
 	UFMODBlueprintStatics::EventInstanceRelease(AMBWrapper);
@@ -92,8 +102,7 @@ void ALLL_MapSoundManager::BeginDestroy()
 
 void ALLL_MapSoundManager::PlayerDeadHandle(ALLL_BaseCharacter* Character)
 {
-	UFMODBlueprintStatics::EventInstanceStop(BGMWrapper);
-	UFMODBlueprintStatics::EventInstanceRelease(BGMWrapper);
+	StopBGM();
 
 	UFMODBlueprintStatics::EventInstanceStop(AMBWrapper);
 	UFMODBlueprintStatics::EventInstanceRelease(AMBWrapper);

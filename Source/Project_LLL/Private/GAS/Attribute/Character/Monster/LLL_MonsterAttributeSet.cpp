@@ -9,21 +9,14 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 
-void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+bool ULLL_MonsterAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
 {
+	bool Result = Super::PreGameplayEffectExecute(Data);
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
-		AActor* Attacker = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
-		if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Attacker))
-		{
-			Attacker = ThrownObject->GetOwner();
-		}
-		
-		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
-		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
-
 		FGameplayTagContainer TagContainer(TAG_GAS_STATUS_MARKED);
 		TagContainer.AddTag(TAG_GAS_STATUS_TARGETED);
 		TagContainer.AddTag(TAG_GAS_STATUS_BLEEDING);
@@ -31,7 +24,29 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		{
 			CheckAbnormalStatus(Data);
 		}
+	}
+	return Result;
+}
+
+void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+{
+	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
+	{
+		AActor* Attacker = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
+		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
+		if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Attacker))
+		{
+			Attacker = ThrownObject->GetOwner();
+		}
+		else if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Attacker))
+		{
+			if (!DOT)
+			{
+				Player->SetLastSentDamage(GetReceiveDamage());
+			}
+		}
 		
+		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 		if (GetCurrentShield() > 0)
 		{
 			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
@@ -58,7 +73,7 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 
 void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data)
 {
-	float Damage = GetReceiveDamage();
+	float Damage = Data.EvaluatedData.Magnitude;
 	const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (!IsValid(PlayerCharacter))
 	{
@@ -70,12 +85,12 @@ void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallb
 	{
 		const int32 MarkCount = GetOwningAbilitySystemComponentChecked()->GetGameplayTagCount(TAG_GAS_MARK_STACK);
 		Damage *= 1.f + AbnormalStatusAttributeSet->GetMarkStatusDamageAmplifyPerStack() * MarkCount;
-		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("표식 대미지 배율 적용. 카운트: %d | 최종값: %f"), MarkCount, Damage));
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("표식 대미지 배율 적용. 카운트: %d | 최종값: %f"), MarkCount, Damage));
 	}
 
 	if (Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration)
 	{
-		SetReceiveDamage(Damage);
+		Data.EvaluatedData.Magnitude = Damage;
 		return;
 	}
 	
@@ -86,6 +101,6 @@ void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallb
 		// Damage *= AbnormalStatusAttributeSet->GetTargetingStatusDamageAmplifyByBoss();
 		GetOwningAbilitySystemComponentChecked()->RemoveLooseGameplayTag(TAG_GAS_STATUS_TARGETED);
 	}
-	
-	SetReceiveDamage(Damage);
+
+	Data.EvaluatedData.Magnitude = Damage;
 }

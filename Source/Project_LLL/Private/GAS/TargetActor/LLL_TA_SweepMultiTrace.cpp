@@ -24,7 +24,23 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 	}
 	
 	TArray<FHitResult> Results;
-	const FVector SweepStartLocation =  SourceActor->GetActorLocation() + SourceActor->GetActorForwardVector() * TraceStartLocation;
+	FVector OriginLocation = SourceActor->GetActorLocation();
+	
+	if (ACharacter* SourceCharacter = Cast<ACharacter>(SourceActor))
+	{
+		if (SourceCharacter->GetMesh()->GetComponentLocation() != SourceCharacter->GetMesh()->GetSocketLocation(OriginSocketOrBoneName))
+		{
+			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("소켓 위치 감지")));
+			OriginLocation = SourceCharacter->GetMesh()->GetSocketLocation(OriginSocketOrBoneName);
+		}
+		else if (FVector::Zero() != SourceCharacter->GetMesh()->GetBoneLocation(OriginSocketOrBoneName))
+		{
+			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("본 위치 감지")));
+			OriginLocation = SourceCharacter->GetMesh()->GetBoneLocation(OriginSocketOrBoneName);
+		}
+	}
+	
+	const FVector SweepStartLocation =  OriginLocation + SourceActor->GetActorForwardVector() * TraceStartLocation;
 	const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetActorForwardVector() * TraceEndLocation;
 	FQuat SweepQuat = SourceActor->GetActorQuat();
 

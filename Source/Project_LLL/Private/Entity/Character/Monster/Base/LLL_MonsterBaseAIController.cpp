@@ -33,7 +33,7 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	}));
 }
 
-void ALLL_MonsterBaseAIController::SetPlayer()
+void ALLL_MonsterBaseAIController::SetPlayer() const
 {
 	if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
 	{
@@ -45,14 +45,19 @@ void ALLL_MonsterBaseAIController::SetPlayer()
 	}
 }
 
+void ALLL_MonsterBaseAIController::StopLogic(const FString& Reason) const
+{
+	BrainComponent->StopLogic(Reason);
+	
+	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+	Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
+}
+
 void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
 	{
-		BrainComponent->StopLogic("Monster Is Damaged");
-
-		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
-		Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
+		StopLogic(TEXT("Monster Is Damaged"));
 	}
 }
 

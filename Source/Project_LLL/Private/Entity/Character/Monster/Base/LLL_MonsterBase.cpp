@@ -139,6 +139,25 @@ void ALLL_MonsterBase::InitAttributeSet()
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_MONSTER, Data, true);
 }
 
+void ALLL_MonsterBase::SetFModParameter(EFModParameter FModParameter)
+{
+	Super::SetFModParameter(FModParameter);
+
+	if (FModParameter == EFModParameter::MonsterWalkMaterialParameter)
+	{
+		const TEnumAsByte<EPhysicalSurface> SurfaceType = GetCharacterAnimInstance()->GetSurfaceType();
+		for (auto StepEventParameterProperty : MonsterBaseDataAsset->StepEventParameterProperties)
+		{
+			if (SurfaceType != StepEventParameterProperty.Key)
+			{
+				continue;
+			}
+
+			SetParameter(FModParameter, static_cast<float>(StepEventParameterProperty.Value));
+		}
+	}
+}
+
 void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 {
 	Super::Damaged(Attacker, IsDOT);
@@ -161,12 +180,12 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 		HitDirection.Z = 0.f;
 		SetActorRotation(HitDirection.Rotation(), ETeleportType::TeleportPhysics);
 		
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충돌 경직")));
+		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충돌 경직")));
 		PlayAnimMontage(MonsterBaseDataAsset->KnockBackCollideMontage);
 	}
 	else if (IsValid(MonsterBaseDataAsset->DamagedAnimMontage))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("일반 경직")));
+		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("일반 경직")));
 		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
 	}
 
@@ -226,7 +245,7 @@ void ALLL_MonsterBase::Dead()
 	MonsterBaseAnimInstance->StopAllMontages(1.0f);
 	
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
-	MonsterBaseAIController->GetBrainComponent()->StopLogic("Monster Is Dead");
+	MonsterBaseAIController->StopLogic("Monster Is Dead");
 
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
@@ -256,7 +275,9 @@ void ALLL_MonsterBase::Dead()
     	TempNiagaraComponent->DestroyComponent();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
-
+	BleedingVFXComponent->SetHiddenInGame(true);
+	MarkVFXComponent->SetHiddenInGame(true);
+	
 	RecognizePlayerToAroundMonster();
 
 	const float DestroyTimer = MonsterAttributeSet->GetDestroyTimer();
@@ -281,6 +302,10 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 		if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower) && GetCapsuleComponent()->GetCollisionProfileName() != CP_MONSTER_FALLABLE)
 		{
 			GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
+			const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
+			MonsterBaseAIController->StopLogic("Monster Is Fallable State");
+			CharacterAnimInstance->StopAllMontages(1.0f);
+			UE_LOG(LogTemp, Log, TEXT("낙사로 인한 BT 정지"))
 		}
 		GetCharacterMovement()->Velocity = FVector::Zero();
 		LaunchCharacter(KnockBackVelocity, true, true);

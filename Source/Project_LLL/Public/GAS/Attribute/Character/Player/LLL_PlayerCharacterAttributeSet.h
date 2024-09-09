@@ -18,6 +18,8 @@ public:
 	ULLL_PlayerCharacterAttributeSet();
 
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxAttackActionCount);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, BaseAttackDamageAmplifyByOther);
+	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CriticalChance);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CriticalAmplify);
 	
@@ -32,7 +34,8 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackRate);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackOffensePowerRate);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FalloutablePower);
-	
+
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseAttackDamageAmplifyByOther);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseActionDamageAmplify);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseActionKnockBackAmplify);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChaseCoolDown);
@@ -48,7 +51,6 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ImpulseStrength);
 
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, bIsComboTimerElapsed);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, LastSentDamage);
 	
 protected:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
@@ -61,6 +63,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxAttackActionCount;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData BaseAttackDamageAmplifyByOther;
+
+	// 크리티컬 관련
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData CriticalChance;
 	
@@ -89,6 +96,9 @@ protected:
 
 	// 추격 관련
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ChaseAttackDamageAmplifyByOther;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ChaseActionDamageAmplify;
 
@@ -144,7 +154,4 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData bIsComboTimerElapsed;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData LastSentDamage;
 };

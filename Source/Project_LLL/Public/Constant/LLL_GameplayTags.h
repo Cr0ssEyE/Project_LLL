@@ -8,7 +8,6 @@
 #define TAG_GAS_DAMAGED FGameplayTag::RequestGameplayTag(FName("Character.Event.Damaged"))
 
 // 캐릭터 상태 관련 게임플레이 태그
-#define TAG_GAS_ABNORMAL_STATUS FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus"))
 #define TAG_GAS_STATUS_BLEEDING FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding"))
 #define TAG_GAS_STATUS_BLEEDING_BASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding.FromBaseAttack"))
 #define TAG_GAS_STATUS_BLEEDING_CHASE_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding.FromChaseAttack"))
@@ -23,6 +22,8 @@
 #define TAG_GAS_COMBO_CHECK_AMPLIFY FGameplayTag::RequestGameplayTag(FName("Character.Player.Event.ComboCountChanged"))
 #define TAG_GAS_ATTACK_HIT_COUNT FGameplayTag::RequestGameplayTag(FName("Character.Player.Event.ReceiveHitCount"))
 #define TAG_GAS_ATTACK_HIT_CHECK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck"))
+#define TAG_GAS_ATTACK_HIT_CHECK_MELEE FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.BaseAttack"))
+#define TAG_GAS_ATTACK_HIT_CHECK_CHASE FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.ChaseAttack"))
 #define TAG_GAS_ATTACK_HIT_CHECK_COMPLETE FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.CheckComplete"))
 #define TAG_GAS_ATTACK_HIT_CHECK_SUCCESS FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.Success"))
 
@@ -46,6 +47,7 @@
 #define TAG_GAS_PLAYER_STATE_INPUT_CHECK_DASH FGameplayTag::RequestGameplayTag(FName("Character.Player.State.InputCheck.Dash"))
 
 // 플레이어 공격 효과 관련 게임플레이 태그
+#define TAG_GAS_ABNORMAL_STATUS FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus"))
 #define TAG_GAS_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Bleeding"))
 #define TAG_GAS_MARK FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Mark"))
 #define TAG_GAS_TARGETING FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Targeting"))
@@ -93,3 +95,7 @@
 #define TAG_GAS_ABILITY_PART_DASH FGameplayTag::RequestGameplayTag(FName("AbilityPart.Dash"))
 #define TAG_GAS_ABILITY_PART_GRANT FGameplayTag::RequestGameplayTag(FName("AbilityPart.Event.Granted"))
 #define TAG_GAS_ABILITY_PART_REMOVE FGameplayTag::RequestGameplayTag(FName("AbilityPart.Event.Removed"))
+
+// 카메라 관련 태그
+#define TAG_SYSTEM_CAMERA_STATE_FOLLOW_CURSOR FGameplayTag::RequestGameplayTag(FName("System.User.Camera.State.FollowCursor"))
+#define TAG_SYSTEM_CAMERA_STATE_HOLD_TARGET FGameplayTag::RequestGameplayTag(FName("System.User.Camera.State.HoldToTarget"))
