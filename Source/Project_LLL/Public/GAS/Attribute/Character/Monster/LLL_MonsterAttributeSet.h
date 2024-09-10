@@ -48,9 +48,9 @@ public:
 	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(SwordDash, DashDamageRange, MonsterData4);
 	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(SwordDash, DashSpeed, MonsterData6);
 	
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashDistance, MonsterData1);
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashSpeed, MonsterData2);
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashDamageRange, MonsterData3);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashPunchDashDistance, MonsterData1);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashPunchDashSpeed, MonsterData2);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashPunchDashDamageRange, MonsterData3);
 	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ShockwaveChargeTimer, MonsterData4);
 	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaDashDistance, MonsterData6);
 	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaDashSpeed, MonsterData7);

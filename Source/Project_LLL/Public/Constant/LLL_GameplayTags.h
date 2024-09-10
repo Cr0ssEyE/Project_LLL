@@ -46,6 +46,7 @@
 
 // 힘 있는 자 게임플레이 태그
 #define TAG_GAS_MAN_OF_STRENGTH_SHOCKWAVE FGameplayTag::RequestGameplayTag(FName("Character.Monster.Boss.ManOfStrength.Action.Shockwave"))
+#define TAG_GAS_MAN_OF_STRENGTH_DASH_PUNCH FGameplayTag::RequestGameplayTag(FName("Character.Monster.Boss.ManOfStrength.Action.DashPunch"))
 #define TAG_GAS_MAN_OF_STRENGTH_ATTACK_IN_APNEA FGameplayTag::RequestGameplayTag(FName("Character.Monster.Boss.ManOfStrength.Action.AttackInApnea"))
 #define TAG_GAS_MAN_OF_STRENGTH_SNAP_OTHER_MONSTER FGameplayTag::RequestGameplayTag(FName("Character.Monster.Boss.ManOfStrength.Action.SnapOtherMonster"))
 #define TAG_GAS_MAN_OF_STRENGTH_THROW_OTHER_MONSTER FGameplayTag::RequestGameplayTag(FName("Character.Monster.Boss.ManOfStrength.Action.ThrowOtherMonster"))
