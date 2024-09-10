@@ -39,6 +39,8 @@ public:
 	FStartSpawnDelegate StartSpawnDelegate;
 	
 private:
+	bool CheckNextWaveCanSpawnByOwnerMonsterHealth();
+	
 	UFUNCTION()
 	void MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter);
 

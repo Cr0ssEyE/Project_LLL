@@ -242,7 +242,7 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 	}
 
 	AnimInstance->StopAllMontages(1.0f);
-	if ( GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_STATE_COLLIDE_OTHER) && IsValid(MonsterBaseDataAsset->KnockBackCollideMontage))
+	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_STATE_COLLIDE_OTHER) && IsValid(MonsterBaseDataAsset->KnockBackCollideMontage))
 	{
 		FVector HitDirection = (GetActorLocation() - GetLastCollideLocation()).GetSafeNormal2D();
 		HitDirection.Z = 0.f;
