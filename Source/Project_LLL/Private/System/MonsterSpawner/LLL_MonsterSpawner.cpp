@@ -150,6 +150,20 @@ void ALLL_MonsterSpawner::SpawnMonster()
 	FModAudioComponent->Play();
 }
 
+bool ALLL_MonsterSpawner::CheckNextWaveCanSpawnByOwnerMonsterHealth()
+{
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(OwnerMonster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+	const float MaxHealth = MonsterAttributeSet->GetMaxHealth();
+	const float CurrentHealth = MonsterAttributeSet->GetCurrentHealth();
+	const float HealthRate = CurrentHealth / MaxHealth * 100.0f;
+
+	const float TriggerHealthRate = SpawnStartHealthRate - CurrentWave * HealthRateSpawnOffset;
+	//const float MinHealthRate = SpawnStartHealthRate - (CurrentWave + 1) * HealthRateSpawnOffset;
+
+	//return HealthRate <= MaxHealthRate && HealthRate > MinHealthRate && CurrentWave < MaxWave;
+	return HealthRate <= TriggerHealthRate && CurrentWave < MaxWave;
+}
+
 void ALLL_MonsterSpawner::MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter)
 {
 	ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(BaseCharacter);
@@ -176,19 +190,20 @@ void ALLL_MonsterSpawner::MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter)
 
 void ALLL_MonsterSpawner::OwnerMonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter)
 {
-	Destroy();
+	while (CheckNextWaveCanSpawnByOwnerMonsterHealth())
+	{
+		SpawnMonster();
+		
+		if (CurrentWave == 1)
+		{
+			StartSpawnDelegate.Broadcast();
+		}
+	}
 }
 
 void ALLL_MonsterSpawner::OwnerMonsterDamagedHandle(bool IsDOT)
 {
-	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(OwnerMonster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-	const float MaxHealth = MonsterAttributeSet->GetMaxHealth();
-	const float CurrentHealth = MonsterAttributeSet->GetCurrentHealth();
-	const float HealthRate = CurrentHealth / MaxHealth * 100.0f;
-
-	const float MaxHealthRate = SpawnStartHealthRate - CurrentWave * HealthRateSpawnOffset;
-	const float MinHealthRate = SpawnStartHealthRate - (CurrentWave + 1) * HealthRateSpawnOffset;
-	if (HealthRate <= MaxHealthRate && HealthRate > MinHealthRate && CurrentWave < MaxWave)
+	while (CheckNextWaveCanSpawnByOwnerMonsterHealth())
 	{
 		SpawnMonster();
 		
