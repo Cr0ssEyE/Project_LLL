@@ -31,8 +31,7 @@ void ALLL_AbilityObject::BeginPlay()
 	SetOwner(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
 	OverlapCollisionSphere->SetSphereRadius(AbilityObjectDataAsset->OverlapCollisionRadius);
 
-	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]
-	{
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
 		FTimerHandle DestroyTimerHandle;
 		GetWorldTimerManager().SetTimer(DestroyTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 			Destroy();
@@ -49,23 +48,25 @@ void ALLL_AbilityObject::NotifyActorBeginOverlap(AActor* OtherActor)
 
 void ALLL_AbilityObject::DamageToOverlapActor(AActor* OtherActor)
 {
-	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-	EffectContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AbilityObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&, OtherActor]{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AbilityObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
 	
-	float OffencePower = AbilityObjectAttributeSet->GetOffensePower();
-	if (AbilityData && AbilityData->AbilityValueType == EAbilityValueType::Fixed)
-	{
-		OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1);
-	}
-	
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
-	if(EffectSpecHandle.IsValid())
-	{
-		if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor))
+		float OffencePower = AbilityObjectAttributeSet->GetOffensePower();
+		if (AbilityData && AbilityData->AbilityValueType == EAbilityValueType::Fixed)
 		{
-			UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *OtherActor->GetName())
-			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
+			OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1);
 		}
-	}
+	
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
+		if(EffectSpecHandle.IsValid())
+		{
+			if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor))
+			{
+				UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *OtherActor->GetName())
+				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
+			}
+		}
+	}));
 }
