@@ -42,13 +42,6 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		{
 			Attacker = ThrownObject->GetOwner();
 		}
-		else if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Attacker))
-		{
-			if (!DOT)
-			{
-				Player->SetLastSentDamage(GetReceiveDamage());
-			}
-		}
 		
 		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 		if (GetCurrentShield() > 0)

@@ -20,7 +20,6 @@
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetArrayLibrary.h"
 #include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
 #include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
 
@@ -138,7 +137,7 @@ void ALLL_RewardGimmick::SetRewardButtons()
 			return;
 		}
 	}
-	
+
 	RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
 }
 
@@ -307,9 +306,7 @@ void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbility
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange,
 				FString(TEXT("버튼 : ")).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityType))).
-				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityPart>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityPart))).
+				Append(StaticEnum<EAnimalType>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AnimalType))).
 				Append(TEXT(" / ")).
 				Append(StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityRank))).
 				Append(TEXT(" / ")).
@@ -354,9 +351,9 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		}
 		
 		const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
-		if (TagContainer.HasTag(TAG_GAS_ABILITY_PART) && !TagContainer.HasTagExact(TAG_GAS_ABILITY_PART_COMMON))
+		if (TagContainer.HasTag(TAG_GAS_ABILITY_NESTING) && !TagContainer.HasTagExact(TAG_GAS_ABILITY_NESTING_ALLOW))
 		{
-			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("커먼 이펙트 아님")));
+			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("중첩 이펙트 아님")));
 			IsCommonEffect = false;
 			TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
 			for (const auto EffectHandle : EffectHandles)
@@ -367,7 +364,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 					continue;
 				}
 				
-				if (CurrentAbilityData->AbilityPart == ActiveEffect->GetAbilityData()->AbilityPart)
+				if (CurrentAbilityData->TagID[0] == ActiveEffect->GetAbilityData()->TagID[0])
 				{
 					ASC->RemoveActiveGameplayEffect(EffectHandle);
 					for (auto GameplayTag : TagContainer.GetGameplayTagArray())
@@ -379,23 +376,23 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		}
 
 		// 단순 수치 변화는 여기에서 적용.
-		float ChangeableValue = CurrentAbilityData->AbilityValue / static_cast<uint32>(CurrentAbilityData->AbilityValueType);
-		const float UnChangeableValue = CurrentAbilityData->UnchangeableValue;
+		float MagnitudeValue1 = CurrentAbilityData->AbilityValue1 / static_cast<uint32>(CurrentAbilityData->Value1Type);
+		const float MagnitudeValue2 = CurrentAbilityData->AbilityValue2 / static_cast<uint32>(CurrentAbilityData->Value2Type);
 		
 		if (!EffectSpecHandle.Data->Def->Modifiers.IsEmpty())
 		{
 			switch (EffectSpecHandle.Data->Def->Modifiers[0].ModifierOp)
 			{
 			case EGameplayModOp::Multiplicitive:
-				++ChangeableValue;
+				++MagnitudeValue1;
 				break;
 			default: // Add, Divide, Max, Override
 				break;
 			}
 		}
 		
-		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, ChangeableValue);
-		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_UNCHANGEABLE_VALUE, UnChangeableValue);
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
 		
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());

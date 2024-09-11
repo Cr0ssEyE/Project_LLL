@@ -128,18 +128,9 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 			const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(OwnerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 			OffencePower = MonsterAttributeSet->GetOffensePower();
 		}
-		else if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerCharacter))
+		else if (Cast<ALLL_PlayerBase>(OwnerCharacter))
 		{
-			const float LastSentDamage = Player->GetLastSentDamage();
-
-			if (AbilityData->AbilityValueType == EAbilityValueType::Fixed)
-			{
-				OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1);
-			}
-			else
-			{
-				OffencePower = (AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1)) / static_cast<uint32>(AbilityData->AbilityValueType) * LastSentDamage;
-			}
+			OffencePower = AbilityData->AbilityValue2 * AbilityLevel / static_cast<uint32>(AbilityData->Value2Type);
 		}
 	}
 
@@ -181,7 +172,14 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, OwnerCharacter->GetCharacterLevel(), EffectContextHandle);
 		if (EffectSpecHandle.IsValid())
 		{
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
+			if (Cast<ALLL_MonsterBase>(OwnerCharacter))
+			{
+				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_RANGED_MONSTER_SPAWN_THROWN_OBJECT_OFFENCE_POWER, OffencePower);
+			}
+			else if (Cast<ALLL_PlayerBase>(OwnerCharacter))
+			{
+				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, OffencePower);
+			}
 			UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *Other->GetName())
 			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 		}

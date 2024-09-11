@@ -21,8 +21,6 @@
 #define PATH_PLAYER_LOWHP_MATERIAL_INST TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Materials/PostProcess/PPMI_LowHP.PPMI_LowHP'")
 
 // 플레이어 어빌리티 오브젝트 관련
-#define PATH_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_FeatherStormDataAsset'/Game/DataAsset/DA_FeatherStorm.DA_FeatherStorm'")
-#define PATH_THREATENING_DEATH_DATA TEXT("/Script/Project_LLL.LLL_ThreateningDeathDataAsset'/Game/DataAsset/DA_ThreateningDeath.DA_ThreateningDeath'")
 #define PATH_RANGE_FEATHER_DETECTOR_DATA TEXT("/Script/Project_LLL.LLL_RangeFeatherDetectorDataAsset'/Game/DataAsset/DA_RangeFeatherDetector.DA_RangeFeatherDetector'")
 
 // 플레이어 투사체 관련

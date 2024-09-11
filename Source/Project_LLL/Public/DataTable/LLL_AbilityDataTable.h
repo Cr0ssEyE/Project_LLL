@@ -83,7 +83,7 @@ struct FAbilityDataTable : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "획득 가중치")
 	int32 GetAbilityRate;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "획득 가중치")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "태그 ID")
 	FString TagID;
 };
 

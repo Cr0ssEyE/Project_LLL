@@ -196,7 +196,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->ThrowDamageEffect, Level, EffectContextHandle);
 			if (EffectSpecHandle.IsValid())
 			{
-				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
+				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_MAN_OF_STRENGTH_THROW_OTHER_MONSTER_OFFENCE_POWER, OffencePower);
 				UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *Other->GetName())
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());
 			}

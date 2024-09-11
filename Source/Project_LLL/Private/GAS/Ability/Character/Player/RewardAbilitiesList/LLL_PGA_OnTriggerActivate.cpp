@@ -98,11 +98,11 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
 
-	const float ChangeableValue = (AbilityData->AbilityValue + AbilityData->ChangeValue * (GetAbilityLevel() - 1)) / static_cast<uint32>(AbilityData->AbilityValueType);
-	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, ChangeableValue);
-
-	const float UnChangeableValue = AbilityData->UnchangeableValue;
-	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_UNCHANGEABLE_VALUE, UnChangeableValue);
+	const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
+	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
+	
+	const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
+	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
 	
 	if (AbilityTags.HasTag(TAG_GAS_ABNORMAL_STATUS))
 	{
@@ -132,14 +132,14 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 
-	int32 SpawnCount = AbilityData->UnchangeableValue == 0 ? 1 : AbilityData->UnchangeableValue;
+	int32 SpawnCount = AbilityData->AbilityValue1 == 0 ? 1 : AbilityData->AbilityValue1;
 	bool ThrowCircular = false;
 	bool Straight = false;
 	float KnockBackPower = 0.0f;
 	if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
 	{
 		const UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
-		TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_PART_COMMON));
+		TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_DENY));
 		for (const auto EffectHandle : EffectHandles)
 		{
 			const ULLL_ExtendedGameplayEffect* ActiveEffect = Cast<ULLL_ExtendedGameplayEffect>(ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def);
@@ -150,11 +150,7 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 
 			if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
 			{
-				if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_FEATHER_AMPLIFICATION))
-				{
-					SpawnCount += ActiveEffect->GetAbilityData()->AbilityValue;
-				}
-				else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
+				if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
 				{
 					SpawnCount = Player->GetChargedFeatherCount();
 					Player->StartChargeFeather();
@@ -233,13 +229,13 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 void ULLL_PGA_OnTriggerActivate::GrantTagWhenHit()
 {
 	float GrantNum;
-	if (TagGrantNumTag == TAG_GAS_ABILITY_CHANGEABLE_VALUE)
+	if (TagGrantNumTag == TAG_GAS_ABILITY_VALUE_1)
 	{
-		GrantNum = AbilityData->AbilityValue + AbilityData->ChangeValue * (GetAbilityLevel() - 1);
+		GrantNum = AbilityData->AbilityValue1 * GetAbilityLevel();
 	}
-	else // TagGrantNumTag == TAG_GAS_ABILITY_UNCHANGEABLE_VALUE
+	else if (TagGrantNumTag == TAG_GAS_ABILITY_VALUE_2)
 	{
-		GrantNum = AbilityData->UnchangeableValue;
+		GrantNum = AbilityData->AbilityValue2 * GetAbilityLevel();
 	}
 	
 	if (bAdditiveOrSubtract) // Add

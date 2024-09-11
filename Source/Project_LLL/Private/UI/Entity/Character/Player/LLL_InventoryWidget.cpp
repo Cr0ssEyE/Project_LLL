@@ -76,7 +76,7 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 {
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningPlayer()->GetCharacter());
 	TArray<FGameplayAbilitySpecHandle> SpecHandles;
-	Player->GetAbilitySystemComponent()->FindAllAbilitiesWithTags(SpecHandles, FGameplayTagContainer(TAG_GAS_ABILITY_PART_COMMON));
+	Player->GetAbilitySystemComponent()->FindAllAbilitiesWithTags(SpecHandles, FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_ALLOW));
 
 	float AbilityLevel = 0.f;
 	if (!SpecHandles.IsEmpty())
@@ -99,7 +99,7 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 	}
 	else
 	{
-		TArray<FActiveGameplayEffectHandle> EffectHandles = Player->GetAbilitySystemComponent()->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_PART_COMMON));
+		TArray<FActiveGameplayEffectHandle> EffectHandles = Player->GetAbilitySystemComponent()->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_ALLOW));
 
 		if (EffectHandles.IsEmpty())
 		{
