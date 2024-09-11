@@ -5,6 +5,7 @@
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "Game/LLL_GameInstance.h"
 #include "Game/LLL_GameProgressManageSubSystem.h"
+#include "Kismet/GameplayStatics.h"
 #include "System/MapGimmick/Components/LLL_ProductSpawnPointComponent.h"
 
 // Sets default values for this component's properties
@@ -131,6 +132,9 @@ void ULLL_ShoppingMapComponent::SetDelegate(ALLL_RewardObject* ProductObject)
 	{
 		ProductList.Remove(ProductObject);
 	}
+
+	// 상품 구매시 세이브는 생각좀 필요
+	// Cast<ULLL_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
 	
 	ShoppingDelegate.Broadcast();
 }

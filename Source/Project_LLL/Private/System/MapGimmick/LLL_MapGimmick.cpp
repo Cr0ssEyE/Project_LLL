@@ -22,6 +22,7 @@
 #include "LevelSequencePlayer.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Game/LLL_GameInstance.h"
 #include "Game/LLL_GameProgressManageSubSystem.h"
@@ -60,6 +61,11 @@ FStageInfoData ALLL_MapGimmick::MakeStageInfoData()
 			continue;
 		}
 		StageInfoData.GatesRewardID.Emplace(GateObject->GetRewardData()->ID);
+	}
+
+	if (CurrentState != EStageState::READY && CurrentState != EStageState::FIGHT)
+	{
+		StageInfoData.LastStageState = CurrentState;
 	}
 	
 	return StageInfoData;
@@ -152,8 +158,9 @@ void ALLL_MapGimmick::LoadLastSessionMap(FStageInfoData StageInfoData)
 			RoomClass = MapDataAsset->Rooms[Seed];
 		}
 	}
-	
-	CreateMap();
+
+	ALLL_PlayerController* PlayerController = Cast<ALLL_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	PlayerController->PlayerInitializedDelegate.AddDynamic(this, &ALLL_MapGimmick::CreateMap);
 }
 
 void ALLL_MapGimmick::CreateMap()
@@ -222,14 +229,38 @@ void ALLL_MapGimmick::CreateMap()
 		SetState(EStageState::READY);
 	}
 
+	// 마지막 플레이 상태 적용
+	FStageInfoData LastInfoData = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->StageInfoData;
+	if (LastInfoData.Seed == Seed && LastInfoData.RoomNumber == CurrentRoomNumber)
+	{
+		CurrentState = LastInfoData.LastStageState;
+		if (CurrentState == EStageState::REWARD && !IsValid(ShoppingMapComponent))
+		{
+			Player->SetActorLocation(LastInfoData.PlayerLocation);
+			RewardSpawn();
+		}
+
+		if (CurrentState == EStageState::NEXT && !IsValid(ShoppingMapComponent))
+		{
+			Player->SetActorLocation(LastInfoData.PlayerLocation);
+			MonsterSpawner->OnDestroyed.Clear();
+			MonsterSpawner->Destroy();
+			EnableAllGates();
+		}
+	}
+	
 	// 처음으로 맵을 생성하거나 로드하는 경우 세이브 스킵
 	if (!bIsFirstLoad)
 	{
 		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
 	}
 	
-	// TODO: Player location change 
-	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
+	// TODO: Player location change
+	// 보상 단계 아님 + 상점 아닌 경우 스폰 포인트로 텔레포트
+	if (LastInfoData.LastStageState != EStageState::REWARD && LastInfoData.LastStageState != EStageState::NEXT && !IsValid(ShoppingMapComponent))
+	{
+		Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
+	}
 	Player->SetActorEnableCollision(true);
 	FadeIn();	
 }
@@ -264,6 +295,11 @@ void ALLL_MapGimmick::RandomMap()
 
 void ALLL_MapGimmick::ChangeMap(AActor* DestroyedActor)
 {
+	// 이전 룸의 임시 데이터 초기화.
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	GameProgressSubSystem->ClearInstantRoomData();
+	GameProgressSubSystem->BeginSaveGame();
+	
 	AllGatesDestroy();
 	RandomMap();
 	CreateMap();
@@ -325,6 +361,12 @@ void ALLL_MapGimmick::SetState(EStageState InNewState)
 	
 	if (StateChangeActions.Contains(InNewState))
 	{
+		if (InNewState == EStageState::REWARD || (InNewState == EStageState::NEXT && !CheckShoppingRoom()))
+		{
+			ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+			GameProgressSubSystem->BeginSaveGame();
+		}
+		
 		StateChangeActions[CurrentState].StageDelegate.ExecuteIfBound();
 	}
 }
@@ -348,20 +390,12 @@ void ALLL_MapGimmick::SetChooseReward()
 	RewardSpawn();
 
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetBattleParameter(0.0f);
-
-	// 클리어 상태 세이브
-	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-	GameProgressSubSystem->BeginSaveGame();
 }
 
 void ALLL_MapGimmick::SetChooseNext()
 {
 	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
 
-	// 보상 획득 직후 상태 세이브
-	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-	GameProgressSubSystem->BeginSaveGame();
-	
 	EnableAllGates();
 }
 
@@ -426,6 +460,13 @@ void ALLL_MapGimmick::RewardSpawn()
 		RewardTransform.SetLocation(FVector::Zero() + FVector(0.f, 0.f, 300.f));
 	}
 	RewardObject->FinishSpawning(RewardTransform);
+
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	if (GameProgressSubSystem->GetCurrentSaveGameData()->StageInfoData.RewardPosition != FVector::Zero())
+	{
+		RewardObject->SetActorLocation(GameProgressSubSystem->GetCurrentSaveGameData()->StageInfoData.RewardPosition);
+	}
+	RewardObjectPosition = RewardObject->GetActorLocation();
 }
 
 void ALLL_MapGimmick::SetRewardWidget()
@@ -496,7 +537,6 @@ void ALLL_MapGimmick::PlayerSetHidden()
 	if (bIsFirstLoad)
 	{
 		bIsFirstLoad = false;
-		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
 	}
 }
 

@@ -43,10 +43,15 @@ public:
 	// 마지막 세션 플레이어 정보 초기화
 	UFUNCTION(BlueprintCallable)
 	void InitializeLastSessionPlayData();
+
+	// 룸 이동시 이전 룸의 임시 정보 초기화 (상점, 보상 위치 등)
+	UFUNCTION(BlueprintCallable)
+	void ClearInstantRoomData();
 	
 	// 게임 진행도 저장
 	UFUNCTION(BlueprintCallable)
 	void BeginSaveGame();
+	
 	void SaveGameProgressInfo();
 
 public:

@@ -10,6 +10,7 @@
 #include "Game/LLL_DebugGameInstance.h"
 #include "Algo/RandomShuffle.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
 #include "Game/LLL_GameProgressManageSubSystem.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
@@ -37,12 +38,7 @@ void ALLL_RewardGimmick::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
-		if (!bMapGimmickIsExist)
-		{
-			SetRewardButtons();
-		}
-	}));
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_RewardGimmick::WaitPlayerInitialize);
 }
 
 // Called every frame
@@ -114,6 +110,26 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	}
 	
 	TArray<TTuple<const FAbilityDataTable*, float>> AbilityDataTables = NormalizedWeightRewardArray;
+
+	// 만약 이누리아 보상 리롤 정보가 세이브 되어있으면 가져와서 적용.
+	// 룸 넘어갈 때 Or 상점에서 이누리아 보상 상호작용 할 때 초기화 하기 때문에 문제 아마도 없?음
+	for (auto RolledAbilityID : GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->StageInfoData.SpawnedAbilityDataIDArray)
+	{
+		for (auto RewardAbilityTable : AbilityData)
+		{
+			if (RolledAbilityID == RewardAbilityTable->ID)
+			{
+				ButtonAbilityDataArray.Emplace(RewardAbilityTable);
+				break;
+			}
+		}
+	}
+	
+	if (!ButtonAbilityDataArray.IsEmpty())
+	{
+		RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
+		return;
+	}
 	
 	RollReward(AbilityDataTables);
 
@@ -132,10 +148,6 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	}
 	
 	RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
-
-	// 보상 세이브 필요
-	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-	GameProgressSubSystem->BeginSaveGame();
 }
 
 void ALLL_RewardGimmick::SetDataTable()
@@ -238,6 +250,17 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 	}
 }
 
+void ALLL_RewardGimmick::WaitPlayerInitialize()
+{
+	ALLL_PlayerController* PlayerController = Cast<ALLL_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (IsValid(PlayerController) && PlayerController->CheckPlayerInitialized() && !bMapGimmickIsExist)
+	{
+		SetRewardButtons();
+		return;
+	}
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_RewardGimmick::WaitPlayerInitialize);
+}
+
 void ALLL_RewardGimmick::ClickFirstButton()
 {
 	if (ButtonAbilityDataArray.IsEmpty())
@@ -285,10 +308,6 @@ void ALLL_RewardGimmick::ClickThirdButton()
 
 void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbilityData)
 {
-	// 보상 선택시 게임 세이브
-	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-	GameProgressSubSystem->BeginSaveGame();
-	
 	CurrentAbilityData = ButtonAbilityData;
 	
 	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetWorld()->GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();

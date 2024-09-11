@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "LLL_PlayerController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerInitializedDelegate);
+
 /**
  * 
  */
@@ -26,6 +28,11 @@ public:
 public:
 	FORCEINLINE void SetCharacterInitialized() { bIsCharacterInitialized = true; }
 	FORCEINLINE void SetWidgetInitialized() { bIsWidgetInitialized = true; }
+	FORCEINLINE bool CheckPlayerInitialized() const { return bIsCharacterInitialized && bIsWidgetInitialized; }
+
+public:
+	FOnPlayerInitializedDelegate PlayerInitializedDelegate;
+	
 protected:
 	void WaitPlayerCharacterInitialize();
 

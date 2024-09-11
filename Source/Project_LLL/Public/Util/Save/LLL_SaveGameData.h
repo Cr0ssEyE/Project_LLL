@@ -27,7 +27,7 @@ public:
 	// Index - ID
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	TMap<int32, int32> ShoppingProductList;
-
+	
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	TArray<int32> AcquiredEruriasID;
 

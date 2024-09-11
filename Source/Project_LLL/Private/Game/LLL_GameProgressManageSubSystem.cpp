@@ -4,7 +4,6 @@
 #include "Game/LLL_GameProgressManageSubSystem.h"
 
 #include "Constant/LLL_GameplayInfo.h"
-#include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
@@ -12,6 +11,7 @@
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/MapGimmick/Components/LLL_ShoppingMapComponent.h"
+#include "System/Reward/LLL_RewardGimmick.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
 ULLL_GameProgressManageSubSystem::ULLL_GameProgressManageSubSystem() :
@@ -96,6 +96,23 @@ void ULLL_GameProgressManageSubSystem::InitializeLastSessionPlayData()
 		}
 	}
 	CurrentSaveGameData->PlayerCharacterStatusData = TempStatusData;
+}
+
+void ULLL_GameProgressManageSubSystem::ClearInstantRoomData()
+{
+	// 상점 관련 임시 데이터 제거
+	if (IsValid(CurrentInstanceMapGimmick.Get()) && CurrentInstanceMapGimmick.Get()->CheckShoppingRoom())
+	{
+		CurrentSaveGameData->PlayerPlayProgressData.ShoppingProductList.Empty();
+		// 만약 상점에 이누리아 2개 이상, 2종류 이상 뜨는거 안정적으로 저장하려면 근본적으로 보상 관련한 시스템 전반 엎어야 함.
+		CurrentSaveGameData->StageInfoData.SpawnedAbilityDataIDArray.Empty();
+		return;
+	}
+
+	// 일반 전투 룸 임시 데이터 제거
+	CurrentSaveGameData->StageInfoData.PlayerLocation = CurrentSaveGameData->StageInfoData.RewardPosition = FVector::Zero();
+	CurrentSaveGameData->StageInfoData.LastStageState = EStageState::READY;
+	CurrentSaveGameData->StageInfoData.SpawnedAbilityDataIDArray.Empty();
 }
 
 void ULLL_GameProgressManageSubSystem::BeginSaveGame()
@@ -209,6 +226,7 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 
 void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEruriaEffect(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID)
 {
+	// 이누리아 개편으로 몇몇 이누리아는 제대로 로드 안될 가능성 있어 체크 필요.
 	TArray<const FAbilityDataTable*> EqualAbilities = FLLL_AbilityDataHelper::ApplyEruriaEffect(GetWorld(), LoadedEffects, EffectID);
 	if (!EqualAbilities.IsEmpty())
 	{
@@ -245,6 +263,31 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 	{
 		CurrentStageInfoData = MapGimmick->MakeStageInfoData();
 
+		// 룸 진행도에 따른 정보 저장
+		EStageState CurrentStageState = MapGimmick->GetStageState();
+		if (CurrentStageState != EStageState::READY && CurrentStageState != EStageState::FIGHT)
+		{
+			ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+			if (IsValid(PlayerCharacter))
+			{
+				CurrentStageInfoData.PlayerLocation = PlayerCharacter->GetActorLocation();
+				if (CurrentStageState == EStageState::REWARD)
+				{
+					CurrentStageInfoData.RewardPosition = MapGimmick->GetRewardPosition();
+					for (auto RolledAbilityData : MapGimmick->GetRewardGimmick()->GetRolledAbilityData())
+					{
+						CurrentStageInfoData.SpawnedAbilityDataIDArray.Emplace(RolledAbilityData->ID);
+					}
+				}
+
+				if (CurrentStageState == EStageState::NEXT && !MapGimmick->CheckShoppingRoom())
+				{
+					
+				}
+			}
+		}
+		CurrentStageInfoData.LastStageState = CurrentStageState;
+		
 		// 상점 정보 저장
 		if (MapGimmick->CheckShoppingRoom())
 		{
@@ -290,7 +333,7 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 	}
 	
 	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (IsValid(PlayerCharacter) && PlayerCharacter->CheckCharacterIsDead())
+	if (!IsValid(PlayerCharacter) || (IsValid(PlayerCharacter) && PlayerCharacter->CheckCharacterIsDead()))
 	{
 		bIsSaveUserDataCompleted = true;
 		return;

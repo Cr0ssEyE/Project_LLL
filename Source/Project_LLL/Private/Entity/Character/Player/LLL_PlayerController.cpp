@@ -58,6 +58,9 @@ void ALLL_PlayerController::WaitPlayerCharacterInitialize()
 {
 	if (bIsCharacterInitialized && bIsWidgetInitialized)
 	{
+		PlayerInitializedDelegate.Broadcast();
+		PlayerInitializedDelegate.Clear();
+		
 		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->LoadLastSessionPlayerData();
 		return;
 	}

@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "DataTable/LLL_RewardDataTable.h"
 #include "DataAsset/LLL_MapDataAsset.h"
+#include "DataTable/LLL_AbilityDataTable.h"
+#include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "GameFramework/Actor.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_MapGimmick.generated.h"
@@ -34,7 +36,10 @@ struct FStageInfoData
 public:
 	FStageInfoData():
 	Seed(UINT32_MAX),
-	RoomNumber(UINT32_MAX)
+	RoomNumber(UINT32_MAX),
+	PlayerLocation(FVector::Zero()),
+	RewardPosition(FVector::Zero()),
+	LastStageState(EStageState::READY)
 	{
 		
 	}
@@ -48,7 +53,18 @@ public:
 
 	UPROPERTY()
 	TArray<uint8> GatesRewardID;
+
+	UPROPERTY()
+	FVector PlayerLocation;
+
+	UPROPERTY()
+	FVector RewardPosition;
+
+	UPROPERTY()
+	EStageState LastStageState;
 	
+	UPROPERTY()
+	TArray<int32> SpawnedAbilityDataIDArray;
 };
 
 USTRUCT(BlueprintType)
@@ -81,6 +97,9 @@ public:
 	FORCEINLINE ALLL_MonsterSpawner* GetMonsterSpawner() const { return MonsterSpawner; }
 	FORCEINLINE bool CheckShoppingRoom() const { return ShoppingMapComponent != nullptr; }
 	FORCEINLINE ULLL_ShoppingMapComponent* GetShoppingMapComponent() const { return ShoppingMapComponent; }
+	FORCEINLINE EStageState GetStageState() const { return CurrentState; }
+	FORCEINLINE ALLL_RewardGimmick* GetRewardGimmick() const { return RewardGimmick; }
+	FORCEINLINE FVector GetRewardPosition() const { return RewardObjectPosition; }
 	
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage")
@@ -185,6 +204,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<ALLL_RewardObject> RewardObjectClass;
 
+	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
+	FVector RewardObjectPosition;
+	
 	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ALLL_RewardGimmick> RewardGimmick;
 	
