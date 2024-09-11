@@ -132,12 +132,12 @@ void ULLL_GamePauseWidget::OnAnimationFinished_Implementation(const UWidgetAnima
 
 	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
 	
-	if (LastClickButton == TitleButton && Animation == FadeAnim)
+	if (LastClickButton == TitleButton && Animation == FadeAnim && GetWorld()->GetName() == LEVEL_LOBBY)
 	{
 		GameProgressSubSystem->OnSaveCompleted.AddDynamic(this, &ULLL_GamePauseWidget::OpenTitle);
 		GameProgressSubSystem->BeginSaveGame();
 	}
-	else if (LastClickButton == ExitButton && Animation == FadeAnim)
+	else if (LastClickButton == ExitButton && Animation == FadeAnim && GetWorld()->GetName() == LEVEL_LOBBY)
 	{
 		GameProgressSubSystem->OnSaveCompleted.AddDynamic(this, &ULLL_GamePauseWidget::OutGame);
 		GameProgressSubSystem->BeginSaveGame();

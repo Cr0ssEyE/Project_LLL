@@ -198,6 +198,8 @@ void ALLL_LobbyManagementActor::PlayerEnteringDungeon()
 		PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
 		PlayerTeleportNiagara->ActivateSystem();
 	}
+
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->InitializeLastSessionPlayData();
 }
 
 void ALLL_LobbyManagementActor::OnDungeonEnterCompleted()

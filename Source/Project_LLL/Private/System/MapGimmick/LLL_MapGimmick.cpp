@@ -176,7 +176,7 @@ void ALLL_MapGimmick::CreateMap()
 			ShoppingMapComponent = Cast<ULLL_ShoppingMapComponent>(ChildComponent);
 			if (IsValid(ShoppingMapComponent))
 			{
-				ShoppingMapComponent->ShopingDelegate.AddUObject(this, &ALLL_MapGimmick::SetRewardWidget);
+				ShoppingMapComponent->ShoppingDelegate.AddUObject(this, &ALLL_MapGimmick::SetRewardWidget);
 			}
 		}
 
@@ -348,11 +348,19 @@ void ALLL_MapGimmick::SetChooseReward()
 	RewardSpawn();
 
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetBattleParameter(0.0f);
+
+	// 클리어 상태 세이브
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	GameProgressSubSystem->BeginSaveGame();
 }
 
 void ALLL_MapGimmick::SetChooseNext()
 {
 	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
+
+	// 보상 획득 직후 상태 세이브
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	GameProgressSubSystem->BeginSaveGame();
 	
 	EnableAllGates();
 }

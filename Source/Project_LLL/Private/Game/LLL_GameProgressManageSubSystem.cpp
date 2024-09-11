@@ -4,6 +4,7 @@
 #include "Game/LLL_GameProgressManageSubSystem.h"
 
 #include "Constant/LLL_GameplayInfo.h"
+#include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
@@ -71,8 +72,30 @@ void ULLL_GameProgressManageSubSystem::InitializeLastSessionMapData(bool ResetTo
 		CurrentSaveGameData->LastPlayedLevelName = LEVEL_LOBBY;
 	}
 	
-	FStageInfoData CurrentStageInfoData;
+	const FStageInfoData CurrentStageInfoData;
 	CurrentSaveGameData->StageInfoData = CurrentStageInfoData;
+}
+
+void ULLL_GameProgressManageSubSystem::InitializeLastSessionPlayData()
+{
+	if (!IsValid(CurrentSaveGameData))
+	{
+		return;
+	}
+	const FPlayerPlayProgressData TempProgressData;
+	CurrentSaveGameData->PlayerPlayProgressData = TempProgressData;
+
+	FPlayerCharacterStatusData TempStatusData;
+	if (ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		if (!PlayerCharacter->CheckCharacterIsDead())
+		{
+			UAbilitySystemComponent* PlayerASC = PlayerCharacter->GetAbilitySystemComponent();
+			const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+			TempStatusData = PlayerCharacterAttributeSet->MakeCharacterStatusData();
+		}
+	}
+	CurrentSaveGameData->PlayerCharacterStatusData = TempStatusData;
 }
 
 void ULLL_GameProgressManageSubSystem::BeginSaveGame()
@@ -154,7 +177,7 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 		return;
 	}
 	
-	if (GetLastPlayedLevelName() == LEVEL_LOBBY)
+	if (GetWorld()->GetName() == LEVEL_LOBBY)
 	{
 		// 로비 관련 처리
 		PlayerCharacter->SetActorLocation(CurrentSaveGameData->LobbyLastStandingLocation);
@@ -162,10 +185,10 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 	}
 
 	PlayerCharacter->InitAttributeSetBySave(&CurrentSaveGameData->PlayerCharacterStatusData);
-	PlayerCharacter->GetGoldComponent()->IncreaseMoney(CurrentSaveGameData->CurrentGoldAmount);
+	PlayerCharacter->GetGoldComponent()->IncreaseMoney(CurrentSaveGameData->PlayerPlayProgressData.CurrentGoldAmount);
 	
 	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
-	TArray<int32> PlayerAcquiredEruriasID = CurrentSaveGameData->AcquiredEruriasID;
+	TArray<int32> PlayerAcquiredEruriasID = CurrentSaveGameData->PlayerPlayProgressData.AcquiredEruriasID;
 
 	for (auto EruriaID : PlayerAcquiredEruriasID)
 	{
@@ -173,7 +196,14 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 		AsyncLoadEffectDelegate.AddDynamic(this, &ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEruriaEffect);
 		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, EruriaID, EEffectAccessRange::None);
 	}
-	
+
+	// for (auto i = 0; i < CurrentSaveGameData->PlayerPlayProgressData.AcquiredGoldAppleCount; i++)
+	// {
+	// 	TSubclassOf<UGameplayEffect> IncreaseHpEffect = CastChecked<ULLL_GameInstance>(GetGameInstance())->GetGlobalParametersDataAsset()->GoldAppleIncreaseHpEffect;
+	// 	FGameplayEffectContextHandle EffectContextHandle = PlayerCharacter->GetAbilitySystemComponent()->MakeEffectContext();
+	// 	const FGameplayEffectSpecHandle EffectSpecHandle = PlayerCharacter->GetAbilitySystemComponent()->MakeOutgoingSpec(IncreaseHpEffect, 1.0, EffectContextHandle);
+	// 	PlayerCharacter->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+	// }
 	OnLastSessionPlayerDataLoaded.Broadcast();
 }
 
@@ -218,15 +248,22 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 		// 상점 정보 저장
 		if (MapGimmick->CheckShoppingRoom())
 		{
+			// Index - ID
 			TMap<int32, int32> ShoppingProductList;
 			uint32 ProductIndex = 0;
 			ULLL_ShoppingMapComponent* ShoppingMapComponent = MapGimmick->GetShoppingMapComponent();
-			for (auto Product : ShoppingMapComponent->GetProductList())
+			TArray<TObjectPtr<ALLL_RewardObject>> ProductList = ShoppingMapComponent->GetProductList();
+			for (auto Product : ProductList)
 			{
-				ShoppingProductList.Emplace(ProductIndex, Product->GetRewardDataIndex());
+				if (!IsValid(Product))
+				{
+					continue;
+				}
+				
+				ShoppingProductList.Emplace(ProductIndex, Product->GetRewardDataID());
 				ProductIndex++;
 			}
-			CurrentSaveGameData->ShoppingProductList = ShoppingProductList;
+			CurrentSaveGameData->PlayerPlayProgressData.ShoppingProductList = ShoppingProductList;
 		}
 	}
 
@@ -253,7 +290,7 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 	}
 	
 	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (PlayerCharacter->CheckCharacterIsDead())
+	if (IsValid(PlayerCharacter) && PlayerCharacter->CheckCharacterIsDead())
 	{
 		bIsSaveUserDataCompleted = true;
 		return;
@@ -286,14 +323,14 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 		AcquiredEruriasStackCount.Emplace(RewardAbilityContainerEffect->GetAbilityData()->ID, EffectSpec.GetLevel());
 	}
 
-	CurrentSaveGameData->AcquiredEruriasID = AcquiredEruriasID;
-	CurrentSaveGameData->AcquiredEruriasStackCount = AcquiredEruriasStackCount;
+	CurrentSaveGameData->PlayerPlayProgressData.AcquiredEruriasID = AcquiredEruriasID;
+	CurrentSaveGameData->PlayerPlayProgressData.AcquiredEruriasStackCount = AcquiredEruriasStackCount;
 	
 	// 어트리뷰트 정보 저장
 	FPlayerCharacterStatusData PlayerCharacterStatusData = PlayerCharacterAttributeSet->MakeCharacterStatusData();
 	CurrentSaveGameData->PlayerCharacterStatusData = PlayerCharacterStatusData;
 	
 	// 휘발성 재화 정보 저장
-	CurrentSaveGameData->CurrentGoldAmount = PlayerCharacter->GetGoldComponent()->GetMoney();
+	CurrentSaveGameData->PlayerPlayProgressData.CurrentGoldAmount = PlayerCharacter->GetGoldComponent()->GetMoney();
 	bIsSaveUserDataCompleted = true;
 }

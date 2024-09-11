@@ -6,7 +6,7 @@
 #include "Components/SceneComponent.h"
 #include "LLL_ShoppingMapComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnShopingDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnShoppingDelegate);
 
 class ALLL_RewardObject;
 //class ULLL_TestShopDataTable;
@@ -24,7 +24,7 @@ public:
 	UFUNCTION()
 	void DeleteProducts();
 
-	FOnShopingDelegate ShopingDelegate;
+	FOnShoppingDelegate ShoppingDelegate;
 
 public:
 	FORCEINLINE TArray<TObjectPtr<ALLL_RewardObject>> GetProductList() const { return ProductList; }
@@ -43,7 +43,7 @@ public:
 	virtual void BeginDestroy() override;
 
 	UFUNCTION()
-	void SetDelegate();
+	void SetDelegate(ALLL_RewardObject* ProductObject);
 	
 protected:
 	UPROPERTY(EditAnywhere, Category = Product, Meta = (AllowPrivateAccess = "true"))

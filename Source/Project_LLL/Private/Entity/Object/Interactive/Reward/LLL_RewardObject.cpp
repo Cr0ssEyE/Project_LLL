@@ -16,6 +16,7 @@
 #include "Game/LLL_DebugGameInstance.h"
 #include "UI/Object/LLL_ProductObjectPriceWidget.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 
@@ -137,7 +138,7 @@ void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 	{
 		// 능력
 	case 1:
-		InteractionDelegate.Broadcast();
+		InteractionDelegate.Broadcast(this);
 		SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 		SelectRewardWidget->SetIsEnabled(true);
 		SelectRewardWidget->FocusToUI();
@@ -151,6 +152,7 @@ void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 		if(EffectSpecHandle.IsValid())
 		{
 			Player->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+			GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->PlayerPlayProgressData.AcquiredGoldAppleCount++;
 		}
 
 		break;

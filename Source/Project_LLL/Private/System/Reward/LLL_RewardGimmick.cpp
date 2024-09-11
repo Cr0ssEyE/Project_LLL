@@ -11,6 +11,7 @@
 #include "Algo/RandomShuffle.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "Kismet/GameplayStatics.h"
 #include "Util/LLL_AbilityDataHelper.h"
@@ -131,6 +132,10 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	}
 	
 	RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
+
+	// 보상 세이브 필요
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	GameProgressSubSystem->BeginSaveGame();
 }
 
 void ALLL_RewardGimmick::SetDataTable()
@@ -280,6 +285,10 @@ void ALLL_RewardGimmick::ClickThirdButton()
 
 void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbilityData)
 {
+	// 보상 선택시 게임 세이브
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	GameProgressSubSystem->BeginSaveGame();
+	
 	CurrentAbilityData = ButtonAbilityData;
 	
 	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetWorld()->GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();

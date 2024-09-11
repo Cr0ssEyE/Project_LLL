@@ -8,6 +8,46 @@
 #include "System/MapGimmick/LLL_MapGimmick.h"
 #include "LLL_SaveGameData.generated.h"
 
+USTRUCT(BlueprintType)
+struct FPlayerPlayProgressData
+{
+	GENERATED_BODY()
+
+public:
+	FPlayerPlayProgressData() :
+	UsedGoldAmount(0),
+	CurrentGoldAmount(0),
+	AcquiredKvassCount(0),
+	AcquiredGoldAppleCount(0)
+	{
+		
+	}
+
+public:
+	// Index - ID
+	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
+	TMap<int32, int32> ShoppingProductList;
+
+	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
+	TArray<int32> AcquiredEruriasID;
+
+	// ID - Count
+	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
+	TMap<int32, int32> AcquiredEruriasStackCount;
+
+	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
+	int32 UsedGoldAmount;
+
+	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
+	int32 CurrentGoldAmount;
+
+	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
+	int32 AcquiredKvassCount;
+
+	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
+	int32 AcquiredGoldAppleCount;
+};
+
 /**
  * 
  */
@@ -45,29 +85,10 @@ public:
 	FStageInfoData StageInfoData;
 	
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
-	TMap<int32, int32> ShoppingProductList;
-	
-	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	FPlayerCharacterStatusData PlayerCharacterStatusData;
 
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
-	TArray<int32> AcquiredEruriasID;
-
-	// ID - Count
-	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
-	TMap<int32, int32> AcquiredEruriasStackCount;
-
-	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
-	int32 UsedGoldAmount;
-
-	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
-	int32 CurrentGoldAmount;
-
-	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
-	int32 AcquiredKvassCount;
-
-	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
-	int32 AcquiredGoldAppleCount;
+	FPlayerPlayProgressData PlayerPlayProgressData;
 
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	FVector LobbyLastStandingLocation;

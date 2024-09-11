@@ -39,6 +39,10 @@ public:
 	// 마지막 맵 정보 초기화
 	UFUNCTION(BlueprintCallable)
 	void InitializeLastSessionMapData(bool ResetToLobby = false) const;
+
+	// 마지막 세션 플레이어 정보 초기화
+	UFUNCTION(BlueprintCallable)
+	void InitializeLastSessionPlayData();
 	
 	// 게임 진행도 저장
 	UFUNCTION(BlueprintCallable)
