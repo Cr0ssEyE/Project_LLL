@@ -63,20 +63,15 @@ enum class EEffectAccessRange : uint8
 
 // 플레이어 어빌리티 종류 구분
 UENUM(BlueprintType)
-enum class EAbilityType : uint8
+enum class EAnimalType : uint8
 {
 	None UMETA(Hidden),
 	Crow,
 	Deer,
-	Wolf
-};
-
-UENUM(BlueprintType)
-enum class EAbilityPart : uint8
-{
-	Common,
-	Attack,
-	Dash
+	Wolf,
+	Horse,
+	WildBoar,
+	Eagle
 };
 
 UENUM(BlueprintType)
@@ -85,7 +80,7 @@ enum class EAbilityRank : uint8
 	Normal,
 	Rare,
 	Epic,
-	Legend
+	Synergy
 };
 
 UENUM(BlueprintType)
@@ -93,9 +88,8 @@ enum class EAbilityCategory : uint8
 {
 	Null,
 	Feather,
-	Critical,
-	Marking,
-	Bleeding
+	Bleeding,
+	Blow
 };
 
 UENUM(BlueprintType)
