@@ -52,9 +52,6 @@ public:
 	void RemoveEruriaInfo(const EAbilityPart AbilityPart);
 	
 protected:
-	void SetEruriaImage(UImage* Image, UTextBlock* TextBlock, FGameplayTag AbilityPartTag, const FAbilityDataTable* AbilityData);
-	
-protected:
 	// 임시 데이터이므로 추후 테이블 연결 필요
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 아이콘(임시)")
 	TArray<UTexture*> EruriaIConTextures;

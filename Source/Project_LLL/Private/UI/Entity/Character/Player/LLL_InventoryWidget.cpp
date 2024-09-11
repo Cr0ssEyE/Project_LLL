@@ -149,6 +149,6 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 	
 	TextBlock->SetText(FText::FromString(AbilityLevelDisplayHelper.DisplayText[static_cast<uint32>(AbilityLevel)]));
 	MaterialInstanceDynamic->SetVectorParameterValue(UI_RARITY_COLOR, EruriaRarityColor[static_cast<uint32>(AbilityData->AbilityRank)]);
-	MaterialInstanceDynamic->SetTextureParameterValue(UI_ERURIA_ICON, EruriaIConTextures[static_cast<uint32>(AbilityData->AbilityType)]);
+	MaterialInstanceDynamic->SetTextureParameterValue(UI_ERURIA_ICON, EruriaIConTextures[static_cast<uint32>(AbilityData->AnimalType)]);
 	return true;
 }

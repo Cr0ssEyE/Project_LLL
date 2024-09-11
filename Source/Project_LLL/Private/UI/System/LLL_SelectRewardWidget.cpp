@@ -66,8 +66,9 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<const FAbilityDataTable*> Abi
 			AbilityInformation = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityInformation, TEXT("Failed To Load Ability Information"))->Korean;
 		
 			// TODO: 강화 UI는 AbilityData->ChangeValue 고려하도록 개선하기
-			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_ABILITY_VALUE, *FString::SanitizeFloat(FMath::Abs(AbilityData->AbilityValue)));
-			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_UNCHANGEABLE_VALUE, *FString::SanitizeFloat(FMath::Abs(AbilityData->UnchangeableValue)));
+			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_ABILITY_VALUE_1, *FString::SanitizeFloat(FMath::Abs(AbilityData->AbilityValue1)));
+			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_ABILITY_VALUE_2, *FString::SanitizeFloat(FMath::Abs(AbilityData->AbilityValue2)));
+			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_REQUIRE_SYNERGY, *FString::SanitizeFloat(FMath::Abs(AbilityData->RequireSynergy)));
 		}
 		else
 		{
@@ -80,20 +81,20 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<const FAbilityDataTable*> Abi
 	RewardNameText1->SetText(FText::FromString(WidgetInfoTexts[0].Key));
 	RewardInfoText1->SetText(FText::FromString(WidgetInfoTexts[0].Value));
 	RewardNameText1->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[0]->AbilityRank)]);
-	RewardIconImage1->SetBrushFromTexture(EnhancedEruriaIConTextures[static_cast<uint32>(AbilityDataArray[0]->AbilityType) - 1].AbilityIcon[static_cast<uint32>(AbilityDataArray[0]->AbilityPart)]);
-	RewardBackgroundImage1->SetBrushFromTexture(EruriaBackgroundTextures[static_cast<uint32>(AbilityDataArray[0]->AbilityType)]);
+	//RewardIconImage1->SetBrushFromTexture(EnhancedEruriaIConTextures[static_cast<uint32>(AbilityDataArray[0]->AnimalType) - 1].AbilityIcon[static_cast<uint32>(AbilityDataArray[0]->AbilityPart)]);
+	RewardBackgroundImage1->SetBrushFromTexture(EruriaBackgroundTextures[static_cast<uint32>(AbilityDataArray[0]->AnimalType)]);
 	
 	RewardNameText2->SetText(FText::FromString(WidgetInfoTexts[1].Key));
 	RewardInfoText2->SetText(FText::FromString(WidgetInfoTexts[1].Value));
 	RewardNameText2->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[1]->AbilityRank)]);
-	RewardIconImage2->SetBrushFromTexture(EnhancedEruriaIConTextures[static_cast<uint32>(AbilityDataArray[1]->AbilityType) - 1].AbilityIcon[static_cast<uint32>(AbilityDataArray[1]->AbilityPart)]);
-	RewardBackgroundImage2->SetBrushFromTexture(EruriaBackgroundTextures[static_cast<uint32>(AbilityDataArray[1]->AbilityType)]);
+	//RewardIconImage2->SetBrushFromTexture(EnhancedEruriaIConTextures[static_cast<uint32>(AbilityDataArray[1]->AnimalType) - 1].AbilityIcon[static_cast<uint32>(AbilityDataArray[1]->AbilityPart)]);
+	RewardBackgroundImage2->SetBrushFromTexture(EruriaBackgroundTextures[static_cast<uint32>(AbilityDataArray[1]->AnimalType)]);
 	
 	RewardNameText3->SetText(FText::FromString(WidgetInfoTexts[2].Key));
 	RewardInfoText3->SetText(FText::FromString(WidgetInfoTexts[2].Value));
 	RewardNameText3->SetDefaultColorAndOpacity(EruriaRarityColor[static_cast<uint32>(AbilityDataArray[2]->AbilityRank)]);
-	RewardIconImage3->SetBrushFromTexture(EnhancedEruriaIConTextures[static_cast<uint32>(AbilityDataArray[2]->AbilityType) - 1].AbilityIcon[static_cast<uint32>(AbilityDataArray[2]->AbilityPart)]);
-	RewardBackgroundImage3->SetBrushFromTexture(EruriaBackgroundTextures[static_cast<uint32>(AbilityDataArray[2]->AbilityType)]);
+	//RewardIconImage3->SetBrushFromTexture(EnhancedEruriaIConTextures[static_cast<uint32>(AbilityDataArray[2]->AnimalType) - 1].AbilityIcon[static_cast<uint32>(AbilityDataArray[2]->AbilityPart)]);
+	RewardBackgroundImage3->SetBrushFromTexture(EruriaBackgroundTextures[static_cast<uint32>(AbilityDataArray[2]->AnimalType)]);
 }
 
 void ULLL_SelectRewardWidget::FocusToUI()
