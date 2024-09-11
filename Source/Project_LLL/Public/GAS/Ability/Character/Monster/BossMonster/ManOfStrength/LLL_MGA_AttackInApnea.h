@@ -18,6 +18,24 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
+	void AttackMiddle(int32 AttackCount);
+	void AttackEnd();
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
-	TObjectPtr<UAnimMontage> AttackInApneaMontage;
+	TObjectPtr<UAnimMontage> AttackInApneaStartMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	TObjectPtr<UAnimMontage> AttackInApneaMiddleMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	TObjectPtr<UAnimMontage> AttackInApneaEndMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Timer")
+	float StartMontageDashTimer;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Timer")
+	float MiddleMontageDashTimer;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Timer")
+	float EndMontageDashTimer;
 };

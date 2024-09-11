@@ -47,6 +47,11 @@ void ALLL_MonsterBaseAIController::StopLogic(const FString& Reason) const
 	Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
 }
 
+void ALLL_MonsterBaseAIController::StartLogic() const
+{
+	BrainComponent->StartLogic();
+}
+
 void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)

@@ -36,8 +36,6 @@ public:
 	void PlayerDeadEvent() const;
 	
 protected:
-	virtual void BeginDestroy() override;
-
 	UPROPERTY()
 	TObjectPtr<const ULLL_MapSoundSubsystemDataAsset> MapSoundSubsystemDataAsset;
 

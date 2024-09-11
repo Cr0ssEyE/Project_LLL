@@ -16,7 +16,7 @@ EBTNodeResult::Type ULLL_Shockwave_BTTaskNode::ExecuteTask(UBehaviorTreeComponen
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	const ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(OwnerComp.GetAIOwner()->GetPawn());
+	ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!ManOfStrength)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("힘 있는 자가 아닙니다"));

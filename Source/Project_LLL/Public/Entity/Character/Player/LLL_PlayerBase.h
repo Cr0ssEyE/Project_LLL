@@ -75,10 +75,12 @@ public:
 	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
 	FORCEINLINE float GetLastSentDamage() const { return LastSentDamage; }
 	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
+	FORCEINLINE float GetFeatherSpawnStartTime() const { return FeatherSpawnStartTime; }
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
 	FORCEINLINE void SetLastSentDamage(float InLastSentDamage) { LastSentDamage = InLastSentDamage; }
+	FORCEINLINE void SetFeatherSpawnStartTime(float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
 	
 	FVector CheckMouseLocation();
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
@@ -155,7 +157,8 @@ private:
 	int32 CurrentCombo;
 	int32 ChargedFeatherCount;
 	FTimerHandle ChargeFeatherTimerHandle;
-	TArray<AActor*> RangeFeatherTargets;
+	TArray<TObjectPtr<AActor>> RangeFeatherTargets;
+	float FeatherSpawnStartTime;
 
 	// 상태 관련 함수
 protected:

@@ -6964,6 +6964,26 @@
 		{
 			"Path": "$(ProjectDir)/Plugins/LDAssistant/Binaries/Win64/UnrealEditor.modules",
 			"Type": "RequiredResource"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/NiagaraUIRenderer/Binaries/Win64/UnrealEditor-NiagaraUIRenderer.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/NiagaraUIRenderer/Binaries/Win64/UnrealEditor-NiagaraUIRenderer.pdb",
+			"Type": "SymbolFile"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/NiagaraUIRenderer/Binaries/Win64/UnrealEditor-NiagaraUIRendererEditor.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/NiagaraUIRenderer/Binaries/Win64/UnrealEditor-NiagaraUIRendererEditor.pdb",
+			"Type": "SymbolFile"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/NiagaraUIRenderer/Binaries/Win64/UnrealEditor.modules",
+			"Type": "RequiredResource"
 		}
 	],
 	"RuntimeDependencies": [
@@ -30116,6 +30136,10 @@
 			"Type": "UFS"
 		},
 		{
+			"Path": "$(ProjectDir)/Plugins/NiagaraUIRenderer/NiagaraUIRenderer.uplugin",
+			"Type": "UFS"
+		},
+		{
 			"Path": "$(ProjectDir)/Project_LLL.uproject",
 			"Type": "UFS"
 		}
@@ -30257,6 +30281,7 @@
 		"Niagara",
 		"NiagaraFluids",
 		"NiagaraSimCaching",
+		"NiagaraUIRenderer",
 		"NullSourceCodeAccess",
 		"ObjectMixer",
 		"OnlineBase",

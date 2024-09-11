@@ -20,10 +20,13 @@
 #include "DataAsset/Global/LLL_GlobalNiagaraDataAsset.h"
 #include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
+#include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Ability/Character/Monster/Base/LLL_MGA_Charge.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "GAS/ASC/LLL_MonsterASC.h"
@@ -65,6 +68,8 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	BleedingVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BleedingStatusEffect"));
 	BleedingVFXComponent->SetupAttachment(RootComponent);
 	BleedingVFXComponent->SetAutoActivate(false);
+
+	AttributeInitId = ATTRIBUTE_INIT_MONSTER;
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -106,6 +111,9 @@ void ALLL_MonsterBase::BeginPlay()
 		BleedingVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
 	}
 	
+	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
+	MonsterBaseAIController->StopLogic("Before Initialize");
+	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -139,7 +147,10 @@ void ALLL_MonsterBase::InitAttributeSet()
 	Super::InitAttributeSet();
 
 	const int32 Data = Id * 100 + Level;
-	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_MONSTER, Data, true);
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, AttributeInitId, Data, true);
+
+	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
+	MonsterBaseAIController->StartLogic();
 }
 
 void ALLL_MonsterBase::SetFModParameter(EFModParameter FModParameter)
@@ -161,9 +172,63 @@ void ALLL_MonsterBase::SetFModParameter(EFModParameter FModParameter)
 	}
 }
 
+void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+	UCharacterMovementComponent* CharacterMovementComponent = CastChecked<UCharacterMovementComponent>(GetMovementComponent());
+	if (CharacterMovementComponent->MovementMode == MOVE_Flying)
+	{
+		CharacterMovementComponent->MovementMode = MOVE_Walking;
+		GetMesh()->SetCollisionProfileName(CP_MONSTER);
+		GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
+	
+		const ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(GetOwner());
+		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Other);
+		if (IsValid(ManOfStrength) && IsValid(Player))
+		{
+			const ULLL_ManOfStrengthDataAsset* ManOfStrengthDataAsset = CastChecked<ULLL_ManOfStrengthDataAsset>(ManOfStrength->GetCharacterDataAsset());
+			const ULLL_MonsterAttributeSet* OwnerMonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(ManOfStrength->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+			const float OffencePower = OwnerMonsterAttributeSet->GetManOfStrengthThrowOffencePower();
+			
+			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+			EffectContextHandle.AddSourceObject(this);
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->ThrowDamageEffect, Level, EffectContextHandle);
+			if (EffectSpecHandle.IsValid())
+			{
+				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
+				UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *Other->GetName())
+				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());
+			}
+		}
+		
+		SetOwner(nullptr);
+		CastChecked<ALLL_MonsterBaseAIController>(GetController())->StartLogic();
+	}
+}
+
+void ALLL_MonsterBase::Charge()
+{
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE)))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (DebugGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
+			}
+		}
+#endif
+	}
+}
+
 void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 {
 	Super::Damaged(Attacker, IsDOT);
+	
+	ShowHitEffect();
+	RecognizePlayerToAroundMonster();
 
 	if (bIsAttacking)
 	{
@@ -177,7 +242,7 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 	}
 
 	AnimInstance->StopAllMontages(1.0f);
-	if ( GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_STATE_COLLIDE_OTHER) && IsValid(MonsterBaseDataAsset->KnockBackCollideMontage))
+	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_STATE_COLLIDE_OTHER) && IsValid(MonsterBaseDataAsset->KnockBackCollideMontage))
 	{
 		FVector HitDirection = (GetActorLocation() - GetLastCollideLocation()).GetSafeNormal2D();
 		HitDirection.Z = 0.f;
@@ -203,23 +268,6 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 		TempNiagaraComponent->DestroyComponent();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
-
-	if (!IsValid(HitEffectOverlayMaterialInstance))
-	{
-		HitEffectOverlayMaterialInstance = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
-		GetMesh()->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
-		for (auto ChildComponent : GetMesh()->GetAttachChildren())
-		{
-			if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ChildComponent))
-			{
-				StaticMeshComponent->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
-			}
-		}
-	}
-
-	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 1.f);
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
-	RecognizePlayerToAroundMonster();
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
@@ -358,6 +406,11 @@ void ALLL_MonsterBase::ApplyStackedKnockBack()
 	ResetKnockBackStack();
 }
 
+float ALLL_MonsterBase::GetChargeTimer() const
+{
+	return MonsterAttributeSet->GetChargeTimer();
+}
+
 void ALLL_MonsterBase::Attack() const
 {
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK)))
@@ -368,22 +421,6 @@ void ALLL_MonsterBase::Attack() const
 			if (DebugGameInstance->CheckMonsterAttackDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 공격 수행"), *GetName()));
-			}
-		}
-#endif
-	}
-}
-
-void ALLL_MonsterBase::Charge() const
-{
-	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_CHARGE)))
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (DebugGameInstance->CheckMonsterAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 차지 수행"), *GetName()));
 			}
 		}
 #endif
@@ -436,6 +473,25 @@ void ALLL_MonsterBase::RecognizePlayerToAroundMonster() const
 		}
 	}
 #endif
+}
+
+void ALLL_MonsterBase::ShowHitEffect()
+{
+	if (!IsValid(HitEffectOverlayMaterialInstance))
+	{
+		HitEffectOverlayMaterialInstance = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
+		GetMesh()->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
+		for (auto ChildComponent : GetMesh()->GetAttachChildren())
+		{
+			if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ChildComponent))
+			{
+				StaticMeshComponent->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
+			}
+		}
+	}
+
+	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 1.f);
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)

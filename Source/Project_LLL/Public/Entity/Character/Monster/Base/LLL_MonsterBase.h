@@ -10,6 +10,7 @@
 #include "Interface/LLL_KnockBackInterface.h"
 #include "LLL_MonsterBase.generated.h"
 
+class UProjectileMovementComponent;
 class ULLL_MonsterAttributeSet;
 /**
  * 
@@ -23,7 +24,7 @@ public:
 	ALLL_MonsterBase();
 	
 	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
-	FORCEINLINE void SetCharging(bool IsCharging) { bIsCharging = IsCharging; }
+	FORCEINLINE void SetCharging(const bool IsCharging) { bIsCharging = IsCharging; }
 	
 	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
@@ -34,16 +35,20 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void InitAttributeSet() override;
 	virtual void SetFModParameter(EFModParameter FModParameter) override;
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	
 public:
+	virtual void Charge();
 	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
 	virtual void Dead() override;
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	virtual void ApplyStackedKnockBack() override;
+	
+	virtual float GetChargeTimer() const;
 
 	void Attack() const;
-	void Charge() const;
 	void RecognizePlayerToAroundMonster() const;
+	void ShowHitEffect();
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -62,6 +67,7 @@ protected:
 	float StackedKnockBackedPower;
 	int32 Id;
 	uint8 bIsCharging : 1;
+	FName AttributeInitId;
 	
 public:
 	UFUNCTION()
