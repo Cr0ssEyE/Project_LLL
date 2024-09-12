@@ -49,6 +49,8 @@ public:
 	void Attack() const;
 	void RecognizePlayerToAroundMonster() const;
 	void ShowHitEffect();
+	void ConnectOwnerDeadDelegate();
+	void DisconnectOwnerDeadDelegate();
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -72,6 +74,9 @@ protected:
 public:
 	UFUNCTION()
 	void ToggleAIHandle(bool value);
+	
+	UFUNCTION()
+	void OwnerCharacterDeadHandle(ALLL_BaseCharacter* Character);
 
 	// 이펙트 관련
 public:

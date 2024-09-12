@@ -499,6 +499,34 @@ void ALLL_MonsterBase::ShowHitEffect()
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
 }
 
+void ALLL_MonsterBase::ConnectOwnerDeadDelegate()
+{
+	if (!IsValid(GetOwner()))
+	{
+		return;
+	}
+	
+	ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwner());
+	if (!OwnerCharacter->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_MonsterBase::OwnerCharacterDeadHandle))
+	{
+		CastChecked<ALLL_BaseCharacter>(Owner)->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterBase::OwnerCharacterDeadHandle);
+	}
+}
+
+void ALLL_MonsterBase::DisconnectOwnerDeadDelegate()
+{
+	if (!IsValid(GetOwner()))
+	{
+		return;
+	}
+	
+	ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwner());
+	if (OwnerCharacter->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_MonsterBase::OwnerCharacterDeadHandle))
+	{
+		CastChecked<ALLL_BaseCharacter>(Owner)->CharacterDeadDelegate.RemoveDynamic(this, &ALLL_MonsterBase::OwnerCharacterDeadHandle);
+	}
+}
+
 void ALLL_MonsterBase::ToggleAIHandle(bool value)
 {
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
@@ -514,6 +542,19 @@ void ALLL_MonsterBase::ToggleAIHandle(bool value)
 			BrainComponent->PauseLogic(TEXT("AI Debug Is Deactivated"));
 		}
 	}
+}
+
+void ALLL_MonsterBase::OwnerCharacterDeadHandle(ALLL_BaseCharacter* Character)
+{
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	
+	UCharacterMovementComponent* CharacterMovementComponent = CastChecked<UCharacterMovementComponent>(GetMovementComponent());
+	CharacterMovementComponent->MovementMode = MOVE_Walking;
+	GetMesh()->SetCollisionProfileName(CP_MONSTER);
+	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
+	
+	SetOwner(nullptr);
+	CastChecked<ALLL_MonsterBaseAIController>(GetController())->StartLogic();
 }
 
 void ALLL_MonsterBase::UpdateMarkVFX(uint8 NewCount, uint8 MaxCount)
