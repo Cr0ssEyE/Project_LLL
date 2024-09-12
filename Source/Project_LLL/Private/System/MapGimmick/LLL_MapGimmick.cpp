@@ -135,6 +135,7 @@ void ALLL_MapGimmick::LoadLastSessionMap(FStageInfoData StageInfoData)
 
 	Seed = StageInfoData.Seed;
 	CurrentRoomNumber = StageInfoData.RoomNumber;
+	bIsLoadedFromSave = StageInfoData.bIsLoadedFromSave;
 	// StageInfoData->GatesRewardID;
 
 	// = 마지막 세션이 플레이 도중이 아님
@@ -229,38 +230,44 @@ void ALLL_MapGimmick::CreateMap()
 		SetState(EStageState::READY);
 	}
 
+	bool PlayerTeleported = false;
+	
 	// 마지막 플레이 상태 적용
-	FStageInfoData LastInfoData = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->StageInfoData;
-	if (LastInfoData.Seed == Seed && LastInfoData.RoomNumber == CurrentRoomNumber)
+	if (bIsFirstLoad && bIsLoadedFromSave)
 	{
+		FStageInfoData LastInfoData = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->StageInfoData;
+		UE_LOG(LogTemp, Log, TEXT("불러온 맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(LastInfoData.LastStageState)));
 		CurrentState = LastInfoData.LastStageState;
-		if (CurrentState == EStageState::REWARD && !IsValid(ShoppingMapComponent))
-		{
-			Player->SetActorLocation(LastInfoData.PlayerLocation);
-			RewardSpawn();
-		}
-
-		if (CurrentState == EStageState::NEXT && !IsValid(ShoppingMapComponent))
+		
+		if (CurrentState == EStageState::REWARD || (CurrentState == EStageState::NEXT && !IsValid(ShoppingMapComponent)))
 		{
 			Player->SetActorLocation(LastInfoData.PlayerLocation);
 			MonsterSpawner->OnDestroyed.Clear();
 			MonsterSpawner->Destroy();
+			PlayerTeleported = true;
+		}
+
+		if (CurrentState == EStageState::REWARD)
+		{
+			RewardSpawn();
+		}
+		else if (CurrentState == EStageState::NEXT && !IsValid(ShoppingMapComponent))
+		{
 			EnableAllGates();
 		}
 	}
 	
-	// 처음으로 맵을 생성하거나 로드하는 경우 세이브 스킵
-	if (!bIsFirstLoad)
-	{
-		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
-	}
-	
 	// TODO: Player location change
-	// 보상 단계 아님 + 상점 아닌 경우 스폰 포인트로 텔레포트
-	if (LastInfoData.LastStageState != EStageState::REWARD && LastInfoData.LastStageState != EStageState::NEXT && !IsValid(ShoppingMapComponent))
+	if (!PlayerTeleported)
 	{
 		Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
+		ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+		if (IsValid(GameProgressSubSystem) && !bIsFirstLoad)
+		{
+			GameProgressSubSystem->BeginSaveGame();
+		}
 	}
+	
 	Player->SetActorEnableCollision(true);
 	FadeIn();	
 }
@@ -296,9 +303,11 @@ void ALLL_MapGimmick::RandomMap()
 void ALLL_MapGimmick::ChangeMap(AActor* DestroyedActor)
 {
 	// 이전 룸의 임시 데이터 초기화.
-	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-	GameProgressSubSystem->ClearInstantRoomData();
-	GameProgressSubSystem->BeginSaveGame();
+	if (!bIsFirstLoad)
+	{
+		ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+		GameProgressSubSystem->ClearInstantRoomData();
+	}
 	
 	AllGatesDestroy();
 	RandomMap();
@@ -361,10 +370,13 @@ void ALLL_MapGimmick::SetState(EStageState InNewState)
 	
 	if (StateChangeActions.Contains(InNewState))
 	{
-		if (InNewState == EStageState::REWARD || (InNewState == EStageState::NEXT && !CheckShoppingRoom()))
+		if (InNewState == EStageState::REWARD)
 		{
 			ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-			GameProgressSubSystem->BeginSaveGame();
+			if (IsValid(GameProgressSubSystem) && !GameProgressSubSystem->CheckExitCurrentSession())
+			{
+				GameProgressSubSystem->BeginSaveGame();
+			}
 		}
 		
 		StateChangeActions[CurrentState].StageDelegate.ExecuteIfBound();
@@ -462,7 +474,7 @@ void ALLL_MapGimmick::RewardSpawn()
 	RewardObject->FinishSpawning(RewardTransform);
 
 	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-	if (GameProgressSubSystem->GetCurrentSaveGameData()->StageInfoData.RewardPosition != FVector::Zero())
+	if (bIsFirstLoad && GameProgressSubSystem->GetCurrentSaveGameData()->StageInfoData.RewardPosition != FVector::Zero())
 	{
 		RewardObject->SetActorLocation(GameProgressSubSystem->GetCurrentSaveGameData()->StageInfoData.RewardPosition);
 	}

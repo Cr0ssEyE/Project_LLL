@@ -350,6 +350,13 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	}
 	
 	AbilityData.Remove(CurrentAbilityData);
+
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	if (IsValid(GameProgressSubSystem))
+	{
+		GameProgressSubSystem->BeginSaveGame();
+	}
+	
 	/*
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();

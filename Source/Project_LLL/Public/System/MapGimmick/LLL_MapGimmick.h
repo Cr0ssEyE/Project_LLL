@@ -39,7 +39,8 @@ public:
 	RoomNumber(UINT32_MAX),
 	PlayerLocation(FVector::Zero()),
 	RewardPosition(FVector::Zero()),
-	LastStageState(EStageState::READY)
+	LastStageState(EStageState::READY),
+	bIsLoadedFromSave(false)
 	{
 		
 	}
@@ -65,6 +66,9 @@ public:
 	
 	UPROPERTY()
 	TArray<int32> SpawnedAbilityDataIDArray;
+
+	UPROPERTY()
+	uint32 bIsLoadedFromSave : 1;
 };
 
 USTRUCT(BlueprintType)
@@ -174,6 +178,9 @@ protected:
 	TMap<EStageState, FStageChangedDelegateWrapper> StateChangeActions;
 
 	uint8 bIsFirstLoad : 1;
+
+	uint8 bIsLoadedFromSave : 1;
+	
 protected:
 	void SetState(EStageState InNewState);
 	

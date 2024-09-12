@@ -41,7 +41,7 @@ FPlayerCharacterStatusData ULLL_PlayerCharacterAttributeSet::MakeCharacterStatus
 void ULLL_PlayerCharacterAttributeSet::InitializeSavedStatusData(const FPlayerCharacterStatusData* CharacterStatusData)
 {
 	MaxHealth.SetCurrentValue(CharacterStatusData->MaxHealth);
-	CurrentHealth.SetCurrentValue(FMath::Clamp(CharacterStatusData->CurrentHealth, 0, CharacterStatusData->MaxHealth));
+	CurrentHealth.SetCurrentValue(CharacterStatusData->CurrentHealth); // (FMath::Clamp(CharacterStatusData->CurrentHealth, 0, CharacterStatusData->MaxHealth));
 	OffensePower.SetBaseValue(CharacterStatusData->OffensePower);
 	MoveSpeed.SetBaseValue(CharacterStatusData->MoveSpeed);
 	AttackSpeed.SetBaseValue(CharacterStatusData->AttackSpeed);

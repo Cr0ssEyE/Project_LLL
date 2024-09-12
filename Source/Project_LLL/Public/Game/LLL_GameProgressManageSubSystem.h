@@ -48,12 +48,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ClearInstantRoomData();
 	
+	UFUNCTION(BlueprintCallable)
+	void SetExitCurrentSession(bool Value);
+
 	// 게임 진행도 저장
 	UFUNCTION(BlueprintCallable)
 	void BeginSaveGame();
 	
 	void SaveGameProgressInfo();
 
+private:
+	void SavePermanentData();
+	void SaveLastSessionMapData();
+	void SaveLastSessionPlayerData();
+	
 public:
 	// 게임 진행도 가져오기
 	UFUNCTION(BlueprintCallable)
@@ -70,16 +78,12 @@ public:
 	FORCEINLINE void RegisterMapGimmick(ALLL_MapGimmick* MapGimmick) { CurrentInstanceMapGimmick = MapGimmick; }
 	FORCEINLINE ULLL_SaveGameData* GetCurrentSaveGameData() const { return CurrentSaveGameData; }
 	FORCEINLINE FName GetLastPlayedLevelName() { return CurrentSaveGameData? CurrentSaveGameData->LastPlayedLevelName : LEVEL_LOBBY; }
-
+	FORCEINLINE bool CheckExitCurrentSession() { return bIsBeginOut; }
+	
 public:
 	FOnLastSessionMapDataLoaded OnLastSessionLoaded;
 	FOnLastSessionPlayerInfoLoaded OnLastSessionPlayerDataLoaded;
 	FOnSaveCompleted OnSaveCompleted;
-	
-private:
-	void SavePermanentData();
-	void SaveLastSessionMapData();
-	void SaveLastSessionPlayerData();
 
 private:
 	UFUNCTION()
@@ -96,4 +100,7 @@ private:
 	uint8 bIsSavePermanentDataCompleted : 1;
 	uint8 bIsSaveMapDataCompleted : 1;
 	uint8 bIsSaveUserDataCompleted : 1;
+
+private:
+	uint8 bIsBeginOut : 1;
 };

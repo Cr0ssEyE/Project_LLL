@@ -4,6 +4,7 @@
 #include "Game/LLL_GameProgressManageSubSystem.h"
 
 #include "Constant/LLL_GameplayInfo.h"
+#include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
@@ -11,13 +12,15 @@
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/MapGimmick/Components/LLL_ShoppingMapComponent.h"
+#include "System/MonsterSpawner/LLL_MonsterSpawner.h"
 #include "System/Reward/LLL_RewardGimmick.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
 ULLL_GameProgressManageSubSystem::ULLL_GameProgressManageSubSystem() :
 	bIsSavePermanentDataCompleted(false),
 	bIsSaveMapDataCompleted(false),
-	bIsSaveUserDataCompleted(false)
+	bIsSaveUserDataCompleted(false),
+	bIsBeginOut(false)
 {
 	
 }
@@ -88,6 +91,7 @@ void ULLL_GameProgressManageSubSystem::InitializeLastSessionPlayData()
 	FPlayerCharacterStatusData TempStatusData;
 	if (ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
+		// 플레이어가 죽지 않은 상태라면 현재 정보 저장. 로비에서 임시강화 같은거 먹으면 던전까지 끌고와야 하기 때문
 		if (!PlayerCharacter->CheckCharacterIsDead())
 		{
 			UAbilitySystemComponent* PlayerASC = PlayerCharacter->GetAbilitySystemComponent();
@@ -113,6 +117,22 @@ void ULLL_GameProgressManageSubSystem::ClearInstantRoomData()
 	CurrentSaveGameData->StageInfoData.PlayerLocation = CurrentSaveGameData->StageInfoData.RewardPosition = FVector::Zero();
 	CurrentSaveGameData->StageInfoData.LastStageState = EStageState::READY;
 	CurrentSaveGameData->StageInfoData.SpawnedAbilityDataIDArray.Empty();
+}
+
+void ULLL_GameProgressManageSubSystem::SetExitCurrentSession(bool Value)
+{
+	bIsBeginOut = Value;
+	if (bIsBeginOut)
+	{
+		ALLL_MapGimmick* MapGimmick = CurrentInstanceMapGimmick.Get();
+		if (IsValid(MapGimmick))
+		{
+			if (IsValid(MapGimmick->GetMonsterSpawner()) && CheckExitCurrentSession())
+			{
+				MapGimmick->GetMonsterSpawner()->OnDestroyed.RemoveAll(MapGimmick);
+			}
+		}
+	}
 }
 
 void ULLL_GameProgressManageSubSystem::BeginSaveGame()
@@ -157,86 +177,6 @@ void ULLL_GameProgressManageSubSystem::SaveGameProgressInfo()
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ULLL_GameProgressManageSubSystem::SaveGameProgressInfo);
 }
 
-void ULLL_GameProgressManageSubSystem::LoadGameProgressInfo()
-{
-	
-}
-
-void ULLL_GameProgressManageSubSystem::LoadLastSessionMapData()
-{
-	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()) || !IsValid(CurrentInstanceMapGimmick.Get()))
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (GetWorld()->GetName() == LEVEL_TEST)
-		{
-			const FStageInfoData TempStageInfoData;
-			OnLastSessionLoaded.Broadcast(TempStageInfoData);
-			return;
-		}
-#endif
-		return;
-	}
-
-	if (GetLastPlayedLevelName() == LEVEL_LOBBY && GetWorld()->GetName() != LEVEL_TEST)
-	{
-		// 로비 관련 처리
-		return;
-	}
-
-	OnLastSessionLoaded.Broadcast(CurrentSaveGameData->StageInfoData);
-}
-
-void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
-{
-	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()) || !IsValid(PlayerCharacter))
-	{
-		return;
-	}
-	
-	if (GetWorld()->GetName() == LEVEL_LOBBY)
-	{
-		// 로비 관련 처리
-		PlayerCharacter->SetActorLocation(CurrentSaveGameData->LobbyLastStandingLocation);
-		return;
-	}
-
-	PlayerCharacter->InitAttributeSetBySave(&CurrentSaveGameData->PlayerCharacterStatusData);
-	PlayerCharacter->GetGoldComponent()->IncreaseMoney(CurrentSaveGameData->PlayerPlayProgressData.CurrentGoldAmount);
-	
-	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
-	TArray<int32> PlayerAcquiredEruriasID = CurrentSaveGameData->PlayerPlayProgressData.AcquiredEruriasID;
-
-	for (auto EruriaID : PlayerAcquiredEruriasID)
-	{
-		FAsyncLoadEffectByIDDelegate AsyncLoadEffectDelegate;
-		AsyncLoadEffectDelegate.AddDynamic(this, &ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEruriaEffect);
-		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, EruriaID, EEffectAccessRange::None);
-	}
-
-	// for (auto i = 0; i < CurrentSaveGameData->PlayerPlayProgressData.AcquiredGoldAppleCount; i++)
-	// {
-	// 	TSubclassOf<UGameplayEffect> IncreaseHpEffect = CastChecked<ULLL_GameInstance>(GetGameInstance())->GetGlobalParametersDataAsset()->GoldAppleIncreaseHpEffect;
-	// 	FGameplayEffectContextHandle EffectContextHandle = PlayerCharacter->GetAbilitySystemComponent()->MakeEffectContext();
-	// 	const FGameplayEffectSpecHandle EffectSpecHandle = PlayerCharacter->GetAbilitySystemComponent()->MakeOutgoingSpec(IncreaseHpEffect, 1.0, EffectContextHandle);
-	// 	PlayerCharacter->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-	// }
-	OnLastSessionPlayerDataLoaded.Broadcast();
-}
-
-void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEruriaEffect(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID)
-{
-	// 이누리아 개편으로 몇몇 이누리아는 제대로 로드 안될 가능성 있어 체크 필요.
-	TArray<const FAbilityDataTable*> EqualAbilities = FLLL_AbilityDataHelper::ApplyEruriaEffect(GetWorld(), LoadedEffects, EffectID);
-	if (!EqualAbilities.IsEmpty())
-	{
-		for (auto EqualAbility : EqualAbilities)
-		{
-			CastChecked<ULLL_GameInstance>(GetGameInstance())->GetAbilityDataTable().Remove(EqualAbility);
-		}
-	}
-}
-
 void ULLL_GameProgressManageSubSystem::SavePermanentData()
 {
 	// 영구 저장 계열 데이터. 게임 진행도, 세계수 강화, NPC 대화 진척도 등
@@ -247,6 +187,7 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 {
 	if (!IsValid(GetWorld()))
 	{
+		ensure(false);
 		return;
 	}
 
@@ -259,12 +200,15 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 	CurrentSaveGameData->LastPlayedLevelName = *GetWorld()->GetName();
 	ALLL_MapGimmick* MapGimmick = CurrentInstanceMapGimmick.Get();
 	FStageInfoData CurrentStageInfoData;
+	
 	if (IsValid(MapGimmick))
 	{
 		CurrentStageInfoData = MapGimmick->MakeStageInfoData();
 
 		// 룸 진행도에 따른 정보 저장
 		EStageState CurrentStageState = MapGimmick->GetStageState();
+		UE_LOG(LogTemp, Log, TEXT("저장하는 맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentStageState)));
+		
 		if (CurrentStageState != EStageState::READY && CurrentStageState != EStageState::FIGHT)
 		{
 			ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
@@ -278,11 +222,6 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 					{
 						CurrentStageInfoData.SpawnedAbilityDataIDArray.Emplace(RolledAbilityData->ID);
 					}
-				}
-
-				if (CurrentStageState == EStageState::NEXT && !MapGimmick->CheckShoppingRoom())
-				{
-					
 				}
 			}
 		}
@@ -300,16 +239,18 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 			{
 				if (!IsValid(Product))
 				{
-					continue;
+					ShoppingProductList.Emplace(ProductIndex, INT8_MAX);
 				}
-				
-				ShoppingProductList.Emplace(ProductIndex, Product->GetRewardDataID());
+				else
+				{
+					ShoppingProductList.Emplace(ProductIndex, Product->GetRewardDataID());
+				}
 				ProductIndex++;
 			}
 			CurrentSaveGameData->PlayerPlayProgressData.ShoppingProductList = ShoppingProductList;
 		}
 	}
-
+	
 	CurrentSaveGameData->StageInfoData = CurrentStageInfoData;
 
 	bIsSaveMapDataCompleted = true;
@@ -376,4 +317,87 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 	// 휘발성 재화 정보 저장
 	CurrentSaveGameData->PlayerPlayProgressData.CurrentGoldAmount = PlayerCharacter->GetGoldComponent()->GetMoney();
 	bIsSaveUserDataCompleted = true;
+}
+
+void ULLL_GameProgressManageSubSystem::LoadGameProgressInfo()
+{
+	
+}
+
+void ULLL_GameProgressManageSubSystem::LoadLastSessionMapData()
+{
+	FStageInfoData TempStageInfoData;
+	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()) || !IsValid(CurrentInstanceMapGimmick.Get()))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (GetWorld()->GetName() == LEVEL_TEST)
+		{
+			OnLastSessionLoaded.Broadcast(TempStageInfoData);
+			return;
+		}
+#endif
+		return;
+	}
+
+	if (GetLastPlayedLevelName() == LEVEL_LOBBY && GetWorld()->GetName() != LEVEL_TEST)
+	{
+		// 로비 관련 처리
+		return;
+	}
+
+	TempStageInfoData = CurrentSaveGameData->StageInfoData;
+	TempStageInfoData.bIsLoadedFromSave = true;
+	OnLastSessionLoaded.Broadcast(TempStageInfoData);
+}
+
+void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
+{
+	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()) || !IsValid(PlayerCharacter))
+	{
+		return;
+	}
+	
+	if (GetWorld()->GetName() == LEVEL_LOBBY)
+	{
+		// 로비 관련 처리
+		PlayerCharacter->SetActorLocation(CurrentSaveGameData->LobbyLastStandingLocation);
+		return;
+	}
+
+	PlayerCharacter->InitAttributeSetBySave(&CurrentSaveGameData->PlayerCharacterStatusData);
+	PlayerCharacter->GetGoldComponent()->IncreaseMoney(CurrentSaveGameData->PlayerPlayProgressData.CurrentGoldAmount);
+	
+	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
+	TArray<int32> PlayerAcquiredEruriasID = CurrentSaveGameData->PlayerPlayProgressData.AcquiredEruriasID;
+
+	for (auto EruriaID : PlayerAcquiredEruriasID)
+	{
+		FAsyncLoadEffectByIDDelegate AsyncLoadEffectDelegate;
+		AsyncLoadEffectDelegate.AddDynamic(this, &ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEruriaEffect);
+		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, EruriaID, EEffectAccessRange::None);
+	}
+
+	// 황금사과 관련 처리. 다만 적용 순서 등의 문제로 인해 여기서 사용하는 이펙트는 체력 회복은 해주지 않음
+	for (auto i = 0; i < CurrentSaveGameData->PlayerPlayProgressData.AcquiredGoldAppleCount; i++)
+	{
+		TSubclassOf<UGameplayEffect> IncreaseHpEffect = CastChecked<ULLL_GameInstance>(GetGameInstance())->GetGlobalParametersDataAsset()->GoldAppleIncreaseHpEffect;
+		FGameplayEffectContextHandle EffectContextHandle = PlayerCharacter->GetAbilitySystemComponent()->MakeEffectContext();
+		const FGameplayEffectSpecHandle EffectSpecHandle = PlayerCharacter->GetAbilitySystemComponent()->MakeOutgoingSpec(IncreaseHpEffect, 1.0, EffectContextHandle);
+		PlayerCharacter->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+	}
+	OnLastSessionPlayerDataLoaded.Broadcast();
+}
+
+void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEruriaEffect(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID)
+{
+	// 이누리아 개편으로 몇몇 이누리아는 제대로 로드 안될 가능성 있어 체크 필요.
+	TArray<const FAbilityDataTable*> EqualAbilities = FLLL_AbilityDataHelper::ApplyEruriaEffect(GetWorld(), LoadedEffects, EffectID);
+	if (!EqualAbilities.IsEmpty())
+	{
+		for (auto EqualAbility : EqualAbilities)
+		{
+			CastChecked<ULLL_GameInstance>(GetGameInstance())->GetAbilityDataTable().Remove(EqualAbility);
+		}
+	}
 }

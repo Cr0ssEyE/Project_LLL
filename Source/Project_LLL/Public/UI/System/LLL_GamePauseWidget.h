@@ -48,11 +48,11 @@ protected:
 
 private:
 	UFUNCTION()
-	FORCEINLINE void OpenTitle() { UGameplayStatics::OpenLevel(this, LEVEL_TITLE); }
-	
+	void OpenTitle();
+
 	UFUNCTION()
-	FORCEINLINE void OutGame() { UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false); }
-	
+	 void OutGame();
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void PlayResumeButtonHoverAnimation() { PlayAnimationForward(ResumeHover); }

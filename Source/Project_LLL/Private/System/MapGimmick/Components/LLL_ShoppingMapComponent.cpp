@@ -55,7 +55,7 @@ void ULLL_ShoppingMapComponent::SetProducts()
 	TMap<int32, int32> SavedShoppingProductList;
 	if (IsValid(GameInstance->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()))
 	{
-		SavedShoppingProductList = GameInstance->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->PlayerPlayProgressData. ShoppingProductList;
+		SavedShoppingProductList = GameInstance->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->PlayerPlayProgressData.ShoppingProductList;
 	}
 
 	int32 ProductIndex = 0;
@@ -64,10 +64,6 @@ void ULLL_ShoppingMapComponent::SetProducts()
 		ULLL_ProductSpawnPointComponent* SpawnPoint = Cast<ULLL_ProductSpawnPointComponent>(ChildComponent);
 		if (IsValid(SpawnPoint))
 		{
-			if (!SavedShoppingProductList.IsEmpty() && SavedShoppingProductList.Num() == ProductIndex)
-			{
-				break;
-			}
 			/*switch (static_cast<ERewardCategory>(FMath::RandRange(2, 4)))
 			{
 			case ERewardCategory::Ability:
@@ -83,8 +79,8 @@ void ULLL_ShoppingMapComponent::SetProducts()
 			}*/
 			const uint32 Index = FMath::RandRange(0, RewardData.Num() - 1);
 			const FRewardDataTable* ProductData = nullptr;
-			// ID != 0. ID 값이 구조체 디폴트 값이 아닌 경우 -> 구매하지 않은 품목이 있는 경우
-			if (!SavedShoppingProductList.IsEmpty() && SavedShoppingProductList[ProductIndex] != 0)
+			// ID != INT8_MAX. ID 값이 구조체 디폴트 값이 아닌 경우 -> 구매하지 않은 품목이 있는 경우
+			if (!SavedShoppingProductList.IsEmpty() && SavedShoppingProductList[ProductIndex] != INT8_MAX)
 			{
 				for (const auto SavedProductData : RewardData)
 				{

@@ -24,7 +24,7 @@ public:
 	}
 
 public:
-	// Index - ID
+	// Index - ID.
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	TMap<int32, int32> ShoppingProductList;
 	
@@ -35,15 +35,19 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	TMap<int32, int32> AcquiredEruriasStackCount;
 
+	// 사용 골드. 
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	int32 UsedGoldAmount;
 
+	// 현재 보유중인 골드.
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	int32 CurrentGoldAmount;
 
+	// 크바스(=강화) 획득 횟수
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	int32 AcquiredKvassCount;
 
+	// 황금사과(=최대체력) 획득 횟수
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
 	int32 AcquiredGoldAppleCount;
 };
@@ -74,7 +78,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "PermanentSaveInfo")
 	int32 PermanentRewardAmount;
 
-	// TODO: NPC 개별 스토리나 대화 진척도 있으면 데이터 추가해야함
+	// TODO: NPC 개별 스토리나 대화 진척도 있으면 데이터 추가해야함. 구조체로 묶기?
 	
 	// 중간 저장 계통(=휘발성)
 public:
