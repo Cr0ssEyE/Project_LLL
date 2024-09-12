@@ -64,11 +64,19 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<const FAbilityDataTable*> Abi
 		{
 			AbilityName = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityName, TEXT("Failed To Load Ability Name"))->Korean;
 			AbilityInformation = StringDataTable->FindRow<FStringDataTable>(*AbilityData->AbilityInformation, TEXT("Failed To Load Ability Information"))->Korean;
-		
+
+			const float Value1 = FMath::Abs(AbilityData->AbilityValue1);
+			const float Value2 = FMath::Abs(AbilityData->AbilityValue2);
+			const float RequireSynergy = FMath::Abs(AbilityData->RequireSynergy);
+
+			FString Value1Text = static_cast<int>(Value1 * 10.0f) % 10 == 0.0f ? FString::FromInt(Value1) :  FString::SanitizeFloat(Value1);
+			FString Value2Text = static_cast<int>(Value2 * 10.0f) % 10 == 0.0f ? FString::FromInt(Value2) :  FString::SanitizeFloat(Value2);
+			FString RequireSynergyText = static_cast<int>(RequireSynergy * 10.0f) % 10 == 0.0f ? FString::FromInt(RequireSynergy) :  FString::SanitizeFloat(RequireSynergy);
+
 			// TODO: 강화 UI는 AbilityData->ChangeValue 고려하도록 개선하기
-			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_ABILITY_VALUE_1, *FString::SanitizeFloat(FMath::Abs(AbilityData->AbilityValue1)));
-			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_ABILITY_VALUE_2, *FString::SanitizeFloat(FMath::Abs(AbilityData->AbilityValue2)));
-			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_REQUIRE_SYNERGY, *FString::SanitizeFloat(FMath::Abs(AbilityData->RequireSynergy)));
+			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_ABILITY_VALUE_1, *(TEXT("<Status>") + Value1Text + "</>"));
+			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_ABILITY_VALUE_2, *(TEXT("<Status>") + Value2Text + "</>"));
+			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_REQUIRE_SYNERGY, *(TEXT("<Status>") + RequireSynergyText + "</>"));
 		}
 		else
 		{

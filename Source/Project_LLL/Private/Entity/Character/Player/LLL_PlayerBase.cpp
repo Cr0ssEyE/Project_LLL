@@ -274,7 +274,7 @@ void ALLL_PlayerBase::RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObje
 	}
 }
 
-void ALLL_PlayerBase::StartChargeFeather()
+void ALLL_PlayerBase::StartChargeFeather(float Timer)
 {
 	ChargedFeatherCount = 1;
 	GetWorldTimerManager().ClearTimer(ChargeFeatherTimerHandle);
@@ -287,7 +287,7 @@ void ALLL_PlayerBase::StartChargeFeather()
 			GetWorldTimerManager().PauseTimer(ChargeFeatherTimerHandle);
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 완료")));
 		}
-	}), 1.0f, true);
+	}), Timer, true);
 }
 
 void ALLL_PlayerBase::AddRangeFeatherTargets(AActor* Target)

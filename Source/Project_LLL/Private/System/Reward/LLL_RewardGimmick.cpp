@@ -398,7 +398,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
 		if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
 		{
-			Player->StartChargeFeather();
+			Player->StartChargeFeather(CurrentAbilityData->AbilityValue1);
 		}
 		
 		// 어빌리티 부여 계열

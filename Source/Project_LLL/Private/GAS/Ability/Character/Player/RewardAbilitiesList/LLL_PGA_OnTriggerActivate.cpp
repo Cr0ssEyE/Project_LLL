@@ -11,6 +11,7 @@
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
 #include "Entity/Object/Thrown/LLL_ThrownFeather.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
@@ -153,16 +154,19 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 				if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
 				{
 					SpawnCount = Player->GetChargedFeatherCount();
-					Player->StartChargeFeather();
+					Player->StartChargeFeather(AbilityData->AbilityValue1);
+				}
+				else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_RANGED_FEATHER))
+				{
+					SpawnCount = 1;
 				}
 				else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CIRCULAR_FEATHER))
 				{
-					// Todo : 추후 데이터화 예정
-					SpawnCount = 12;
+					SpawnCount = AbilityData->AbilityValue1;
 					ThrowCircular = true;
 					Straight = true;
-					// Todo : 추후 데이터화 예정
-					KnockBackPower = 300.0f;
+					const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(ASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+					KnockBackPower = PlayerCharacterAttributeSet->GetKnockBackPower();
 				}
 			}
 		}

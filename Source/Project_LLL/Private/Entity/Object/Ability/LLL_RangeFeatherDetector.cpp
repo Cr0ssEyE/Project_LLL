@@ -24,6 +24,8 @@ void ALLL_RangeFeatherDetector::BeginPlay()
 	AbilityObjectAttributeSet = RangeFeatherDetectorAttributeSet;
 
 	CastChecked<ALLL_PlayerBase>(GetOwner())->SetFeatherSpawnStartTime(AbilityObjectAttributeSet->GetDestroyTimer() + 0.01f);
+
+	OverlapCollisionSphere->SetSphereRadius(AbilityData->AbilityValue1 * 100.0f);
 }
 
 void ALLL_RangeFeatherDetector::Tick(float DeltaSeconds)

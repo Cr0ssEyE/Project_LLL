@@ -58,7 +58,7 @@ public:
 
 	void CharacterUnDissolveBegin();
 	
-	void StartChargeFeather();
+	void StartChargeFeather(float Timer);
 	void AddRangeFeatherTargets(AActor* Target);
 	TArray<AActor*> GetRangeFeatherTargetsAndClear();
 
