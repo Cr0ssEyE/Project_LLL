@@ -48,14 +48,18 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 			}
 		}
 #endif
-		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-		if (GetCurrentHealth() == 0)
+
+		if (Player->GetCapsuleComponent()->GetCollisionProfileName() != CP_PLAYER_EVADE)
 		{
-			Player->Dead();
-		}
-		else
-		{
-			Player->Damaged(Attacker, DOT);
+			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+			if (GetCurrentHealth() == 0)
+			{
+				Player->Dead();
+			}
+			else
+			{
+				Player->Damaged(Attacker, DOT);
+			}
 		}
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
