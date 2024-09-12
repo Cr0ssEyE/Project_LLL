@@ -166,7 +166,7 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 					ThrowCircular = true;
 					Straight = true;
 					const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(ASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-					KnockBackPower = PlayerCharacterAttributeSet->GetKnockBackPower();
+					KnockBackPower = AbilityData->KnockBackPower + PlayerCharacterAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
 				}
 			}
 		}

@@ -43,7 +43,7 @@ void ULLL_PGA_KnockBack::KnockBackTarget()
 			const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerCharacterAttributeSet, ActionAmplify);
 			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
 			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
-			UE_LOG(LogTemp, Log, TEXT("넉백 : %f"), PlayerCharacterAttributeSet->GetKnockBackPower())
+			UE_LOG(LogTemp, Log, TEXT("넉백 수행(플레이어) : %f"), PlayerCharacterAttributeSet->GetKnockBackPower())
 		}
 	}
 	

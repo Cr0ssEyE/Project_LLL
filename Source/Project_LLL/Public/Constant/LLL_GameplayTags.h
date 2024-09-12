@@ -67,6 +67,8 @@
 // 플레이어 보상 어빌리티 관련 게임플레이 태그
 #define TAG_GAS_ABILITY_VALUE_1 FGameplayTag::RequestGameplayTag(FName("Ability.Value.1"))
 #define TAG_GAS_ABILITY_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.Value.2"))
+#define TAG_GAS_ABILITY_HUNDRED_VALUE_1 FGameplayTag::RequestGameplayTag(FName("Ability.HundredValue.1"))
+#define TAG_GAS_ABILITY_HUNDRED_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.HundredValue.2"))
 
 // 어빌리티 슬롯 관련 태그
 #define TAG_GAS_ABILITY_PART_GRANT FGameplayTag::RequestGameplayTag(FName("AbilityPart.Event.Granted"))

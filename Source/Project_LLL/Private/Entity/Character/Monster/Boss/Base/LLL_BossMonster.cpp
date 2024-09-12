@@ -21,9 +21,3 @@ void ALLL_BossMonster::BeginPlay()
 	
 	CurrentHavePatterns = BossMonsterDataAsset->DefaultPatterns;
 }
-
-void ALLL_BossMonster::Damaged(AActor* Attacker, bool IsDOT)
-{
-	ShowHitEffect();
-	RecognizePlayerToAroundMonster();
-}

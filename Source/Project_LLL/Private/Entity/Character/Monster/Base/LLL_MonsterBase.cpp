@@ -230,6 +230,11 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 	ShowHitEffect();
 	RecognizePlayerToAroundMonster();
 
+	if (Cast<ALLL_BossMonster>(this))
+	{
+		return;
+	}
+
 	if (bIsAttacking)
 	{
 		return;
@@ -354,7 +359,7 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 	if (CustomTimeDilation == 1.f)
 	{
 		StackedKnockBackedPower = KnockBackPower;
-		if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower) && GetCapsuleComponent()->GetCollisionProfileName() != CP_MONSTER_FALLABLE)
+		if (!Cast<ALLL_BossMonster>(this) && FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower) && GetCapsuleComponent()->GetCollisionProfileName() != CP_MONSTER_FALLABLE)
 		{
 			GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
 			const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
