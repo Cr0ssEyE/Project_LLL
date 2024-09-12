@@ -74,6 +74,7 @@ public:
 	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
 	FORCEINLINE float GetFeatherSpawnStartTime() const { return FeatherSpawnStartTime; }
 	FORCEINLINE float GetOriginKnockBackPower() const { return originKnockBackPower; }
+	FORCEINLINE float GetOriginOffencePower() const { return originOffencePower; }
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
@@ -157,6 +158,7 @@ private:
 	TArray<TObjectPtr<AActor>> RangeFeatherTargets;
 	float FeatherSpawnStartTime;
 	float originKnockBackPower;
+	float originOffencePower;
 
 	// 상태 관련 함수
 protected:
