@@ -276,7 +276,8 @@ void ALLL_PlayerBase::RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObje
 
 void ALLL_PlayerBase::StartChargeFeather(float Timer)
 {
-	ChargedFeatherCount = 1;
+	ChargedFeatherCount = 0;
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
 	GetWorldTimerManager().ClearTimer(ChargeFeatherTimerHandle);
 	GetWorldTimerManager().SetTimer(ChargeFeatherTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		ChargedFeatherCount++;

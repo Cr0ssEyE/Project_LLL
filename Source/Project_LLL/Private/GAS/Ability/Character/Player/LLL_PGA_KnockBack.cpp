@@ -32,7 +32,7 @@ void ULLL_PGA_KnockBack::KnockBackTarget()
 {
 	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	const FVector AvatarLocation = CurrentActorInfo->AvatarActor->GetActorLocation();
-	
+
 	for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
 	{
 		// 초기 구현은 MovementComponent의 LaunchCharacter 기반 물리 넉백으로 구현. 추후 방향성에 따른 수정 예정
@@ -43,6 +43,7 @@ void ULLL_PGA_KnockBack::KnockBackTarget()
 			const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerCharacterAttributeSet, ActionAmplify);
 			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
 			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
+			UE_LOG(LogTemp, Log, TEXT("넉백 : %f"), PlayerCharacterAttributeSet->GetKnockBackPower())
 		}
 	}
 	
