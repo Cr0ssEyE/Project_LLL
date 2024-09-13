@@ -157,7 +157,7 @@ public:
 			UE_LOG(LogTemp, Log, TEXT("치명타 발동 (확률 : %.2f%%)"), CriticalChance * 100.0f)
 		}
 		
-		return OffensePower + (bIsChance ? CriticalAmplify * OffensePower : 0);
+		return bIsChance ? CriticalAmplify * OffensePower : OffensePower;
 	}
 	
 	static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)
