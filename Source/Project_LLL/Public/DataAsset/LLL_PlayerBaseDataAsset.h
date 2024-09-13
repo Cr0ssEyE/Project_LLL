@@ -90,6 +90,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "일시정지 입력 키")
 	TObjectPtr<UInputAction> PauseInputAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "스킬 입력 키")
+	TObjectPtr<UInputAction> SkillInputAction;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")

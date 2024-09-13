@@ -186,6 +186,7 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->PauseInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::PauseAction);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->SkillInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SkillAction, EAbilityInputName::Skill);
 }
 
 void ALLL_PlayerBase::InitAttributeSet()
@@ -440,11 +441,6 @@ void ALLL_PlayerBase::ChaseAction(const FInputActionValue& Value, EAbilityInputN
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
-	if (CastChecked<ULLL_GameInstance>(GetGameInstance())->CheckCustomTimeDilationIsChanging())
-	{
-		return;
-	}
-	
 	const int32 InputID = static_cast<int32>(InputName);
 	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{

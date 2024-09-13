@@ -10,7 +10,8 @@ UENUM(BlueprintType)
 enum class EAbilityInputName : uint8
 {
 	Attack UMETA(Displayname="공격"),
-	Dash UMETA(Displayname="회피")
+	Dash UMETA(Displayname="회피"),
+	Skill UMETA(Displayname="스킬")
 };
 
 // 이펙트 회전 방향을 임의로 지정하는 경우 사용
