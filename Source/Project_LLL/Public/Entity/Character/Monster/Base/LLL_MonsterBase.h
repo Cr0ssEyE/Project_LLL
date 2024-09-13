@@ -29,6 +29,7 @@ public:
 	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
 	FORCEINLINE int32 GetId() const { return Id; }
+	FORCEINLINE bool IsKnockBacking() const { return bIsKnockBacking; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -70,6 +71,11 @@ protected:
 	int32 Id;
 	uint8 bIsCharging : 1;
 	FName AttributeInitId;
+	uint8 bIsKnockBacking : 1;
+	FVector LastKnockBackVelocity;
+	float LastKnockBackPower;
+	uint8 StartKnockBackVelocity : 1;
+	uint8 DeflectCount;
 	
 public:
 	UFUNCTION()

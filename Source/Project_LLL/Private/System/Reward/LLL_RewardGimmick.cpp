@@ -421,6 +421,10 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		{
 			Player->StartChargeFeather(CurrentAbilityData->AbilityValue1);
 		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_DEFLECT_BY_WALL))
+		{
+			Player->SetDeflectCount(CurrentAbilityData->AbilityValue1);
+		}
 		
 		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
 

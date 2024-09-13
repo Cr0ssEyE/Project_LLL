@@ -75,10 +75,12 @@ public:
 	FORCEINLINE float GetFeatherSpawnStartTime() const { return FeatherSpawnStartTime; }
 	FORCEINLINE float GetOriginKnockBackPower() const { return originKnockBackPower; }
 	FORCEINLINE float GetOriginOffencePower() const { return originOffencePower; }
+	FORCEINLINE int32 GetDeflectCount() const { return DeflectCount; }
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
 	FORCEINLINE void SetFeatherSpawnStartTime(float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
+	FORCEINLINE void SetDeflectCount(int InDeflectCount) { DeflectCount = InDeflectCount; }
 	
 	FVector CheckMouseLocation();
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
@@ -159,6 +161,7 @@ private:
 	float FeatherSpawnStartTime;
 	float originKnockBackPower;
 	float originOffencePower;
+	int32 DeflectCount;
 
 	// 상태 관련 함수
 protected:
