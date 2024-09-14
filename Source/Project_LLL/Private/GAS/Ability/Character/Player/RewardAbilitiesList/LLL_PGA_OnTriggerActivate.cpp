@@ -13,6 +13,7 @@
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
+#include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 #include "Util/LLL_AbilityDataHelper.h"
@@ -149,24 +150,33 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 				continue;
 			}
 
-			if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
+			const ULLL_GE_GiveAbilityComponent* GiveAbilityComponent = CastChecked<ULLL_GE_GiveAbilityComponent>(ActiveEffect->FindComponent(ULLL_GE_GiveAbilityComponent::StaticClass()));
+			for (auto AbilitySpecConfig : const_cast<ULLL_GE_GiveAbilityComponent*>(GiveAbilityComponent)->GetAbilitySpecConfigs())
 			{
-				if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
+				if (FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(AbilitySpecConfig.Ability))
 				{
-					SpawnCount = Player->GetChargedFeatherCount();
-					Player->StartChargeFeather(AbilityData->AbilityValue1);
-				}
-				else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_RANGED_FEATHER))
-				{
-					SpawnCount = 1;
-				}
-				else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CIRCULAR_FEATHER))
-				{
-					SpawnCount = AbilityData->AbilityValue1;
-					ThrowCircular = true;
-					Straight = true;
-					const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(ASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-					KnockBackPower = AbilityData->KnockBackPower + PlayerCharacterAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
+					if (CastChecked<ULLL_PGA_RewardAbilityBase>(Spec->GetPrimaryInstance()) != this)
+					{
+						continue;
+					}
+					
+					if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
+					{
+						SpawnCount = Player->GetChargedFeatherCount();
+						Player->StartChargeFeather(AbilityData->AbilityValue1);
+					}
+					else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_RANGED_FEATHER))
+					{
+						SpawnCount = 1;
+					}
+					else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CIRCULAR_FEATHER))
+					{
+						SpawnCount = AbilityData->AbilityValue1;
+						ThrowCircular = true;
+						Straight = true;
+						const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(ASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+						KnockBackPower = AbilityData->KnockBackPower + PlayerCharacterAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
+					}
 				}
 			}
 		}
