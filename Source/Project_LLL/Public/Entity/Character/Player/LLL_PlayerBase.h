@@ -76,12 +76,16 @@ public:
 	FORCEINLINE float GetOriginKnockBackPower() const { return originKnockBackPower; }
 	FORCEINLINE float GetOriginOffencePower() const { return originOffencePower; }
 	FORCEINLINE int32 GetDeflectCount() const { return DeflectCount; }
+	FORCEINLINE float GetKnockBackTransmissionOffencePower() const { return KnockBackTransmissionOffencePower; }
+	FORCEINLINE float GetKnockBackTransmissionKnockBackPower() const { return KnockBackTransmissionKnockBackPower; }
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
 	FORCEINLINE void SetFeatherSpawnStartTime(float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
 	FORCEINLINE void SetDeflectCount(int InDeflectCount) { DeflectCount = InDeflectCount; }
-	
+	FORCEINLINE void SetKnockBackTransmissionOffencePower(float InKnockBackTransmissionOffencePower) { KnockBackTransmissionOffencePower = InKnockBackTransmissionOffencePower; }
+	FORCEINLINE void SetKnockBackTransmissionKnockBackPower(float InKnockBackTransmissionKnockBackPower) { KnockBackTransmissionKnockBackPower = InKnockBackTransmissionKnockBackPower; }
+
 	FVector CheckMouseLocation();
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
@@ -162,6 +166,8 @@ private:
 	float originKnockBackPower;
 	float originOffencePower;
 	int32 DeflectCount;
+	float KnockBackTransmissionOffencePower;
+	float KnockBackTransmissionKnockBackPower;
 
 	// 상태 관련 함수
 protected:

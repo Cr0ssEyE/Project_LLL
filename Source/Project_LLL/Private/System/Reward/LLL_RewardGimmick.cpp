@@ -350,7 +350,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 			continue;
 		}
 		
-		const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
+		/*const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
 		if (TagContainer.HasTag(TAG_GAS_ABILITY_NESTING) && !TagContainer.HasTagExact(TAG_GAS_ABILITY_NESTING_ALLOW))
 		{
 			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("중첩 이펙트 아님")));
@@ -373,7 +373,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 					}
 				}
 			}
-		}
+		}*/
 
 		// 단순 수치 변화는 여기에서 적용.
 		float MagnitudeValue1 = CurrentAbilityData->AbilityValue1 / static_cast<uint32>(CurrentAbilityData->Value1Type);
@@ -424,6 +424,11 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_DEFLECT_BY_WALL))
 		{
 			Player->SetDeflectCount(CurrentAbilityData->AbilityValue1);
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION))
+		{
+			Player->SetKnockBackTransmissionOffencePower(CurrentAbilityData->AbilityValue1);
+			Player->SetKnockBackTransmissionKnockBackPower(CurrentAbilityData->AbilityValue2);
 		}
 		
 		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());

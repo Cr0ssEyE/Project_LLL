@@ -4,6 +4,7 @@
 #include "GAS/Ability/Character/Player/LLL_PGA_KnockBack.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Task/LLL_AT_Trace.h"
 #include "Interface/LLL_KnockBackInterface.h"
@@ -30,7 +31,7 @@ void ULLL_PGA_KnockBack::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 
 void ULLL_PGA_KnockBack::KnockBackTarget()
 {
-	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	const FVector AvatarLocation = CurrentActorInfo->AvatarActor->GetActorLocation();
 
 	for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
@@ -40,10 +41,14 @@ void ULLL_PGA_KnockBack::KnockBackTarget()
 		{
 			const FVector LaunchDirection = (Actor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
 			const float ActionAmplify = KnockBackAmplifyChangeSection.Eval(CurrentEventData.EventMagnitude, KnockBackAmplifyChangeSection.RowName.ToString());
-			const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerCharacterAttributeSet, ActionAmplify);
+			const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerAttributeSet->GetKnockBackPower(), PlayerAttributeSet, ActionAmplify);
 			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
+			UE_LOG(LogTemp, Log, TEXT("넉백 수행(플레이어) : %f"), PlayerAttributeSet->GetKnockBackPower())
+			if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(KnockBackActor))
+			{
+				Monster->SetLastActionAmplify(ActionAmplify);
+			}
 			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
-			UE_LOG(LogTemp, Log, TEXT("넉백 수행(플레이어) : %f"), PlayerCharacterAttributeSet->GetKnockBackPower())
 		}
 	}
 	

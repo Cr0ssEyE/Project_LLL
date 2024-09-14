@@ -61,6 +61,7 @@
 #define TAG_GAS_HAVE_RANGED_FEATHER FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.RangedFeather"))
 #define TAG_GAS_HAVE_CIRCULAR_FEATHER FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.CircularFeather"))
 #define TAG_GAS_HAVE_DEFLECT_BY_WALL FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.DeflectByWall"))
+#define TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.KnockBackTransmission"))
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))
@@ -70,6 +71,7 @@
 #define TAG_GAS_ABILITY_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.Value.2"))
 #define TAG_GAS_ABILITY_HUNDRED_VALUE_1 FGameplayTag::RequestGameplayTag(FName("Ability.HundredValue.1"))
 #define TAG_GAS_ABILITY_HUNDRED_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.HundredValue.2"))
+#define TAF_GAS_ABILITY_VALUE_OFFENCE_POWER FGameplayTag::RequestGameplayTag(FName("Ability.Value.OffencePower"))
 
 // 어빌리티 슬롯 관련 태그
 #define TAG_GAS_ABILITY_PART_GRANT FGameplayTag::RequestGameplayTag(FName("AbilityPart.Event.Granted"))

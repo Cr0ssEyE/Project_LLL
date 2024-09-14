@@ -130,14 +130,14 @@ public:
 		return CalculateResult;
 	}
 
-	static float CalculateKnockBackPower(const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet, const float ActionAmplify = 1.f)
+	static float CalculateKnockBackPower(const float KnockBackPower, const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet, const float ActionAmplify = 1.f)
 	{
-		if (!IsValid(PlayerCharacterAttributeSet))
+		if (!IsValid(PlayerAttributeSet))
 		{
 			return 0.f;
 		}
 		
-		const float CalculateResult = (PlayerCharacterAttributeSet->GetKnockBackPower() + PlayerCharacterAttributeSet->GetOffensePower() * PlayerCharacterAttributeSet->GetKnockBackOffensePowerRate()) * ActionAmplify;
+		const float CalculateResult = (KnockBackPower + PlayerAttributeSet->GetOffensePower() * PlayerAttributeSet->GetKnockBackOffensePowerRate()) * ActionAmplify;
 		return CalculateResult;
 	}
 

@@ -56,6 +56,7 @@ void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
 	{
+		UE_LOG(LogTemp, Log, TEXT("%s 피격 모션 시작"), *Monster->GetName())
 		StopLogic(TEXT("Monster Is Damaged"));
 	}
 }
@@ -64,6 +65,7 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage && !Monster->IsKnockBacking())
 	{
+		UE_LOG(LogTemp, Log, TEXT("%s 피격 모션 끝"), *Monster->GetName())
 		if (Monster->CheckCharacterIsDead())
 		{
 			return;

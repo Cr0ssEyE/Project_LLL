@@ -107,4 +107,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "PP", DisplayName = "PP HPLow 파라미터 최소값")
 	float HPLowScalarLowValue;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "연쇄 작용 이누리아 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> KnockBackTransmissionDamageEffect;
 };
