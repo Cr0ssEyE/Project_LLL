@@ -28,7 +28,7 @@ public:
 
 	static FVector CalculateLaunchVelocity(const FVector& Direction, const float Multiply)
 	{
-		const FVector CalculateResult = Direction * Multiply * 10.f;
+		const FVector CalculateResult = Direction.GetSafeNormal2D() * Multiply * 10.f;
 		return CalculateResult;
 	}
 

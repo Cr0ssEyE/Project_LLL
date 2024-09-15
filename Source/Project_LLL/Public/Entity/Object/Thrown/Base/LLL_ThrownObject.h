@@ -42,7 +42,7 @@ public:
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
-	void KnockBackTarget(AActor* Other) const;
+	void KnockBackTarget(const FVector& Direction, AActor* Other) const;
 	
 	UFUNCTION()
 	void TargetDeadHandle(ALLL_BaseCharacter* Character);

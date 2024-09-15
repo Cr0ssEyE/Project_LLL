@@ -70,7 +70,6 @@ void ALLL_ThrownObject::Activate()
 
 	AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	UE_LOG(LogTemp, Log, TEXT("활성화"))
 	ProjectileMovementComponent->Activate();
 	SetActorHiddenInGame(false);
 	AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
@@ -97,8 +96,6 @@ void ALLL_ThrownObject::Deactivate()
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	UE_LOG(LogTemp, Log, TEXT("비활성화"))
-	UE_LOG(LogTemp, Log, TEXT("%f %f %f"),ProjectileMovementComponent->Velocity.X, ProjectileMovementComponent->Velocity.Y, ProjectileMovementComponent->Velocity.Z)
 	ProjectileMovementComponent->Deactivate();
 	SetActorHiddenInGame(true);
 	
@@ -117,7 +114,6 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 	SetOwner(NewOwner);
 	Target = NewTarget;
 
-	UE_LOG(LogTemp, Log, TEXT("벨로시티 입력"))
 	ProjectileMovementComponent->MaxSpeed = InSpeed;
 	ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
 	
@@ -184,23 +180,21 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, OwnerCharacter->GetCharacterLevel(), EffectContextHandle);
 		if (EffectSpecHandle.IsValid())
 		{
+			FVector Direction = (Other->GetActorLocation() - OwnerCharacter->GetActorLocation()).GetSafeNormal2D();
 			if (Cast<ALLL_MonsterBase>(OwnerCharacter))
 			{
 				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_RANGED_MONSTER_SPAWN_THROWN_OBJECT_OFFENCE_POWER, OffencePower);
 
 				UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
-				KnockBackTarget(Other);
-
-				Deactivate();
+				KnockBackTarget(Direction, Other);
 			}
 			else if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerCharacter))
 			{
 				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, OffencePower);
-				
 				UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지 : 1"), *Other->GetName(), OffencePower)
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
-				KnockBackTarget(Other);
+				KnockBackTarget(Direction, Other);
 
 				UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 				const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
@@ -213,16 +207,14 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 					for (int i = 0; i < HitCount - 1; i++)
 					{
 						FTimerHandle QuadrupleHitTimerHandle;
-						GetWorld()->GetTimerManager().SetTimer(QuadrupleHitTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, i, HitCount, Other, EffectSpecHandle, AbilitySystemInterface, PlayerAttributeSet, Player]{
+						GetWorld()->GetTimerManager().SetTimer(QuadrupleHitTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, i, HitCount, Other, EffectSpecHandle, AbilitySystemInterface, PlayerAttributeSet, Player, Direction]{
 							UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지 : %d"), *Other->GetName(), OffencePower, i + 2)
 							ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 							if (i == HitCount - 2)
 							{
 								KnockBackPower = Player->GetQuadrupleHitKnockBackPower();
 								KnockBackPower += PlayerAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
-								KnockBackTarget(Other);
-								
-								Deactivate();
+								KnockBackTarget(Direction, Other);
 							}
 						}), HitOffsetTime, false);
 
@@ -232,16 +224,16 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 			}
 		}
 	}
+	
+	Deactivate();
 }
 
-void ALLL_ThrownObject::KnockBackTarget(AActor* Other) const
+void ALLL_ThrownObject::KnockBackTarget(const FVector& Direction, AActor* Other) const
 {
 	ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Other);
 	if (KnockBackActor && KnockBackPower != 0.0f)
 	{
-		const FVector AvatarLocation = GetActorLocation();
-		const FVector LaunchDirection = (Other->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
-		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
+		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
 		UE_LOG(LogTemp, Log, TEXT("넉백 수행(투사체) : %f"), KnockBackPower)
 		KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 	}

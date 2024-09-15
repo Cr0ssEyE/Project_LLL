@@ -63,6 +63,7 @@
 #define TAG_GAS_HAVE_QUADRUPLE_HIT FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.QuadrupleHit"))
 #define TAG_GAS_HAVE_DEFLECT_BY_WALL FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.DeflectByWall"))
 #define TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.KnockBackTransmission"))
+#define TAG_GAS_HAVE_FASTER_KNOCK_BACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.FasterKnockBack"))
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))

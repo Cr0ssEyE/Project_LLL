@@ -245,13 +245,11 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 				ThrownObject->SetActorLocationAndRotation(Location, Rotator);
 				ThrownObject->SetAbilityInfo(AbilityData, GetAbilityLevel());
 				ThrownObject->Throw(Player, Target, ThrowSpeed, Straight, KnockBackPower);
-				UE_LOG(LogTemp, Log, TEXT("%s 발사"), *ThrownObject->GetName())
 			}
 
 			if (i == SpawnCount - 1)
 			{
 				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-				UE_LOG(LogTemp, Log, TEXT("%d개 호출하고 종료"), SpawnCount)
 			}
 		}), TempSpawnOffsetTime, false);
 

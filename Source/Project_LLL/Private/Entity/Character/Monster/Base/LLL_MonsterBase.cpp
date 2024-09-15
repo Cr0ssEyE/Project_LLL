@@ -132,9 +132,12 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 	if (bIsKnockBacking)
 	{
 		FVector VelocityWithKnockBack = GetVelocity();
+		UE_LOG(LogTemp, Log, TEXT("%s의 넉백 중 벨로시티 : %f %f %f, 넉백 체크 시작 : %d"), *GetName(), VelocityWithKnockBack.X, VelocityWithKnockBack.Y, VelocityWithKnockBack.Z, StartKnockBackVelocity)
+
 		bool IsMoving = CastChecked<ALLL_MonsterBaseAIController>(GetController())->GetPathFollowingComponent()->GetStatus() == EPathFollowingStatus::Moving;
 		if ((VelocityWithKnockBack == FVector::ZeroVector || IsMoving) && StartKnockBackVelocity)
 		{
+			CustomTimeDilation = 1.f;
 			UE_LOG(LogTemp, Log, TEXT("%s가 넉백 끝"), *GetName())
 			bIsKnockBacking = false;
 			StartKnockBackVelocity = false;
@@ -434,8 +437,17 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 		return;
 	}
 	
-	if (CustomTimeDilation == 1.f)
+	if (CustomTimeDilation >= 1.f)
 	{
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		if (IsValid(Player))
+		{
+			UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+			if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
+			{
+				CustomTimeDilation = 1 + Player->GetFasterKnockBackSpeedRate();
+			}
+		}
 		StackedKnockBackedPower = KnockBackPower;
 		if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower) && GetCapsuleComponent()->GetCollisionProfileName() != CP_MONSTER_FALLABLE)
 		{

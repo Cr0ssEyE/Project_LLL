@@ -80,6 +80,7 @@ public:
 	FORCEINLINE float GetKnockBackTransmissionKnockBackPower() const { return KnockBackTransmissionKnockBackPower; }
 	FORCEINLINE float GetQuadrupleHitKnockBackPower() const { return QuadrupleHitKnockBackPower; }
 	FORCEINLINE float GetQuadrupleHitDamageRate() const { return QuadrupleHitDamageRate; }
+	FORCEINLINE float GetFasterKnockBackSpeedRate() const { return FasterKnockBackSpeedRate; }
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
@@ -89,6 +90,7 @@ public:
 	FORCEINLINE void SetKnockBackTransmissionKnockBackPower(float InKnockBackTransmissionKnockBackPower) { KnockBackTransmissionKnockBackPower = InKnockBackTransmissionKnockBackPower; }
 	FORCEINLINE void SetQuadrupleHitKnockBackPower(float InQuadrupleHitKnockBackPower) { QuadrupleHitKnockBackPower = InQuadrupleHitKnockBackPower; }
 	FORCEINLINE void SetQuadrupleHitDamageRate(float InQuadrupleHitDamageRate) { QuadrupleHitDamageRate = InQuadrupleHitDamageRate; }
+	FORCEINLINE void SetFasterKnockBackSpeedRate(float InFasterKnockBackRate) { FasterKnockBackSpeedRate = InFasterKnockBackRate; }
 	
 	FVector CheckMouseLocation();
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
@@ -174,6 +176,7 @@ private:
 	float KnockBackTransmissionKnockBackPower;
 	float QuadrupleHitKnockBackPower;
 	float QuadrupleHitDamageRate;
+	float FasterKnockBackSpeedRate;
 
 	// 상태 관련 함수
 protected:
