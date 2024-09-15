@@ -417,27 +417,33 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 			}
 		}
 
+		const float Value1 = CurrentAbilityData->AbilityValue1 / static_cast<uint32>(CurrentAbilityData->Value1Type);
+		const float Value2 = CurrentAbilityData->AbilityValue2 / static_cast<uint32>(CurrentAbilityData->Value2Type);
 		if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
 		{
-			Player->StartChargeFeather(CurrentAbilityData->AbilityValue1);
+			Player->StartChargeFeather(Value1);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_DEFLECT_BY_WALL))
 		{
-			Player->SetDeflectCount(CurrentAbilityData->AbilityValue1);
+			Player->SetDeflectCount(Value1);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION))
 		{
-			Player->SetKnockBackTransmissionOffencePower(CurrentAbilityData->AbilityValue1);
-			Player->SetKnockBackTransmissionKnockBackPower(CurrentAbilityData->AbilityValue2);
+			Player->SetKnockBackTransmissionOffencePower(Value1);
+			Player->SetKnockBackTransmissionKnockBackPower(Value2);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
 		{
 			Player->SetQuadrupleHitKnockBackPower(CurrentAbilityData->KnockBackPower);
-			Player->SetQuadrupleHitDamageRate(CurrentAbilityData->AbilityValue1 / static_cast<uint32>(CurrentAbilityData->Value1Type));
+			Player->SetQuadrupleHitDamageRate(Value1);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
 		{
-			Player->SetFasterKnockBackSpeedRate(CurrentAbilityData->AbilityValue1 / static_cast<uint32>(CurrentAbilityData->Value1Type));
+			Player->SetFasterKnockBackSpeedRate(Value1);
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE_BY_ENURIA_COUNT))
+		{
+			Player->SetIncreaseKnockBackDamageByEnuriaCountDamageRate(Value1);
 		}
 		
 		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());

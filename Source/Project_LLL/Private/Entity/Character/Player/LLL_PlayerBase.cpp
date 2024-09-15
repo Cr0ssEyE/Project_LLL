@@ -515,6 +515,13 @@ void ALLL_PlayerBase::PauseCameraMoveToCursor()
 	SpringArm->SetRelativeLocation(GetActorLocation());
 }
 
+int32 ALLL_PlayerBase::GetEnuriaCount() const
+{
+	const TArray<FActiveGameplayEffectHandle> AllowEffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_ALLOW));
+	const TArray<FActiveGameplayEffectHandle> DenyEffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_DENY));
+	return AllowEffectHandles.Num() + DenyEffectHandles.Num();
+}
+
 void ALLL_PlayerBase::TurnToMouseCursor()
 {
 	if (GetActorRotation() == MouseDirectionRotator || !GetCharacterAnimInstance()->IsSlotActive(ANIM_SLOT_ATTACK))

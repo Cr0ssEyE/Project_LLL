@@ -71,6 +71,7 @@ public:
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
+	FORCEINLINE FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
 	FORCEINLINE float GetFeatherSpawnStartTime() const { return FeatherSpawnStartTime; }
 	FORCEINLINE float GetOriginKnockBackPower() const { return originKnockBackPower; }
@@ -81,6 +82,7 @@ public:
 	FORCEINLINE float GetQuadrupleHitKnockBackPower() const { return QuadrupleHitKnockBackPower; }
 	FORCEINLINE float GetQuadrupleHitDamageRate() const { return QuadrupleHitDamageRate; }
 	FORCEINLINE float GetFasterKnockBackSpeedRate() const { return FasterKnockBackSpeedRate; }
+	FORCEINLINE float GetIncreaseKnockBackDamageByEnuriaCountDamageRate() const { return IncreaseKnockBackDamageByEnuriaCountDamageRate; }
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
@@ -91,14 +93,14 @@ public:
 	FORCEINLINE void SetQuadrupleHitKnockBackPower(float InQuadrupleHitKnockBackPower) { QuadrupleHitKnockBackPower = InQuadrupleHitKnockBackPower; }
 	FORCEINLINE void SetQuadrupleHitDamageRate(float InQuadrupleHitDamageRate) { QuadrupleHitDamageRate = InQuadrupleHitDamageRate; }
 	FORCEINLINE void SetFasterKnockBackSpeedRate(float InFasterKnockBackRate) { FasterKnockBackSpeedRate = InFasterKnockBackRate; }
+	FORCEINLINE void SetIncreaseKnockBackDamageByEnuriaCountDamageRate(float InIncreaseKnockBackDamageByEnuriaCountDamageRate) { IncreaseKnockBackDamageByEnuriaCountDamageRate = InIncreaseKnockBackDamageByEnuriaCountDamageRate; }
 	
 	FVector CheckMouseLocation();
-	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
-
-public:
 	void StartCameraMoveToCursor(ALLL_PlayerController* PlayerController = nullptr);
 	void PauseCameraMoveToCursor();
+
+	int32 GetEnuriaCount() const;
 
 public:
 	FDissolveCompleteDelegate DissolveCompleteDelegate;
@@ -177,6 +179,7 @@ private:
 	float QuadrupleHitKnockBackPower;
 	float QuadrupleHitDamageRate;
 	float FasterKnockBackSpeedRate;
+	float IncreaseKnockBackDamageByEnuriaCountDamageRate;
 
 	// 상태 관련 함수
 protected:
