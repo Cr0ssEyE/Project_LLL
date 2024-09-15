@@ -78,6 +78,8 @@ public:
 	FORCEINLINE int32 GetDeflectCount() const { return DeflectCount; }
 	FORCEINLINE float GetKnockBackTransmissionOffencePower() const { return KnockBackTransmissionOffencePower; }
 	FORCEINLINE float GetKnockBackTransmissionKnockBackPower() const { return KnockBackTransmissionKnockBackPower; }
+	FORCEINLINE float GetQuadrupleHitKnockBackPower() const { return QuadrupleHitKnockBackPower; }
+	FORCEINLINE float GetQuadrupleHitDamageRate() const { return QuadrupleHitDamageRate; }
 
 	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
@@ -85,7 +87,9 @@ public:
 	FORCEINLINE void SetDeflectCount(int InDeflectCount) { DeflectCount = InDeflectCount; }
 	FORCEINLINE void SetKnockBackTransmissionOffencePower(float InKnockBackTransmissionOffencePower) { KnockBackTransmissionOffencePower = InKnockBackTransmissionOffencePower; }
 	FORCEINLINE void SetKnockBackTransmissionKnockBackPower(float InKnockBackTransmissionKnockBackPower) { KnockBackTransmissionKnockBackPower = InKnockBackTransmissionKnockBackPower; }
-
+	FORCEINLINE void SetQuadrupleHitKnockBackPower(float InQuadrupleHitKnockBackPower) { QuadrupleHitKnockBackPower = InQuadrupleHitKnockBackPower; }
+	FORCEINLINE void SetQuadrupleHitDamageRate(float InQuadrupleHitDamageRate) { QuadrupleHitDamageRate = InQuadrupleHitDamageRate; }
+	
 	FVector CheckMouseLocation();
 	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
@@ -168,6 +172,8 @@ private:
 	int32 DeflectCount;
 	float KnockBackTransmissionOffencePower;
 	float KnockBackTransmissionKnockBackPower;
+	float QuadrupleHitKnockBackPower;
+	float QuadrupleHitDamageRate;
 
 	// 상태 관련 함수
 protected:

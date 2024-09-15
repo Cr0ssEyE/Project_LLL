@@ -60,6 +60,7 @@
 #define TAG_GAS_HAVE_CHARGED_FEATHER FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.ChargedFeather"))
 #define TAG_GAS_HAVE_RANGED_FEATHER FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.RangedFeather"))
 #define TAG_GAS_HAVE_CIRCULAR_FEATHER FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.CircularFeather"))
+#define TAG_GAS_HAVE_QUADRUPLE_HIT FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.QuadrupleHit"))
 #define TAG_GAS_HAVE_DEFLECT_BY_WALL FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.DeflectByWall"))
 #define TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.KnockBackTransmission"))
 

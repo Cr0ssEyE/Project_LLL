@@ -150,6 +150,8 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 				continue;
 			}
 
+			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(ASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+			
 			const ULLL_GE_GiveAbilityComponent* GiveAbilityComponent = CastChecked<ULLL_GE_GiveAbilityComponent>(ActiveEffect->FindComponent(ULLL_GE_GiveAbilityComponent::StaticClass()));
 			for (auto AbilitySpecConfig : const_cast<ULLL_GE_GiveAbilityComponent*>(GiveAbilityComponent)->GetAbilitySpecConfigs())
 			{
@@ -174,8 +176,8 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 						SpawnCount = AbilityData->AbilityValue1;
 						ThrowCircular = true;
 						Straight = true;
-						const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(ASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-						KnockBackPower = AbilityData->KnockBackPower + PlayerCharacterAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
+						KnockBackPower = AbilityData->KnockBackPower;
+						KnockBackPower += PlayerAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
 					}
 				}
 			}
@@ -184,6 +186,13 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 
 	float ThrowCircularAngle = 0.0f;
 	float TempSpawnOffsetTime = Player->GetFeatherSpawnStartTime();
+
+	if (SpawnCount == 0)
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
+	}
+	
 	for (int i = 0; i < SpawnCount; i++)
 	{
 		TArray<AActor*> Targets = Player->GetRangeFeatherTargetsAndClear();
@@ -236,11 +245,13 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 				ThrownObject->SetActorLocationAndRotation(Location, Rotator);
 				ThrownObject->SetAbilityInfo(AbilityData, GetAbilityLevel());
 				ThrownObject->Throw(Player, Target, ThrowSpeed, Straight, KnockBackPower);
+				UE_LOG(LogTemp, Log, TEXT("%s 발사"), *ThrownObject->GetName())
 			}
 
 			if (i == SpawnCount - 1)
 			{
 				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+				UE_LOG(LogTemp, Log, TEXT("%d개 호출하고 종료"), SpawnCount)
 			}
 		}), TempSpawnOffsetTime, false);
 

@@ -132,8 +132,6 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 	if (bIsKnockBacking)
 	{
 		FVector VelocityWithKnockBack = GetVelocity();
-		UE_LOG(LogTemp, Log, TEXT("%s의 넉백 중 벨로시티 : %f %f %f, 넉백 체크 시작 : %d"), *GetName(), VelocityWithKnockBack.X, VelocityWithKnockBack.Y, VelocityWithKnockBack.Z, StartKnockBackVelocity)
-
 		bool IsMoving = CastChecked<ALLL_MonsterBaseAIController>(GetController())->GetPathFollowingComponent()->GetStatus() == EPathFollowingStatus::Moving;
 		if ((VelocityWithKnockBack == FVector::ZeroVector || IsMoving) && StartKnockBackVelocity)
 		{
@@ -256,17 +254,17 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 		{
 			FVector Direction = (OtherMonster->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
 			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-			float KnockBackPower = Player->GetKnockBackTransmissionKnockBackPower() + PlayerAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
+			float KnockBackPower = Player->GetKnockBackTransmissionKnockBackPower();
+			KnockBackPower += PlayerAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
 			UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 넉백"), *Other->GetName(), KnockBackPower)
 			OtherMonster->SetKnockBackSender(this);
 			
-			const float CalculatedKnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(KnockBackPower, PlayerAttributeSet, LastActionAmplify);
-			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, CalculatedKnockBackPower);
-			OtherMonster->SetLastActionAmplify(LastActionAmplify);
-			OtherMonster->AddKnockBackVelocity(LaunchVelocity, CalculatedKnockBackPower);
+			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
+			OtherMonster->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 			
 			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
-			float OffencePower = Player->GetKnockBackTransmissionOffencePower() + PlayerAttributeSet->GetOffensePower() - Player->GetOriginOffencePower();
+			float OffencePower = Player->GetKnockBackTransmissionOffencePower();
+			OffencePower += PlayerAttributeSet->GetOffensePower() - Player->GetOriginOffencePower();
 			
 			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(this);
@@ -595,13 +593,8 @@ void ALLL_MonsterBase::ConnectOwnerDeadDelegate()
 
 void ALLL_MonsterBase::DisconnectOwnerDeadDelegate()
 {
-	if (!IsValid(GetOwner()))
-	{
-		return;
-	}
-	
-	ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwner());
-	if (OwnerCharacter->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_MonsterBase::OwnerCharacterDeadHandle))
+	ALLL_BaseCharacter* OwnerCharacter = Cast<ALLL_BaseCharacter>(GetOwner());
+	if (IsValid(OwnerCharacter) && OwnerCharacter->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_MonsterBase::OwnerCharacterDeadHandle))
 	{
 		CastChecked<ALLL_BaseCharacter>(Owner)->CharacterDeadDelegate.RemoveDynamic(this, &ALLL_MonsterBase::OwnerCharacterDeadHandle);
 	}

@@ -111,4 +111,7 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "연쇄 작용 이누리아 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> KnockBackTransmissionDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "맹렬한 공세 이누리아 데미지 타임 오프셋")
+	float QuadrupleHitHitOffsetTime;
 };

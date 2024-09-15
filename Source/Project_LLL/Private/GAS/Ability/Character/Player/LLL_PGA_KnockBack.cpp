@@ -4,7 +4,6 @@
 #include "GAS/Ability/Character/Player/LLL_PGA_KnockBack.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Task/LLL_AT_Trace.h"
 #include "Interface/LLL_KnockBackInterface.h"
@@ -44,10 +43,6 @@ void ULLL_PGA_KnockBack::KnockBackTarget()
 			const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerAttributeSet->GetKnockBackPower(), PlayerAttributeSet, ActionAmplify);
 			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
 			UE_LOG(LogTemp, Log, TEXT("넉백 수행(플레이어) : %f"), PlayerAttributeSet->GetKnockBackPower())
-			if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(KnockBackActor))
-			{
-				Monster->SetLastActionAmplify(ActionAmplify);
-			}
 			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 		}
 	}

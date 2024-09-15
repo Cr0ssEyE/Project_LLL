@@ -25,7 +25,6 @@ public:
 	
 	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
 	FORCEINLINE void SetCharging(const bool IsCharging) { bIsCharging = IsCharging; }
-	FORCEINLINE void SetLastActionAmplify(float InLastActionAmplify) { LastActionAmplify = InLastActionAmplify; }
 	FORCEINLINE void SetKnockBackSender(ALLL_MonsterBase* InKnockBackSender) { KnockBackSender = InKnockBackSender; }
 	
 	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
@@ -74,7 +73,6 @@ protected:
 	uint8 bIsCharging : 1;
 	FName AttributeInitId;
 	uint8 bIsKnockBacking : 1;
-	float LastActionAmplify;
 	FVector LastKnockBackVelocity;
 	float LastKnockBackPower;
 	uint8 StartKnockBackVelocity : 1;

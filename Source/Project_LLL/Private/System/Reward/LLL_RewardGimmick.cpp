@@ -430,6 +430,11 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 			Player->SetKnockBackTransmissionOffencePower(CurrentAbilityData->AbilityValue1);
 			Player->SetKnockBackTransmissionKnockBackPower(CurrentAbilityData->AbilityValue2);
 		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
+		{
+			Player->SetQuadrupleHitKnockBackPower(CurrentAbilityData->KnockBackPower);
+			Player->SetQuadrupleHitDamageRate(CurrentAbilityData->AbilityValue1 / static_cast<uint32>(CurrentAbilityData->Value1Type));
+		}
 		
 		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
 

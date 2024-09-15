@@ -62,6 +62,7 @@ void ALLL_ThrownFeather::Activate()
 	Super::Activate();
 
 	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ProjectileMovementComponent->UpdatedComponent = HitCollisionBox;
 }
 
 void ALLL_ThrownFeather::Deactivate()
