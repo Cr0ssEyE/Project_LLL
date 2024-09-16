@@ -143,7 +143,10 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 			KnockBackTargetDamaged = false;
 			KnockBackCauserDamaged = false;
 			const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
-			MonsterBaseAIController->StartLogic();
+			if (!CheckCharacterIsDead())
+			{
+				MonsterBaseAIController->StartLogic();
+			}
 			CastChecked<ALLL_MonsterBaseAIController>(GetController())->ResumeMove(FAIRequestID::AnyRequest);
 		}
 		else

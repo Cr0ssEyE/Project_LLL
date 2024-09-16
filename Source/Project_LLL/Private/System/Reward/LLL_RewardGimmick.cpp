@@ -177,7 +177,7 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 				continue;
 			}
 
-			bool IsInValidReward = false;
+			bool IsNotValidReward = false;
 			if (GottenAbilityArray.IsEmpty())
 			{
 				if (Reward.Key->RequireCategory != EAbilityCategory::Null)
@@ -192,8 +192,11 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 				{
 					if (Reward.Key->AbilityName == GottenReward->AbilityName)
 					{
-						IsInValidReward = true;
-						break;
+						if (Reward.Key->TagID[0] != '1')
+						{
+							IsNotValidReward = true;
+							break;
+						}
 					}
 
 					// 획득 조건 체크
@@ -202,16 +205,16 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 						continue;
 					}
 
-					IsInValidReward = false;
+					IsNotValidReward = false;
 					if (Reward.Key->RequireCategory == GottenReward->AbilityCategory)
 					{
-						IsInValidReward = true;
+						IsNotValidReward = true;
 						break;
 					}
 				}
 			}
 
-			if (IsInValidReward)
+			if (IsNotValidReward)
 			{
 				CurrentWeight += Reward.Value;
 				continue;
@@ -223,13 +226,13 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 				{
 					if (Reward.Key->AbilityName == EmplacedReward->AbilityName)
 					{
-						IsInValidReward = true;
+						IsNotValidReward = true;
 						break;
 					}
 				}
 			}
 
-			if (IsInValidReward)
+			if (IsNotValidReward)
 			{
 				CurrentWeight += Reward.Value;
 				continue;
@@ -334,8 +337,6 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		return;
 	}
 	
-	bool IsCommonEffect = true;
-	
 	UE_LOG(LogTemp, Log, TEXT("부여 된 플레이어 이펙트"));
 	for (auto& LoadedEffect : LoadedEffects)
 	{
@@ -349,31 +350,28 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		{
 			continue;
 		}
+
+		TArray<FActiveGameplayEffectHandle> EffectHandles;
+		const TArray<FActiveGameplayEffectHandle> AllowEffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_ALLOW));
+		const TArray<FActiveGameplayEffectHandle> DenyEffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_DENY));
 		
-		/*const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
-		if (TagContainer.HasTag(TAG_GAS_ABILITY_NESTING) && !TagContainer.HasTagExact(TAG_GAS_ABILITY_NESTING_ALLOW))
+		EffectHandles.Append(AllowEffectHandles);
+		EffectHandles.Append(DenyEffectHandles);
+		
+		for (const auto EffectHandle : EffectHandles)
 		{
-			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("중첩 이펙트 아님")));
-			IsCommonEffect = false;
-			TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
-			for (const auto EffectHandle : EffectHandles)
+			const ULLL_ExtendedGameplayEffect* ActiveEffect = Cast<ULLL_ExtendedGameplayEffect>(ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def);
+			if (!IsValid(ActiveEffect))
 			{
-				const ULLL_ExtendedGameplayEffect* ActiveEffect = Cast<ULLL_ExtendedGameplayEffect>(ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def);
-				if (!IsValid(ActiveEffect))
-				{
-					continue;
-				}
-				
-				if (CurrentAbilityData->TagID[0] == ActiveEffect->GetAbilityData()->TagID[0])
-				{
-					ASC->RemoveActiveGameplayEffect(EffectHandle);
-					for (auto GameplayTag : TagContainer.GetGameplayTagArray())
-					{
-						UE_LOG(LogTemp, Log, TEXT("- %s 태그를 가진 이펙트 삭제"), *GameplayTag.ToString());
-					}
-				}
+				continue;
 			}
-		}*/
+				
+			if (CurrentAbilityData->TagID[1] == ActiveEffect->GetAbilityData()->TagID[1])
+			{
+				ASC->RemoveActiveGameplayEffect(EffectHandle);
+				UE_LOG(LogTemp, Log, TEXT("사용 타입 이펙트 삭제"));
+			}
+		}
 
 		// 단순 수치 변화는 여기에서 적용.
 		float MagnitudeValue1 = CurrentAbilityData->AbilityValue1 / static_cast<uint32>(CurrentAbilityData->Value1Type);
@@ -422,15 +420,15 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	}
 
 	// TODO: UI 관련 상호작용 구현.
-	if (IsCommonEffect)
-	{
-		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("커먼 이펙트 획득")));
-		PlayerUIManager->GetInventoryWidget()->SetEruriaInfo(CurrentAbilityData);
-	}
-	else
-	{
-		PlayerUIManager->GetMainEruriaWidget()->SetEruriaInfo(CurrentAbilityData);
-	}
+	//if (IsCommonEffect)
+	//{
+	// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("커먼 이펙트 획득")));
+	PlayerUIManager->GetInventoryWidget()->SetEruriaInfo(CurrentAbilityData);
+	//}
+	//else
+	//{
+	//PlayerUIManager->GetMainEruriaWidget()->SetEruriaInfo(CurrentAbilityData);
+	//}
 
 	TArray<const FAbilityDataTable*> EqualAbilities;
 	uint8 Count = 2;
