@@ -17,15 +17,14 @@ class PROJECT_LLL_API ULLL_MonsterASC : public ULLL_BaseASC
 public:
 	// Sets default values for this component's properties
 	ULLL_MonsterASC();
-
-	virtual FActiveGameplayEffectHandle ApplyGameplayEffectSpecToSelf(const FGameplayEffectSpec& GameplayEffect, FPredictionKey PredictionKey) override;
 	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
 	virtual void BeginDestroy() override;
-protected:
+	
+	virtual FActiveGameplayEffectHandle ApplyGameplayEffectSpecToSelf(const FGameplayEffectSpec& GameplayEffect, FPredictionKey PredictionKey) override;
+	
     // TODO: 플레이어랑 몬스터 ASC 분리하기
     virtual void OnFallableTagAdded(const FGameplayTag Tag, int32 count);
     virtual void CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEffectSpec);

@@ -7,10 +7,13 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "DataAsset/LLL_ThrownFeatherDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/Object/Thrown/LLL_ThrownFeatherAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
@@ -70,4 +73,62 @@ void ALLL_ThrownFeather::Deactivate()
 	Super::Deactivate();
 	
 	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower)
+{
+	Super::Throw(NewOwner, NewTarget, InSpeed, Straight, InKnockBackPower);
+
+	ALLL_BaseCharacter* OwnerCharacter = Cast<ALLL_BaseCharacter>(GetOwner());
+	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerCharacter))
+	{
+		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
+		{
+			OffencePower *= Player->GetQuadrupleHitDamageRate();
+		}
+	}
+}
+
+void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner());
+	const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other);
+	if (IsValid(Player) && AbilitySystemInterface)
+	{
+		FVector Direction = (Other->GetActorLocation() - Player->GetActorLocation()).GetSafeNormal2D();
+		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+				
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
+		{
+			float HitCount = 4;
+			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+			float HitOffsetTime = PlayerDataAsset->QuadrupleHitHitOffsetTime;
+			for (int i = 0; i < HitCount - 1; i++)
+			{
+				FTimerHandle QuadrupleHitTimerHandle;
+				GetWorld()->GetTimerManager().SetTimer(QuadrupleHitTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, i, HitCount, Other, AbilitySystemInterface, PlayerAttributeSet, Player, Direction]{
+					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+					EffectContextHandle.AddSourceObject(this);
+					const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
+					if (EffectSpecHandle.IsValid())
+					{
+						UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지 : %d"), *Other->GetName(), OffencePower, i + 2)
+						ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
+						if (i == HitCount - 2)
+						{
+							KnockBackPower = Player->GetQuadrupleHitKnockBackPower();
+							KnockBackPower += PlayerAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
+							KnockBackTarget(Direction, Other);
+						}
+					}
+				}), HitOffsetTime, false);
+
+				HitOffsetTime += 0.1f;
+			}
+		}
+	}
 }

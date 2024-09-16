@@ -43,9 +43,6 @@
 #define TAG_GAS_MONSTER_FALLABLE FGameplayTag::RequestGameplayTag(FName("Character.Monster.State.Fallable"))
 #define TAG_GAS_MONSTER_DASH FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Dash"))
 
-// 원거리 몬스터 관련 게임플레이 태그
-#define TAG_GAS_RANGED_MONSTER_SPAWN_THROWN_OBJECT_OFFENCE_POWER FGameplayTag::RequestGameplayTag(FName("Character.Monster.Ranged.Action.SpawnThrownObject.OffencePower"))
-
 // 힘 있는 자 게임플레이 태그
 #define TAG_GAS_MAN_OF_STRENGTH_SHOCKWAVE FGameplayTag::RequestGameplayTag(FName("Character.Monster.Boss.ManOfStrength.Action.Shockwave"))
 #define TAG_GAS_MAN_OF_STRENGTH_DASH_PUNCH FGameplayTag::RequestGameplayTag(FName("Character.Monster.Boss.ManOfStrength.Action.DashPunch"))
@@ -76,8 +73,6 @@
 #define TAF_GAS_ABILITY_VALUE_OFFENCE_POWER FGameplayTag::RequestGameplayTag(FName("Ability.Value.OffencePower"))
 
 // 어빌리티 슬롯 관련 태그
-#define TAG_GAS_ABILITY_PART_GRANT FGameplayTag::RequestGameplayTag(FName("AbilityPart.Event.Granted"))
-#define TAG_GAS_ABILITY_NESTING FGameplayTag::RequestGameplayTag(FName("Ability.Nesting"))
 #define TAG_GAS_ABILITY_NESTING_ALLOW FGameplayTag::RequestGameplayTag(FName("Ability.Nesting.Allow"))
 #define TAG_GAS_ABILITY_NESTING_DENY FGameplayTag::RequestGameplayTag(FName("Ability.Nesting.Deny"))
 

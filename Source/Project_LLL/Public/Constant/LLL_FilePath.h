@@ -22,6 +22,7 @@
 
 // 플레이어 어빌리티 오브젝트 관련
 #define PATH_RANGE_FEATHER_DETECTOR_DATA TEXT("/Script/Project_LLL.LLL_RangeFeatherDetectorDataAsset'/Game/DataAsset/DA_RangeFeatherDetector.DA_RangeFeatherDetector'")
+#define PATH_RANGE_KNOCK_BACK_DETECTOR_DATA TEXT("/Script/Project_LLL.LLL_RangeKnockBackDetectorDataAsset'/Game/DataAsset/DA_RangeKnockBackDetector.DA_RangeKnockBackDetector'")
 
 // 플레이어 투사체 관련
 #define PATH_THROWN_FEATHER_DATA TEXT("/Script/Project_LLL.LLL_ThrownFeatherDataAsset'/Game/DataAsset/DA_ThrownFeather.DA_ThrownFeather'")

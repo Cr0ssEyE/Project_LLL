@@ -125,7 +125,7 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 
 void ULLL_PGA_OnTriggerActivate::SpawnAbilityObject()
 {
-	FLLL_AbilityDataHelper::SpawnAbilityObject(this, AbilityObjectClass, CurrentEventData, AbilityObjectLocationTarget, AbilityObjectOffsetLocation);
+	FLLL_AbilityDataHelper::SpawnAbilityObject(this, AbilityObjectClass, CurrentEventData, AbilityObjectLocationTarget, AbilityObjectOffsetLocation, AbilityObjectOffsetRotation);
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
@@ -242,6 +242,7 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 						Rotator += FRotator(0.0f, 180.0f + Offset * (FMath::RandBool() ? 1.0f : -1.0f) * FMath::RandRange(0, Multiply), 0.0f);
 					}
 				}
+				
 				ThrownObject->SetActorLocationAndRotation(Location, Rotator);
 				ThrownObject->SetAbilityInfo(AbilityData, GetAbilityLevel());
 				ThrownObject->Throw(Player, Target, ThrowSpeed, Straight, KnockBackPower);

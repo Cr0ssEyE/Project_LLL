@@ -133,12 +133,6 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 			const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(OwnerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 			OffencePower = AbilityData->AbilityValue2 * AbilityLevel / static_cast<uint32>(AbilityData->Value2Type);
 			OffencePower += PlayerCharacterAttributeSet->GetOffencePower() - Player->GetOriginOffencePower();
-
-			UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-			if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
-			{
-				OffencePower *= Player->GetQuadrupleHitDamageRate();
-			}
 		}
 	}
 
@@ -175,52 +169,25 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other);
 	if (IsValid(OwnerCharacter) && AbilitySystemInterface)
 	{
+		const FVector Direction = (Other->GetActorLocation() - OwnerCharacter->GetActorLocation()).GetSafeNormal2D();
+		
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, OwnerCharacter->GetAbilityLevel(), EffectContextHandle);
 		if (EffectSpecHandle.IsValid())
 		{
-			FVector Direction = (Other->GetActorLocation() - OwnerCharacter->GetActorLocation()).GetSafeNormal2D();
 			if (Cast<ALLL_MonsterBase>(OwnerCharacter))
 			{
-				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_RANGED_MONSTER_SPAWN_THROWN_OBJECT_OFFENCE_POWER, OffencePower);
-
+				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAF_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
 				UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
-				KnockBackTarget(Direction, Other);
 			}
-			else if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerCharacter))
+			else if (Cast<ALLL_PlayerBase>(OwnerCharacter))
 			{
 				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, OffencePower);
 				UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지 : 1"), *Other->GetName(), OffencePower)
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 				KnockBackTarget(Direction, Other);
-
-				UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-				const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-				
-				if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
-				{
-					float HitCount = 4;
-					const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
-					float HitOffsetTime = PlayerDataAsset->QuadrupleHitHitOffsetTime;
-					for (int i = 0; i < HitCount - 1; i++)
-					{
-						FTimerHandle QuadrupleHitTimerHandle;
-						GetWorld()->GetTimerManager().SetTimer(QuadrupleHitTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, i, HitCount, Other, EffectSpecHandle, AbilitySystemInterface, PlayerAttributeSet, Player, Direction]{
-							UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지 : %d"), *Other->GetName(), OffencePower, i + 2)
-							ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
-							if (i == HitCount - 2)
-							{
-								KnockBackPower = Player->GetQuadrupleHitKnockBackPower();
-								KnockBackPower += PlayerAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
-								KnockBackTarget(Direction, Other);
-							}
-						}), HitOffsetTime, false);
-
-						HitOffsetTime += 0.1f;
-					}
-				}
 			}
 		}
 	}

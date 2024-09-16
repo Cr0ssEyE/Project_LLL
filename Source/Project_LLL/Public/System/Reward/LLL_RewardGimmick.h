@@ -71,7 +71,7 @@ protected:
 	uint32 TotalRewardWeight;
 	TArray<TTuple<const FAbilityDataTable*, float>> NormalizedWeightRewardArray;
 	
-	TArray<const FAbilityDataTable*> GettenAbilityArray;
+	TArray<const FAbilityDataTable*> GottenAbilityArray;
 	TArray<const FAbilityDataTable*> ButtonAbilityDataArray;
 
 	const FAbilityDataTable* CurrentAbilityData;

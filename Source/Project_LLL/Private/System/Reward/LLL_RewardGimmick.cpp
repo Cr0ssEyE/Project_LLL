@@ -178,7 +178,7 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 			}
 
 			bool IsInValidReward = false;
-			if (GettenAbilityArray.IsEmpty())
+			if (GottenAbilityArray.IsEmpty())
 			{
 				if (Reward.Key->RequireCategory != EAbilityCategory::Null)
 				{
@@ -188,7 +188,7 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 			}
 			else
 			{
-				for (const auto GottenReward : GettenAbilityArray)
+				for (const auto GottenReward : GottenAbilityArray)
 				{
 					if (Reward.Key->AbilityName == GottenReward->AbilityName)
 					{
@@ -249,7 +249,7 @@ void ALLL_RewardGimmick::ClickFirstButton()
 	}
 	
 	ClickButtonEvent(ButtonAbilityDataArray[0]);
-	GettenAbilityArray.Emplace(ButtonAbilityDataArray[0]);
+	GottenAbilityArray.Emplace(ButtonAbilityDataArray[0]);
 	if (!bIsTest)
 	{
 		ButtonAbilityDataArray.Empty();
@@ -264,7 +264,7 @@ void ALLL_RewardGimmick::ClickSecondButton()
 	}
 	
 	ClickButtonEvent(ButtonAbilityDataArray[1]);
-	GettenAbilityArray.Emplace(ButtonAbilityDataArray[1]);
+	GottenAbilityArray.Emplace(ButtonAbilityDataArray[1]);
 	if (!bIsTest)
 	{
 		ButtonAbilityDataArray.Empty();
@@ -279,7 +279,7 @@ void ALLL_RewardGimmick::ClickThirdButton()
 	}
 	
 	ClickButtonEvent(ButtonAbilityDataArray[2]);
-	GettenAbilityArray.Emplace(ButtonAbilityDataArray[2]);
+	GottenAbilityArray.Emplace(ButtonAbilityDataArray[2]);
 	if (!bIsTest)
 	{
 		ButtonAbilityDataArray.Empty();
@@ -416,40 +416,8 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 				}
 			}
 		}
-
-		const float Value1 = CurrentAbilityData->AbilityValue1 / static_cast<uint32>(CurrentAbilityData->Value1Type);
-		const float Value2 = CurrentAbilityData->AbilityValue2 / static_cast<uint32>(CurrentAbilityData->Value2Type);
-		if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
-		{
-			Player->StartChargeFeather(Value1);
-		}
-		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_DEFLECT_BY_WALL))
-		{
-			Player->SetDeflectCount(Value1);
-		}
-		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION))
-		{
-			Player->SetKnockBackTransmissionOffencePower(Value1);
-			Player->SetKnockBackTransmissionKnockBackPower(Value2);
-		}
-		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
-		{
-			Player->SetQuadrupleHitKnockBackPower(CurrentAbilityData->KnockBackPower);
-			Player->SetQuadrupleHitDamageRate(Value1);
-		}
-		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
-		{
-			Player->SetFasterKnockBackSpeedRate(Value1);
-		}
-		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE_BY_ENURIA_COUNT))
-		{
-			Player->SetIncreaseKnockBackDamageByEnuriaCountDamageRate(Value1);
-		}
 		
 		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
-
-		const FGameplayEventData PayLoadData;
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ABILITY_PART_GRANT, PayLoadData);
 		break;
 	}
 

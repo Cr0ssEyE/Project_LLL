@@ -19,13 +19,6 @@ ULLL_MonsterASC::ULLL_MonsterASC()
 
 }
 
-FActiveGameplayEffectHandle ULLL_MonsterASC::ApplyGameplayEffectSpecToSelf(const FGameplayEffectSpec& GameplayEffect,
-	FPredictionKey PredictionKey)
-{
-	CheckAbnormalEffect(GameplayEffect);
-	return Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
-}
-
 // Called when the game starts
 void ULLL_MonsterASC::BeginPlay()
 {
@@ -46,6 +39,13 @@ void ULLL_MonsterASC::BeginDestroy()
 {
 	MarkTimerHandle.Invalidate();
 	Super::BeginDestroy();
+}
+
+FActiveGameplayEffectHandle ULLL_MonsterASC::ApplyGameplayEffectSpecToSelf(const FGameplayEffectSpec& GameplayEffect, FPredictionKey PredictionKey)
+{
+	CheckAbnormalEffect(GameplayEffect);
+	
+	return Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
 }
 
 void ULLL_MonsterASC::OnFallableTagAdded(const FGameplayTag Tag, int32 count)
