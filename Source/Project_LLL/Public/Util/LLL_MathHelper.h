@@ -130,17 +130,6 @@ public:
 		return CalculateResult;
 	}
 
-	static float CalculateKnockBackPower(const float KnockBackPower, const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet, const float ActionAmplify = 1.f)
-	{
-		if (!IsValid(PlayerAttributeSet))
-		{
-			return 0.f;
-		}
-		
-		const float CalculateResult = (KnockBackPower + PlayerAttributeSet->GetOffensePower() * PlayerAttributeSet->GetKnockBackOffensePowerRate()) * ActionAmplify;
-		return CalculateResult;
-	}
-
 	static float CalculateCriticalDamage(const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet, const float OffensePower)
 	{
 		const float CriticalChance = PlayerAttributeSet->GetCriticalChance();

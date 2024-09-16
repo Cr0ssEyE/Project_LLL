@@ -10,6 +10,7 @@
 #include "Interface/LLL_KnockBackInterface.h"
 #include "LLL_MonsterBase.generated.h"
 
+class ALLL_PlayerBase;
 class UProjectileMovementComponent;
 class ULLL_MonsterAttributeSet;
 /**
@@ -23,11 +24,10 @@ class PROJECT_LLL_API ALLL_MonsterBase : public ALLL_BaseCharacter, public ILLL_
 public:
 	ALLL_MonsterBase();
 	
-	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
 	FORCEINLINE void SetCharging(const bool IsCharging) { bIsCharging = IsCharging; }
 	FORCEINLINE void SetKnockBackSender(ALLL_MonsterBase* InKnockBackSender) { KnockBackSender = InKnockBackSender; }
 	
-	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
+	FORCEINLINE virtual float GetKnockBackedPower() const override { return bIsKnockBacking ? LastKnockBackPower : 0.0f; }
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
 	FORCEINLINE int32 GetId() const { return Id; }
 	FORCEINLINE bool IsKnockBacking() const { return bIsKnockBacking; }
@@ -44,7 +44,6 @@ public:
 	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
 	virtual void Dead() override;
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
-	virtual void ApplyStackedKnockBack() override;
 	
 	virtual float GetChargeTimer() const;
 
@@ -53,6 +52,8 @@ public:
 	void ShowHitEffect();
 	void ConnectOwnerDeadDelegate();
 	void DisconnectOwnerDeadDelegate();
+	void DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster);
+	void DamageKnockBackCauser(ALLL_PlayerBase* Player);
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -67,8 +68,6 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> MaskMeshComponent;
 
-	FVector StackedKnockBackVelocity;
-	float StackedKnockBackedPower;
 	int32 Id;
 	uint8 bIsCharging : 1;
 	FName AttributeInitId;
@@ -78,6 +77,8 @@ protected:
 	uint8 StartKnockBackVelocity : 1;
 	uint8 DeflectCount;
 	TObjectPtr<ALLL_MonsterBase> KnockBackSender;
+	uint8 KnockBackTargetDamaged : 1;
+	uint8 KnockBackCauserDamaged : 1;
 	
 public:
 	UFUNCTION()

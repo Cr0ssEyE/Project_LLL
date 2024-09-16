@@ -70,7 +70,6 @@ public:
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
-	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
 	FORCEINLINE FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
 	FORCEINLINE float GetFeatherSpawnStartTime() const { return FeatherSpawnStartTime; }
@@ -203,11 +202,6 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_ObjectPoolingComponent> ObjectPoolingComponent;
-	
-	//UI 관련
-protected:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UWidgetComponent> ChaseActionGaugeWidgetComponent;
 
 	// MPC 관련
 protected:

@@ -53,10 +53,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	
 	PlayerCharacterAttributeSet = CreateDefaultSubobject<ULLL_PlayerCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
 	AbnormalStatusAttributeSet = CreateDefaultSubobject<ULLL_AbnormalStatusAttributeSet>(TEXT("AbnormalStatusAttributeSet"));
-	
-	ChaseActionGaugeWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("ChaseActionGaugeWidgetComponent"));
-
-	ChaseActionGaugeWidgetComponent->SetupAttachment(RootComponent);
 
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_PlayerBaseDataAsset>(PATH_PLAYER_DATA, EAssertionLevel::Check);
 	CameraDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_CameraDataAsset>(PATH_CAMERA_DATA, EAssertionLevel::Check);
@@ -196,7 +192,7 @@ void ALLL_PlayerBase::InitAttributeSet()
 	// DefaultGame.ini의 [/Script/GameplayAbilities.AbilitySystemGlobals] 항목에 테이블 미리 추가해놔야 정상 작동함.
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, Level, true);
 	originKnockBackPower = PlayerCharacterAttributeSet->GetKnockBackPower();
-	originOffencePower = PlayerCharacterAttributeSet->GetOffensePower();
+	originOffencePower = PlayerCharacterAttributeSet->GetOffencePower();
 }
 
 void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)

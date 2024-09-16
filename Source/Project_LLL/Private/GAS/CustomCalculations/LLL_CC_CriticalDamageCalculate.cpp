@@ -26,7 +26,7 @@ float ULLL_CC_CriticalDamageCalculate::CalculateBaseMagnitude_Implementation(con
 		DamageAmplifyValue = PlayerAttributeSet->GetBaseAttackDamageAmplifyByOther();
 	}
 	
-	Result = FLLL_MathHelper::CalculateCriticalDamage(PlayerAttributeSet, PlayerAttributeSet->GetOffensePower() * DamageAmplifyValue);
+	Result = FLLL_MathHelper::CalculateCriticalDamage(PlayerAttributeSet, PlayerAttributeSet->GetOffencePower() * DamageAmplifyValue);
 	
 	return Result;
 }

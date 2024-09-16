@@ -6,12 +6,6 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
-#include "Util/LLL_MathHelper.h"
-
-ULLL_CC_KnockBackDamageCalculate::ULLL_CC_KnockBackDamageCalculate()
-{
-	bUsePowKnockBackRate = false;
-}
 
 float ULLL_CC_KnockBackDamageCalculate::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
 {
@@ -22,13 +16,9 @@ float ULLL_CC_KnockBackDamageCalculate::CalculateBaseMagnitude_Implementation(co
 	{
 		return Result;
 	}
-	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	
-	const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerAttributeSet->GetKnockBackPower(), PlayerAttributeSet, KnockBackAmplifyValueRowHandle.Eval(Spec.GetLevel(), TEXT("Error!!!")));
-	const float MainKnockBackRate = PlayerAttributeSet->GetKnockBackRate();
-	const float SubKnockBackRate = bUsePowKnockBackRate ? PlayerAttributeSet->GetKnockBackRate() : 1.f;
-
-	Result = KnockBackPower * MainKnockBackRate * SubKnockBackRate;
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+	Result = PlayerAttributeSet->GetKnockBackOffencePower() * PlayerAttributeSet->GetKnockBackOffencePowerRate();
 
 	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE_BY_ENURIA_COUNT))

@@ -114,4 +114,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "맹렬한 공세 이누리아 데미지 타임 오프셋")
 	float QuadrupleHitHitOffsetTime;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "넉백된 대상이 받는 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> KnockBackCauserDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "넉백된 대상과 충돌한 대상이 받는 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> KnockBackTargetDamageEffect;
 };

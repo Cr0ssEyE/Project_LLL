@@ -39,15 +39,11 @@ void ULLL_PGA_KnockBack::KnockBackTarget()
 		if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor))
 		{
 			const FVector LaunchDirection = (Actor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
-			const float ActionAmplify = KnockBackAmplifyChangeSection.Eval(CurrentEventData.EventMagnitude, KnockBackAmplifyChangeSection.RowName.ToString());
-			const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerAttributeSet->GetKnockBackPower(), PlayerAttributeSet, ActionAmplify);
-			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
+			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, PlayerAttributeSet->GetKnockBackPower());
 			UE_LOG(LogTemp, Log, TEXT("넉백 수행(플레이어) : %f"), PlayerAttributeSet->GetKnockBackPower())
-			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
+			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, PlayerAttributeSet->GetKnockBackPower());
 		}
 	}
-	
-	BP_ApplyGameplayEffectToTarget(CurrentEventData.TargetData, KnockBackEffect, CurrentEventData.EventMagnitude);
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

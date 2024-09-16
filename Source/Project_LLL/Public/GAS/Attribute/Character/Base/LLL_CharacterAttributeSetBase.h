@@ -30,7 +30,7 @@ public:
 	
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, MaxHealth);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, CurrentHealth)
-	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, OffensePower);
+	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, OffencePower);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, MoveSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, ReceiveDamage);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, AccelerateSpeed);
@@ -47,7 +47,7 @@ protected:
 	FGameplayAttributeData CurrentHealth;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData OffensePower;
+	FGameplayAttributeData OffencePower;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MoveSpeed;

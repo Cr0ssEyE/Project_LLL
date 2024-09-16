@@ -56,9 +56,6 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
 	DropGoldEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'"), EAssertionLevel::Check);
 
-	StackedKnockBackedPower = 0.f;
-	StackedKnockBackVelocity = FVector::Zero();
-
 	MaskMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mask"));
 	MaskMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	MaskMeshComponent->SetupAttachment(RootComponent);
@@ -143,6 +140,8 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 			StartKnockBackVelocity = false;
 			DeflectCount = 0;
 			KnockBackSender = nullptr;
+			KnockBackTargetDamaged = false;
+			KnockBackCauserDamaged = false;
 			const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
 			MonsterBaseAIController->StartLogic();
 			CastChecked<ALLL_MonsterBaseAIController>(GetController())->ResumeMove(FAIRequestID::AnyRequest);
@@ -219,7 +218,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 			
 			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(this);
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->ThrowDamageEffect, Level, EffectContextHandle);
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->ThrowDamageEffect, ManOfStrength->GetAbilityLevel(), EffectContextHandle);
 			if (EffectSpecHandle.IsValid())
 			{
 				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_MAN_OF_STRENGTH_THROW_OTHER_MONSTER_OFFENCE_POWER, OffencePower);
@@ -236,47 +235,57 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 	if (bIsKnockBacking && IsValid(Player))
 	{
 		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DEFLECT_BY_WALL) && !Cast<ALLL_BaseCharacter>(Other) && !Cast<ALLL_FallableWallGimmick>(Other) && DeflectCount < Player->GetDeflectCount())
+		if (!Cast<ALLL_BaseCharacter>(Other) && !Cast<ALLL_FallableWallGimmick>(Other))
 		{
 			float DotProduct = FVector::DotProduct(HitNormal, FVector::UpVector);
 			float AngleInRadians = FMath::Acos(DotProduct);
 			float AngleInDegrees = FMath::RadiansToDegrees(AngleInRadians);
 			if (AngleInDegrees > 45.0f)
 			{
-				// 반사 벡터 구하기
-				LastKnockBackVelocity = LastKnockBackVelocity - 2 * FVector::DotProduct(LastKnockBackVelocity, HitNormal) * HitNormal;
-				DeflectCount++;
-				UE_LOG(LogTemp, Log, TEXT("벽에 %d번 튕김"), DeflectCount)
-				AddKnockBackVelocity(LastKnockBackVelocity, LastKnockBackPower);
-				StartKnockBackVelocity = false;
+				DamageKnockBackCauser(Player);
+
+				if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DEFLECT_BY_WALL) && DeflectCount < Player->GetDeflectCount())
+				{
+					// 반사 벡터 구하기
+					LastKnockBackVelocity = LastKnockBackVelocity - 2 * FVector::DotProduct(LastKnockBackVelocity, HitNormal) * HitNormal;
+					DeflectCount++;
+					UE_LOG(LogTemp, Log, TEXT("벽에 %d번 튕김"), DeflectCount)
+					AddKnockBackVelocity(LastKnockBackVelocity, LastKnockBackPower);
+					StartKnockBackVelocity = false;
+				}
 			}
 		}
 
 		ALLL_MonsterBase* OtherMonster = Cast<ALLL_MonsterBase>(Other);
-		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION) && IsValid(OtherMonster) && (!IsValid(KnockBackSender) || OtherMonster != KnockBackSender) && !OtherMonster->IsKnockBacking())
+		if (IsValid(OtherMonster))
 		{
-			FVector Direction = (OtherMonster->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
-			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-			float KnockBackPower = Player->GetKnockBackTransmissionKnockBackPower();
-			KnockBackPower += PlayerAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
-			UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 넉백"), *Other->GetName(), KnockBackPower)
-			OtherMonster->SetKnockBackSender(this);
+			DamageKnockBackTarget(Player, OtherMonster);
+			DamageKnockBackCauser(Player);
 			
-			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
-			OtherMonster->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
-			
-			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
-			float OffencePower = Player->GetKnockBackTransmissionOffencePower();
-			OffencePower += PlayerAttributeSet->GetOffensePower() - Player->GetOriginOffencePower();
-			
-			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-			EffectContextHandle.AddSourceObject(this);
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->KnockBackTransmissionDamageEffect, Level, EffectContextHandle);
-			if (EffectSpecHandle.IsValid())
+			if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION) && (!IsValid(KnockBackSender) || OtherMonster != KnockBackSender) && !OtherMonster->IsKnockBacking())
 			{
-				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAF_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
-				UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
-				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
+				FVector Direction = (OtherMonster->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+				const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+				float KnockBackPower = Player->GetKnockBackTransmissionKnockBackPower();
+				KnockBackPower += PlayerAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
+				UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 넉백"), *Other->GetName(), KnockBackPower)
+			
+				FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
+				OtherMonster->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
+			
+				const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+				float OffencePower = Player->GetKnockBackTransmissionOffencePower();
+				OffencePower += PlayerAttributeSet->GetOffencePower() - Player->GetOriginOffencePower();
+			
+				FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+				EffectContextHandle.AddSourceObject(this);
+				const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->KnockBackTransmissionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
+				if (EffectSpecHandle.IsValid())
+				{
+					EffectSpecHandle.Data->SetSetByCallerMagnitude(TAF_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+					UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
+					ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
+				}
 			}
 		}
 	}
@@ -437,68 +446,37 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 		return;
 	}
 	
-	if (CustomTimeDilation >= 1.f)
+	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (IsValid(Player))
 	{
-		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-		if (IsValid(Player))
+		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
 		{
-			UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-			if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
-			{
-				CustomTimeDilation = 1 + Player->GetFasterKnockBackSpeedRate();
-			}
+			CustomTimeDilation = 1 + Player->GetFasterKnockBackSpeedRate();
 		}
-		StackedKnockBackedPower = KnockBackPower;
-		if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower) && GetCapsuleComponent()->GetCollisionProfileName() != CP_MONSTER_FALLABLE)
-		{
-			GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
-		}
-		GetCharacterMovement()->Velocity = FVector::Zero();
-		LaunchCharacter(KnockBackVelocity, true, true);
-		UE_LOG(LogTemp, Log, TEXT("%s가 %f 파워로 넉백 시작"), *GetName(), KnockBackPower)
-		bIsKnockBacking = true;
-		LastKnockBackVelocity = KnockBackVelocity;
-		LastKnockBackPower = KnockBackPower;
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (DebugGameInstance->CheckMonsterHitCheckDebug() || DebugGameInstance->CheckMonsterCollisionDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("넉백 방향 및 속도 : %f, %f, %f || %f"), KnockBackVelocity.X, KnockBackVelocity.Y, KnockBackVelocity.Z, KnockBackVelocity.Length()));
-			}
-		}
-#endif
-	}
-	else
-	{
-		StackedKnockBackedPower += KnockBackPower;
-		StackedKnockBackVelocity += KnockBackVelocity;
-	}
-}
-
-void ALLL_MonsterBase::ApplyStackedKnockBack()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f"), StackedKnockBackVelocity.Length()));
-
-	if (StackedKnockBackVelocity.Length() < 100.f)
-	{
-		ResetKnockBackStack();
-		return;
 	}
 	
-	if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), StackedKnockBackedPower))
+	if (FLLL_MathHelper::CheckFallableKnockBackPower(GetWorld(), KnockBackPower) && GetCapsuleComponent()->GetCollisionProfileName() != CP_MONSTER_FALLABLE)
 	{
 		GetAbilitySystemComponent()->AddLooseGameplayTag(TAG_GAS_MONSTER_FALLABLE);
 	}
-
-	// TODO: 나중에 몬스터별 최대 넉백값 같은거 나오면 수정하기
-	Damaged();
-	FVector ScaledStackedKnockBackVelocity = ClampVector(StackedKnockBackVelocity, FVector::One() * -30000.f, FVector::One() * 30000.f);
-	ScaledStackedKnockBackVelocity.Z = 0.f;
+	
 	GetCharacterMovement()->Velocity = FVector::Zero();
-	LaunchCharacter(ScaledStackedKnockBackVelocity, true, true);
-
-	ResetKnockBackStack();
+	LaunchCharacter(KnockBackVelocity, true, true);
+	UE_LOG(LogTemp, Log, TEXT("%s가 %f 파워로 넉백 시작"), *GetName(), KnockBackPower)
+	bIsKnockBacking = true;
+	LastKnockBackVelocity = KnockBackVelocity;
+	LastKnockBackPower = KnockBackPower;
+	
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (DebugGameInstance->CheckMonsterHitCheckDebug() || DebugGameInstance->CheckMonsterCollisionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("넉백 방향 및 속도 : %f, %f, %f || %f"), KnockBackVelocity.X, KnockBackVelocity.Y, KnockBackVelocity.Z, KnockBackVelocity.Length()));
+		}
+	}
+#endif
 }
 
 float ALLL_MonsterBase::GetChargeTimer() const
@@ -609,6 +587,42 @@ void ALLL_MonsterBase::DisconnectOwnerDeadDelegate()
 	if (IsValid(OwnerCharacter) && OwnerCharacter->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_MonsterBase::OwnerCharacterDeadHandle))
 	{
 		CastChecked<ALLL_BaseCharacter>(Owner)->CharacterDeadDelegate.RemoveDynamic(this, &ALLL_MonsterBase::OwnerCharacterDeadHandle);
+	}
+}
+
+void ALLL_MonsterBase::DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster)
+{
+	if (!KnockBackTargetDamaged)
+	{
+		KnockBackTargetDamaged = true;
+		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+		
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		EffectContextHandle.AddInstigator(Player, this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->KnockBackTargetDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
+		if (EffectSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Monster->GetAbilitySystemComponent());
+		}
+	}
+}
+
+void ALLL_MonsterBase::DamageKnockBackCauser(ALLL_PlayerBase* Player)
+{
+	if (!KnockBackCauserDamaged)
+	{
+		KnockBackCauserDamaged = true;
+		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+		
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		EffectContextHandle.AddInstigator(Player, this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->KnockBackCauserDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
+		if (EffectSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
 	}
 }
 

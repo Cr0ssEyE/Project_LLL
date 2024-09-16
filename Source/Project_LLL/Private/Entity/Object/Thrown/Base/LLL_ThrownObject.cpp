@@ -126,13 +126,13 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 		if (Cast<ALLL_MonsterBase>(OwnerCharacter))
 		{
 			const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(OwnerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-			OffencePower = MonsterAttributeSet->GetOffensePower();
+			OffencePower = MonsterAttributeSet->GetOffencePower();
 		}
 		else if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerCharacter))
 		{
 			const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(OwnerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 			OffencePower = AbilityData->AbilityValue2 * AbilityLevel / static_cast<uint32>(AbilityData->Value2Type);
-			OffencePower += PlayerCharacterAttributeSet->GetOffensePower() - Player->GetOriginOffencePower();
+			OffencePower += PlayerCharacterAttributeSet->GetOffencePower() - Player->GetOriginOffencePower();
 
 			UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 			if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
@@ -177,7 +177,7 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
-		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, OwnerCharacter->GetCharacterLevel(), EffectContextHandle);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, OwnerCharacter->GetAbilityLevel(), EffectContextHandle);
 		if (EffectSpecHandle.IsValid())
 		{
 			FVector Direction = (Other->GetActorLocation() - OwnerCharacter->GetActorLocation()).GetSafeNormal2D();

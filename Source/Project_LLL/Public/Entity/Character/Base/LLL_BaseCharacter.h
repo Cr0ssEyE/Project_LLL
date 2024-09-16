@@ -44,7 +44,7 @@ public:
 	
 	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
 	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
-	FORCEINLINE float GetCharacterLevel() const { return Level; }
+	FORCEINLINE float GetAbilityLevel() const { return Level; }
 	FORCEINLINE FVector GetLastCollideLocation() const { return LastCollideLocation; }
 	
 protected:
