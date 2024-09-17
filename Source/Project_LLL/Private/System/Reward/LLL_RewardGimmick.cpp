@@ -29,14 +29,10 @@ ALLL_RewardGimmick::ALLL_RewardGimmick() :
 	CurrentAbilityData(nullptr),
 	bIsButtonEventSetup(false),
 	bMapGimmickIsExist(false),
-	bIsTest(false),
-	TestAbilityDataID1(110001),
-	TestAbilityDataID2(110002),
-	TestAbilityDataID3(110003)
+	bIsTest(false)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	
 }
 
 // Called when the game starts or when spawned
@@ -50,6 +46,18 @@ void ALLL_RewardGimmick::BeginPlay()
 			SetRewardButtons();
 		}
 	}));
+
+	if (bIsTest && TestAbilityDataID.IsEmpty())
+	{
+		FTestAbilityDataID TempTestAbilityDataID;
+		TempTestAbilityDataID.TestAbilityDataID1 = 11001;
+		TempTestAbilityDataID.TestAbilityDataID2 = 11002;
+		TempTestAbilityDataID.TestAbilityDataID3 = 11003;
+
+		TestAbilityDataID.Emplace(TempTestAbilityDataID);
+	}
+
+	Cast<ULLL_GameInstance>(GetGameInstance())->RewardGimmick = this;
 }
 
 // Called every frame
@@ -106,12 +114,29 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	{
 		for (auto Data : AbilityData)
 		{
-			if (Data->ID == TestAbilityDataID1 || Data->ID == TestAbilityDataID2 || Data->ID == TestAbilityDataID3)
+			int32 Index = RewardWidget->Num - 1;
+			if (Index >= TestAbilityDataID.Num() || Index == -1)
+			{
+				Index = 0;
+			}
+
+			const int32 ID1 = TestAbilityDataID[Index].TestAbilityDataID1;
+			const int32 ID2 = TestAbilityDataID[Index].TestAbilityDataID2;
+			const int32 ID3 = TestAbilityDataID[Index].TestAbilityDataID3;
+			
+			if (Data->ID == ID1 || Data->ID == ID2 || Data->ID == ID3)
 			{
 				ButtonAbilityDataArray.Emplace(Data);
 			}
 		}
+		
 		RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
+
+		ButtonAbilityData1 = ButtonAbilityDataArray[0];
+		ButtonAbilityData2 = ButtonAbilityDataArray[1];
+		ButtonAbilityData3 = ButtonAbilityDataArray[2];
+		
+		ButtonAbilityDataArray.Empty();
 		return;
 	}
 
@@ -139,6 +164,12 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	}
 
 	RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
+
+	ButtonAbilityData1 = ButtonAbilityDataArray[0];
+	ButtonAbilityData2 = ButtonAbilityDataArray[1];
+	ButtonAbilityData3 = ButtonAbilityDataArray[2];
+
+	ButtonAbilityDataArray.Empty();
 }
 
 void ALLL_RewardGimmick::SetDataTable()
@@ -247,47 +278,20 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 
 void ALLL_RewardGimmick::ClickFirstButton()
 {
-	if (ButtonAbilityDataArray.IsEmpty())
-	{
-		return;
-	}
-	
-	ClickButtonEvent(ButtonAbilityDataArray[0]);
-	GottenAbilityArray.Emplace(ButtonAbilityDataArray[0]);
-	if (!bIsTest)
-	{
-		ButtonAbilityDataArray.Empty();
-	}
+	ClickButtonEvent(ButtonAbilityData1);
+	GottenAbilityArray.Emplace(ButtonAbilityData1);
 }
 
 void ALLL_RewardGimmick::ClickSecondButton()
 {
-	if (ButtonAbilityDataArray.IsEmpty())
-	{
-		return;
-	}
-	
-	ClickButtonEvent(ButtonAbilityDataArray[1]);
-	GottenAbilityArray.Emplace(ButtonAbilityDataArray[1]);
-	if (!bIsTest)
-	{
-		ButtonAbilityDataArray.Empty();
-	}
+	ClickButtonEvent(ButtonAbilityData2);
+	GottenAbilityArray.Emplace(ButtonAbilityData2);
 }
 
 void ALLL_RewardGimmick::ClickThirdButton()
 {
-	if (ButtonAbilityDataArray.IsEmpty())
-	{
-		return;
-	}
-	
-	ClickButtonEvent(ButtonAbilityDataArray[2]);
-	GottenAbilityArray.Emplace(ButtonAbilityDataArray[2]);
-	if (!bIsTest)
-	{
-		ButtonAbilityDataArray.Empty();
-	}
+	ClickButtonEvent(ButtonAbilityData3);
+	GottenAbilityArray.Emplace(ButtonAbilityData3);
 }
 
 void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbilityData)

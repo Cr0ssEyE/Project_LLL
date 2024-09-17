@@ -28,5 +28,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	EAbilityCategory AbilityCategory;
 
-	
+	UPROPERTY(EditAnywhere)
+	int32 Num;
 };

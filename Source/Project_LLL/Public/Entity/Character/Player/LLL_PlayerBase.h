@@ -57,10 +57,6 @@ public:
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
 	void CharacterUnDissolveBegin();
-	
-	void StartChargeFeather(float Timer);
-	void AddRangeFeatherTargets(AActor* Target);
-	TArray<AActor*> GetRangeFeatherTargetsAndClear();
 
 public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
@@ -110,7 +106,10 @@ public:
 	FORCEINLINE void SetIncreaseKnockBackDamageByEnuriaCountDamageRate(const float InIncreaseKnockBackDamageByEnuriaCountDamageRate) { IncreaseKnockBackDamageByEnuriaCountDamageRate = InIncreaseKnockBackDamageByEnuriaCountDamageRate; }
 	FORCEINLINE void SetRangeKnockBackKnockBackPower(const float InRangeKnockBackKnockBackPower) { RangeKnockBackKnockBackPower = InRangeKnockBackKnockBackPower; }
 	FORCEINLINE void SetVampireRecoveryRate(const float InVampireRecoveryRate) { VampireRecoveryRate = InVampireRecoveryRate; }
-	
+
+	void StartChargeFeather(float Timer);
+	void AddRangeFeatherTargets(AActor* Target);
+	TArray<AActor*> GetRangeFeatherTargetsAndClear();
 	void VampireRecovery(float OffencePower) const;
 
 public:

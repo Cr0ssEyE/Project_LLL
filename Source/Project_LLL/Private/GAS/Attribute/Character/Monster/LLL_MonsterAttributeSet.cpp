@@ -13,6 +13,11 @@
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 
+ULLL_MonsterAttributeSet::ULLL_MonsterAttributeSet()
+{
+	
+}
+
 bool ULLL_MonsterAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
 {
 	bool Result = Super::PreGameplayEffectExecute(Data);

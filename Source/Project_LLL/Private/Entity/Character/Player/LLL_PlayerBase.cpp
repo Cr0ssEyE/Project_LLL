@@ -274,33 +274,28 @@ void ALLL_PlayerBase::RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObje
 	}
 }
 
-void ALLL_PlayerBase::StartChargeFeather(float Timer)
+void ALLL_PlayerBase::CharacterUnDissolveBegin()
 {
-	ChargedFeatherCount = 0;
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
-	GetWorldTimerManager().ClearTimer(ChargeFeatherTimerHandle);
-	GetWorldTimerManager().SetTimer(ChargeFeatherTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
-		ChargedFeatherCount++;
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
-		// Todo : 추후 데이터화 예정
-		if (ChargedFeatherCount == 10)
-		{
-			GetWorldTimerManager().PauseTimer(ChargeFeatherTimerHandle);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 완료")));
-		}
-	}), Timer, true);
-}
+	if (GetMesh()->bHiddenInGame || IsHidden())
+	{
+		SetActorHiddenInGame(false);
+		GetMesh()->SetHiddenInGame(false);
+	}
+	
+	if (!IsValid(CharacterDissolveActor))
+	{
+		CharacterDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->CharacterDissolveActor, GetTransform());
+	}
+	else
+	{
+		CharacterDissolveActor->SetActorTransform(GetTransform());
+	}
+	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() + GetMesh()->GetRelativeLocation().Z);
 
-void ALLL_PlayerBase::AddRangeFeatherTargets(AActor* Target)
-{
-	RangeFeatherTargets.Emplace(Target);
-}
-
-TArray<AActor*> ALLL_PlayerBase::GetRangeFeatherTargetsAndClear()
-{
-	TArray<AActor*> TempRangeFeatherTargets = RangeFeatherTargets;
-	RangeFeatherTargets.Empty();
-	return TempRangeFeatherTargets;
+	UMaterialParameterCollection* PlayerMPC = GetGameInstance<ULLL_GameInstance>()->GetPlayerMPC();
+	GetWorld()->GetParameterCollectionInstance(PlayerMPC)->SetScalarParameterValue(PLAYER_CHARACTER_DISSOLVE, 1.f);
+	
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PullUpDissolveActor);
 }
 
 FVector ALLL_PlayerBase::CheckMouseLocation()
@@ -531,6 +526,35 @@ int32 ALLL_PlayerBase::GetEnuriaCount() const
 	return AllowEffectHandles.Num() + DenyEffectHandles.Num();
 }
 
+void ALLL_PlayerBase::StartChargeFeather(float Timer)
+{
+	ChargedFeatherCount = 0;
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
+	GetWorldTimerManager().ClearTimer(ChargeFeatherTimerHandle);
+	GetWorldTimerManager().SetTimer(ChargeFeatherTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		ChargedFeatherCount++;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
+		// Todo : 추후 데이터화 예정
+		if (ChargedFeatherCount == 10)
+		{
+			GetWorldTimerManager().PauseTimer(ChargeFeatherTimerHandle);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 완료")));
+		}
+	}), Timer, true);
+}
+
+void ALLL_PlayerBase::AddRangeFeatherTargets(AActor* Target)
+{
+	RangeFeatherTargets.Emplace(Target);
+}
+
+TArray<AActor*> ALLL_PlayerBase::GetRangeFeatherTargetsAndClear()
+{
+	TArray<AActor*> TempRangeFeatherTargets = RangeFeatherTargets;
+	RangeFeatherTargets.Empty();
+	return TempRangeFeatherTargets;
+}
+
 void ALLL_PlayerBase::VampireRecovery(float OffencePower) const
 {
 	OffencePower *= VampireRecoveryRate;
@@ -709,30 +733,6 @@ void ALLL_PlayerBase::DropDissolveActor()
 	
 	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
-}
-
-void ALLL_PlayerBase::CharacterUnDissolveBegin()
-{
-	if (GetMesh()->bHiddenInGame || IsHidden())
-	{
-		SetActorHiddenInGame(false);
-		GetMesh()->SetHiddenInGame(false);
-	}
-	
-	if (!IsValid(CharacterDissolveActor))
-	{
-		CharacterDissolveActor = GetWorld()->SpawnActor<AActor>(PlayerDataAsset->CharacterDissolveActor, GetTransform());
-	}
-	else
-	{
-		CharacterDissolveActor->SetActorTransform(GetTransform());
-	}
-	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() + GetMesh()->GetRelativeLocation().Z);
-
-	UMaterialParameterCollection* PlayerMPC = GetGameInstance<ULLL_GameInstance>()->GetPlayerMPC();
-	GetWorld()->GetParameterCollectionInstance(PlayerMPC)->SetScalarParameterValue(PLAYER_CHARACTER_DISSOLVE, 1.f);
-	
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::PullUpDissolveActor);
 }
 
 void ALLL_PlayerBase::PullUpDissolveActor()
