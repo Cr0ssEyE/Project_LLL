@@ -26,11 +26,13 @@ public:
 	
 	FORCEINLINE void SetCharging(const bool IsCharging) { bIsCharging = IsCharging; }
 	FORCEINLINE void SetKnockBackSender(ALLL_MonsterBase* InKnockBackSender) { KnockBackSender = InKnockBackSender; }
+	FORCEINLINE void SetBleedingStack(const int32 InBleedingStack) { BleedingStack = InBleedingStack; }
 	
 	FORCEINLINE virtual float GetKnockBackedPower() const override { return bIsKnockBacking ? LastKnockBackPower : 0.0f; }
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
 	FORCEINLINE int32 GetId() const { return Id; }
 	FORCEINLINE bool IsKnockBacking() const { return bIsKnockBacking; }
+	FORCEINLINE int32 GetBleedingStack() const { return BleedingStack; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -79,6 +81,7 @@ protected:
 	TObjectPtr<ALLL_MonsterBase> KnockBackSender;
 	uint8 KnockBackTargetDamaged : 1;
 	uint8 KnockBackCauserDamaged : 1;
+	int32 BleedingStack;
 	
 public:
 	UFUNCTION()
@@ -89,14 +92,14 @@ public:
 
 	// 이펙트 관련
 public:
-	void UpdateMarkVFX(uint8 NewCount = 0, uint8 MaxCount = 0);
+	void UpdateStackVFX(uint8 NewCount = 0, uint8 MaxCount = 0);
 	void UpdateBleedingVFX(bool ActiveState = true);
 	void UpdateMonsterHitVFX();
 	
 	// 이펙트 관련
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UNiagaraComponent> MarkVFXComponent;
+	TObjectPtr<UNiagaraComponent> StackVFXComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UNiagaraComponent> BleedingVFXComponent;

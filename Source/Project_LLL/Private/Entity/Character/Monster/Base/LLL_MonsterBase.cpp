@@ -60,9 +60,9 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	MaskMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	MaskMeshComponent->SetupAttachment(RootComponent);
 
-	MarkVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MarkStatusEffect"));
-	MarkVFXComponent->SetupAttachment(RootComponent);
-	MarkVFXComponent->SetAutoActivate(false);
+	StackVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("StackStatusEffect"));
+	StackVFXComponent->SetupAttachment(RootComponent);
+	StackVFXComponent->SetAutoActivate(false);
 
 	BleedingVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BleedingStatusEffect"));
 	BleedingVFXComponent->SetupAttachment(RootComponent);
@@ -96,11 +96,11 @@ void ALLL_MonsterBase::BeginPlay()
 	MaskMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, MonsterBaseDataAsset->MaskAttachSocketName);
 	MaskMeshComponent->SetRelativeTransform(MonsterBaseDataAsset->MaskTransform);
 
-	UNiagaraSystem* MarkCountNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->MarkCountNiagaraSystem;
-	if (IsValid(MarkCountNiagaraSystem))
+	UNiagaraSystem* StackCountNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->StackCountNiagaraSystem;
+	if (IsValid(StackCountNiagaraSystem))
 	{
-		MarkVFXComponent->SetAsset(MarkCountNiagaraSystem);
-		MarkVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_OVERHEAD);
+		StackVFXComponent->SetAsset(StackCountNiagaraSystem);
+		StackVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_OVERHEAD);
 	}
 
 	UNiagaraSystem* BleedingNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->BleedingNiagaraSystem;
@@ -129,8 +129,7 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 	if (bIsKnockBacking)
 	{
 		FVector VelocityWithKnockBack = GetVelocity();
-		UE_LOG(LogTemp, Log, TEXT("%s의 넉백 중 벨로시티 : %f %f %f, 넉백 체크 시작 : %d"), *GetName(), VelocityWithKnockBack.X, VelocityWithKnockBack.Y, VelocityWithKnockBack.Z, StartKnockBackVelocity)
-
+		
 		// 넉백 끝났을때 처리
 		bool IsMoving = CastChecked<ALLL_MonsterBaseAIController>(GetController())->GetPathFollowingComponent()->GetStatus() == EPathFollowingStatus::Moving;
 		if ((VelocityWithKnockBack == FVector::ZeroVector || IsMoving) && StartKnockBackVelocity)
@@ -426,7 +425,7 @@ void ALLL_MonsterBase::Dead()
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 	BleedingVFXComponent->SetHiddenInGame(true);
-	MarkVFXComponent->SetHiddenInGame(true);
+	StackVFXComponent->SetHiddenInGame(true);
 	
 	RecognizePlayerToAroundMonster();
 
@@ -454,6 +453,10 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 		bIsKnockBacking = true;
 		LastKnockBackVelocity = KnockBackVelocity;
 		LastKnockBackPower = KnockBackPower;
+		
+		CharacterAnimInstance->StopAllMontages(1.0f);
+		const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
+		MonsterBaseAIController->StopLogic("Monster Is Fallable");
 		return;
 	}
 	
@@ -669,7 +672,7 @@ void ALLL_MonsterBase::OwnerCharacterDeadHandle(ALLL_BaseCharacter* Character)
 	CastChecked<ALLL_MonsterBaseAIController>(GetController())->StartLogic();
 }
 
-void ALLL_MonsterBase::UpdateMarkVFX(uint8 NewCount, uint8 MaxCount)
+void ALLL_MonsterBase::UpdateStackVFX(uint8 NewCount, uint8 MaxCount)
 {
 	if (NewCount > MaxCount)
 	{
@@ -678,17 +681,17 @@ void ALLL_MonsterBase::UpdateMarkVFX(uint8 NewCount, uint8 MaxCount)
 
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("표식 값 갱신: %d"), NewCount));
 
-	MarkVFXComponent->SetFloatParameter(NS_MARK_COUNT, FMath::Max(NewCount - 1.f, 0.f));
+	StackVFXComponent->SetFloatParameter(NS_MARK_COUNT, FMath::Max(NewCount - 1.f, 0.f));
 	
 	if (NewCount > 0)
 	{
-		MarkVFXComponent->ActivateSystem();
-		MarkVFXComponent->SetVisibility(true);
+		StackVFXComponent->ActivateSystem();
+		StackVFXComponent->SetVisibility(true);
 	}
 	else
 	{
-		MarkVFXComponent->Deactivate();
-		MarkVFXComponent->SetVisibility(false);
+		StackVFXComponent->Deactivate();
+		StackVFXComponent->SetVisibility(false);
 	}
 	
 }

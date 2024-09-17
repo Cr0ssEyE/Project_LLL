@@ -83,23 +83,29 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 
 void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data)
 {
-	float Damage = Data.EvaluatedData.Magnitude;
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (!IsValid(Player))
+	if (Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration)
 	{
-		return;
-	}
-
-	Damage += Player->GetPlusOffencePower();
+		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 	
-	UE_LOG(LogTemp, Log, TEXT("%s의 출혈 데미지 : %f"), *GetOwningActor()->GetName(), Damage)
-	Data.EvaluatedData.Magnitude = Damage;
+		float Damage = Data.EvaluatedData.Magnitude;
+		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		if (!IsValid(Player))
+		{
+			return;
+		}
 
-	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		Damage *= Monster->GetBleedingStack();
+		Damage += Player->GetPlusOffencePower();
+	
+		UE_LOG(LogTemp, Log, TEXT("%s의 출혈 데미지 : %f"), *Monster->GetName(), Damage)
+		Data.EvaluatedData.Magnitude = Damage;
 
-	// 피의 갈증 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_VAMPIRE))
-	{
-		Player->VampireRecovery(Damage);
+		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+
+		// 피의 갈증 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_VAMPIRE))
+		{
+			Player->VampireRecovery(Damage);
+		}
 	}
 }

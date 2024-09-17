@@ -72,6 +72,14 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		}
 #endif
 	}
+
+	if (Data.EvaluatedData.Attribute == GetCurrentHealthAttribute())
+	{
+		if (GetCurrentHealth() > GetMaxHealth())
+		{
+			SetCurrentHealth(GetMaxHealth());
+		}
+	}
 	
 	Super::PostGameplayEffectExecute(Data);
 }
