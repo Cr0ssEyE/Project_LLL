@@ -131,6 +131,7 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 		FVector VelocityWithKnockBack = GetVelocity();
 		UE_LOG(LogTemp, Log, TEXT("%s의 넉백 중 벨로시티 : %f %f %f, 넉백 체크 시작 : %d"), *GetName(), VelocityWithKnockBack.X, VelocityWithKnockBack.Y, VelocityWithKnockBack.Z, StartKnockBackVelocity)
 
+		// 넉백 끝났을때 처리
 		bool IsMoving = CastChecked<ALLL_MonsterBaseAIController>(GetController())->GetPathFollowingComponent()->GetStatus() == EPathFollowingStatus::Moving;
 		if ((VelocityWithKnockBack == FVector::ZeroVector || IsMoving) && StartKnockBackVelocity)
 		{
@@ -204,13 +205,14 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
+	// 몬스터가 날아가다 부딪혔을때 처리
 	UCharacterMovementComponent* CharacterMovementComponent = CastChecked<UCharacterMovementComponent>(GetMovementComponent());
 	if (CharacterMovementComponent->MovementMode == MOVE_Flying)
 	{
 		CharacterMovementComponent->MovementMode = MOVE_Walking;
 		GetMesh()->SetCollisionProfileName(CP_MONSTER);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
-	
+
 		const ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(GetOwner());
 		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Other);
 		if (IsValid(ManOfStrength) && IsValid(Player))
@@ -231,7 +233,10 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 		}
 		
 		SetOwner(nullptr);
-		CastChecked<ALLL_MonsterBaseAIController>(GetController())->StartLogic();
+		if (!CheckCharacterIsDead())
+		{
+			CastChecked<ALLL_MonsterBaseAIController>(GetController())->StartLogic();
+		}
 	}
 
 	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
@@ -247,6 +252,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 			{
 				DamageKnockBackCauser(Player);
 
+				// 리바운드 이누리아
 				if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DEFLECT_BY_WALL) && DeflectCount < Player->GetDeflectCount())
 				{
 					// 반사 벡터 구하기
@@ -264,7 +270,8 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 		{
 			DamageKnockBackTarget(Player, OtherMonster);
 			DamageKnockBackCauser(Player);
-			
+
+			// 연쇄 작용 이누리아
 			if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION) && (!IsValid(KnockBackSender) || OtherMonster != KnockBackSender) && !OtherMonster->IsKnockBacking())
 			{
 				FVector Direction = (OtherMonster->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
@@ -437,8 +444,9 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 	const float DecreaseVelocityByWeight = FMath::Max(0.f, (MonsterAttributeSet->GetWeight() - 1) * GetGameInstance<ULLL_GameInstance>()->GetGlobalParametersDataAsset()->DecreaseVelocityPerWeight);
 	KnockBackVelocity *= 1 - DecreaseVelocityByWeight;
 	KnockBackPower *= 1 - DecreaseVelocityByWeight;
-	
 	KnockBackVelocity.Z = 0.f;
+
+	// 낙사 넉백일때 처리
 	if (KnockBackPower < 0.f)
 	{
 		LaunchCharacter(KnockBackVelocity, true, true);
@@ -453,6 +461,7 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 	if (IsValid(Player))
 	{
 		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		// 넘치는 힘 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
 		{
 			CustomTimeDilation = 1 + Player->GetFasterKnockBackSpeedRate();

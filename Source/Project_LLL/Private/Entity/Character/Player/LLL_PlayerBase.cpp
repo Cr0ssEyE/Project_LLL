@@ -79,6 +79,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	LastCheckedMouseLocation = FVector::Zero();
 	bIsLowHP = false;
 	FeatherSpawnStartTime = 0.01f;
+	bCanSkill = true;
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -426,17 +427,13 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 	}
 }
 
-void ALLL_PlayerBase::ChaseAction(const FInputActionValue& Value, EAbilityInputName InputName)
-{
-	const int32 InputID = static_cast<int32>(InputName);
-	if(const FGameplayAbilitySpec* ChaseSpec = ASC->FindAbilitySpecFromInputID(InputID))
-	{
-		ASC->TryActivateAbility(ChaseSpec->Handle);
-	}
-}
-
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
+	if (!bCanSkill)
+	{
+		return;
+	}
+	
 	const int32 InputID = static_cast<int32>(InputName);
 	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
@@ -450,6 +447,12 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 			ASC->TryActivateAbility(SkillSpec->Handle);
 		}
 	}
+
+	bCanSkill = false;
+	FTimerHandle SkillCoolTimeTimerHandle;
+	GetWorldTimerManager().SetTimer(SkillCoolTimeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		bCanSkill = true;
+	}), SkillCoolTime, false);
 }
 
 void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)

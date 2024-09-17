@@ -83,6 +83,7 @@ void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpee
 	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerCharacter))
 	{
 		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		// 맹렬한 공세 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
 		{
 			OffencePower *= Player->GetQuadrupleHitDamageRate();
@@ -101,7 +102,8 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 		FVector Direction = (Other->GetActorLocation() - Player->GetActorLocation()).GetSafeNormal2D();
 		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-				
+
+		// 맹렬한 공세 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
 		{
 			float HitCount = 4;

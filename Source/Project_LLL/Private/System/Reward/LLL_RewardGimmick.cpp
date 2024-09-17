@@ -190,8 +190,10 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 			{
 				for (const auto GottenReward : GottenAbilityArray)
 				{
+					// 이미 얻은 이누리아일 경우
 					if (Reward.Key->AbilityName == GottenReward->AbilityName)
 					{
+						// 중첩 이누리아가 아닐 경우
 						if (Reward.Key->TagID[0] != '1')
 						{
 							IsNotValidReward = true;
@@ -199,12 +201,11 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 						}
 					}
 
-					// 획득 조건 체크
+					// 획득 조건이 필요한 이누리아일 경우
 					if (Reward.Key->RequireCategory == EAbilityCategory::Null)
 					{
 						continue;
 					}
-
 					IsNotValidReward = false;
 					if (Reward.Key->RequireCategory == GottenReward->AbilityCategory)
 					{
@@ -407,9 +408,11 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 					Cast<ULLL_PGA_RewardAbilityBase>(Spec->GetPrimaryInstance())->SetAbilityInfo(CurrentAbilityData);
 					UE_LOG(LogTemp, Log, TEXT("스펙에 접근해서 값 바꾸기 시도"));
 
+					// 사용 타입 이누리아 처리
 					if (CurrentAbilityData->TagID[1] == '1')
 					{
 						Spec->InputID = static_cast<int32>(EAbilityInputName::Skill);
+						Player->SetSkillCoolTime(CurrentAbilityData->AbilityCooldown);
 					}
 				}
 			}

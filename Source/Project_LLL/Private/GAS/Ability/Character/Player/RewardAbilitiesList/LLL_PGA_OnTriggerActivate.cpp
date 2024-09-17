@@ -150,9 +150,8 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 				continue;
 			}
 
-			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(ASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-			
 			const ULLL_GE_GiveAbilityComponent* GiveAbilityComponent = CastChecked<ULLL_GE_GiveAbilityComponent>(ActiveEffect->FindComponent(ULLL_GE_GiveAbilityComponent::StaticClass()));
+			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(ASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 			for (auto AbilitySpecConfig : const_cast<ULLL_GE_GiveAbilityComponent*>(GiveAbilityComponent)->GetAbilitySpecConfigs())
 			{
 				if (FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(AbilitySpecConfig.Ability))
@@ -161,16 +160,19 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 					{
 						continue;
 					}
-					
+
+					// 깃털 연발 이누리아
 					if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
 					{
 						SpawnCount = Player->GetChargedFeatherCount();
 						Player->StartChargeFeather(AbilityData->AbilityValue1);
 					}
+					// 화려한 등장 이누리아
 					else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_RANGED_FEATHER))
 					{
 						SpawnCount = 1;
 					}
+					// 접근 금지 이누리아
 					else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CIRCULAR_FEATHER))
 					{
 						SpawnCount = AbilityData->AbilityValue1;
