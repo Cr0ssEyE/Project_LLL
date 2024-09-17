@@ -190,15 +190,15 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 			{
 				for (const auto GottenReward : GottenAbilityArray)
 				{
-					// 이미 얻은 이누리아일 경우
+					// 중첩 이누리아일 경우
+					if (Reward.Key->TagID[0] == '1')
+					{
+						break;
+					}
 					if (Reward.Key->AbilityName == GottenReward->AbilityName)
 					{
-						// 중첩 이누리아가 아닐 경우
-						if (Reward.Key->TagID[0] != '1')
-						{
-							IsNotValidReward = true;
-							break;
-						}
+						IsNotValidReward = true;
+						break;
 					}
 
 					// 획득 조건이 필요한 이누리아일 경우
@@ -206,10 +206,10 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 					{
 						continue;
 					}
-					IsNotValidReward = false;
+					IsNotValidReward = true;
 					if (Reward.Key->RequireCategory == GottenReward->AbilityCategory)
 					{
-						IsNotValidReward = true;
+						IsNotValidReward = false;
 						break;
 					}
 				}
