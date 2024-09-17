@@ -80,6 +80,8 @@ public:
 	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
 	void StartCameraMoveToCursor(ALLL_PlayerController* PlayerController = nullptr);
 	void PauseCameraMoveToCursor();
+	float GetPlusOffencePower() const;
+	float GetPlusKnockBackPower() const;
 	
 	int32 GetEnuriaCount() const;
 
@@ -87,8 +89,8 @@ public:
 	// 이누리아 관련 함수
 	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
 	FORCEINLINE float GetFeatherSpawnStartTime() const { return FeatherSpawnStartTime; }
-	FORCEINLINE float GetOriginKnockBackPower() const { return originKnockBackPower; }
-	FORCEINLINE float GetOriginOffencePower() const { return originOffencePower; }
+	FORCEINLINE float GetOriginKnockBackPower() const { return OriginKnockBackPower; }
+	FORCEINLINE float GetOriginOffencePower() const { return OriginOffencePower; }
 	FORCEINLINE int32 GetDeflectCount() const { return DeflectCount; }
 	FORCEINLINE float GetKnockBackTransmissionOffencePower() const { return KnockBackTransmissionOffencePower; }
 	FORCEINLINE float GetKnockBackTransmissionKnockBackPower() const { return KnockBackTransmissionKnockBackPower; }
@@ -107,6 +109,9 @@ public:
 	FORCEINLINE void SetFasterKnockBackSpeedRate(const float InFasterKnockBackRate) { FasterKnockBackSpeedRate = InFasterKnockBackRate; }
 	FORCEINLINE void SetIncreaseKnockBackDamageByEnuriaCountDamageRate(const float InIncreaseKnockBackDamageByEnuriaCountDamageRate) { IncreaseKnockBackDamageByEnuriaCountDamageRate = InIncreaseKnockBackDamageByEnuriaCountDamageRate; }
 	FORCEINLINE void SetRangeKnockBackKnockBackPower(const float InRangeKnockBackKnockBackPower) { RangeKnockBackKnockBackPower = InRangeKnockBackKnockBackPower; }
+	FORCEINLINE void SetVampireRecoveryRate(const float InVampireRecoveryRate) { VampireRecoveryRate = InVampireRecoveryRate; }
+	
+	void VampireRecovery(float OffencePower) const;
 
 public:
 	FDissolveCompleteDelegate DissolveCompleteDelegate;
@@ -181,8 +186,8 @@ private:
 	FTimerHandle ChargeFeatherTimerHandle;
 	TArray<TObjectPtr<AActor>> RangeFeatherTargets;
 	float FeatherSpawnStartTime;
-	float originKnockBackPower;
-	float originOffencePower;
+	float OriginKnockBackPower;
+	float OriginOffencePower;
 	int32 DeflectCount;
 	float KnockBackTransmissionOffencePower;
 	float KnockBackTransmissionKnockBackPower;
@@ -191,6 +196,7 @@ private:
 	float FasterKnockBackSpeedRate;
 	float IncreaseKnockBackDamageByEnuriaCountDamageRate;
 	float RangeKnockBackKnockBackPower;
+	float VampireRecoveryRate;
 
 	// 상태 관련 함수
 protected:

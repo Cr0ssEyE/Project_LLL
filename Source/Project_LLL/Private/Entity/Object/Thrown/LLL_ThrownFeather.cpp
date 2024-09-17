@@ -4,7 +4,6 @@
 #include "Entity/Object/Thrown/LLL_ThrownFeather.h"
 
 #include "Components/BoxComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -83,10 +82,13 @@ void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpee
 	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerCharacter))
 	{
 		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		
 		// 맹렬한 공세 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
 		{
+			OffencePower -= Player->GetPlusOffencePower();
 			OffencePower *= Player->GetQuadrupleHitDamageRate();
+			OffencePower += Player->GetPlusOffencePower();
 		}
 	}
 }
@@ -123,7 +125,7 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 						if (i == HitCount - 2)
 						{
 							KnockBackPower = Player->GetQuadrupleHitKnockBackPower();
-							KnockBackPower += PlayerAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
+							KnockBackPower += Player->GetPlusKnockBackPower();
 							KnockBackTarget(Direction, Other);
 						}
 					}

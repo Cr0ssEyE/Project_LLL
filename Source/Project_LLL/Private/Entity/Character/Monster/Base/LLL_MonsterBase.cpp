@@ -461,6 +461,7 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 	if (IsValid(Player))
 	{
 		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		
 		// 넘치는 힘 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
 		{

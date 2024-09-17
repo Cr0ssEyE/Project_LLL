@@ -61,6 +61,10 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		{
 			Player->SetIncreaseKnockBackDamageByEnuriaCountDamageRate(Value1);
 		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_VAMPIRE))
+		{
+			Player->SetVampireRecoveryRate(Value1);
+		}
 	}
 	
 	return Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);

@@ -151,7 +151,6 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 			}
 
 			const ULLL_GE_GiveAbilityComponent* GiveAbilityComponent = CastChecked<ULLL_GE_GiveAbilityComponent>(ActiveEffect->FindComponent(ULLL_GE_GiveAbilityComponent::StaticClass()));
-			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(ASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 			for (auto AbilitySpecConfig : const_cast<ULLL_GE_GiveAbilityComponent*>(GiveAbilityComponent)->GetAbilitySpecConfigs())
 			{
 				if (FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(AbilitySpecConfig.Ability))
@@ -179,7 +178,7 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 						ThrowCircular = true;
 						Straight = true;
 						KnockBackPower = AbilityData->KnockBackPower;
-						KnockBackPower += PlayerAttributeSet->GetKnockBackPower() - Player->GetOriginKnockBackPower();
+						KnockBackPower += Player->GetPlusKnockBackPower();
 					}
 				}
 			}

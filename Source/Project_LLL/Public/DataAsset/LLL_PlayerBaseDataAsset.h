@@ -109,15 +109,20 @@ public:
 	float HPLowScalarLowValue;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "연쇄 작용 이누리아 데미지 이펙트")
-	TSubclassOf<UGameplayEffect> KnockBackTransmissionDamageEffect;
-
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "맹렬한 공세 이누리아 데미지 타임 오프셋")
-	float QuadrupleHitHitOffsetTime;
-
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "넉백된 대상이 받는 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> KnockBackCauserDamageEffect;
 
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "넉백된 대상과 충돌한 대상이 받는 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> KnockBackTargetDamageEffect;
+
+	// 이누리아 관련
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "연쇄 작용 이누리아 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> KnockBackTransmissionDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "맹렬한 공세 이누리아 데미지 타임 오프셋")
+	float QuadrupleHitHitOffsetTime;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "피의 갈증 이누리아 회복 이펙트")
+	TSubclassOf<UGameplayEffect> VampireRecoveryEffect;
 };

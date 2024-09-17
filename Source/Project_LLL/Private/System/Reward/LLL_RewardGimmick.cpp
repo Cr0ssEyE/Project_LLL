@@ -367,7 +367,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 				continue;
 			}
 				
-			if (CurrentAbilityData->TagID[1] == ActiveEffect->GetAbilityData()->TagID[1])
+			if (CurrentAbilityData->TagID[1] == '1')
 			{
 				ASC->RemoveActiveGameplayEffect(EffectHandle);
 				UE_LOG(LogTemp, Log, TEXT("사용 타입 이펙트 삭제"));

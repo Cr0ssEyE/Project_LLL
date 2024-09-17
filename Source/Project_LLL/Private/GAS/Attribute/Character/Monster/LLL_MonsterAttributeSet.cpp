@@ -13,12 +13,6 @@
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 
-ULLL_MonsterAttributeSet::ULLL_MonsterAttributeSet() :
-	Weight(1)
-{
-	
-}
-
 bool ULLL_MonsterAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
 {
 	bool Result = Super::PreGameplayEffectExecute(Data);
@@ -85,17 +79,22 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data)
 {
 	float Damage = Data.EvaluatedData.Magnitude;
-	const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (!IsValid(PlayerCharacter))
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (!IsValid(Player))
 	{
-		return;
-	}
-	
-	if (Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration)
-	{
-		Data.EvaluatedData.Magnitude = Damage;
 		return;
 	}
 
+	Damage += Player->GetPlusOffencePower();
+	
+	UE_LOG(LogTemp, Log, TEXT("%s의 출혈 데미지 : %f"), *GetOwningActor()->GetName(), Damage)
 	Data.EvaluatedData.Magnitude = Damage;
+
+	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+
+	// 피의 갈증 이누리아
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_VAMPIRE))
+	{
+		Player->VampireRecovery(Damage);
+	}
 }

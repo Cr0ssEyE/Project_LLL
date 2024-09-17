@@ -34,7 +34,5 @@ protected:
 	
 protected:
 	FTimerHandle MarkTimerHandle;
-
 	FTimerHandle BleedingTimerHandle;
-	
 };
