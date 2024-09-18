@@ -78,18 +78,24 @@ void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpee
 {
 	Super::Throw(NewOwner, NewTarget, InSpeed, Straight, InKnockBackPower);
 
-	ALLL_BaseCharacter* OwnerCharacter = Cast<ALLL_BaseCharacter>(GetOwner());
-	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerCharacter))
+	if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
 	{
-		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		OffencePower = AbilityData->AbilityValue2 * AbilityLevel / static_cast<uint32>(AbilityData->Value2Type);
+		OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
+		OffencePower *= PlayerAttributeSet->GetFeatherOffencePowerRate();
 		
 		// 맹렬한 공세 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
 		{
-			OffencePower -= Player->GetPlusOffencePower();
 			OffencePower *= Player->GetQuadrupleHitDamageRate();
-			OffencePower += Player->GetPlusOffencePower();
 		}
+		OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+		OffencePower += PlayerAttributeSet->GetFeatherOffencePowerPlus();
+
+		KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
+		KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
 	}
 }
 
@@ -102,7 +108,8 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	if (IsValid(Player) && AbilitySystemInterface)
 	{
 		FVector Direction = (Other->GetActorLocation() - Player->GetActorLocation()).GetSafeNormal2D();
-		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 		// 맹렬한 공세 이누리아
@@ -125,7 +132,9 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 						if (i == HitCount - 2)
 						{
 							KnockBackPower = Player->GetQuadrupleHitKnockBackPower();
-							KnockBackPower += Player->GetPlusKnockBackPower();
+							KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
+							KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+							
 							KnockBackTarget(Direction, Other);
 						}
 					}

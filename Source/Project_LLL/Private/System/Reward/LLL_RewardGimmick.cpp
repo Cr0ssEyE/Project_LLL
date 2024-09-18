@@ -382,19 +382,6 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		float MagnitudeValue1 = CurrentAbilityData->AbilityValue1 / static_cast<uint32>(CurrentAbilityData->Value1Type);
 		float MagnitudeValue2 = CurrentAbilityData->AbilityValue2 / static_cast<uint32>(CurrentAbilityData->Value2Type);
 		
-		if (!EffectSpecHandle.Data->Def->Modifiers.IsEmpty())
-		{
-			switch (EffectSpecHandle.Data->Def->Modifiers[0].ModifierOp)
-			{
-			case EGameplayModOp::Multiplicitive:
-				++MagnitudeValue1;
-				++MagnitudeValue2;
-				break;
-			default: // Add, Divide, Max, Override
-				break;
-			}
-		}
-		
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_1, MagnitudeValue1 * 100.0f);

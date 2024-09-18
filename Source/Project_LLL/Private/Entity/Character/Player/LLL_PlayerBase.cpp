@@ -509,16 +509,6 @@ void ALLL_PlayerBase::PauseCameraMoveToCursor()
 	SpringArm->SetRelativeLocation(GetActorLocation());
 }
 
-float ALLL_PlayerBase::GetPlusOffencePower() const
-{
-	return PlayerCharacterAttributeSet->GetOffencePower() - GetOriginOffencePower();
-}
-
-float ALLL_PlayerBase::GetPlusKnockBackPower() const
-{
-	return PlayerCharacterAttributeSet->GetKnockBackPower() - GetOriginKnockBackPower();
-}
-
 int32 ALLL_PlayerBase::GetEnuriaCount() const
 {
 	const TArray<FActiveGameplayEffectHandle> AllowEffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_ALLOW));
@@ -564,7 +554,7 @@ void ALLL_PlayerBase::VampireRecovery(float OffencePower) const
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->VampireRecoveryEffect, GetAbilityLevel(), EffectContextHandle);
 	if (EffectSpecHandle.IsValid())
 	{
-		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAF_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
 		UE_LOG(LogTemp, Log, TEXT("%f만큼 회복"), OffencePower)
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}

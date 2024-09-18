@@ -178,7 +178,6 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 						ThrowCircular = true;
 						Straight = true;
 						KnockBackPower = AbilityData->KnockBackPower;
-						KnockBackPower += Player->GetPlusKnockBackPower();
 					}
 				}
 			}

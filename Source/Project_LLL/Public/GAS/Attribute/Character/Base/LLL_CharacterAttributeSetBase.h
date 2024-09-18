@@ -32,11 +32,12 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, CurrentHealth)
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, OffencePower);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, MoveSpeed);
-	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, ReceiveDamage);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, AccelerateSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, TurnSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, GroundFriction);
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, AttackSpeed);
+	
+	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, ReceiveDamage);
 	
 	// 캐릭터 기본 어트리뷰트 데이터
 protected:

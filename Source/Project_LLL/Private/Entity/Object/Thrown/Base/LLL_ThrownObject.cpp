@@ -10,10 +10,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
 #include "Util/LLL_MathHelper.h"
 
@@ -120,20 +117,8 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 	FModAudioComponent->SetPitch(Owner->CustomTimeDilation);
 	FModAudioComponent->Play();
 
-	ALLL_BaseCharacter* OwnerCharacter = Cast<ALLL_BaseCharacter>(GetOwner());
-	if (IsValid(OwnerCharacter))
-	{
-		if (Cast<ALLL_MonsterBase>(OwnerCharacter))
-		{
-			const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(OwnerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-			OffencePower = MonsterAttributeSet->GetOffencePower();
-		}
-		else if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerCharacter))
-		{
-			OffencePower = AbilityData->AbilityValue2 * AbilityLevel / static_cast<uint32>(AbilityData->Value2Type);
-			OffencePower += Player->GetPlusOffencePower();
-		}
-	}
+	bIsStraight = Straight;
+	KnockBackPower = InKnockBackPower;
 
 	ALLL_BaseCharacter* TargetCharacter = Cast<ALLL_BaseCharacter>(Target);
 	if (IsValid(TargetCharacter))
@@ -150,9 +135,6 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 			bTargetIsDead = true;
 		}
 	}
-	
-	bIsStraight = Straight;
-	KnockBackPower = InKnockBackPower;
 
 	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_ThrownObject::Deactivate, ThrownObjectAttributeSet->GetHideTimer(), false);
 }
@@ -172,19 +154,10 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, OwnerCharacter->GetAbilityLevel(), EffectContextHandle);
 		if (EffectSpecHandle.IsValid())
 		{
-			if (Cast<ALLL_MonsterBase>(OwnerCharacter))
-			{
-				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAF_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
-				UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
-				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
-			}
-			else if (Cast<ALLL_PlayerBase>(OwnerCharacter))
-			{
-				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, OffencePower);
-				UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지 : 1"), *Other->GetName(), OffencePower)
-				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
-				KnockBackTarget(Direction, Other);
-			}
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+			UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
+			KnockBackTarget(Direction, Other);
 		}
 	}
 	

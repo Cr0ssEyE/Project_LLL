@@ -8,6 +8,7 @@
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_RangeKnockBackDetectorDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/Object/Ability/LLL_RangeKnockBackDetectorAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
@@ -48,7 +49,13 @@ void ALLL_RangeKnockBackDetector::NotifyActorBeginOverlap(AActor* OtherActor)
 	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
 	{
 		KnockBackDirection = Player->GetActorForwardVector();
+		
+		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 		KnockBackPower = AbilityData->AbilityValue1 * 100.0f;
+		KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
+		KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+		
 		KnockBackToOverlapActor(OtherActor);
 	}
 }

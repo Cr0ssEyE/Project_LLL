@@ -83,24 +83,25 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 
 void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data)
 {
-	if (Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration)
+	if (Data.EffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_BLEEDING))
 	{
 		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
-	
-		float Damage = Data.EvaluatedData.Magnitude;
+		
 		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		if (!IsValid(Player))
 		{
 			return;
 		}
-
+		
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		float Damage = Data.EvaluatedData.Magnitude;
+		Damage *= PlayerAttributeSet->GetAllOffencePowerRate();
 		Damage *= Monster->GetBleedingStack();
-		Damage += Player->GetPlusOffencePower();
+		Damage += PlayerAttributeSet->GetAllOffencePowerPlus();
 	
 		UE_LOG(LogTemp, Log, TEXT("%s의 출혈 데미지 : %f"), *Monster->GetName(), Damage)
 		Data.EvaluatedData.Magnitude = Damage;
-
-		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 
 		// 피의 갈증 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_VAMPIRE))

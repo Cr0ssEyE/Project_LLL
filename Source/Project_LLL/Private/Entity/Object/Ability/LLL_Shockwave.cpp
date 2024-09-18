@@ -63,6 +63,7 @@ void ALLL_Shockwave::NotifyActorBeginOverlap(AActor* OtherActor)
 		const UAbilitySystemComponent* ManOfStrengthASC = ManOfStrength->GetAbilitySystemComponent();
 		const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(ManOfStrengthASC->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 		OffencePower = MonsterAttributeSet->GetManOfStrengthShockwaveOffencePower();
+		
 		DamageToOverlapActor(OtherActor);
 	}
 }

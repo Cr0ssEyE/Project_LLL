@@ -12,21 +12,19 @@ float ULLL_CC_CriticalDamageCalculate::CalculateBaseMagnitude_Implementation(con
 {
 	float Result = Super::CalculateBaseMagnitude_Implementation(Spec);
 	
-	const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(Spec.GetEffectContext().GetInstigator());
-	if (!IsValid(PlayerCharacter))
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Spec.GetEffectContext().GetInstigator());
+	if (!IsValid(Player))
 	{
 		return Result;
 	}
-	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
-	const FGameplayTagContainer EffectTagContainer = Spec.Def->GetAssetTags();
-	float DamageAmplifyValue = 1.f;
-	if (EffectTagContainer.HasTag(TAG_GAS_ATTACK_HIT_CHECK_MELEE))
-	{
-		DamageAmplifyValue = PlayerAttributeSet->GetBaseAttackDamageAmplifyByOther();
-	}
+	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+	Result = PlayerAttributeSet->GetOffencePower();
+	Result *= PlayerAttributeSet->GetAllOffencePowerRate();
+	Result += PlayerAttributeSet->GetAllOffencePowerPlus();
 	
-	Result = FLLL_MathHelper::CalculateCriticalDamage(PlayerAttributeSet, PlayerAttributeSet->GetOffencePower() * DamageAmplifyValue);
+	Result = FLLL_MathHelper::CalculateCriticalDamage(PlayerAttributeSet, Result);
 	
 	return Result;
 }

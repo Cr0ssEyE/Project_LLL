@@ -76,8 +76,6 @@ public:
 	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
 	void StartCameraMoveToCursor(ALLL_PlayerController* PlayerController = nullptr);
 	void PauseCameraMoveToCursor();
-	float GetPlusOffencePower() const;
-	float GetPlusKnockBackPower() const;
 	
 	int32 GetEnuriaCount() const;
 
@@ -85,8 +83,6 @@ public:
 	// 이누리아 관련 함수
 	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
 	FORCEINLINE float GetFeatherSpawnStartTime() const { return FeatherSpawnStartTime; }
-	FORCEINLINE float GetOriginKnockBackPower() const { return OriginKnockBackPower; }
-	FORCEINLINE float GetOriginOffencePower() const { return OriginOffencePower; }
 	FORCEINLINE int32 GetDeflectCount() const { return DeflectCount; }
 	FORCEINLINE float GetKnockBackTransmissionOffencePower() const { return KnockBackTransmissionOffencePower; }
 	FORCEINLINE float GetKnockBackTransmissionKnockBackPower() const { return KnockBackTransmissionKnockBackPower; }
@@ -97,7 +93,7 @@ public:
 	FORCEINLINE float GetRangeKnockBackKnockBackPower() const { return RangeKnockBackKnockBackPower; }
 	
 	FORCEINLINE void SetFeatherSpawnStartTime(const float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
-	FORCEINLINE void SetDeflectCount(const int InDeflectCount) { DeflectCount = InDeflectCount; }
+	FORCEINLINE void SetDeflectCount(const int32 InDeflectCount) { DeflectCount = InDeflectCount; }
 	FORCEINLINE void SetKnockBackTransmissionOffencePower(const float InKnockBackTransmissionOffencePower) { KnockBackTransmissionOffencePower = InKnockBackTransmissionOffencePower; }
 	FORCEINLINE void SetKnockBackTransmissionKnockBackPower(const float InKnockBackTransmissionKnockBackPower) { KnockBackTransmissionKnockBackPower = InKnockBackTransmissionKnockBackPower; }
 	FORCEINLINE void SetQuadrupleHitKnockBackPower(const float InQuadrupleHitKnockBackPower) { QuadrupleHitKnockBackPower = InQuadrupleHitKnockBackPower; }
@@ -235,8 +231,4 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	float ScalarValue;
-
-protected:
-	UPROPERTY(VisibleAnywhere)
-	float LastSentDamage;
 };

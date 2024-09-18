@@ -13,8 +13,15 @@
 
 ULLL_PlayerCharacterAttributeSet::ULLL_PlayerCharacterAttributeSet() :
 LowHealthPercentage(0.3f),
-BaseAttackDamageAmplifyByOther(1.f),
-TargetingCorrectionRadius(100.f)
+TargetingCorrectionRadius(100.f),
+AllOffencePowerRate(1.0f),
+AllOffencePowerPlus(0.0f),
+KnockBackPowerRate(1.0f),
+KnockBackPowerPlus(0.0f),
+KnockBackOffencePowerRate(1.0f),
+KnockBackOffencePowerPlus(0.0f),
+FeatherOffencePowerRate(1.0f),
+FeatherOffencePowerPlus(0.0f)
 {
 	
 }

@@ -49,14 +49,7 @@ void ALLL_AbilityObject::DamageToOverlapActor(AActor* OtherActor)
 			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AbilityObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
 			if(EffectSpecHandle.IsValid())
 			{
-				if (Cast<ALLL_MonsterBase>(GetOwner()))
-				{
-					EffectSpecHandle.Data->SetSetByCallerMagnitude(TAF_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
-				}
-				else if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
-				{
-					EffectSpecHandle.Data->SetSetByCallerMagnitude(TAF_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower + Player->GetPlusOffencePower());
-				}
+				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 			}
 		}
@@ -69,17 +62,8 @@ void ALLL_AbilityObject::KnockBackToOverlapActor(AActor* OtherActor)
 		ILLL_KnockBackInterface* KnockBackInterface = Cast<ILLL_KnockBackInterface>(OtherActor);
 		if (KnockBackInterface && OtherActor != GetOwner())
 		{
-			FVector LaunchVelocity;
-			if (Cast<ALLL_MonsterBase>(GetOwner()))
-			{
-				LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(KnockBackDirection, KnockBackPower);
-				KnockBackInterface->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
-			}
-			else if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
-			{
-				LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(KnockBackDirection, KnockBackPower + Player->GetPlusKnockBackPower());
-				KnockBackInterface->AddKnockBackVelocity(LaunchVelocity, KnockBackPower + Player->GetPlusKnockBackPower());
-			}
+			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(KnockBackDirection, KnockBackPower);
+			KnockBackInterface->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 		}
 	}));
 }

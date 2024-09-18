@@ -30,18 +30,22 @@ void ULLL_PGA_KnockBack::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 
 void ULLL_PGA_KnockBack::KnockBackTarget()
 {
-	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-	const FVector AvatarLocation = CurrentActorInfo->AvatarActor->GetActorLocation();
-
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
 	{
-		// 초기 구현은 MovementComponent의 LaunchCharacter 기반 물리 넉백으로 구현. 추후 방향성에 따른 수정 예정
+		const FVector AvatarLocation = CurrentActorInfo->AvatarActor->GetActorLocation();
+		const FVector Direction = (Actor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
+		
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		float KnockBackPower = PlayerAttributeSet->GetKnockBackPower();
+		KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
+		KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+		
 		if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor))
 		{
-			const FVector LaunchDirection = (Actor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
-			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, PlayerAttributeSet->GetKnockBackPower());
-			UE_LOG(LogTemp, Log, TEXT("넉백 수행(플레이어) : %f"), PlayerAttributeSet->GetKnockBackPower())
-			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, PlayerAttributeSet->GetKnockBackPower());
+			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
+			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 		}
 	}
 

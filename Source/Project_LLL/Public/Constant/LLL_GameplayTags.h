@@ -69,7 +69,7 @@
 #define TAG_GAS_ABILITY_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.Value.2"))
 #define TAG_GAS_ABILITY_HUNDRED_VALUE_1 FGameplayTag::RequestGameplayTag(FName("Ability.HundredValue.1"))
 #define TAG_GAS_ABILITY_HUNDRED_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.HundredValue.2"))
-#define TAF_GAS_ABILITY_VALUE_OFFENCE_POWER FGameplayTag::RequestGameplayTag(FName("Ability.Value.OffencePower"))
+#define TAG_GAS_ABILITY_VALUE_OFFENCE_POWER FGameplayTag::RequestGameplayTag(FName("Ability.Value.OffencePower"))
 
 // 어빌리티 슬롯 관련 태그
 #define TAG_GAS_ABILITY_NESTING_ALLOW FGameplayTag::RequestGameplayTag(FName("Ability.Nesting.Allow"))

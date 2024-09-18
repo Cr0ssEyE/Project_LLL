@@ -16,19 +16,21 @@ float ULLL_CC_KnockBackDamageCalculate::CalculateBaseMagnitude_Implementation(co
 	{
 		return Result;
 	}
-	
-	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-	Result = PlayerAttributeSet->GetKnockBackOffencePower() * PlayerAttributeSet->GetKnockBackOffencePowerRate();
 
-	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+	Result = PlayerAttributeSet->GetKnockBackOffencePower();
+	Result *= PlayerAttributeSet->GetAllOffencePowerRate();
+	Result *= PlayerAttributeSet->GetKnockBackOffencePowerRate();
 	
 	// 질량 축적 이누리아
 	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE_BY_ENURIA_COUNT))
 	{
 		Result *= 1 + Player->GetIncreaseKnockBackDamageByEnuriaCountDamageRate() * Player->GetEnuriaCount();
 	}
+	Result += PlayerAttributeSet->GetAllOffencePowerPlus();
+	Result += PlayerAttributeSet->GetKnockBackOffencePowerPlus();
 
-	Result += Player->GetPlusOffencePower();
-	
+	UE_LOG(LogTemp, Log, TEXT("넉백 피해 : %f"), Result)
 	return Result;
 }
