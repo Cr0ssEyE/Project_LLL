@@ -125,4 +125,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "피의 갈증 이누리아 회복 이펙트")
 	TSubclassOf<UGameplayEffect> VampireRecoveryEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "피의 역병 이누리아 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> BleedingTransmissionDamageEffect;
 };

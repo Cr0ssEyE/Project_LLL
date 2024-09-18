@@ -82,15 +82,9 @@ void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpee
 	{
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-		OffencePower = AbilityData->AbilityValue2 * AbilityLevel / static_cast<uint32>(AbilityData->Value2Type);
+		OffencePower = AbilityData->AbilityValue2 / static_cast<uint32>(AbilityData->Value2Type);
 		OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
 		OffencePower *= PlayerAttributeSet->GetFeatherOffencePowerRate();
-		
-		// 맹렬한 공세 이누리아
-		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
-		{
-			OffencePower *= Player->GetQuadrupleHitDamageRate();
-		}
 		OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
 		OffencePower += PlayerAttributeSet->GetFeatherOffencePowerPlus();
 
@@ -128,6 +122,7 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 					if (EffectSpecHandle.IsValid())
 					{
 						UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지 : %d"), *Other->GetName(), OffencePower, i + 2)
+						EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
 						ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 						if (i == HitCount - 2)
 						{

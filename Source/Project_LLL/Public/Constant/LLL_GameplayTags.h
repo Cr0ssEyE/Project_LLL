@@ -27,7 +27,6 @@
 #define TAG_GAS_PLAYER_STATE_INPUT_CHECK_DASH FGameplayTag::RequestGameplayTag(FName("Character.Player.State.InputCheck.Dash"))
 
 // 플레이어 공격 효과 관련 게임플레이 태그
-#define TAG_GAS_ABNORMAL_STATUS FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus"))
 #define TAG_GAS_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Bleeding"))
 
 // 플레이어 부가 효과 구분용 게임플레이 태그
@@ -60,6 +59,7 @@
 #define TAG_GAS_HAVE_FASTER_KNOCK_BACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.FasterKnockBack"))
 #define TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE_BY_ENURIA_COUNT FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.IncreaseKnockBackDamageByEnuriaCount"))
 #define TAG_GAS_HAVE_VAMPIRE FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.Vampire"))
+#define TAG_GAS_HAVE_BLEEDING_TRANSMISSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.BleedingTransmission"))
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))

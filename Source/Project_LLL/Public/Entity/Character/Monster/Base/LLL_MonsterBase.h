@@ -10,6 +10,7 @@
 #include "Interface/LLL_KnockBackInterface.h"
 #include "LLL_MonsterBase.generated.h"
 
+struct FAbilityDataTable;
 class ALLL_PlayerBase;
 class UProjectileMovementComponent;
 class ULLL_MonsterAttributeSet;
@@ -26,13 +27,11 @@ public:
 	
 	FORCEINLINE void SetCharging(const bool IsCharging) { bIsCharging = IsCharging; }
 	FORCEINLINE void SetKnockBackSender(ALLL_MonsterBase* InKnockBackSender) { KnockBackSender = InKnockBackSender; }
-	FORCEINLINE void SetBleedingStack(const int32 InBleedingStack) { BleedingStack = InBleedingStack; }
 	
 	FORCEINLINE virtual float GetKnockBackedPower() const override { return bIsKnockBacking ? LastKnockBackPower : 0.0f; }
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
 	FORCEINLINE int32 GetId() const { return Id; }
 	FORCEINLINE bool IsKnockBacking() const { return bIsKnockBacking; }
-	FORCEINLINE int32 GetBleedingStack() const { return BleedingStack; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -56,6 +55,13 @@ public:
 	void DisconnectOwnerDeadDelegate();
 	void DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster);
 	void DamageKnockBackCauser(ALLL_PlayerBase* Player);
+
+	// 이누리아 관련
+public:
+	FORCEINLINE void SetBleedingStack(const int32 InBleedingStack) { BleedingStack = InBleedingStack; }
+	FORCEINLINE void SetBleedingTransmissionOffencePower(const float InBleedingTransmissionOffencePower) { BleedingTransmissionOffencePower = InBleedingTransmissionOffencePower; }
+	
+	FORCEINLINE int32 GetBleedingStack() const { return BleedingStack; }
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -81,7 +87,12 @@ protected:
 	TObjectPtr<ALLL_MonsterBase> KnockBackSender;
 	uint8 KnockBackTargetDamaged : 1;
 	uint8 KnockBackCauserDamaged : 1;
+
+	// 이누리아 관련
+protected:
 	int32 BleedingStack;
+	float BleedingTransmissionOffencePower;
+	uint8 BleedingTransmissionTargetDamaged: 1;
 	
 public:
 	UFUNCTION()

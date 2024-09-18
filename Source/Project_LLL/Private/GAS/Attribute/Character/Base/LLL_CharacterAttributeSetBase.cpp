@@ -35,9 +35,9 @@ void ULLL_CharacterAttributeSetBase::PostAttributeChange(const FGameplayAttribut
 
 bool ULLL_CharacterAttributeSetBase::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
 {
-	if(Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
+	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
-		if(Data.EvaluatedData.Magnitude < 0.f)
+		if (Data.EvaluatedData.Magnitude < 0.f)
 		{
 			Data.EvaluatedData.Magnitude = 0.f;
 		}

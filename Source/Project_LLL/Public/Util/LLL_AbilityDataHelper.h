@@ -12,18 +12,16 @@ class PROJECT_LLL_API FLLL_AbilityDataHelper
 {
 public:
 	// 이펙트의 상태이상 설정 관련,
-	static void SetAbnormalStatusAbilityDuration(const ULLL_PGA_RewardAbilityBase* RewardAbility, const TSharedPtr<FGameplayEffectSpec>& EffectSpec)
+	static void SetBleedingStatusAbilityDuration(const ALLL_PlayerBase* Player, const TSharedPtr<FGameplayEffectSpec>& EffectSpec)
 	{
-		const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(RewardAbility->GetAbilitySystemComponentFromActorInfo()->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(PlayerASC->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
 
 		// EffectSpec->bDurationLocked = false 하는 이유는 코드 외적인 부분에서 
-		if (RewardAbility->AbilityTags.HasTag(TAG_GAS_BLEEDING))
-		{
-			EffectSpec->bDurationLocked = false;
-			EffectSpec->SetDuration(AbnormalStatusAttributeSet->GetBleedingStatusDuration(), true);
-			EffectSpec->Period = AbnormalStatusAttributeSet->GetBleedingStatusPeriod();
-			UE_LOG(LogTemp, Log, TEXT("%f Period 값 변경"), EffectSpec->GetPeriod());
-		}
+		EffectSpec->bDurationLocked = false;
+		EffectSpec->SetDuration(AbnormalStatusAttributeSet->GetBleedingStatusDuration(), true);
+		EffectSpec->Period = AbnormalStatusAttributeSet->GetBleedingStatusPeriod();
+		UE_LOG(LogTemp, Log, TEXT("%f Period 값 변경"), EffectSpec->GetPeriod());
 	}
 
 	static bool SpawnAbilityObject(const ULLL_CharacterGameplayAbilityBase* OwnerAbility, const TSubclassOf<ALLL_AbilityObject>& AbilityObjectClass, FGameplayEventData EventData = FGameplayEventData(), const EEffectApplyTarget AbilityObjectLocationTarget = EEffectApplyTarget::Self, const FVector& OffsetLocation = FVector::ZeroVector, const FRotator& OffsetRotator = FRotator::ZeroRotator)

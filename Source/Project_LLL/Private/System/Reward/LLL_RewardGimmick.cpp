@@ -114,8 +114,8 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	{
 		for (auto Data : AbilityData)
 		{
-			int32 Index = RewardWidget->Num - 1;
-			if (Index >= TestAbilityDataID.Num() || Index == -1)
+			int32 Index = RewardWidget->Num;
+			if (Index >= TestAbilityDataID.Num())
 			{
 				Index = 0;
 			}

@@ -20,16 +20,12 @@ ULLL_MonsterAttributeSet::ULLL_MonsterAttributeSet()
 
 bool ULLL_MonsterAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
 {
-	bool Result = Super::PreGameplayEffectExecute(Data);
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
-		FGameplayTagContainer TagContainer(TAG_GAS_STATUS_BLEEDING);
-		if (GetOwningAbilitySystemComponentChecked()->HasAnyMatchingGameplayTags(TagContainer))
-		{
-			CheckAbnormalStatus(Data);
-		}
+		CheckAbnormalStatus(Data);
 	}
-	return Result;
+	
+	return Super::PreGameplayEffectExecute(Data);
 }
 
 void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -43,14 +39,14 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 			Attacker = ThrownObject->GetOwner();
 		}
 
-		bool damaged = false;
+		bool Damaged = false;
 		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 		if (GetCurrentShield() > 0)
 		{
 			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
 		
 			Monster->Damaged(Attacker, DOT);
-			damaged = true;
+			Damaged = true;
 		}
 		else
 		{
@@ -63,14 +59,14 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 			else
 			{
 				Monster->Damaged(Attacker, DOT);
-				damaged = true;
+				Damaged = true;
 			}
 		}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			if (ProtoGameInstance->CheckMonsterHitCheckDebug() && Cast<ALLL_MonsterBase>(GetOwningActor()) && damaged)
+			if (ProtoGameInstance->CheckMonsterHitCheckDebug() && Cast<ALLL_MonsterBase>(GetOwningActor()) && Damaged)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("몬스터 데미지 입음. : %f"), Data.EvaluatedData.Magnitude));
 			}
@@ -85,15 +81,19 @@ void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallb
 {
 	if (Data.EffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_BLEEDING))
 	{
-		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
-		
 		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		if (!IsValid(Player))
 		{
 			return;
 		}
 		
+		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION))
+		{
+			Monster->SetBleedingTransmissionOffencePower(Data.EvaluatedData.Magnitude);
+		}
+		
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 		float Damage = Data.EvaluatedData.Magnitude;
 		Damage *= PlayerAttributeSet->GetAllOffencePowerRate();

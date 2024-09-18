@@ -98,26 +98,28 @@ void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandl
 void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 {
 	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
-	const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
+	const FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
 
 	const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
-	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
-	
 	const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
-	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
 	
-	if (AbilityTags.HasTag(TAG_GAS_ABNORMAL_STATUS))
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_1, MagnitudeValue1 * 100.0f);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_2, MagnitudeValue2 * 100.0f);
+	
+	if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
 	{
-		FLLL_AbilityDataHelper::SetAbnormalStatusAbilityDuration(this, EffectHandle.Data);
+		FLLL_AbilityDataHelper::SetBleedingStatusAbilityDuration(CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo()), EffectSpecHandle.Data);
 	}
 	
 	if (Effect->GetEffectApplyTarget() == EEffectApplyTarget::Self)
 	{
-		K2_ApplyGameplayEffectSpecToOwner(EffectHandle);
+		K2_ApplyGameplayEffectSpecToOwner(EffectSpecHandle);
 	}
 	else
 	{
-		K2_ApplyGameplayEffectSpecToTarget(EffectHandle, CurrentEventData.TargetData);
+		K2_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, CurrentEventData.TargetData);
 	}
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

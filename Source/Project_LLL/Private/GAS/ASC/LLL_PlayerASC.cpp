@@ -51,7 +51,6 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
 		{
 			Player->SetQuadrupleHitKnockBackPower(Effect->GetAbilityData()->KnockBackPower);
-			Player->SetQuadrupleHitDamageRate(Value1);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
 		{
@@ -64,6 +63,10 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_VAMPIRE))
 		{
 			Player->SetVampireRecoveryRate(Value1);
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION))
+		{
+			Player->SetBleedingTransmissionStack(Value1);
 		}
 	}
 	

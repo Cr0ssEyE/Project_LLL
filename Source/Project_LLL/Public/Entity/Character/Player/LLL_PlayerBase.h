@@ -87,22 +87,22 @@ public:
 	FORCEINLINE float GetKnockBackTransmissionOffencePower() const { return KnockBackTransmissionOffencePower; }
 	FORCEINLINE float GetKnockBackTransmissionKnockBackPower() const { return KnockBackTransmissionKnockBackPower; }
 	FORCEINLINE float GetQuadrupleHitKnockBackPower() const { return QuadrupleHitKnockBackPower; }
-	FORCEINLINE float GetQuadrupleHitDamageRate() const { return QuadrupleHitDamageRate; }
 	FORCEINLINE float GetFasterKnockBackSpeedRate() const { return FasterKnockBackSpeedRate; }
 	FORCEINLINE float GetIncreaseKnockBackDamageByEnuriaCountDamageRate() const { return IncreaseKnockBackDamageByEnuriaCountDamageRate; }
 	FORCEINLINE float GetRangeKnockBackKnockBackPower() const { return RangeKnockBackKnockBackPower; }
+	FORCEINLINE int32 GetBleedingTransmissionStack() const { return BleedingTransmissionStack; }
 	
 	FORCEINLINE void SetFeatherSpawnStartTime(const float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
 	FORCEINLINE void SetDeflectCount(const int32 InDeflectCount) { DeflectCount = InDeflectCount; }
 	FORCEINLINE void SetKnockBackTransmissionOffencePower(const float InKnockBackTransmissionOffencePower) { KnockBackTransmissionOffencePower = InKnockBackTransmissionOffencePower; }
 	FORCEINLINE void SetKnockBackTransmissionKnockBackPower(const float InKnockBackTransmissionKnockBackPower) { KnockBackTransmissionKnockBackPower = InKnockBackTransmissionKnockBackPower; }
 	FORCEINLINE void SetQuadrupleHitKnockBackPower(const float InQuadrupleHitKnockBackPower) { QuadrupleHitKnockBackPower = InQuadrupleHitKnockBackPower; }
-	FORCEINLINE void SetQuadrupleHitDamageRate(const float InQuadrupleHitDamageRate) { QuadrupleHitDamageRate = InQuadrupleHitDamageRate; }
 	FORCEINLINE void SetFasterKnockBackSpeedRate(const float InFasterKnockBackRate) { FasterKnockBackSpeedRate = InFasterKnockBackRate; }
 	FORCEINLINE void SetIncreaseKnockBackDamageByEnuriaCountDamageRate(const float InIncreaseKnockBackDamageByEnuriaCountDamageRate) { IncreaseKnockBackDamageByEnuriaCountDamageRate = InIncreaseKnockBackDamageByEnuriaCountDamageRate; }
 	FORCEINLINE void SetRangeKnockBackKnockBackPower(const float InRangeKnockBackKnockBackPower) { RangeKnockBackKnockBackPower = InRangeKnockBackKnockBackPower; }
 	FORCEINLINE void SetVampireRecoveryRate(const float InVampireRecoveryRate) { VampireRecoveryRate = InVampireRecoveryRate; }
-
+	FORCEINLINE void SetBleedingTransmissionStack(const int32 InBleedingTransmissionStack) { BleedingTransmissionStack = InBleedingTransmissionStack; }
+	
 	void StartChargeFeather(float Timer);
 	void AddRangeFeatherTargets(AActor* Target);
 	TArray<AActor*> GetRangeFeatherTargetsAndClear();
@@ -192,6 +192,7 @@ private:
 	float IncreaseKnockBackDamageByEnuriaCountDamageRate;
 	float RangeKnockBackKnockBackPower;
 	float VampireRecoveryRate;
+	int32 BleedingTransmissionStack;
 
 	// 상태 관련 함수
 protected:

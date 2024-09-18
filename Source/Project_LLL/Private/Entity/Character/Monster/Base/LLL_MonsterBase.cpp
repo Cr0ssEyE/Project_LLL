@@ -35,6 +35,7 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "System/MapGimmick/LLL_FallableWallGimmick.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
+#include "Util/LLL_AbilityDataHelper.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Util/LLL_MathHelper.h"
 
@@ -142,6 +143,8 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 			KnockBackSender = nullptr;
 			KnockBackTargetDamaged = false;
 			KnockBackCauserDamaged = false;
+			BleedingTransmissionTargetDamaged = false;
+			
 			const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
 			if (!CheckCharacterIsDead())
 			{
@@ -239,9 +242,11 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 	}
 
 	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (bIsKnockBacking && IsValid(Player))
+	if (IsValid(Player) && bIsKnockBacking)
 	{
-		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		
 		if (!Cast<ALLL_BaseCharacter>(Other) && !Cast<ALLL_FallableWallGimmick>(Other))
 		{
 			float DotProduct = FVector::DotProduct(HitNormal, FVector::UpVector);
@@ -270,32 +275,59 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 			DamageKnockBackTarget(Player, OtherMonster);
 			DamageKnockBackCauser(Player);
 
-			// 연쇄 작용 이누리아
-			if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION) && (!IsValid(KnockBackSender) || OtherMonster != KnockBackSender) && !OtherMonster->IsKnockBacking())
+			if ((!IsValid(KnockBackSender) || OtherMonster != KnockBackSender) && !OtherMonster->IsKnockBacking())
 			{
-				FVector Direction = (OtherMonster->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
-				const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-				float KnockBackPower = Player->GetKnockBackTransmissionKnockBackPower();
-				KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
-				KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
-				UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 넉백"), *Other->GetName(), KnockBackPower)
-			
-				FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
-				OtherMonster->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
-			
 				const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
-				float OffencePower = Player->GetKnockBackTransmissionOffencePower();
-				OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
-				OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
-			
-				FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-				EffectContextHandle.AddSourceObject(this);
-				const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->KnockBackTransmissionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
-				if (EffectSpecHandle.IsValid())
+				
+				// 연쇄 작용 이누리아
+				if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION))
 				{
-					EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
-					UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
-					ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
+					float OffencePower = Player->GetKnockBackTransmissionOffencePower();
+					OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
+					OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+
+					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+					EffectContextHandle.AddSourceObject(this);
+					const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->KnockBackTransmissionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
+					if (EffectSpecHandle.IsValid())
+					{
+						EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+						UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
+						ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
+					}
+
+					FVector Direction = (OtherMonster->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+					
+					float KnockBackPower = Player->GetKnockBackTransmissionKnockBackPower();
+					KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
+					KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+			
+					UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 넉백"), *Other->GetName(), KnockBackPower)
+					FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
+					OtherMonster->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
+				}
+
+				// 피의 역병 이누리아
+				if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION) && ASC->HasMatchingGameplayTag(TAG_GAS_STATUS_BLEEDING) && !BleedingTransmissionTargetDamaged)
+				{
+					BleedingTransmissionTargetDamaged = true;
+					
+					int32 TempBleedingStack = OtherMonster->GetBleedingStack() + Player->GetBleedingTransmissionStack();
+					if (TempBleedingStack > 5)
+					{
+						TempBleedingStack = 5;
+					}
+					OtherMonster->SetBleedingStack(TempBleedingStack - 1);
+					
+					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+					EffectContextHandle.AddSourceObject(this);
+					const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->BleedingTransmissionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
+					if (EffectSpecHandle.IsValid())
+					{
+						EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, BleedingTransmissionOffencePower);
+						FLLL_AbilityDataHelper::SetBleedingStatusAbilityDuration(Player, EffectSpecHandle.Data);
+						ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
+					}
 				}
 			}
 		}
