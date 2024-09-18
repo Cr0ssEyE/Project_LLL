@@ -80,6 +80,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	bIsLowHP = false;
 	FeatherSpawnStartTime = 0.01f;
 	bCanSkill = true;
+	SkillCoolTime = 0.01f;
 }
 
 void ALLL_PlayerBase::BeginPlay()
