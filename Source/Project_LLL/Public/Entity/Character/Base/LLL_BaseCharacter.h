@@ -44,7 +44,7 @@ public:
 	
 	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
 	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
-	FORCEINLINE float GetAbilityLevel() const { return Level; }
+	FORCEINLINE float GetAbilityLevel() const { return AbilityLevel; }
 	FORCEINLINE FVector GetLastCollideLocation() const { return LastCollideLocation; }
 	
 protected:
@@ -97,7 +97,7 @@ protected:
 	uint8 bIsAttacking : 1;
 
 	UPROPERTY(EditAnywhere)
-	int32 Level;
+	int32 AbilityLevel;
 
 	// 이동 관련 변수
 protected:

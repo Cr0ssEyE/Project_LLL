@@ -177,7 +177,7 @@ void ALLL_MonsterBase::InitAttributeSet()
 {
 	Super::InitAttributeSet();
 
-	const int32 Data = Id * 100 + Level;
+	const int32 Data = Id * 100 + AbilityLevel;
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, AttributeInitId, Data, true);
 
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());

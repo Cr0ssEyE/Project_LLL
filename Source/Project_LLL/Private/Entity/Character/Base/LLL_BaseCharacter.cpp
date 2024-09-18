@@ -28,7 +28,7 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	FModAudioComponent->SetupAttachment(RootComponent);
 
-	Level = 1;
+	AbilityLevel = 1;
 }
 
 void ALLL_BaseCharacter::PostLoad()
