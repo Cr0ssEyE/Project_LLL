@@ -424,7 +424,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	//PlayerUIManager->GetMainEruriaWidget()->SetEruriaInfo(CurrentAbilityData);
 	//}
 
-	TArray<const FAbilityDataTable*> EqualAbilities;
+	/*TArray<const FAbilityDataTable*> EqualAbilities;
 	uint8 Count = 2;
 	for (auto Data : AbilityData)
 	{
@@ -452,10 +452,14 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		{
 			AbilityData.Remove(EqualAbility);
 		}
+	}*/
+
+	if (!bIsTest)
+	{
+		// 테이블에서 중복 보상 제거 후 가중치 재계산
+		AbilityData.Remove(CurrentAbilityData);
+		SetRewardWeight();
 	}
-	AbilityData.Remove(CurrentAbilityData);
-	// 테이블에서 중복 보상 제거 후 가중치 재계산
-	SetRewardWeight();
 	
 	CurrentAbilityData = nullptr;
 	bIsButtonEventSetup = false;

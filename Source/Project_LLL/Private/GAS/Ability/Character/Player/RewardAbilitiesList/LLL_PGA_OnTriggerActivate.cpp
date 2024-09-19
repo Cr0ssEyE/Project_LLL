@@ -166,7 +166,10 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 					if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
 					{
 						SpawnCount = Player->GetChargedFeatherCount();
-						Player->StartChargeFeather(AbilityData->AbilityValue1);
+						if (SpawnCount >= 1)
+						{
+							Player->StartChargeFeather(AbilityData->AbilityValue1);
+						}
 					}
 					// 화려한 등장 이누리아
 					else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_RANGED_FEATHER))
