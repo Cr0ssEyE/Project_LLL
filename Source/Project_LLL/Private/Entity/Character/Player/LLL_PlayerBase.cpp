@@ -79,8 +79,6 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	LastCheckedMouseLocation = FVector::Zero();
 	bIsLowHP = false;
 	FeatherSpawnStartTime = 0.01f;
-	bCanSkill = true;
-	SkillCoolTime = 0.01f;
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -470,7 +468,7 @@ void ALLL_PlayerBase::PauseAction(const FInputActionValue& Value)
 	PlayerUIManager->TogglePauseWidget(bIsDead);
 }
 
-void ALLL_PlayerBase::PlayerRotateToMouseCursor(float RotationMultiplyValue, bool UseLastLocation)
+void ALLL_PlayerBase::RotateToMouseCursor(float RotationMultiplyValue, bool UseLastLocation)
 {
 	FVector MouseWorldLocation;
 	if (UseLastLocation)
@@ -487,7 +485,7 @@ void ALLL_PlayerBase::PlayerRotateToMouseCursor(float RotationMultiplyValue, boo
 	MouseDirectionRotator = ViewDirection.Rotation();
 	ToCursorRotationMultiplyValue = RotationMultiplyValue;
 	
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::RotateToMouseCursorRecursive);
 }
 
 void ALLL_PlayerBase::StartCameraMoveToCursor(ALLL_PlayerController* PlayerController)
@@ -561,16 +559,16 @@ void ALLL_PlayerBase::VampireRecovery(float OffencePower) const
 	}
 }
 
-void ALLL_PlayerBase::TurnToMouseCursor()
+void ALLL_PlayerBase::RotateToMouseCursorRecursive()
 {
-	if (GetActorRotation() == MouseDirectionRotator || !GetCharacterAnimInstance()->IsSlotActive(ANIM_SLOT_ATTACK))
+	if (GetActorRotation().Equals(MouseDirectionRotator, 1.0f) || !GetCharacterAnimInstance()->IsSlotActive(ANIM_SLOT_ATTACK))
 	{
 		return;
 	}
 	
 	SetActorRotation(FMath::RInterpTo(GetActorRotation(), MouseDirectionRotator, GetWorld()->GetDeltaSeconds(), PlayerCharacterAttributeSet->GetTurnSpeed() * ToCursorRotationMultiplyValue));
 	
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::TurnToMouseCursor);
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::RotateToMouseCursorRecursive);
 }
 
 void ALLL_PlayerBase::MoveCameraToMouseCursor()

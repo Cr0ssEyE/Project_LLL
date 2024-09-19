@@ -416,7 +416,6 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 					// 사용 타입 이누리아 처리
 					if (CurrentAbilityData->TagID[1] == '1')
 					{
-						Spec->InputID = static_cast<int32>(EAbilityInputName::Skill);
 						Player->SetSkillCoolTime(CurrentAbilityData->AbilityCooldown);
 					}
 				}

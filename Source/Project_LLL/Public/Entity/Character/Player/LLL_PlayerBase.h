@@ -70,10 +70,10 @@ public:
 
 	FORCEINLINE void SetCurrentCombo(const int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const bool Press) { bIsMoveInputPressed = Press; }
-	FORCEINLINE void SetSkillCoolTime(const float InSkillCoolTime) { SkillCoolTime = InSkillCoolTime; }
+	FORCEINLINE void SetSkillCoolTime(const float InSkillCoolTime) { SkillCoolTime = InSkillCoolTime; bCanSkill = true; }
 	
 	FVector CheckMouseLocation();
-	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
+	void RotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
 	void StartCameraMoveToCursor(ALLL_PlayerController* PlayerController = nullptr);
 	void PauseCameraMoveToCursor();
 	
@@ -112,7 +112,7 @@ public:
 	FDissolveCompleteDelegate DissolveCompleteDelegate;
 	
 protected:
-	void TurnToMouseCursor();
+	void RotateToMouseCursorRecursive();
 	void MoveCameraToMouseCursor();
 	
 	// 카메라
