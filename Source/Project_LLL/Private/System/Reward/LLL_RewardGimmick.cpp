@@ -208,7 +208,7 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 				continue;
 			}
 
-			bool IsNotValidReward = false;
+			bool IsValidReward = true;
 			if (GottenAbilityArray.IsEmpty())
 			{
 				if (Reward.Key->RequireCategory != EAbilityCategory::Null)
@@ -221,35 +221,44 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 			{
 				for (const auto GottenReward : GottenAbilityArray)
 				{
+					// 획득 조건이 필요한 이누리아일 경우
+					if (Reward.Key->RequireCategory != EAbilityCategory::Null)
+					{
+						IsValidReward = false;
+						if (Reward.Key->RequireCategory == GottenReward->AbilityCategory)
+						{
+							IsValidReward = true;
+							break;
+						}
+					}
+				}
+
+				if (!IsValidReward)
+				{
+					CurrentWeight += Reward.Value;
+					continue;
+				}
+
+				for (const auto GottenReward : GottenAbilityArray)
+				{
 					// 중첩 이누리아일 경우
 					if (Reward.Key->TagID[0] == '1')
 					{
+						IsValidReward = true;
 						break;
 					}
 					if (Reward.Key->AbilityName == GottenReward->AbilityName)
 					{
-						IsNotValidReward = true;
-						break;
-					}
-
-					// 획득 조건이 필요한 이누리아일 경우
-					if (Reward.Key->RequireCategory == EAbilityCategory::Null)
-					{
-						continue;
-					}
-					IsNotValidReward = true;
-					if (Reward.Key->RequireCategory == GottenReward->AbilityCategory)
-					{
-						IsNotValidReward = false;
+						IsValidReward = false;
 						break;
 					}
 				}
-			}
 
-			if (IsNotValidReward)
-			{
-				CurrentWeight += Reward.Value;
-				continue;
+				if (!IsValidReward)
+				{
+					CurrentWeight += Reward.Value;
+					continue;
+				}
 			}
 			
 			if (!ButtonAbilityDataArray.IsEmpty())
@@ -258,13 +267,13 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 				{
 					if (Reward.Key->AbilityName == EmplacedReward->AbilityName)
 					{
-						IsNotValidReward = true;
+						IsValidReward = false;
 						break;
 					}
 				}
 			}
 
-			if (IsNotValidReward)
+			if (!IsValidReward)
 			{
 				CurrentWeight += Reward.Value;
 				continue;
@@ -362,19 +371,24 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		
 		EffectHandles.Append(AllowEffectHandles);
 		EffectHandles.Append(DenyEffectHandles);
-		
-		for (const auto EffectHandle : EffectHandles)
+
+		if (CurrentAbilityData->TagID[1] == '1')
 		{
-			const ULLL_ExtendedGameplayEffect* ActiveEffect = Cast<ULLL_ExtendedGameplayEffect>(ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def);
-			if (!IsValid(ActiveEffect))
+			for (const auto EffectHandle : EffectHandles)
 			{
-				continue;
-			}
+				const ULLL_ExtendedGameplayEffect* ActiveEffect = Cast<ULLL_ExtendedGameplayEffect>(ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def);
+				if (!IsValid(ActiveEffect))
+				{
+					continue;
+				}
 				
-			if (CurrentAbilityData->TagID[1] == '1')
-			{
-				ASC->RemoveActiveGameplayEffect(EffectHandle);
-				UE_LOG(LogTemp, Log, TEXT("사용 타입 이펙트 삭제"));
+				if (ActiveEffect->GetAbilityData()->TagID[1] == '1')
+				{
+					ASC->RemoveActiveGameplayEffect(EffectHandle);
+					GottenAbilityArray.Remove(ActiveEffect->GetAbilityData());
+					AbilityData.Emplace(ActiveEffect->GetAbilityData());
+					UE_LOG(LogTemp, Log, TEXT("사용 타입 이펙트 삭제"));
+				}
 			}
 		}
 
@@ -414,47 +428,10 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	}
 
 	// TODO: UI 관련 상호작용 구현.
-	//if (IsCommonEffect)
-	//{
-	// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("커먼 이펙트 획득")));
 	PlayerUIManager->GetInventoryWidget()->SetEruriaInfo(CurrentAbilityData);
-	//}
-	//else
-	//{
 	//PlayerUIManager->GetMainEruriaWidget()->SetEruriaInfo(CurrentAbilityData);
-	//}
 
-	/*TArray<const FAbilityDataTable*> EqualAbilities;
-	uint8 Count = 2;
-	for (auto Data : AbilityData)
-	{
-		// 전설 이누리아의 경우 For문 중단
-		if (CurrentAbilityData->ID % 10000 > ABILITY_RANK_LEGEND)
-		{
-			EqualAbilities.Emplace(Data);
-			break;
-		}
-		
-		if (Data->ID % ABILITY_INFO_ID == CurrentAbilityData->ID % ABILITY_INFO_ID)
-		{
-			EqualAbilities.Emplace(Data);
-			--Count;
-			if (!Count)
-			{
-				break;
-			}
-		}
-	}
-
-	if (!EqualAbilities.IsEmpty())
-	{
-		for (auto EqualAbility : EqualAbilities)
-		{
-			AbilityData.Remove(EqualAbility);
-		}
-	}*/
-
-	if (!bIsTest)
+	if (!bIsTest || CurrentAbilityData->TagID[0] != '1')
 	{
 		// 테이블에서 중복 보상 제거 후 가중치 재계산
 		AbilityData.Remove(CurrentAbilityData);

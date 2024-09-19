@@ -46,7 +46,7 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION))
 		{
 			Player->SetKnockBackTransmissionOffencePower(Value1);
-			Player->SetKnockBackTransmissionKnockBackPower(Value2);
+			Player->SetKnockBackTransmissionKnockBackPower(Value2 * 100.0f);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
 		{

@@ -26,6 +26,7 @@ float ULLL_CC_KnockBackDamageCalculate::CalculateBaseMagnitude_Implementation(co
 	// 질량 축적 이누리아
 	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE_BY_ENURIA_COUNT))
 	{
+		UE_LOG(LogTemp, Log, TEXT("이누리아 갯수 : %d"), Player->GetEnuriaCount())
 		Result *= 1 + Player->GetIncreaseKnockBackDamageByEnuriaCountDamageRate() * Player->GetEnuriaCount();
 	}
 	Result += PlayerAttributeSet->GetAllOffencePowerPlus();
