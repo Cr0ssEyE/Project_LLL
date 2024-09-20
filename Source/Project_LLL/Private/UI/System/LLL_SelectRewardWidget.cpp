@@ -74,9 +74,9 @@ void ULLL_SelectRewardWidget::SetWidgetInfo(TArray<const FAbilityDataTable*> Abi
 			FString RequireSynergyText = static_cast<int>(RequireSynergy * 10.0f) % 10 == 0.0f ? FString::FromInt(RequireSynergy) :  FString::SanitizeFloat(RequireSynergy);
 
 			// TODO: 강화 UI는 AbilityData->ChangeValue 고려하도록 개선하기
-			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_ABILITY_VALUE_1, *(TEXT("<Status>") + Value1Text + "</>"));
-			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_ABILITY_VALUE_2, *(TEXT("<Status>") + Value2Text + "</>"));
-			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_REQUIRE_SYNERGY, *(TEXT("<Status>") + RequireSynergyText + "</>"));
+			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_ABILITY_VALUE_1, *Value1Text);
+			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_ABILITY_VALUE_2, *Value2Text);
+			AbilityInformation = AbilityInformation.Replace(UI_ABILITY_INFO_REQUIRE_SYNERGY, *RequireSynergyText);
 		}
 		else
 		{
