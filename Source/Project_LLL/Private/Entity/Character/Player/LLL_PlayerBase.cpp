@@ -623,6 +623,9 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 {
 	Super::Damaged(Attacker, IsDOT);
 	
+	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+	ASC->CancelAbilities(nullptr, &WithOutTags);
+	
 	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT)
 	{
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);

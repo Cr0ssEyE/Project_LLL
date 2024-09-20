@@ -45,9 +45,6 @@ public:
 	
 	// 애니메이션 관련
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
-	TObjectPtr<UAnimMontage> DeadAnimMontage;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 연출 시퀀서")
 	TObjectPtr<ULevelSequence> DeadSequencer;
 

@@ -121,7 +121,6 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	{
 		FGameplayAbilityTargetDataHandle NewTargetDataHandle;
 		TArray<TWeakObjectPtr<AActor>> NewActors;
-
 		for (auto Target : CurrentEventData.TargetData.Data[0]->GetActors())
 		{
 			if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
@@ -136,7 +135,6 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 					Monster->ToggleBleedingTrigger();
 				}
 			}
-    
 			NewActors.Add(Target);
 		}
 

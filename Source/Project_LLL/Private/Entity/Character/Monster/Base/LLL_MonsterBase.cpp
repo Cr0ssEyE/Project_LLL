@@ -430,19 +430,26 @@ void ALLL_MonsterBase::Dead()
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
 	MonsterBaseAIController->StopLogic("Monster Is Dead");
 
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
-
-	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
-	if (IsValid(PlayerBase))
+	if (!IsValid(MonsterBaseDataAsset->DeadAnimMontage))
 	{
-		FVector ImpulseDirection = GetActorLocation() - PlayerBase->GetActorLocation();
-		ImpulseDirection.Normalize();
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-		const float ImpulseStrength = PlayerAttributeSet->GetImpulseStrength();
-		const FVector FinalImpulse = ImpulseDirection * ImpulseStrength * 100.0f;
+		GetMesh()->SetSimulatePhysics(true);
+		GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
+
+		const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+		if (IsValid(PlayerBase))
+		{
+			FVector ImpulseDirection = GetActorLocation() - PlayerBase->GetActorLocation();
+			ImpulseDirection.Normalize();
+			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerBase->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+			const float ImpulseStrength = PlayerAttributeSet->GetImpulseStrength();
+			const FVector FinalImpulse = ImpulseDirection * ImpulseStrength * 100.0f;
 		
-		GetMesh()->AddImpulseToAllBodiesBelow(FinalImpulse);
+			GetMesh()->AddImpulseToAllBodiesBelow(FinalImpulse);
+		}
+	}
+	else
+	{
+		PlayAnimMontage(MonsterBaseDataAsset->DeadAnimMontage);
 	}
 
 	MonsterStatusWidgetComponent->SetHiddenInGame(true);

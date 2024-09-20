@@ -31,9 +31,9 @@ void ULLL_PGA_Skill::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_Skill::OnInterruptedCallBack);
 	PlayMontageTask->ReadyForActivation();
 
-	UAbilityTask_WaitGameplayEvent* TraceEndTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_SKILL_CHECK);
-	TraceEndTask->EventReceived.AddDynamic(this, &ULLL_PGA_Skill::SkillCompleteCallBack);
-	TraceEndTask->ReadyForActivation();
+	UAbilityTask_WaitGameplayEvent* SkillCompleteTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_SKILL_CHECK);
+	SkillCompleteTask->EventReceived.AddDynamic(this, &ULLL_PGA_Skill::SkillCompleteCallBack);
+	SkillCompleteTask->ReadyForActivation();
 }
 
 void ULLL_PGA_Skill::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
