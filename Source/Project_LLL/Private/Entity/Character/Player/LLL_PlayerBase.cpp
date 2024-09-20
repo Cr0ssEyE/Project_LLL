@@ -439,13 +439,13 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 		else
 		{
 			ASC->TryActivateAbility(SkillSpec->Handle);
+
+			bCanSkill = false;
+			GetWorldTimerManager().SetTimer(SkillCoolTimeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+				bCanSkill = true;
+			}), SkillCoolTime, false);
 		}
 	}
-
-	bCanSkill = false;
-	GetWorldTimerManager().SetTimer(SkillCoolTimeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
-		bCanSkill = true;
-	}), SkillCoolTime, false);
 }
 
 void ALLL_PlayerBase::InteractAction(const FInputActionValue& Value)
@@ -622,12 +622,6 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 {
 	Super::Damaged(Attacker, IsDOT);
-
-	if (!IsDOT)
-	{
-		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
-		ASC->CancelAbilities(nullptr, &WithOutTags);
-	}
 	
 	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT)
 	{

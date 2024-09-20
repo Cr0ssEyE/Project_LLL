@@ -4,11 +4,15 @@
 #include "GAS/Ability/Character/Player/LLL_PGA_Skill.h"
 
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 
 void ULLL_PGA_Skill::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	bSkillComplete = false;
 	
 	if (!IsValid(SkillMontage))
 	{
@@ -26,4 +30,24 @@ void ULLL_PGA_Skill::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_Skill::OnCompleteCallBack);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_Skill::OnInterruptedCallBack);
 	PlayMontageTask->ReadyForActivation();
+
+	UAbilityTask_WaitGameplayEvent* TraceEndTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_SKILL_CHECK);
+	TraceEndTask->EventReceived.AddDynamic(this, &ULLL_PGA_Skill::SkillCompleteCallBack);
+	TraceEndTask->ReadyForActivation();
+}
+
+void ULLL_PGA_Skill::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	if (!bSkillComplete)
+	{
+		ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+		Player->ReadyToUseSkill();
+	}
+}
+
+void ULLL_PGA_Skill::SkillCompleteCallBack(FGameplayEventData Payload)
+{
+	bSkillComplete = true;
 }
