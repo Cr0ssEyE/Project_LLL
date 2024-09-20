@@ -247,7 +247,7 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 						IsValidReward = true;
 						break;
 					}
-					if (Reward.Key->AbilityName == GottenReward->AbilityName)
+					if (Reward.Key->AbilityName == GottenReward->AbilityName && Reward.Key->ID <= GottenReward->ID)
 					{
 						IsValidReward = false;
 						break;
@@ -372,23 +372,29 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 		EffectHandles.Append(AllowEffectHandles);
 		EffectHandles.Append(DenyEffectHandles);
 
-		if (CurrentAbilityData->TagID[1] == '1')
+		for (const auto EffectHandle : EffectHandles)
 		{
-			for (const auto EffectHandle : EffectHandles)
+			const ULLL_ExtendedGameplayEffect* ActiveEffect = Cast<ULLL_ExtendedGameplayEffect>(ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def);
+			if (!IsValid(ActiveEffect))
 			{
-				const ULLL_ExtendedGameplayEffect* ActiveEffect = Cast<ULLL_ExtendedGameplayEffect>(ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def);
-				if (!IsValid(ActiveEffect))
-				{
-					continue;
-				}
+				continue;
+			}
 				
-				if (ActiveEffect->GetAbilityData()->TagID[1] == '1')
+			if (CurrentAbilityData->TagID[1] == '1' && ActiveEffect->GetAbilityData()->TagID[1] == '1')
+			{
+				ASC->RemoveActiveGameplayEffect(EffectHandle);
+				GottenAbilityArray.Remove(ActiveEffect->GetAbilityData());
+				if (CurrentAbilityData->AbilityName != ActiveEffect->GetAbilityData()->AbilityName)
 				{
-					ASC->RemoveActiveGameplayEffect(EffectHandle);
-					GottenAbilityArray.Remove(ActiveEffect->GetAbilityData());
 					AbilityData.Emplace(ActiveEffect->GetAbilityData());
-					UE_LOG(LogTemp, Log, TEXT("사용 타입 이펙트 삭제"));
 				}
+				UE_LOG(LogTemp, Log, TEXT("사용 타입 이펙트 삭제"));
+			}
+			else if (CurrentAbilityData->AbilityName == ActiveEffect->GetAbilityData()->AbilityName)
+			{
+				ASC->RemoveActiveGameplayEffect(EffectHandle);
+				GottenAbilityArray.Remove(ActiveEffect->GetAbilityData());
+				UE_LOG(LogTemp, Log, TEXT("낮은 티어 이펙트 삭제"));
 			}
 		}
 
@@ -412,12 +418,6 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 					// EGameplayAbilityInstancingPolicy::InstancedPerActor로 설정된 어빌리티 한정 정상작동
 					Cast<ULLL_PGA_RewardAbilityBase>(Spec->GetPrimaryInstance())->SetAbilityInfo(CurrentAbilityData);
 					UE_LOG(LogTemp, Log, TEXT("스펙에 접근해서 값 바꾸기 시도"));
-
-					// 사용 타입 이누리아 처리
-					if (CurrentAbilityData->TagID[1] == '1')
-					{
-						Player->SetSkillCoolTime(CurrentAbilityData->AbilityCooldown);
-					}
 				}
 			}
 		}
@@ -430,11 +430,15 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	PlayerUIManager->GetInventoryWidget()->SetEruriaInfo(CurrentAbilityData);
 	//PlayerUIManager->GetMainEruriaWidget()->SetEruriaInfo(CurrentAbilityData);
 
-	if (!bIsTest || CurrentAbilityData->TagID[0] != '1')
+	// 테스트 중이 아니면 테이블에서 중복 보상 제거 후 가중치 재계산
+	if (!bIsTest)
 	{
-		// 테이블에서 중복 보상 제거 후 가중치 재계산
-		AbilityData.Remove(CurrentAbilityData);
-		SetRewardWeight();
+		// 중첩 타입 이누리아일 경우 제거하지 않기
+		if (CurrentAbilityData->TagID[0] != '1')
+		{
+			AbilityData.Remove(CurrentAbilityData);
+			SetRewardWeight();
+		}
 	}
 	
 	CurrentAbilityData = nullptr;

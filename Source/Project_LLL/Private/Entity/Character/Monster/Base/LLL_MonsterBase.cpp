@@ -133,17 +133,17 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 		
 		// 넉백 끝났을때 처리
 		bool IsMoving = CastChecked<ALLL_MonsterBaseAIController>(GetController())->GetPathFollowingComponent()->GetStatus() == EPathFollowingStatus::Moving;
-		if ((VelocityWithKnockBack == FVector::ZeroVector || IsMoving) && StartKnockBackVelocity)
+		if ((VelocityWithKnockBack == FVector::ZeroVector || IsMoving) && bStartKnockBackVelocity)
 		{
 			CustomTimeDilation = 1.f;
 			UE_LOG(LogTemp, Log, TEXT("%s가 넉백 끝"), *GetName())
 			bIsKnockBacking = false;
-			StartKnockBackVelocity = false;
+			bStartKnockBackVelocity = false;
 			DeflectCount = 0;
 			KnockBackSender = nullptr;
-			KnockBackTargetDamaged = false;
-			KnockBackCauserDamaged = false;
-			BleedingTransmissionTargetDamaged = false;
+			bKnockBackTargetDamaged = false;
+			bKnockBackCauserDamaged = false;
+			bBleedingTransmissionTargetDamaged = false;
 			
 			const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
 			if (!CheckCharacterIsDead())
@@ -154,7 +154,7 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 		}
 		else
 		{
-			StartKnockBackVelocity = true;
+			bStartKnockBackVelocity = true;
 		}
 	}
 
@@ -264,7 +264,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 					DeflectCount++;
 					UE_LOG(LogTemp, Log, TEXT("벽에 %d번 튕김"), DeflectCount)
 					AddKnockBackVelocity(LastKnockBackVelocity, LastKnockBackPower);
-					StartKnockBackVelocity = false;
+					bStartKnockBackVelocity = false;
 				}
 			}
 		}
@@ -308,9 +308,9 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 				}
 
 				// 피의 역병 이누리아
-				if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION) && ASC->HasMatchingGameplayTag(TAG_GAS_STATUS_BLEEDING) && !BleedingTransmissionTargetDamaged)
+				if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION) && ASC->HasMatchingGameplayTag(TAG_GAS_STATUS_BLEEDING) && !bBleedingTransmissionTargetDamaged)
 				{
-					BleedingTransmissionTargetDamaged = true;
+					bBleedingTransmissionTargetDamaged = true;
 					
 					int32 TempBleedingStack = OtherMonster->GetBleedingStack() + Player->GetBleedingTransmissionStack();
 					if (TempBleedingStack > 5)
@@ -642,9 +642,9 @@ void ALLL_MonsterBase::DisconnectOwnerDeadDelegate()
 
 void ALLL_MonsterBase::DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster)
 {
-	if (!KnockBackTargetDamaged)
+	if (!bKnockBackTargetDamaged)
 	{
-		KnockBackTargetDamaged = true;
+		bKnockBackTargetDamaged = true;
 		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
 		
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
@@ -660,9 +660,9 @@ void ALLL_MonsterBase::DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL
 
 void ALLL_MonsterBase::DamageKnockBackCauser(ALLL_PlayerBase* Player)
 {
-	if (!KnockBackCauserDamaged)
+	if (!bKnockBackCauserDamaged)
 	{
-		KnockBackCauserDamaged = true;
+		bKnockBackCauserDamaged = true;
 		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
 		
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
@@ -674,6 +674,11 @@ void ALLL_MonsterBase::DamageKnockBackCauser(ALLL_PlayerBase* Player)
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 	}
+}
+
+void ALLL_MonsterBase::ToggleBleedingTrigger()
+{
+	bBleedingTrigger = !bBleedingTrigger;
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)

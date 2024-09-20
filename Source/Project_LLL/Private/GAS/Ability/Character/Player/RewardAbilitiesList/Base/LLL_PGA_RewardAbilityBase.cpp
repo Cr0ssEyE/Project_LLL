@@ -21,7 +21,7 @@ void ULLL_PGA_RewardAbilityBase::PreActivate(const FGameplayAbilitySpecHandle Ha
 			const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
 			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
 
- 			K2_ApplyGameplayEffectSpecToOwner(EffectHandle);
+ 			BP_ApplyGameplayEffectToOwner(ActivateEffect.Key);
 		}
 	}
 }

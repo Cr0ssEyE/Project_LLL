@@ -62,6 +62,9 @@ public:
 	FORCEINLINE void SetBleedingTransmissionOffencePower(const float InBleedingTransmissionOffencePower) { BleedingTransmissionOffencePower = InBleedingTransmissionOffencePower; }
 	
 	FORCEINLINE int32 GetBleedingStack() const { return BleedingStack; }
+	FORCEINLINE bool GetBleedingTrigger() const { return bBleedingTrigger; }
+
+	void ToggleBleedingTrigger();
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -82,17 +85,18 @@ protected:
 	uint8 bIsKnockBacking : 1;
 	FVector LastKnockBackVelocity;
 	float LastKnockBackPower;
-	uint8 StartKnockBackVelocity : 1;
-	uint8 DeflectCount;
+	uint8 bStartKnockBackVelocity : 1;
+	int32 DeflectCount;
 	TObjectPtr<ALLL_MonsterBase> KnockBackSender;
-	uint8 KnockBackTargetDamaged : 1;
-	uint8 KnockBackCauserDamaged : 1;
+	uint8 bKnockBackTargetDamaged : 1;
+	uint8 bKnockBackCauserDamaged : 1;
 
 	// 이누리아 관련
 protected:
 	int32 BleedingStack;
+	uint8 bBleedingTrigger : 1;
 	float BleedingTransmissionOffencePower;
-	uint8 BleedingTransmissionTargetDamaged: 1;
+	uint8 bBleedingTransmissionTargetDamaged: 1;
 	
 public:
 	UFUNCTION()

@@ -443,7 +443,6 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 	}
 
 	bCanSkill = false;
-	FTimerHandle SkillCoolTimeTimerHandle;
 	GetWorldTimerManager().SetTimer(SkillCoolTimeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		bCanSkill = true;
 	}), SkillCoolTime, false);
@@ -488,7 +487,7 @@ void ALLL_PlayerBase::RotateToMouseCursor(float RotationMultiplyValue, bool UseL
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::RotateToMouseCursorRecursive);
 }
 
-void ALLL_PlayerBase::StartCameraMoveToCursor(ALLL_PlayerController* PlayerController)
+void ALLL_PlayerBase::StartCameraMoveToCursor(const ALLL_PlayerController* PlayerController)
 {
 	if (PlayerController != CastChecked<ALLL_PlayerController>(GetController()))
 	{
@@ -500,12 +499,19 @@ void ALLL_PlayerBase::StartCameraMoveToCursor(ALLL_PlayerController* PlayerContr
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::MoveCameraToMouseCursor);
 }
 
-void ALLL_PlayerBase::PauseCameraMoveToCursor()
+void ALLL_PlayerBase::PauseCameraMoveToCursor() const
 {
 	ASC->RemoveLooseGameplayTag(TAG_SYSTEM_CAMERA_STATE_FOLLOW_CURSOR);
 	ASC->AddLooseGameplayTag(TAG_SYSTEM_CAMERA_STATE_HOLD_TARGET);
 
 	SpringArm->SetRelativeLocation(GetActorLocation());
+}
+
+void ALLL_PlayerBase::ReadyToUseSkill()
+{
+	bCanSkill = true;
+
+	SkillCoolTimeTimerHandle.Invalidate();
 }
 
 int32 ALLL_PlayerBase::GetEnuriaCount() const
@@ -616,6 +622,12 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
 {
 	Super::Damaged(Attacker, IsDOT);
+
+	if (!IsDOT)
+	{
+		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+		ASC->CancelAbilities(nullptr, &WithOutTags);
+	}
 	
 	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT)
 	{

@@ -7,11 +7,11 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "DataTable/LLL_AbilityDataTable.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
 #include "Entity/Object/Thrown/LLL_ThrownFeather.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
@@ -115,11 +115,40 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	
 	if (Effect->GetEffectApplyTarget() == EEffectApplyTarget::Self)
 	{
-		K2_ApplyGameplayEffectSpecToOwner(EffectSpecHandle);
+		BP_ApplyGameplayEffectToOwner(OnAttackHitEffect);
 	}
 	else
 	{
-		K2_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, CurrentEventData.TargetData);
+		FGameplayAbilityTargetDataHandle NewTargetDataHandle;
+		TArray<TWeakObjectPtr<AActor>> NewActors;
+
+		for (auto Target : CurrentEventData.TargetData.Data[0]->GetActors())
+		{
+			if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
+			{
+				if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Target.Get()))
+				{
+					if (!Monster->GetBleedingTrigger())
+					{
+						Monster->ToggleBleedingTrigger();
+						continue;
+					}
+					Monster->ToggleBleedingTrigger();
+				}
+			}
+    
+			NewActors.Add(Target);
+		}
+
+		if (NewActors.Num() > 0)
+		{
+			FGameplayAbilityTargetData_ActorArray* NewTargetData = new FGameplayAbilityTargetData_ActorArray();
+			NewTargetData->TargetActorArray = NewActors;
+			NewTargetDataHandle.Add(NewTargetData);
+		}
+
+		CurrentEventData.TargetData = NewTargetDataHandle;
+		BP_ApplyGameplayEffectToTarget(CurrentEventData.TargetData, OnAttackHitEffect);
 	}
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

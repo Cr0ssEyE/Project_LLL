@@ -67,15 +67,18 @@ public:
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	FORCEINLINE FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
+	FORCEINLINE bool IsSkillRotateToMouseCursor() const { return bSkillRotateToMouseCursor; }
 
 	FORCEINLINE void SetCurrentCombo(const int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const bool Press) { bIsMoveInputPressed = Press; }
-	FORCEINLINE void SetSkillCoolTime(const float InSkillCoolTime) { SkillCoolTime = InSkillCoolTime; bCanSkill = true; }
+	FORCEINLINE void SetSkillCoolTime(const float InSkillCoolTime) { SkillCoolTime = InSkillCoolTime; }
+	FORCEINLINE void SetSkillRotateToMouseCursor(const bool SkillRotateToMouseCursor) { bSkillRotateToMouseCursor = SkillRotateToMouseCursor; }
 	
 	FVector CheckMouseLocation();
 	void RotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
-	void StartCameraMoveToCursor(ALLL_PlayerController* PlayerController = nullptr);
-	void PauseCameraMoveToCursor();
+	void StartCameraMoveToCursor(const ALLL_PlayerController* PlayerController = nullptr);
+	void PauseCameraMoveToCursor() const;
+	void ReadyToUseSkill();
 	
 	int32 GetEnuriaCount() const;
 
@@ -174,6 +177,8 @@ private:
 	int32 CurrentCombo;
 	float SkillCoolTime;
 	uint8 bCanSkill : 1;
+	uint8 bSkillRotateToMouseCursor : 1;
+	FTimerHandle SkillCoolTimeTimerHandle;
 
 	// 이누리아 관련 변수
 private:

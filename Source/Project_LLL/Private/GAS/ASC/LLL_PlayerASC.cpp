@@ -27,14 +27,35 @@ void ULLL_PlayerASC::BeginPlay()
 
 FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const FGameplayEffectSpec& GameplayEffect, FPredictionKey PredictionKey)
 {
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (!IsValid(Player))
+	{
+		return Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
+	}
+	
 	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(GameplayEffect.Def);
 
 	if (IsValid(Effect) && (Effect->GetAssetTags().HasTag(TAG_GAS_ABILITY_NESTING_DENY) || Effect->GetAssetTags().HasTag(TAG_GAS_ABILITY_NESTING_DENY)))
 	{
+		const float CoolDown = Effect->GetAbilityData()->AbilityCooldown;
+		if (Effect->GetAbilityData()->TagID[1] == '1')
+		{
+			Player->SetSkillCoolTime(CoolDown);
+			Player->ReadyToUseSkill();
+			
+			EAnimalType AnimalType = Effect->GetAbilityData()->AnimalType;
+			if (AnimalType == EAnimalType::Deer || AnimalType == EAnimalType::Wolf)
+			{
+				Player->SetSkillRotateToMouseCursor(true);
+			}
+			else
+			{
+				Player->SetSkillRotateToMouseCursor(false);
+			}
+		}
+		
 		const float Value1 = Effect->GetAbilityData()->AbilityValue1 / static_cast<uint32>(Effect->GetAbilityData()->Value1Type);
 		const float Value2 = Effect->GetAbilityData()->AbilityValue2 / static_cast<uint32>(Effect->GetAbilityData()->Value2Type);
-		
 		if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
 		{
 			Player->StartChargeFeather(Value1);
