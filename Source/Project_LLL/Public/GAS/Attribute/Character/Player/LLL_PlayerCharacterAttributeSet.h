@@ -6,6 +6,59 @@
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 #include "LLL_PlayerCharacterAttributeSet.generated.h"
 
+USTRUCT(BlueprintType)
+struct FPlayerCharacterStatusData
+{
+	GENERATED_BODY()
+
+public:
+	FPlayerCharacterStatusData():
+	MaxHealth(0),
+	CurrentHealth(0),
+	OffencePower(0),
+	MoveSpeed(0),
+	AttackSpeed(0),
+	CriticalChance(0),
+	CriticalAmplify(0),
+	MaxDashCount(0),
+	DashDistance(0),
+	KnockBackPower(0)
+	{
+		
+	}
+
+public:
+	UPROPERTY()
+	uint32 MaxHealth;
+
+	UPROPERTY()
+	uint32 CurrentHealth;
+
+	UPROPERTY()
+	uint32 OffencePower;
+
+	UPROPERTY()
+	uint32 MoveSpeed;
+
+	UPROPERTY()
+	uint32 AttackSpeed;
+
+	UPROPERTY()
+	float CriticalChance;
+
+	UPROPERTY()
+	float CriticalAmplify;
+	
+	UPROPERTY()
+	uint32 MaxDashCount;
+
+	UPROPERTY()
+	float DashDistance;
+
+	UPROPERTY()
+	uint32 KnockBackPower;
+};
+
 /**
  * 
  */
@@ -54,6 +107,10 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackOffencePowerPlus);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherOffencePowerRate);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherOffencePowerPlus);
+
+public:
+	FPlayerCharacterStatusData MakeCharacterStatusData() const;
+	void InitializeSavedStatusData(const FPlayerCharacterStatusData* CharacterStatusData);
 	
 protected:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;

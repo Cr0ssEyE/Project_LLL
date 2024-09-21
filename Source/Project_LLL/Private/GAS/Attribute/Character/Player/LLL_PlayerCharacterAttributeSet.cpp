@@ -26,6 +26,40 @@ FeatherOffencePowerPlus(0.0f)
 	
 }
 
+FPlayerCharacterStatusData ULLL_PlayerCharacterAttributeSet::MakeCharacterStatusData() const
+{
+	FPlayerCharacterStatusData CharacterStatusData;
+	CharacterStatusData.MaxHealth = MaxHealth.GetBaseValue();
+	CharacterStatusData.CurrentHealth = CurrentHealth.GetCurrentValue();
+	CharacterStatusData.OffencePower = OffencePower.GetBaseValue();
+	CharacterStatusData.MoveSpeed = MoveSpeed.GetBaseValue();
+	CharacterStatusData.AttackSpeed = AttackSpeed.GetBaseValue();
+	CharacterStatusData.CriticalChance = CriticalChance.GetBaseValue();
+	CharacterStatusData.CriticalAmplify = CriticalAmplify.GetBaseValue();
+	CharacterStatusData.MaxDashCount = MaxDashCount.GetBaseValue();
+	CharacterStatusData.DashDistance = DashDistance.GetBaseValue();
+	CharacterStatusData.KnockBackPower = KnockBackPower.GetBaseValue();
+	
+	return CharacterStatusData;
+}
+
+void ULLL_PlayerCharacterAttributeSet::InitializeSavedStatusData(const FPlayerCharacterStatusData* CharacterStatusData)
+{
+	MaxHealth.SetCurrentValue(CharacterStatusData->MaxHealth);
+	CurrentHealth.SetCurrentValue(CharacterStatusData->CurrentHealth); // (FMath::Clamp(CharacterStatusData->CurrentHealth, 0, CharacterStatusData->MaxHealth));
+	OffencePower.SetBaseValue(CharacterStatusData->OffencePower);
+	MoveSpeed.SetBaseValue(CharacterStatusData->MoveSpeed);
+	AttackSpeed.SetBaseValue(CharacterStatusData->AttackSpeed);
+	CriticalChance.SetBaseValue(CharacterStatusData->CriticalChance);
+	CriticalAmplify.SetBaseValue(CharacterStatusData->CriticalAmplify);
+	MaxDashCount.SetBaseValue(CharacterStatusData->MaxDashCount);
+	DashDistance.SetBaseValue(CharacterStatusData->DashDistance);
+	KnockBackPower.SetBaseValue(CharacterStatusData->KnockBackPower);
+
+	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
+	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
+}
+
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())

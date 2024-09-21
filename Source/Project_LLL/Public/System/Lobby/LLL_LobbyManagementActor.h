@@ -72,5 +72,7 @@ protected:
 protected:
 	UPROPERTY()
 	TObjectPtr<ALevelSequenceActor> LobbySequenceActor;
-	
+
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> PlayerTeleportNiagara;
 };

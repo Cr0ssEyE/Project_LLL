@@ -41,7 +41,7 @@ public:
 	FORCEINLINE ULLL_InventoryWidget* GetInventoryWidget() const { return InventoryWidget; }
 	FORCEINLINE ULLL_InteractionWidget* GetInteractionWidget() const { return InteractionWidget; }
 	FORCEINLINE ULLL_SelectRewardWidget* GetSelectRewardWidget() const { return SelectRewardWidget; }
-	FORCEINLINE ULLL_MainEruriaInfoWidget* GetMainEruriaWidget() const { return MainEruriaInfoWidget; }
+	FORCEINLINE ULLL_MainEruriaInfoWidget* GetMainEnuriaWidget() const { return MainEnuriaInfoWidget; }
 	
 protected:
 	virtual void UpdateWidget() override;
@@ -74,10 +74,10 @@ protected:
 	TObjectPtr<ULLL_SelectRewardWidget> SelectRewardWidget;
 
 	UPROPERTY(VisibleAnywhere)
-	TSubclassOf<ULLL_MainEruriaInfoWidget> MainEruriaInfoWidgetClass;
+	TSubclassOf<ULLL_MainEruriaInfoWidget> MainEnuriaInfoWidgetClass;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ULLL_MainEruriaInfoWidget> MainEruriaInfoWidget;
+	TObjectPtr<ULLL_MainEruriaInfoWidget> MainEnuriaInfoWidget;
 
 protected:
 	UPROPERTY(VisibleAnywhere)

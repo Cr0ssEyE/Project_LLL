@@ -18,7 +18,7 @@ void ULLL_MainEruriaInfoWidget::NativeConstruct()
 	
 }
 
-void ULLL_MainEruriaInfoWidget::SetEruriaInfo(const FAbilityDataTable* AbilityData)
+void ULLL_MainEruriaInfoWidget::SetEnuriaInfo(const FAbilityDataTable* AbilityData)
 {
 	
 }

@@ -48,7 +48,7 @@ class PROJECT_LLL_API ULLL_MainEruriaInfoWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	void SetEruriaInfo(const FAbilityDataTable* AbilityData);
+	void SetEnuriaInfo(const FAbilityDataTable* AbilityData);
 	void RemoveEruriaInfo(const EAbilityPart AbilityPart);
 	
 protected:

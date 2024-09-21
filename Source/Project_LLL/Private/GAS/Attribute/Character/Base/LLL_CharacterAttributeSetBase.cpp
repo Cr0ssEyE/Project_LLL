@@ -67,6 +67,12 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 		
 		SetReceiveDamage(0.f);
 	}
+
+	if (Data.EvaluatedData.Attribute == GetCurrentHealthAttribute())
+	{
+		SetCurrentHealth(FMath::Clamp(GetCurrentHealth(), 0.f, GetMaxHealth()));
+	}
+	
 	Character->UpdateWidgetDelegate.Broadcast();
 
 	Super::PostGameplayEffectExecute(Data);

@@ -29,7 +29,8 @@ public:
 	ULLL_GameInstance();
 
 	virtual void Init() override;
-
+	virtual void InitDataTables();
+	
 	FStageEncounteredDelegate EncounteredDelegate;
 	
 public:

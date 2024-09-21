@@ -42,7 +42,7 @@ public:
 
 	FORCEINLINE const FRewardDataTable* GetRewardData(uint8 index) { return RewardData[index]; }
 	FORCEINLINE void InformMapGimmickIsExist() { bMapGimmickIsExist = true; }
-
+	FORCEINLINE TArray<const FAbilityDataTable*> GetRolledAbilityData() const { return ButtonAbilityDataArray; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -64,6 +64,8 @@ public:
 	void RollReward(TArray<TTuple<const FAbilityDataTable*, float>> AbilityDataTables);
 	
 protected:
+	void WaitPlayerInitialize();
+	
 	UFUNCTION()
 	void ClickFirstButton();
 
@@ -76,7 +78,7 @@ protected:
 	void ClickButtonEvent(const FAbilityDataTable* ButtonAbilityData);
 
 	UFUNCTION()
-	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects);
+	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID);
 	
 protected:
 	TArray<const FRewardDataTable*> RewardData;
@@ -85,9 +87,7 @@ protected:
 	uint32 TotalRewardWeight;
 	TArray<TTuple<const FAbilityDataTable*, float>> NormalizedWeightRewardArray;
 	
-	TArray<const FAbilityDataTable*> GottenAbilityArray;
 	TArray<const FAbilityDataTable*> ButtonAbilityDataArray;
-	const FAbilityDataTable* CurrentAbilityData;
 	
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsButtonEventSetup : 1;
