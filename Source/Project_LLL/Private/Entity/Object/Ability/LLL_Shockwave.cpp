@@ -6,9 +6,9 @@
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
-#include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
-#include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
 #include "Game/LLL_DebugGameInstance.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "GAS/Attribute/Object/Ability/LLL_ShockwaveAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
@@ -52,19 +52,18 @@ void ALLL_Shockwave::Tick(float DeltaSeconds)
 void ALLL_Shockwave::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-
-	if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OtherActor))
-	{
-		if (CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance())->IsDashing())
-		{
-			return;
-		}
-	}
 	
 	if (GetDistanceTo(OtherActor) < OverlapCollisionSphere->GetScaledSphereRadius() - ShockwaveAttributeSet->GetThickness())
 	{
 		return;
 	}
-	
-	DamageToOverlapActor(OtherActor);
+
+	if (const ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(GetOwner()))
+	{
+		const UAbilitySystemComponent* ManOfStrengthASC = ManOfStrength->GetAbilitySystemComponent();
+		const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(ManOfStrengthASC->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+		OffencePower = MonsterAttributeSet->GetManOfStrengthShockwaveOffencePower();
+		
+		DamageToOverlapActor(OtherActor);
+	}
 }

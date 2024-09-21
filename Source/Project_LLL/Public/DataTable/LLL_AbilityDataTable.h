@@ -18,14 +18,17 @@ struct FAbilityDataTable : public FTableRowBase
 
 	FAbilityDataTable() :
 	ID(10000),
-	AbilityType(EAbilityType::None),
-	AbilityPart(EAbilityPart::Common),
+	AnimalType(EAnimalType::None),
 	AbilityRank(EAbilityRank::Normal),
 	AbilityCategory(EAbilityCategory::Null),
 	bIsImplement(false),
-	AbilityValueType(),
-	AbilityValue(0.f),
-	ChangeValue(0.f), UnchangeableValue(0),
+	AbilityValue1(0.f),
+	Value1Type(EAbilityValueType::Fixed),
+	AbilityValue2(0.f),
+	Value2Type(EAbilityValueType::Fixed),
+	KnockBackPower(0.f),
+	AbilityCooldown(0.f),
+	RequireSynergy(0),
 	RequireCategory(EAbilityCategory::Null),
 	GetAbilityRate(0.f)
 	{
@@ -35,11 +38,8 @@ struct FAbilityDataTable : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	int32 ID;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 유형")
-	EAbilityType AbilityType;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 부위")
-	EAbilityPart AbilityPart;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "동물 유형")
+	EAnimalType AnimalType;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 등급")
 	EAbilityRank AbilityRank;
@@ -53,26 +53,38 @@ struct FAbilityDataTable : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 정보")
 	FString AbilityInformation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 구현 여부")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "구현 여부")
 	uint8 bIsImplement : 1;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "수치 적용 유형")
-	EAbilityValueType AbilityValueType;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 수치")
-	float AbilityValue;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "수치 변화량")
-	float ChangeValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 수치 1")
+	float AbilityValue1;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "수치 1 유형")
+	EAbilityValueType Value1Type;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "미변동 요소 수치")
-	float UnchangeableValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 수치 2")
+	float AbilityValue2;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "수치 2 유형")
+	EAbilityValueType Value2Type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "넉백 수치")
+	float KnockBackPower;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "능력 쿨타임")
+	float AbilityCooldown;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "시너지 요구량")
+	int32 RequireSynergy;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "획득 조건")
 	EAbilityCategory RequireCategory;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "획득 가중치")
 	int32 GetAbilityRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", DisplayName = "태그 ID")
+	FString TagID;
 };
 
 UCLASS()

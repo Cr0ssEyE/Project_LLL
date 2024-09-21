@@ -13,8 +13,15 @@
 
 ULLL_PlayerCharacterAttributeSet::ULLL_PlayerCharacterAttributeSet() :
 LowHealthPercentage(0.3f),
-BaseAttackDamageAmplifyByOther(1.f),
-TargetingCorrectionRadius(100.f)
+TargetingCorrectionRadius(100.f),
+AllOffencePowerRate(1.0f),
+AllOffencePowerPlus(0.0f),
+KnockBackPowerRate(1.0f),
+KnockBackPowerPlus(0.0f),
+KnockBackOffencePowerRate(1.0f),
+KnockBackOffencePowerPlus(0.0f),
+FeatherOffencePowerRate(1.0f),
+FeatherOffencePowerPlus(0.0f)
 {
 	
 }
@@ -86,14 +93,18 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 			}
 		}
 #endif
-		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-		if (GetCurrentHealth() == 0)
+
+		if (Player->GetCapsuleComponent()->GetCollisionProfileName() != CP_PLAYER_EVADE)
 		{
-			Player->Dead();
-		}
-		else
-		{
-			Player->Damaged(Attacker, DOT);
+			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+			if (GetCurrentHealth() == 0)
+			{
+				Player->Dead();
+			}
+			else
+			{
+				Player->Damaged(Attacker, DOT);
+			}
 		}
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -105,6 +116,14 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 			}
 		}
 #endif
+	}
+
+	if (Data.EvaluatedData.Attribute == GetCurrentHealthAttribute())
+	{
+		if (GetCurrentHealth() > GetMaxHealth())
+		{
+			SetCurrentHealth(GetMaxHealth());
+		}
 	}
 	
 	Super::PostGameplayEffectExecute(Data);

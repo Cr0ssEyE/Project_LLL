@@ -170,6 +170,6 @@ void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 		break;
 	default:;
 	}
-	
+
 	Destroy();
 }

@@ -59,10 +59,6 @@ public:
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
 	void CharacterUnDissolveBegin();
-	
-	void StartChargeFeather();
-	void AddRangeFeatherTargets(AActor* Target);
-	TArray<AActor*> GetRangeFeatherTargetsAndClear();
 
 public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
@@ -72,29 +68,56 @@ public:
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
-	FORCEINLINE UWidgetComponent* GetChaseActionGaugeWidgetComponent() const { return ChaseActionGaugeWidgetComponent;}
-	FORCEINLINE float GetLastSentDamage() const { return LastSentDamage; }
-	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
-	FORCEINLINE float GetFeatherSpawnStartTime() const { return FeatherSpawnStartTime; }
+	FORCEINLINE FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
+	FORCEINLINE bool IsSkillRotateToMouseCursor() const { return bSkillRotateToMouseCursor; }
 
-	FORCEINLINE void SetCurrentCombo(int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
-	FORCEINLINE void SetMoveInputPressed(const FInputActionValue& Value, const bool Press) { bIsMoveInputPressed = Press; }
-	FORCEINLINE void SetLastSentDamage(float InLastSentDamage) { LastSentDamage = InLastSentDamage; }
-	FORCEINLINE void SetFeatherSpawnStartTime(float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
+	FORCEINLINE void SetCurrentCombo(const int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
+	FORCEINLINE void SetMoveInputPressed(const bool Press) { bIsMoveInputPressed = Press; }
+	FORCEINLINE void SetSkillCoolTime(const float InSkillCoolTime) { SkillCoolTime = InSkillCoolTime; }
+	FORCEINLINE void SetSkillRotateToMouseCursor(const bool SkillRotateToMouseCursor) { bSkillRotateToMouseCursor = SkillRotateToMouseCursor; }
 	
 	FVector CheckMouseLocation();
-	FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
-	void PlayerRotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
+	void RotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
+	void StartCameraMoveToCursor(const ALLL_PlayerController* PlayerController = nullptr);
+	void PauseCameraMoveToCursor() const;
+	void ReadyToUseSkill();
+	
+	int32 GetEnuriaCount() const;
 
 public:
-	void StartCameraMoveToCursor(ALLL_PlayerController* PlayerController = nullptr);
-	void PauseCameraMoveToCursor();
+	// 이누리아 관련 함수
+	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
+	FORCEINLINE float GetFeatherSpawnStartTime() const { return FeatherSpawnStartTime; }
+	FORCEINLINE int32 GetDeflectCount() const { return DeflectCount; }
+	FORCEINLINE float GetKnockBackTransmissionOffencePower() const { return KnockBackTransmissionOffencePower; }
+	FORCEINLINE float GetKnockBackTransmissionKnockBackPower() const { return KnockBackTransmissionKnockBackPower; }
+	FORCEINLINE float GetQuadrupleHitKnockBackPower() const { return QuadrupleHitKnockBackPower; }
+	FORCEINLINE float GetFasterKnockBackSpeedRate() const { return FasterKnockBackSpeedRate; }
+	FORCEINLINE float GetIncreaseKnockBackDamageByEnuriaCountDamageRate() const { return IncreaseKnockBackDamageByEnuriaCountDamageRate; }
+	FORCEINLINE float GetRangeKnockBackKnockBackPower() const { return RangeKnockBackKnockBackPower; }
+	FORCEINLINE int32 GetBleedingTransmissionStack() const { return BleedingTransmissionStack; }
+	
+	FORCEINLINE void SetFeatherSpawnStartTime(const float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
+	FORCEINLINE void SetDeflectCount(const int32 InDeflectCount) { DeflectCount = InDeflectCount; }
+	FORCEINLINE void SetKnockBackTransmissionOffencePower(const float InKnockBackTransmissionOffencePower) { KnockBackTransmissionOffencePower = InKnockBackTransmissionOffencePower; }
+	FORCEINLINE void SetKnockBackTransmissionKnockBackPower(const float InKnockBackTransmissionKnockBackPower) { KnockBackTransmissionKnockBackPower = InKnockBackTransmissionKnockBackPower; }
+	FORCEINLINE void SetQuadrupleHitKnockBackPower(const float InQuadrupleHitKnockBackPower) { QuadrupleHitKnockBackPower = InQuadrupleHitKnockBackPower; }
+	FORCEINLINE void SetFasterKnockBackSpeedRate(const float InFasterKnockBackRate) { FasterKnockBackSpeedRate = InFasterKnockBackRate; }
+	FORCEINLINE void SetIncreaseKnockBackDamageByEnuriaCountDamageRate(const float InIncreaseKnockBackDamageByEnuriaCountDamageRate) { IncreaseKnockBackDamageByEnuriaCountDamageRate = InIncreaseKnockBackDamageByEnuriaCountDamageRate; }
+	FORCEINLINE void SetRangeKnockBackKnockBackPower(const float InRangeKnockBackKnockBackPower) { RangeKnockBackKnockBackPower = InRangeKnockBackKnockBackPower; }
+	FORCEINLINE void SetVampireRecoveryRate(const float InVampireRecoveryRate) { VampireRecoveryRate = InVampireRecoveryRate; }
+	FORCEINLINE void SetBleedingTransmissionStack(const int32 InBleedingTransmissionStack) { BleedingTransmissionStack = InBleedingTransmissionStack; }
+	
+	void StartChargeFeather(float Timer);
+	void AddRangeFeatherTargets(AActor* Target);
+	TArray<AActor*> GetRangeFeatherTargetsAndClear();
+	void VampireRecovery(float OffencePower) const;
 
 public:
 	FDissolveCompleteDelegate DissolveCompleteDelegate;
 	
 protected:
-	void TurnToMouseCursor();
+	void RotateToMouseCursorRecursive();
 	void MoveCameraToMouseCursor();
 	
 	// 카메라
@@ -124,7 +147,6 @@ private:
 	void MoveAction(const FInputActionValue& Value);
 	void DashAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void AttackAction(const FInputActionValue& Value, EAbilityInputName InputName);
-	void ChaseAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void SkillAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void InteractAction(const FInputActionValue& Value);
 	void InventoryAction(const FInputActionValue& Value);
@@ -155,15 +177,31 @@ private:
 	float ToCursorRotationMultiplyValue;
 	int32 LastAttackerMonsterId;
 	int32 CurrentCombo;
+	float SkillCoolTime;
+	uint8 bCanSkill : 1;
+	uint8 bSkillRotateToMouseCursor : 1;
+	FTimerHandle SkillCoolTimeTimerHandle;
+
+	// 이누리아 관련 변수
+private:
 	int32 ChargedFeatherCount;
 	FTimerHandle ChargeFeatherTimerHandle;
 	TArray<TObjectPtr<AActor>> RangeFeatherTargets;
 	float FeatherSpawnStartTime;
+	int32 DeflectCount;
+	float KnockBackTransmissionOffencePower;
+	float KnockBackTransmissionKnockBackPower;
+	float QuadrupleHitKnockBackPower;
+	float QuadrupleHitDamageRate;
+	float FasterKnockBackSpeedRate;
+	float IncreaseKnockBackDamageByEnuriaCountDamageRate;
+	float RangeKnockBackKnockBackPower;
+	float VampireRecoveryRate;
+	int32 BleedingTransmissionStack;
 
 	// 상태 관련 함수
 protected:
 	void DropDissolveActor();
-
 	void PullUpDissolveActor();
 	
 	UFUNCTION()
@@ -182,11 +220,6 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_ObjectPoolingComponent> ObjectPoolingComponent;
-	
-	//UI 관련
-protected:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UWidgetComponent> ChaseActionGaugeWidgetComponent;
 
 	// MPC 관련
 protected:
@@ -204,8 +237,4 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	float ScalarValue;
-
-protected:
-	UPROPERTY(VisibleAnywhere)
-	float LastSentDamage;
 };

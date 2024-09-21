@@ -25,9 +25,6 @@ ULLL_GameInstance::ULLL_GameInstance()
 	ObjectMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_OBJECT_MPC, EAssertionLevel::Check);
 	PlayerMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_PLAYER_MPC, EAssertionLevel::Check);
 	PostProcessMPC = FLLL_ConstructorHelper::FindAndGetObject<UMaterialParameterCollection>(PATH_POSTPROCESS_MPC, EAssertionLevel::Check);
-	
-	CustomTimeDilation = 1.f;
-	CustomTimeDilationInterpSpeed = TIME_DILATION_INTERP_SPEED;
 }
 
 void ULLL_GameInstance::Init()
@@ -85,70 +82,3 @@ void ULLL_GameInstance::InitDataTables()
 		StringData.Add(LoadStringData);
 	}
 }
-
-void ULLL_GameInstance::SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation)
-{
-	if (!bCustomTimeDilationIsChanging)
-	{
-		bCustomTimeDilationIsChanging = true;
-
-		SetActorsCustomTimeDilationRecursive(Actors, InCustomTimeDilation);
-	}
-}
-
-void ULLL_GameInstance::SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation)
-{
-	if (!IsValid(GetWorld()))
-	{
-		return;
-	}
-
-	TArray<AActor*> SucceedActors;
-	for (const auto Actor : Actors)
-	{
-		if (!IsValid(Actor))
-		{
-			continue;
-		}
-
-		if (Actor->CustomTimeDilation == InCustomTimeDilation)
-		{
-			SucceedActors.Emplace(Actor);
-			continue;
-		}
-		
-		Actor->CustomTimeDilation = CustomTimeDilation;
-	
-		if (const ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(Actor))
-		{
-			FModInterface->GetFModAudioComponent()->SetPitch(CustomTimeDilation);
-		}
-	}
-
-	GetSubsystem<ULLL_MapSoundSubsystem>()->SetBulletTimeParameterValue(CustomTimeDilation);
-
-	for (auto Actor : SucceedActors)
-	{
-		if (Actors.Contains(Actor))
-		{
-			Actors.Remove(Actor);
-		}
-	}
-	
-	UE_LOG(LogTemp, Log, TEXT("CustomTimeDilation : %.5f"), CustomTimeDilation)
-	
-	if (CustomTimeDilation == InCustomTimeDilation)
-	{
-		bCustomTimeDilationIsChanging = false;
-		return;
-	}
-
-	CustomTimeDilation = FMath::FInterpTo(CustomTimeDilation, InCustomTimeDilation, GetWorld()->GetDeltaSeconds(), CustomTimeDilationInterpSpeed);
-
-	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&, Actors, InCustomTimeDilation]{
-		SetActorsCustomTimeDilationRecursive(Actors, InCustomTimeDilation);
-	}));
-}
-
-
-

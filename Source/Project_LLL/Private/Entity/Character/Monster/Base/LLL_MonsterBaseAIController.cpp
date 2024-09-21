@@ -62,7 +62,7 @@ void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 
 void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (Montage == MonsterDataAsset->DamagedAnimMontage)
+	if (Montage == MonsterDataAsset->DamagedAnimMontage && !Monster->IsKnockBacking())
 	{
 		if (Monster->CheckCharacterIsDead())
 		{

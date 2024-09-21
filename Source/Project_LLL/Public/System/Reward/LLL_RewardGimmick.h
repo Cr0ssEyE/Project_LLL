@@ -16,6 +16,21 @@ class ULLL_RewardDataTable;
 class ULLL_TestAbilityDataTable;
 class ALLL_AbilityRewardObject;
 
+USTRUCT(BlueprintType)
+struct FTestAbilityDataID
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 TestAbilityDataID1;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 TestAbilityDataID2;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 TestAbilityDataID3;
+};
+
 UCLASS()
 class PROJECT_LLL_API ALLL_RewardGimmick : public ALLL_SystemBase
 {
@@ -67,15 +82,13 @@ protected:
 	
 protected:
 	TArray<const FRewardDataTable*> RewardData;
-	
 	TArray<const FAbilityDataTable*> AbilityData;
 
 	uint32 TotalRewardWeight;
 	TArray<TTuple<const FAbilityDataTable*, float>> NormalizedWeightRewardArray;
 	
-	TArray<const FAbilityDataTable*> GettenAbilityArray;
+	TArray<const FAbilityDataTable*> GottenAbilityArray;
 	TArray<const FAbilityDataTable*> ButtonAbilityDataArray;
-
 	const FAbilityDataTable* CurrentAbilityData;
 	
 	UPROPERTY(EditDefaultsOnly)
@@ -83,17 +96,16 @@ protected:
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	uint8 bMapGimmickIsExist : 1;
+	
+	const FAbilityDataTable* ButtonAbilityData1;
+	const FAbilityDataTable* ButtonAbilityData2;
+	const FAbilityDataTable* ButtonAbilityData3;
 
-protected:
+	// 테스트용
+public:
 	UPROPERTY(EditAnywhere)
 	uint8 bIsTest : 1;
-
-	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
-	uint32 TestAbilityDataID1;
-
-	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
-	uint32 TestAbilityDataID2;
 	
 	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
-	uint32 TestAbilityDataID3;
+	TArray<FTestAbilityDataID> TestAbilityDataID;
 };
