@@ -191,8 +191,6 @@ void ALLL_PlayerBase::InitAttributeSet()
 
 	// DefaultGame.ini의 [/Script/GameplayAbilities.AbilitySystemGlobals] 항목에 테이블 미리 추가해놔야 정상 작동함.
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, ATTRIBUTE_INIT_PLAYER, AbilityLevel, true);
-	OriginKnockBackPower = PlayerCharacterAttributeSet->GetKnockBackPower();
-	OriginOffencePower = PlayerCharacterAttributeSet->GetOffencePower();
 }
 
 void ALLL_PlayerBase::SetFModParameter(EFModParameter FModParameter)

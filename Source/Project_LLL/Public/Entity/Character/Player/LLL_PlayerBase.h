@@ -186,8 +186,6 @@ private:
 	FTimerHandle ChargeFeatherTimerHandle;
 	TArray<TObjectPtr<AActor>> RangeFeatherTargets;
 	float FeatherSpawnStartTime;
-	float OriginKnockBackPower;
-	float OriginOffencePower;
 	int32 DeflectCount;
 	float KnockBackTransmissionOffencePower;
 	float KnockBackTransmissionKnockBackPower;
