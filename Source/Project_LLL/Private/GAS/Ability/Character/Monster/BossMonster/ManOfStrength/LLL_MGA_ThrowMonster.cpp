@@ -50,7 +50,7 @@ void ULLL_MGA_ThrowMonster::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		CharacterMovementComponent->Velocity = Direction * Speed;
 		MonsterAIController->GetBlackboardComponent()->SetValueAsObject(BBKEY_OTHER_MONSTER, nullptr);
 
-		OtherMonster->SetOwner(Monster);
+		OtherMonster->DisconnectOwnerDeadDelegate();
 
 		UE_LOG(LogTemp, Log, TEXT("%s 던지기"), *OtherMonster->GetName())
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

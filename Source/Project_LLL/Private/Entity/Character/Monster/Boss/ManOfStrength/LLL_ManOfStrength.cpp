@@ -62,7 +62,7 @@ void ALLL_ManOfStrength::InitAttributeSet()
 {
 	Super::InitAttributeSet();
 
-	const float DashDamageRange = MonsterAttributeSet->GetManOfStrengthDashDamageRange();
+	const float DashDamageRange = MonsterAttributeSet->GetManOfStrengthDashPunchDashDamageRange();
 	DashDamageRangeBox->SetBoxExtent(FVector(GetCapsuleComponent()->GetScaledCapsuleRadius(), DashDamageRange, DashDamageRange));
 }
 
@@ -76,7 +76,7 @@ void ALLL_ManOfStrength::NotifyActorBeginOverlap(AActor* OtherActor)
 		{
 			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(this);
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->DashDamageEffect, Level, EffectContextHandle);
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->DashDamageEffect, AbilityLevel, EffectContextHandle);
 			if(EffectSpecHandle.IsValid())
 			{
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());
@@ -100,7 +100,7 @@ void ALLL_ManOfStrength::Charge()
 	AAIController* AIController = CastChecked<AAIController>(GetController());
 	switch (static_cast<EBossMonsterPattern>(AIController->GetBlackboardComponent()->GetValueAsEnum(BBKEY_PATTERN)))
 	{
-	case EBossMonsterPattern::ManOfStrength_Dash:
+	case EBossMonsterPattern::ManOfStrength_DashPunch:
 		ChargeTimer = MonsterAttributeSet->GetChargeTimer();
 		break;
 		
@@ -119,25 +119,6 @@ void ALLL_ManOfStrength::Charge()
 	Super::Charge();
 }
 
-void ALLL_ManOfStrength::Dash()
-{
-	DashDistance = MonsterAttributeSet->GetManOfStrengthDashDistance();
-	DashSpeed = MonsterAttributeSet->GetManOfStrengthDashSpeed();
-	
-	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_DASH)))
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (DebugGameInstance->CheckMonsterAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 대쉬 펀치"), *GetName()));
-			}
-		}
-#endif
-	}
-}
-
 void ALLL_ManOfStrength::Shockwave() const
 {
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MAN_OF_STRENGTH_SHOCKWAVE)))
@@ -148,6 +129,25 @@ void ALLL_ManOfStrength::Shockwave() const
 			if (DebugGameInstance->CheckMonsterAttackDebug())
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 충격파 생성"), *GetName()));
+			}
+		}
+#endif
+	}
+}
+
+void ALLL_ManOfStrength::DashPunch()
+{
+	DashDistance = MonsterAttributeSet->GetManOfStrengthDashPunchDashDistance();
+	DashSpeed = MonsterAttributeSet->GetManOfStrengthDashPunchDashSpeed();
+	
+	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MAN_OF_STRENGTH_DASH_PUNCH)))
+	{
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		{
+			if (DebugGameInstance->CheckMonsterAttackDebug())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 대시 펀치"), *GetName()));
 			}
 		}
 #endif

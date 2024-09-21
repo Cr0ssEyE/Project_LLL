@@ -56,7 +56,10 @@ protected:
 	EEffectApplyTarget AbilityObjectLocationTarget;
 	
 	UPROPERTY(EditAnywhere, Category = "GAS|SpawnObject", DisplayName = "상대 위치", meta =(EditCondition = "bUseSpawnAbilityObject == true", EditConditionHides))
-	FVector AbilityObjectOffsetLocation;;
+	FVector AbilityObjectOffsetLocation;
+
+	UPROPERTY(EditAnywhere, Category = "GAS|SpawnObject", DisplayName = "상대 회전", meta =(EditCondition = "bUseSpawnAbilityObject == true", EditConditionHides))
+	FRotator AbilityObjectOffsetRotation;
 	
 	// Thrown
 protected:

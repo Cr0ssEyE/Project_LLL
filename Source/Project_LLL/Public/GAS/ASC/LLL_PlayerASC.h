@@ -20,4 +20,5 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	virtual FActiveGameplayEffectHandle ApplyGameplayEffectSpecToSelf(const FGameplayEffectSpec& GameplayEffect, FPredictionKey PredictionKey) override;
 };
