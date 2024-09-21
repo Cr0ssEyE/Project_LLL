@@ -28,7 +28,7 @@ void ULLL_InventoryWidget::NativeConstruct()
 	CurrentEmptyEruriaSlotIndex = 0;
 }
 
-void ULLL_InventoryWidget::SetEruriaInfo(const FAbilityDataTable* AbilityData)
+void ULLL_InventoryWidget::SetEnuriaInfo(const FAbilityDataTable* AbilityData)
 {
 	if (SetEruriaImage(CommonEruriaImages[CurrentEmptyEruriaSlotIndex], CommonEruriaLevelTexts[CurrentEmptyEruriaSlotIndex], AbilityData))
 	{

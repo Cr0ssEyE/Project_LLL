@@ -284,8 +284,8 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	
 	// 어빌리티 정보 저장
-	TArray<int32> AcquiredEruriasID;
-	TMap<int32, int32> AcquiredEruriasStackCount;
+	TArray<int32> AcquiredEnuriasID;
+	TMap<int32, int32> AcquiredEnuriasStackCount;
 	
 	TArray<FGameplayEffectSpec> EffectSpecs;
 	PlayerASC->GetAllActiveGameplayEffectSpecs(EffectSpecs);
@@ -302,13 +302,13 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionPlayerData()
 			continue;
 		}
 
-		AcquiredEruriasID.Emplace(RewardAbilityContainerEffect->GetAbilityData()->ID);
+		AcquiredEnuriasID.Emplace(RewardAbilityContainerEffect->GetAbilityData()->ID);
 		// 레벨로 했을 때 정상 작동 하는지 체크 필요
-		AcquiredEruriasStackCount.Emplace(RewardAbilityContainerEffect->GetAbilityData()->ID, EffectSpec.GetLevel());
+		AcquiredEnuriasStackCount.Emplace(RewardAbilityContainerEffect->GetAbilityData()->ID, EffectSpec.GetLevel());
 	}
 
-	CurrentSaveGameData->PlayerPlayProgressData.AcquiredEruriasID = AcquiredEruriasID;
-	CurrentSaveGameData->PlayerPlayProgressData.AcquiredEruriasStackCount = AcquiredEruriasStackCount;
+	CurrentSaveGameData->PlayerPlayProgressData.AcquiredEnuriasID = AcquiredEnuriasID;
+	CurrentSaveGameData->PlayerPlayProgressData.AcquiredEnuriasStackCount = AcquiredEnuriasStackCount;
 	
 	// 어트리뷰트 정보 저장
 	FPlayerCharacterStatusData PlayerCharacterStatusData = PlayerCharacterAttributeSet->MakeCharacterStatusData();
@@ -361,7 +361,8 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 	if (GetWorld()->GetName() == LEVEL_LOBBY)
 	{
 		// 로비 관련 처리
-		PlayerCharacter->SetActorLocation(CurrentSaveGameData->LobbyLastStandingLocation);
+		//PlayerCharacter->SetActorLocation(CurrentSaveGameData->LobbyLastStandingLocation);
+		PlayerCharacter->SetActorLocation(FVector::ZeroVector);
 		return;
 	}
 
@@ -369,13 +370,13 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 	PlayerCharacter->GetGoldComponent()->IncreaseMoney(CurrentSaveGameData->PlayerPlayProgressData.CurrentGoldAmount);
 	
 	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
-	TArray<int32> PlayerAcquiredEruriasID = CurrentSaveGameData->PlayerPlayProgressData.AcquiredEruriasID;
+	TArray<int32> PlayerAcquiredEnuriasID = CurrentSaveGameData->PlayerPlayProgressData.AcquiredEnuriasID;
 
-	for (auto EruriaID : PlayerAcquiredEruriasID)
+	for (auto EnuriaID : PlayerAcquiredEnuriasID)
 	{
 		FAsyncLoadEffectByIDDelegate AsyncLoadEffectDelegate;
-		AsyncLoadEffectDelegate.AddDynamic(this, &ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEruriaEffect);
-		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, EruriaID, EEffectAccessRange::None);
+		AsyncLoadEffectDelegate.AddDynamic(this, &ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEnuriaEffect);
+		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, EnuriaID, EEffectAccessRange::None);
 	}
 
 	// 황금사과 관련 처리. 다만 적용 순서 등의 문제로 인해 여기서 사용하는 이펙트는 체력 회복은 해주지 않음
@@ -389,15 +390,10 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 	OnLastSessionPlayerDataLoaded.Broadcast();
 }
 
-void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEruriaEffect(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID)
+void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEnuriaEffect(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID)
 {
 	// 이누리아 개편으로 몇몇 이누리아는 제대로 로드 안될 가능성 있어 체크 필요.
-	TArray<const FAbilityDataTable*> EqualAbilities = FLLL_AbilityDataHelper::ApplyEruriaEffect(GetWorld(), LoadedEffects, EffectID);
-	if (!EqualAbilities.IsEmpty())
-	{
-		for (auto EqualAbility : EqualAbilities)
-		{
-			CastChecked<ULLL_GameInstance>(GetGameInstance())->GetAbilityDataTable().Remove(EqualAbility);
-		}
-	}
+	ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetGameInstance());
+	TArray<const FAbilityDataTable*> AbilityData = GameInstance->GetAbilityDataTable();
+	FLLL_AbilityDataHelper::ApplyEnuriaEffect(GetWorld(), LoadedEffects, EffectID, AbilityData, GameInstance->RewardGimmick->bIsTest);
 }

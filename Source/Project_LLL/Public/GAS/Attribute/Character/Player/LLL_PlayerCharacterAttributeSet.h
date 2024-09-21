@@ -15,16 +15,14 @@ public:
 	FPlayerCharacterStatusData():
 	MaxHealth(0),
 	CurrentHealth(0),
-	OffensePower(0),
+	OffencePower(0),
 	MoveSpeed(0),
 	AttackSpeed(0),
 	CriticalChance(0),
 	CriticalAmplify(0),
 	MaxDashCount(0),
 	DashDistance(0),
-	KnockBackPower(0),
-	KnockBackRate(0),
-	KnockBackOffensePowerRate(0)
+	KnockBackPower(0)
 	{
 		
 	}
@@ -37,7 +35,7 @@ public:
 	uint32 CurrentHealth;
 
 	UPROPERTY()
-	uint32 OffensePower;
+	uint32 OffencePower;
 
 	UPROPERTY()
 	uint32 MoveSpeed;
@@ -59,12 +57,6 @@ public:
 
 	UPROPERTY()
 	uint32 KnockBackPower;
-
-	UPROPERTY()
-	float KnockBackRate;
-	
-	UPROPERTY()
-	float KnockBackOffensePowerRate;
 };
 
 /**

@@ -77,8 +77,8 @@ public:
 public:
 	FORCEINLINE void RegisterMapGimmick(ALLL_MapGimmick* MapGimmick) { CurrentInstanceMapGimmick = MapGimmick; }
 	FORCEINLINE ULLL_SaveGameData* GetCurrentSaveGameData() const { return CurrentSaveGameData; }
-	FORCEINLINE FName GetLastPlayedLevelName() { return CurrentSaveGameData? CurrentSaveGameData->LastPlayedLevelName : LEVEL_LOBBY; }
-	FORCEINLINE bool CheckExitCurrentSession() { return bIsBeginOut; }
+	FORCEINLINE FName GetLastPlayedLevelName() const { return CurrentSaveGameData ? CurrentSaveGameData->LastPlayedLevelName : LEVEL_LOBBY; }
+	FORCEINLINE bool CheckExitCurrentSession() const { return bIsBeginOut; }
 	
 public:
 	FOnLastSessionMapDataLoaded OnLastSessionLoaded;
@@ -87,7 +87,7 @@ public:
 
 private:
 	UFUNCTION()
-	void LoadLastSessionPlayerEruriaEffect(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID);
+	void LoadLastSessionPlayerEnuriaEffect(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID);
 
 private:
 	UPROPERTY()

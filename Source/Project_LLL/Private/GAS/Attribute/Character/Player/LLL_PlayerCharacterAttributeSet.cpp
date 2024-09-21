@@ -31,7 +31,7 @@ FPlayerCharacterStatusData ULLL_PlayerCharacterAttributeSet::MakeCharacterStatus
 	FPlayerCharacterStatusData CharacterStatusData;
 	CharacterStatusData.MaxHealth = MaxHealth.GetBaseValue();
 	CharacterStatusData.CurrentHealth = CurrentHealth.GetCurrentValue();
-	CharacterStatusData.OffensePower = OffensePower.GetBaseValue();
+	CharacterStatusData.OffencePower = OffencePower.GetBaseValue();
 	CharacterStatusData.MoveSpeed = MoveSpeed.GetBaseValue();
 	CharacterStatusData.AttackSpeed = AttackSpeed.GetBaseValue();
 	CharacterStatusData.CriticalChance = CriticalChance.GetBaseValue();
@@ -39,8 +39,6 @@ FPlayerCharacterStatusData ULLL_PlayerCharacterAttributeSet::MakeCharacterStatus
 	CharacterStatusData.MaxDashCount = MaxDashCount.GetBaseValue();
 	CharacterStatusData.DashDistance = DashDistance.GetBaseValue();
 	CharacterStatusData.KnockBackPower = KnockBackPower.GetBaseValue();
-	CharacterStatusData.KnockBackRate = KnockBackRate.GetBaseValue();
-	CharacterStatusData.KnockBackOffensePowerRate = KnockBackOffensePowerRate.GetBaseValue();
 	
 	return CharacterStatusData;
 }
@@ -49,7 +47,7 @@ void ULLL_PlayerCharacterAttributeSet::InitializeSavedStatusData(const FPlayerCh
 {
 	MaxHealth.SetCurrentValue(CharacterStatusData->MaxHealth);
 	CurrentHealth.SetCurrentValue(CharacterStatusData->CurrentHealth); // (FMath::Clamp(CharacterStatusData->CurrentHealth, 0, CharacterStatusData->MaxHealth));
-	OffensePower.SetBaseValue(CharacterStatusData->OffensePower);
+	OffencePower.SetBaseValue(CharacterStatusData->OffencePower);
 	MoveSpeed.SetBaseValue(CharacterStatusData->MoveSpeed);
 	AttackSpeed.SetBaseValue(CharacterStatusData->AttackSpeed);
 	CriticalChance.SetBaseValue(CharacterStatusData->CriticalChance);
@@ -57,8 +55,6 @@ void ULLL_PlayerCharacterAttributeSet::InitializeSavedStatusData(const FPlayerCh
 	MaxDashCount.SetBaseValue(CharacterStatusData->MaxDashCount);
 	DashDistance.SetBaseValue(CharacterStatusData->DashDistance);
 	KnockBackPower.SetBaseValue(CharacterStatusData->KnockBackPower);
-	KnockBackRate.SetBaseValue(CharacterStatusData->KnockBackRate);
-	KnockBackOffensePowerRate.SetBaseValue(CharacterStatusData->KnockBackOffensePowerRate);
 
 	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();

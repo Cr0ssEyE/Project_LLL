@@ -87,9 +87,7 @@ protected:
 	uint32 TotalRewardWeight;
 	TArray<TTuple<const FAbilityDataTable*, float>> NormalizedWeightRewardArray;
 	
-	TArray<const FAbilityDataTable*> GottenAbilityArray;
 	TArray<const FAbilityDataTable*> ButtonAbilityDataArray;
-	const FAbilityDataTable* CurrentAbilityData;
 	
 	UPROPERTY(EditDefaultsOnly)
 	uint8 bIsButtonEventSetup : 1;

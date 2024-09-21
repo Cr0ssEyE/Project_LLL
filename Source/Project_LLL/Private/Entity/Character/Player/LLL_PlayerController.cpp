@@ -60,8 +60,11 @@ void ALLL_PlayerController::WaitPlayerCharacterInitialize()
 	{
 		PlayerInitializedDelegate.Broadcast();
 		PlayerInitializedDelegate.Clear();
-		
-		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->LoadLastSessionPlayerData();
+
+		if (GetWorld()->GetName() != LEVEL_PROTOTYPE)
+		{
+			GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->LoadLastSessionPlayerData();
+		}
 		return;
 	}
 	GetWorldTimerManager().SetTimerForNextTick(this ,&ALLL_PlayerController::WaitPlayerCharacterInitialize);

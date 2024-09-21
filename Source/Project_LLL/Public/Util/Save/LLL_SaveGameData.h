@@ -29,11 +29,11 @@ public:
 	TMap<int32, int32> ShoppingProductList;
 	
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
-	TArray<int32> AcquiredEruriasID;
+	TArray<int32> AcquiredEnuriasID;
 
 	// ID - Count
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
-	TMap<int32, int32> AcquiredEruriasStackCount;
+	TMap<int32, int32> AcquiredEnuriasStackCount;
 
 	// 사용 골드. 
 	UPROPERTY(BlueprintReadWrite, Category = "LastSessionSaveInfo")
