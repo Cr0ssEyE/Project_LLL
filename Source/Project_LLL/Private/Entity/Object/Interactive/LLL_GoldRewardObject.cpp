@@ -7,7 +7,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Kismet/GameplayStatics.h"
 
-void ALLL_GoldRewardObject::SetInformation(const FRewardDataTable* Data)
+void ALLL_GoldRewardObject::SetInformation(const FRewardDataTable* Data, const uint32 Index)
 {
 	Super::SetInformation(Data);
 

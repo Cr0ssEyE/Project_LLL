@@ -52,6 +52,13 @@ void ALLL_KillZone::OnKillTriggerBeginOverlap(UPrimitiveComponent* OverlappedCom
 			{
 				PlayerCharacter->SetActorLocation(FVector(0.f, 0.f, PlayerCharacter->GetMesh()->GetRelativeLocation().Z));
 			}
+
+			if (MapGimmick->GetMonsterSpawner()->GetSpawnPoints().IsEmpty())
+			{
+				ensure(false);
+				PlayerCharacter->SetActorLocation(FVector::Zero());
+				return;
+			}
 			
 			for (auto SpawnPoint : MapGimmick->GetMonsterSpawner()->GetSpawnPoints())
 			{

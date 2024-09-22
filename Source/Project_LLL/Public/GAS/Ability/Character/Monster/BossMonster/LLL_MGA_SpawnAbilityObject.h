@@ -26,4 +26,7 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "상대 위치")
 	FVector OffsetLocation;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "상대 회전")
+	FRotator OffsetRotation;
 };

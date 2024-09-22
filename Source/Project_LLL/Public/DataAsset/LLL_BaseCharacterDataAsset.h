@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
 #include "LLL_BaseCharacterDataAsset.generated.h"
 
@@ -42,6 +41,9 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "피격 애님 몽타주")
 	TObjectPtr<UAnimMontage> DamagedAnimMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
+	TObjectPtr<UAnimMontage> DeadAnimMontage;
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "발동형 게임플레이 어빌리티")

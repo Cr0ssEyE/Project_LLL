@@ -37,10 +37,10 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	}
 #endif
 	
-	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	
-	if(IsValid(PlayerCharacter) && IsValid(PlayerAttributeSet) && IsValid(AttackAnimMontage))
+	if(IsValid(Player) && IsValid(PlayerAttributeSet) && IsValid(AttackAnimMontage))
 	{
 		MaxAttackAction = PlayerAttributeSet->GetMaxAttackActionCount();
 	}
@@ -50,7 +50,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		return;
 	}
 
-	PlayerCharacter->PlayerRotateToMouseCursor();
+	Player->RotateToMouseCursor();
 
 	FGameplayTagContainer OwnedTagsContainer;
 	GetAbilitySystemComponentFromActorInfo_Checked()->GetOwnedGameplayTags(OwnedTagsContainer);
@@ -64,8 +64,8 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	WaitTagTask->EventReceived.AddDynamic(this, &ULLL_PGA_AttackBase::CheckInputPressed);
 	WaitTagTask->ReadyForActivation();
 
-	PlayerCharacter->SetAttacking(true);
-	PlayerCharacter->SetCurrentCombo(CurrentComboAction);
+	Player->SetAttacking(true);
+	Player->SetCurrentCombo(CurrentComboAction);
 }
 
 void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -87,14 +87,14 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 	}
 #endif
 	
-	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	if(IsValid(PlayerCharacter))
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	if(IsValid(Player))
 	{
-		PlayerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+		Player->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 		CurrentComboAction = 0;
 		bIsCanPlayNextAction = false;
-		PlayerCharacter->SetAttacking(false);
-		PlayerCharacter->SetCurrentCombo(CurrentComboAction);
+		Player->SetAttacking(false);
+		Player->SetCurrentCombo(CurrentComboAction);
 	}
 	
 	if (bWasCancelled)
@@ -108,7 +108,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 			}
 
 			UFXSystemComponent* NotifyComponent = NiagaraEffectNotify->GetSpawnedEffect();
-			if (IsValid(GetWorld()) && IsValid(PlayerCharacter) && IsValid(NotifyComponent) && !NotifyComponent->IsGarbageEliminationEnabled())
+			if (IsValid(GetWorld()) && IsValid(Player) && IsValid(NotifyComponent) && !NotifyComponent->IsGarbageEliminationEnabled())
 			{
 				NotifyComponent->DestroyComponent();
 			}
@@ -156,9 +156,9 @@ void ULLL_PGA_AttackBase::CheckInputPressed(FGameplayEventData EventData)
 
 void ULLL_PGA_AttackBase::SetNextAttackAction()
 {
-	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	const UAnimInstance* PlayerAnimInstance = PlayerCharacter->GetCharacterAnimInstance();
-	if(IsValid(PlayerCharacter) && bIsCanPlayNextAction && PlayerAnimInstance->Montage_IsPlaying(AttackAnimMontage))
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	const UAnimInstance* PlayerAnimInstance = Player->GetCharacterAnimInstance();
+	if(IsValid(Player) && bIsCanPlayNextAction && PlayerAnimInstance->Montage_IsPlaying(AttackAnimMontage))
 	{
 		FGameplayTagContainer OwnedTagsContainer;
 		GetAbilitySystemComponentFromActorInfo_Checked()->GetOwnedGameplayTags(OwnedTagsContainer);
@@ -168,7 +168,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 			CurrentComboAction = 0;
 		}
 		
-		PlayerCharacter->PlayerRotateToMouseCursor(1.f, true);
+		Player->RotateToMouseCursor(1.f, true);
 
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_ATTACK_HIT_CHECK_COMPLETE, FGameplayEventData());
 		MontageJumpToSection(*FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
@@ -184,8 +184,8 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 			}
 		}));
 		
-		PlayerCharacter->SetAttacking(true);
-		PlayerCharacter->SetCurrentCombo(CurrentComboAction);
+		Player->SetAttacking(true);
+		Player->SetCurrentCombo(CurrentComboAction);
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))

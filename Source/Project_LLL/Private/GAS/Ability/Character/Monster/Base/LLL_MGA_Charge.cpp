@@ -13,6 +13,7 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+	float ChargeTimer;
 	if (bIsBossMonster)
 	{
 		const ALLL_BossMonster* BossMonster = CastChecked<ALLL_BossMonster>(Monster);
@@ -24,6 +25,13 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 		}
 		
 		Monster->GetCharacterAnimInstance()->Montage_Play(ChargeMontages[BossMonster->GetChargeMontageKey()]);
+
+		FTimerHandle ChargeTimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(ChargeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		}), Monster->GetChargeTimer() == 0 ? ChargeMontages[BossMonster->GetChargeMontageKey()]->GetPlayLength() / Monster->CustomTimeDilation : Monster->GetChargeTimer(), false);
+
+		ChargeTimer = Monster->GetChargeTimer() == 0 ? ChargeMontages[BossMonster->GetChargeMontageKey()]->GetPlayLength() / Monster->CustomTimeDilation : Monster->GetChargeTimer();
 	}
 	else
 	{
@@ -34,12 +42,14 @@ void ULLL_MGA_Charge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 		}
 		
 		Monster->GetCharacterAnimInstance()->Montage_Play(ChargeMontage);
-	}
 		
+		ChargeTimer = Monster->GetChargeTimer() == 0 ? ChargeMontage->GetPlayLength() / Monster->CustomTimeDilation : Monster->GetChargeTimer();
+	}
+	
 	FTimerHandle ChargeTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(ChargeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-	}), Monster->GetChargeTimer(), false);
+	}), ChargeTimer, false);
 
 	Monster->SetCharging(true);
 }

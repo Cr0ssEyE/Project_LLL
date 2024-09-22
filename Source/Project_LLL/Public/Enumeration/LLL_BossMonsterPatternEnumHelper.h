@@ -9,7 +9,7 @@ UENUM(BlueprintType)
 enum class EBossMonsterPattern : uint8
 {
 	ManOfStrength_Shockwave,
-	ManOfStrength_Dash,
+	ManOfStrength_DashPunch,
 	ManOfStrength_SnapOtherMonster,
 	ManOfStrength_AttackInApnea
 };
