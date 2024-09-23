@@ -42,6 +42,7 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 #include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
+#include "Util/LLL_AbilityDataHelper.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
@@ -516,9 +517,20 @@ void ALLL_PlayerBase::ReadyToUseSkill()
 
 int32 ALLL_PlayerBase::GetEnuriaCount() const
 {
-	const TArray<FActiveGameplayEffectHandle> AllowEffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_ALLOW));
-	const TArray<FActiveGameplayEffectHandle> DenyEffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_DENY));
-	return AllowEffectHandles.Num() + DenyEffectHandles.Num();
+	return FLLL_AbilityDataHelper::GottenAbilityArrayEffectHandles(GetWorld()).Num();
+}
+
+int32 ALLL_PlayerBase::GetWolfEnuriaCount() const
+{
+	int32 Count = 0;
+	for (const auto AbilityData : FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld()))
+	{
+		if (AbilityData->AnimalType == EAnimalType::Wolf)
+		{
+			Count++;
+		}
+	}
+	return Count;
 }
 
 void ALLL_PlayerBase::StartChargeFeather(float Timer)

@@ -99,6 +99,12 @@ void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallb
 		Damage *= PlayerAttributeSet->GetAllOffencePowerRate();
 		Damage *= Monster->GetBleedingStack();
 		Damage += PlayerAttributeSet->GetAllOffencePowerPlus();
+
+		// 과다출혈 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EXCESSIVE_BLEEDING) && Monster->GetBleedingStack() == Monster->GetMaxBleedingStack())
+		{
+			Damage += Player->GetExcessiveBleedingOffencePowerPlus();
+		}
 	
 		UE_LOG(LogTemp, Log, TEXT("%s의 출혈 데미지 : %f"), *Monster->GetName(), Damage)
 		Data.EvaluatedData.Magnitude = Damage;

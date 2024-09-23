@@ -97,7 +97,7 @@ void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandl
 
 void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 {
-	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
+	ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
 
 	const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
@@ -110,7 +110,7 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	
 	if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
 	{
-		FLLL_AbilityDataHelper::SetBleedingStatusAbilityDuration(CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo()), EffectSpecHandle.Data);
+		FLLL_AbilityDataHelper::SetBleedingPeriodValue(CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo()), Effect);
 	}
 	
 	if (Effect->GetEffectApplyTarget() == EEffectApplyTarget::Self)

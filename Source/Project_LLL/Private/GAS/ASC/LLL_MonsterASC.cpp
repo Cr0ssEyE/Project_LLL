@@ -63,8 +63,7 @@ void ULLL_MonsterASC::OnFallableTagAdded(const FGameplayTag Tag, int32 count)
 
 void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEffectSpec)
 {
-	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActor());
-	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (!IsValid(Player))
 	{
 		return;
@@ -72,7 +71,7 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(PlayerASC->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
-	
+	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActor());
 	if (GameplayEffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_BLEEDING))
 	{
 		if (GetWorld()->GetTimerManager().IsTimerActive(BleedingTimerHandle))
@@ -82,10 +81,10 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 
 		Monster->UpdateBleedingVFX(true);
 
-		if (Monster->GetBleedingStack() < 5)
+		if (Monster->GetBleedingStack() < Monster->GetMaxBleedingStack())
 		{
 			Monster->SetBleedingStack(Monster->GetBleedingStack() + 1);
-			Monster->UpdateStackVFX(Monster->GetBleedingStack(), 5);
+			Monster->UpdateStackVFX(Monster->GetBleedingStack(), Monster->GetMaxBleedingStack());
 		}
 		
 		GetWorld()->GetTimerManager().SetTimer(BleedingTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, Monster]{

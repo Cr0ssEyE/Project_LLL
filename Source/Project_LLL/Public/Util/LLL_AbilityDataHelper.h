@@ -20,16 +20,19 @@ class PROJECT_LLL_API FLLL_AbilityDataHelper
 {
 public:
 	// 이펙트의 상태이상 설정 관련,
-	static void SetBleedingStatusAbilityDuration(const ALLL_PlayerBase* Player, const TSharedPtr<FGameplayEffectSpec>& EffectSpec)
+	static void SetBleedingPeriodValue(const ALLL_PlayerBase* Player, ULLL_ExtendedGameplayEffect* Effect)
 	{
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 		const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(PlayerASC->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
-
-		// EffectSpec->bDurationLocked = false 하는 이유는 코드 외적인 부분에서 
-		EffectSpec->bDurationLocked = false;
-		EffectSpec->SetDuration(AbnormalStatusAttributeSet->GetBleedingStatusDuration(), true);
-		EffectSpec->Period = AbnormalStatusAttributeSet->GetBleedingStatusPeriod();
-		UE_LOG(LogTemp, Log, TEXT("%f Period 값 변경"), EffectSpec->GetPeriod());
+		
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EXCESSIVE_BLEEDING) && Player->GetWolfEnuriaCount() >= Player->GetExcessiveBleedingWolfEnuriaCheckCount())
+		{
+			Effect->SetPeriodValue(Player->GetExcessiveBleedingPeriod());
+		}
+		else
+		{
+			Effect->SetPeriodValue(AbnormalStatusAttributeSet->GetBleedingStatusPeriod());
+		}
 	}
 
 	static bool SpawnAbilityObject(const ULLL_CharacterGameplayAbilityBase* OwnerAbility, const TSubclassOf<ALLL_AbilityObject>& AbilityObjectClass, FGameplayEventData EventData = FGameplayEventData(), const EEffectApplyTarget AbilityObjectLocationTarget = EEffectApplyTarget::Self, const FVector& OffsetLocation = FVector::ZeroVector, const FRotator& OffsetRotator = FRotator::ZeroRotator)

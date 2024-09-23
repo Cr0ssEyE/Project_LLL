@@ -63,6 +63,7 @@ public:
 	
 	FORCEINLINE int32 GetBleedingStack() const { return BleedingStack; }
 	FORCEINLINE bool GetBleedingTrigger() const { return bBleedingTrigger; }
+	FORCEINLINE float GetMaxBleedingStack() const { return MaxBleedingStack; }
 
 	void ToggleBleedingTrigger();
 	
@@ -94,6 +95,7 @@ protected:
 	// 이누리아 관련
 protected:
 	int32 BleedingStack;
+	int32 MaxBleedingStack;
 	uint8 bBleedingTrigger : 1;
 	float BleedingTransmissionOffencePower;
 	uint8 bBleedingTransmissionTargetDamaged: 1;

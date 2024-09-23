@@ -61,6 +61,7 @@
 #define TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE_BY_ENURIA_COUNT FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.IncreaseKnockBackDamageByEnuriaCount"))
 #define TAG_GAS_HAVE_VAMPIRE FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.Vampire"))
 #define TAG_GAS_HAVE_BLEEDING_TRANSMISSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.BleedingTransmission"))
+#define TAG_GAS_HAVE_EXCESSIVE_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.ExcessiveBleeding"))
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))
@@ -71,6 +72,7 @@
 #define TAG_GAS_ABILITY_HUNDRED_VALUE_1 FGameplayTag::RequestGameplayTag(FName("Ability.HundredValue.1"))
 #define TAG_GAS_ABILITY_HUNDRED_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.HundredValue.2"))
 #define TAG_GAS_ABILITY_VALUE_OFFENCE_POWER FGameplayTag::RequestGameplayTag(FName("Ability.Value.OffencePower"))
+#define TAG_GAS_ABILITY_VALUE_PERIOD FGameplayTag::RequestGameplayTag(FName("Ability.Value.Period"))
 
 // 어빌리티 슬롯 관련 태그
 #define TAG_GAS_ABILITY_NESTING_ALLOW FGameplayTag::RequestGameplayTag(FName("Ability.Nesting.Allow"))
