@@ -3,12 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataAsset/LLL_InteractiveObjectDataAsset.h"
 #include "Entity/Object/Base/LLL_BaseObject.h"
 #include "GameFramework/Actor.h"
 #include "Interface/LLL_InteractiveEntityInterface.h"
 #include "LLL_InteractiveObject.generated.h"
 
+class ULLL_InteractiveObjectDataAsset;
 class UBoxComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInteractionDelegate);
 
 UCLASS()
 class PROJECT_LLL_API ALLL_InteractiveObject : public ALLL_BaseObject, public ILLL_InteractiveEntityInterface
@@ -19,7 +23,14 @@ public:
 	ALLL_InteractiveObject();
 	
 	virtual void Tick(float DeltaTime) override;
-	virtual void InteractiveEvent() override;
+	
+public:
+	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
+	FORCEINLINE bool CheckUseCustomDisplayText() const { return InteractiveObjectDataAsset->bUseCustomDisplayName; }
+	FORCEINLINE FString GetCustomDisplayText() const { return InteractiveObjectDataAsset->CustomDisplayTextString; }
+	
+public:
+	FInteractionDelegate OnInteractionDelegate;
 	
 protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
@@ -27,11 +38,14 @@ protected:
 	
 protected:
 	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<const ULLL_InteractiveObjectDataAsset> InteractiveObjectDataAsset;
+	
+	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UBoxComponent> InteractOnlyCollisionBox;
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	uint8 bIsEnabled : 1;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	uint8 bIsOnceEventOnly : 1;
 };

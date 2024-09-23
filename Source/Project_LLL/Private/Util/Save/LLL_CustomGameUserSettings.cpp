@@ -45,6 +45,7 @@ void ULLL_CustomGameUserSettings::ApplyGameplaySettings()
 
 void ULLL_CustomGameUserSettings::SetToDefaults()
 {
-	
 	Super::SetToDefaults();
+
+	FrameRateLimit = 60.f;
 }

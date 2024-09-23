@@ -7,7 +7,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "Constant/LLL_MaterialParameterName.h"
+#include "..\..\..\..\..\Public\Constant\LLL_GraphicParameterNames.h"
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -36,16 +36,6 @@ void ULLL_MainEruriaInfoWidget::SetEruriaInfo(const FAbilityDataTable* AbilityDa
 		AbilityEruriaImage = DashEruriaImage;
 		AbilityEruriaTextBlock = DashEruriaLevelText;
 		EruriaAbilityPartTag = TAG_GAS_ABILITY_PART_DASH;
-		break;
-	case EAbilityPart::Chase:
-		AbilityEruriaImage = ChaseEruriaImage;
-		AbilityEruriaTextBlock = ChaseEruriaLevelText;
-		EruriaAbilityPartTag = TAG_GAS_ABILITY_PART_CHASE;
-		break;
-	case EAbilityPart::ComboSkill:
-		AbilityEruriaImage = ComboSkillEruriaImage;
-		AbilityEruriaTextBlock = ComboSkillEruriaLevelText;
-		EruriaAbilityPartTag = TAG_GAS_ABILITY_PART_COMBO_SKILL;
 		break;
 	default: // EAbilityPart::Common
 		//TODO: Inventory Widget에서 Common 이누리아 처리하기
@@ -79,14 +69,6 @@ void ULLL_MainEruriaInfoWidget::RemoveEruriaInfo(const EAbilityPart AbilityPart)
 	case EAbilityPart::Dash:
 		AbilityEruriaImage = DashEruriaImage;
 		AbilityEruriaTextBlock = DashEruriaLevelText;
-		break;
-	case EAbilityPart::Chase:
-		AbilityEruriaImage = ChaseEruriaImage;
-		AbilityEruriaTextBlock = ChaseEruriaLevelText;
-		break;
-	case EAbilityPart::ComboSkill:
-		AbilityEruriaImage = ComboSkillEruriaImage;
-		AbilityEruriaTextBlock = ComboSkillEruriaLevelText;
 		break;
 	default:
 		checkNoEntry();

@@ -5,16 +5,21 @@
 
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Constant/LLL_FilePath.h"
+#include "DataAsset/LLL_InteractiveObjectDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
+#include "Util/LLL_ConstructorHelper.h"
 
 ALLL_InteractiveObject::ALLL_InteractiveObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	InteractiveObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_InteractiveObjectDataAsset>(PATH_INTERACTIVE_OBJECT_DATA, EAssertionLevel::Check);
+
 	InteractOnlyCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Ineractive Collision"));
 	InteractOnlyCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	InteractOnlyCollisionBox->SetBoxExtent(FVector(200.0f, 200.0f, 200.0f));
+	InteractOnlyCollisionBox->SetBoxExtent(InteractiveObjectDataAsset->InteractOnlyCollisionBoxExtent);
 	InteractOnlyCollisionBox->SetCollisionProfileName(CP_INTERACTION);
 	InteractOnlyCollisionBox->SetupAttachment(RootComponent);
 }
@@ -56,7 +61,7 @@ void ALLL_InteractiveObject::Tick(float DeltaTime)
 #endif
 }
 
-void ALLL_InteractiveObject::InteractiveEvent()
+void ALLL_InteractiveObject::InteractiveEvent(AActor* InteractedActor)
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
@@ -67,6 +72,8 @@ void ALLL_InteractiveObject::InteractiveEvent()
 		}
 	}
 #endif
+
+	OnInteractionDelegate.Broadcast();
 }
 
 

@@ -24,5 +24,8 @@ class PROJECT_LLL_API ILLL_DashMonsterInterface
 public:
 	virtual void SetDashing(bool IsDashing) = 0;
 	virtual bool IsDashing() const = 0;
-	virtual void Dash() const = 0;
+	virtual void Dash() = 0;
+	virtual float GetMaxDashDistance() const = 0;
+	virtual float GetMinDashDistance() const = 0;
+	virtual float GetDashSpeed() const = 0;
 };

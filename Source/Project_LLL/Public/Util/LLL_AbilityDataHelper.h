@@ -12,7 +12,7 @@ class PROJECT_LLL_API FLLL_AbilityDataHelper
 {
 public:
 	// 이펙트의 상태이상 설정 관련,
-	static void SetAbnormalStatusAbilityDuration(ULLL_PGA_RewardAbilityBase* RewardAbility, TSharedPtr<FGameplayEffectSpec> EffectSpec)
+	static void SetAbnormalStatusAbilityDuration(const ULLL_PGA_RewardAbilityBase* RewardAbility, const TSharedPtr<FGameplayEffectSpec>& EffectSpec)
 	{
 		const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(RewardAbility->GetAbilitySystemComponentFromActorInfo()->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
 
@@ -25,23 +25,9 @@ public:
 			UE_LOG(LogTemp, Log, TEXT("%f Period 값 변경"), EffectSpec->GetPeriod());
 			return;
 		}
-
-		if (RewardAbility->AbilityTags.HasTag(TAG_GAS_MARK))
-		{
-			EffectSpec->bDurationLocked = false;
-			EffectSpec->SetDuration(AbnormalStatusAttributeSet->GetMarkStatusDuration(), true);
-			return;
-		}
-
-		if (RewardAbility->AbilityTags.HasTag(TAG_GAS_TARGETING))
-		{
-			EffectSpec->bDurationLocked = false;
-			EffectSpec->SetDuration(AbnormalStatusAttributeSet->GetTargetingStatusDuration(), true);
-			return;
-		}
 	}
 
-	static bool SpawnAbilityObject(const ULLL_PGA_RewardAbilityBase* OwnerAbility, const TSubclassOf<ALLL_AbilityObject>& AbilityObjectClass, FGameplayEventData EventData = FGameplayEventData(), EEffectApplyTarget AbilityObjectLocationTarget = EEffectApplyTarget::Self)
+	static bool SpawnAbilityObject(const ULLL_CharacterGameplayAbilityBase* OwnerAbility, const TSubclassOf<ALLL_AbilityObject>& AbilityObjectClass, FGameplayEventData EventData = FGameplayEventData(), const EEffectApplyTarget AbilityObjectLocationTarget = EEffectApplyTarget::Self, const FVector& OffsetLocation = FVector::ZeroVector)
 	{
 		UWorld* World = OwnerAbility->GetWorld();
 		if (!World)
@@ -58,11 +44,15 @@ public:
 		{
 			SpawnTransform = EventData.TargetData.Data[0]->GetActors()[0]->GetActorTransform();
 		}
+		SpawnTransform.SetLocation(SpawnTransform.GetLocation() + SpawnTransform.GetRotation().RotateVector(OffsetLocation));
 	
 		ALLL_AbilityObject* AbilityObject = World->SpawnActorDeferred<ALLL_AbilityObject>(AbilityObjectClass, SpawnTransform);
-		AbilityObject->SetAbilityInfo(OwnerAbility->GetAbilityData(), OwnerAbility->GetAbilityLevel());
+		if (const ULLL_PGA_RewardAbilityBase* RewardAbility = Cast<ULLL_PGA_RewardAbilityBase>(OwnerAbility))
+		{
+			AbilityObject->SetAbilityInfo(RewardAbility->GetAbilityData(), RewardAbility->GetAbilityLevel());
+		}
 		AbilityObject->SetOwner(OwnerAbility->GetAvatarActorFromActorInfo());
-		AbilityObject->FinishSpawning(OwnerAbility->GetAvatarActorFromActorInfo()->GetActorTransform());
+		AbilityObject->FinishSpawning(SpawnTransform);
 
 		if (AbilityObject)
 		{

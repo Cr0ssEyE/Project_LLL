@@ -61,6 +61,7 @@ void ULLL_BaseCharacterAnimInstance::SetStepEventParameter(FName FootSocketName)
 	if (!Character->GetMesh()->DoesSocketExist(FootSocketName))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("소켓이 존재하지 않음"));
+		ensure(false);
 		
 		return;
 	}

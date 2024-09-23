@@ -40,8 +40,8 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 		}
 	}
 	
-	const FVector SweepStartLocation =  OriginLocation + SourceActor->GetActorForwardVector() * TraceStartLocation;
-	const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetActorForwardVector() * TraceEndLocation;
+	const FVector SweepStartLocation = OriginLocation + SourceActor->GetTransform().GetRotation().RotateVector(TraceStartLocation);
+	const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetTransform().GetRotation().RotateVector(TraceEndLocation);
 	FQuat SweepQuat = SourceActor->GetActorQuat();
 
 	if (TraceShape.ShapeType == ECollisionShape::Capsule)

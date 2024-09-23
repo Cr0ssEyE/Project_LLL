@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "LLL_MapDataAsset.generated.h"
 
+class ALLL_GateObject;
 class ULevelSequence;
 class ALLL_RewardObject;
 class ALLL_MonsterSpawner;
@@ -29,6 +30,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Map", DisplayName = "보스 룸 블루프린트")
 	TSubclassOf<AActor> Boss;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Map", DisplayName = "게이트 블루프린트")
+	TSubclassOf<ALLL_GateObject> Gate;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Map", DisplayName = "최대 룸 개수")
 	uint8 MaximumRoom;
@@ -51,6 +55,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "텔레포트 파티클")
 	TObjectPtr<UNiagaraSystem> TeleportParticle;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "텔레포트-페이드아웃 지연시간")
+	float TeleportFadeOutDelay;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "파티클 사이즈", meta=(DisplayPriority=1))
 	FVector ParticleScale = FVector::OneVector;
 };

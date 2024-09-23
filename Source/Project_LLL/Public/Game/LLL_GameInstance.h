@@ -9,14 +9,18 @@
 #include "DataTable/LLL_StringDataTable.h"
 #include "LLL_GameInstance.generated.h"
 
+#define TIME_DILATION_INTERP_SPEED 15.0f
+
 /**
  * 
  */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStageEncountedDelegate);
+enum class ELevelSequenceType : uint8;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStageEncounteredDelegate, ELevelSequenceType, SequenceType);
 
-class ALLL_MapSoundManager;
-class ULLL_ShareableNiagaraDataAsset;
+class ULLL_GlobalNiagaraDataAsset;
+class ULLL_GlobalParameterDataAsset;
+class ULLL_MapSoundSubsystem;
 
 UCLASS()
 class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
@@ -28,12 +32,9 @@ public:
 
 	virtual void Init() override;
 
-	FStageEncountedDelegate EncountedDelegate;
+	FStageEncounteredDelegate EncounteredDelegate;
 	
 public:
-	FORCEINLINE ALLL_MapSoundManager* GetMapSoundManager() const { return MapSoundManager; }
-	FORCEINLINE void SetMapSoundManager(ALLL_MapSoundManager* InMapSoundManager) { MapSoundManager = InMapSoundManager; }
-	
 	// 데이터 테이블 Getter
 	FORCEINLINE TArray<const FAbilityDataTable*> GetAbilityDataTable() const { return AbilityData; }
 	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterData; }
@@ -50,12 +51,11 @@ public:
 
 	// 데이터 에셋
 public:
-	FORCEINLINE TObjectPtr<const ULLL_ShareableNiagaraDataAsset> GetShareableNiagaraDataAsset() const { return ShareableNiagaraDataAsset; }
+	FORCEINLINE TObjectPtr<const ULLL_GlobalNiagaraDataAsset> GetGlobalNiagaraDataAsset() const { return GlobalNiagaraDataAsset; }
+	FORCEINLINE TObjectPtr<const ULLL_GlobalParameterDataAsset> GetGlobalParametersDataAsset() const { return GlobalParametersDataAsset; }
 	
 public:
 	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
-	void SetMapSoundManagerBattleParameter(float Value) const;
-	void SetMapSoundManagerPauseParameter(float Value) const;
 
 protected:
 	void SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation);
@@ -77,7 +77,10 @@ protected:
 	// 범용 데이터 에셋
 protected:
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<const ULLL_ShareableNiagaraDataAsset> ShareableNiagaraDataAsset;
+	TObjectPtr<const ULLL_GlobalNiagaraDataAsset> GlobalNiagaraDataAsset;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<const ULLL_GlobalParameterDataAsset> GlobalParametersDataAsset;
 	
 	// 데이터 테이블 변수
 protected:
@@ -101,9 +104,6 @@ protected:
 	TObjectPtr<const UDataTable> StringDataTable;
 
 	TArray<const FStringDataTable*> StringData;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ALLL_MapSoundManager> MapSoundManager;
 	
 protected:
 	UPROPERTY(VisibleAnywhere)

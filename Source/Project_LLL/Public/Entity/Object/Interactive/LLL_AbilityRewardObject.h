@@ -18,12 +18,12 @@ class PROJECT_LLL_API ALLL_AbilityRewardObject : public ALLL_RewardObject
 
 public:
 	virtual void SetInformation(const FRewardDataTable* Data) override;
-
-	virtual void InteractiveEvent() override;
+	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 
 	void SetAbilityCategory(EAbilityCategory AbilityData);
 	
 	FOnAbilityRewardInteractionDelegate* AbilityRewardInteractionDelegate;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	EAbilityCategory AbilityCategory;

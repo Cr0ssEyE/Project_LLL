@@ -4,6 +4,7 @@
 #include "Entity/Object/Ability/LLL_ThreateningDeath.h"
 
 #include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "Constant/LLL_FilePath.h"
 #include "DataAsset/LLL_AbilityObjectDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
@@ -36,7 +37,7 @@ void ALLL_ThreateningDeath::BeginPlay()
 	{
 		if (DebugGameInstance->CheckPlayerDashDebug())
 		{
-			DrawDebugBox(GetWorld(), GetActorLocation(), OverlapCollisionBox->GetScaledBoxExtent(), FColor::Blue, false, ThreateningDeathAttributeSet->GetDestroyTimer());
+			DrawDebugSphere(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius(), 16, FColor::Blue, false, ThreateningDeathAttributeSet->GetDestroyTimer());
 		}
 	}
 #endif
@@ -44,6 +45,8 @@ void ALLL_ThreateningDeath::BeginPlay()
 
 void ALLL_ThreateningDeath::NotifyActorBeginOverlap(AActor* OtherActor)
 {
+	Super::NotifyActorBeginOverlap(OtherActor);
+	
 	ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(OtherActor);
 	if (!KnockBackActor)
 	{

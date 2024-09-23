@@ -7,6 +7,7 @@
 #include "Entity/Object/Base/LLL_BaseObject.h"
 #include "LLL_AbilityObject.generated.h"
 
+class USphereComponent;
 class ULLL_AbilityObjectAttributeSet;
 class ULLL_AbilityObjectDataAsset;
 class UBoxComponent;
@@ -28,8 +29,11 @@ public:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 protected:
+	UFUNCTION()
+	void DamageToOverlapActor(AActor* Actor);
+	
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<UBoxComponent> OverlapCollisionBox;
+	TObjectPtr<USphereComponent> OverlapCollisionSphere;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_AbilityObjectDataAsset> AbilityObjectDataAsset;

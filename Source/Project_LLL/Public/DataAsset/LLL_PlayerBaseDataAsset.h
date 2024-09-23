@@ -6,26 +6,17 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
-class ULevelSequence;
 enum class EPlayerDamagedTypeParameter : uint8;
-enum class EMonsterId : uint8;
-class ULLL_MainEruriaInfoWidget;
 enum class EPlayerWalkMaterialParameter : uint8;
-enum class EPlayerFootstepsSurface : uint8;
-class ULLL_SkillWidget;
-class ULLL_PlayerChaseHandDataAsset;
 enum class EAbilityInputName : uint8;
-class ULLL_InteractionWidget;
-class ULLL_InventoryWidget;
-class ULLL_PlayerStatusWidget;
-class ULLL_GamePauseWidget;
-class ULLL_PlayerAnimInstance;
-class ULLL_SelectRewardWidget;
 class UInputAction;
 class UInputMappingContext;
-class UNiagaraSystem;
-class ULLL_PlayerChaseActionWidget;
-class ULLL_PlayerComboWidget;
+class ULevelSequence;
+class ULLL_MainEruriaInfoWidget;
+class ULLL_SelectRewardWidget;
+class ULLL_InteractionWidget;
+class ULLL_InventoryWidget;
+class ULLL_GamePauseWidget;
 
 /**
  * 
@@ -49,20 +40,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "보상 선택 UI")
 	TSubclassOf<ULLL_SelectRewardWidget> SelectRewardWidgetClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "콤보 UI")
-	TSubclassOf<ULLL_PlayerComboWidget> ComboWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "추격 쿨타임 UI")
-	TSubclassOf<ULLL_PlayerChaseActionWidget> ChaseActionWidgetClass;
-
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "메인 이누리아 UI")
 	TSubclassOf<ULLL_MainEruriaInfoWidget> MainEruriaInfoWidgetClass;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "추격 쿨타임 UI 위치")
-	FVector ChaseActionGaugeLocation;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "추격 쿨타임 UI 크기")
-	FVector2D ChaseActionGaugeSize;
 	
 	// 애니메이션 관련
 public:
@@ -73,10 +52,13 @@ public:
 	TObjectPtr<ULevelSequence> DeadSequencer;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 연출용 디졸브 액터")
-	TSubclassOf<AActor> DeadSequenceDissolveActor;
+	TSubclassOf<AActor> CharacterDissolveActor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "디졸브 액터 낙하 속도")
 	float DissolveActorFallSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "디졸브 액터 정지 위치(플레이어 위치 기준)")
+	float DissolveActorFallStopLocation;
 	
 	// 입력 이벤트 관련
 public:
@@ -97,11 +79,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "기본 공격 입력 키")
 	TObjectPtr<UInputAction> AttackInputAction;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "추격 액션 입력 키")
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "보조 액션 입력 키")
 	TObjectPtr<UInputAction> ControlChaseInputAction;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "스킬 입력 키")
-	TObjectPtr<UInputAction> SkillInputAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "상호작용 입력 키")
 	TObjectPtr<UInputAction> InteractionInputAction;
