@@ -10,10 +10,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
-#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
 #include "Util/LLL_MathHelper.h"
 
@@ -98,7 +95,7 @@ void ALLL_ThrownObject::Deactivate()
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProjectileMovementComponent->Deactivate();
 	SetActorHiddenInGame(true);
-
+	
 	ALLL_BaseCharacter* TargetCharacter = Cast<ALLL_BaseCharacter>(Target);
 	if (IsValid(TargetCharacter) && TargetCharacter->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_ThrownObject::TargetDeadHandle))
 	{
@@ -116,39 +113,19 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 
 	ProjectileMovementComponent->MaxSpeed = InSpeed;
 	ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
-
+	
 	FModAudioComponent->SetPitch(Owner->CustomTimeDilation);
 	FModAudioComponent->Play();
 
-	ALLL_BaseCharacter* OwnerCharacter = Cast<ALLL_BaseCharacter>(GetOwner());
-	if (IsValid(OwnerCharacter))
-	{
-		if (Cast<ALLL_MonsterBase>(OwnerCharacter))
-		{
-			const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(OwnerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-			OffencePower = MonsterAttributeSet->GetOffensePower();
-		}
-		else if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerCharacter))
-		{
-			const float LastSentDamage = Player->GetLastSentDamage();
-
-			if (AbilityData->AbilityValueType == EAbilityValueType::Fixed)
-			{
-				OffencePower = AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1);
-			}
-			else
-			{
-				OffencePower = (AbilityData->AbilityValue + AbilityData->ChangeValue * (AbilityLevel - 1)) / static_cast<uint32>(AbilityData->AbilityValueType) * LastSentDamage;
-			}
-		}
-	}
+	bIsStraight = Straight;
+	KnockBackPower = InKnockBackPower;
 
 	ALLL_BaseCharacter* TargetCharacter = Cast<ALLL_BaseCharacter>(Target);
 	if (IsValid(TargetCharacter))
 	{
 		TargetCapsuleRadius = TargetCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius();
 
-		if (!TargetCharacter->CheckCharacterIsDead())
+		if (!TargetCharacter->CheckCharacterIsDead() && !TargetCharacter->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_ThrownObject::TargetDeadHandle))
 		{
 			TargetCharacter->CharacterDeadDelegate.AddDynamic(this, &ALLL_ThrownObject::TargetDeadHandle);
 		}
@@ -158,9 +135,6 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 			bTargetIsDead = true;
 		}
 	}
-	
-	bIsStraight = Straight;
-	KnockBackPower = InKnockBackPower;
 
 	GetWorldTimerManager().SetTimer(HideTimerHandle, this, &ALLL_ThrownObject::Deactivate, ThrownObjectAttributeSet->GetHideTimer(), false);
 }
@@ -168,31 +142,37 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
-	
+		
 	const ALLL_BaseCharacter* OwnerCharacter = Cast<ALLL_BaseCharacter>(GetOwner());
 	const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other);
 	if (IsValid(OwnerCharacter) && AbilitySystemInterface)
 	{
+		const FVector Direction = (Other->GetActorLocation() - OwnerCharacter->GetActorLocation()).GetSafeNormal2D();
+		
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
-		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, OwnerCharacter->GetCharacterLevel(), EffectContextHandle);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, OwnerCharacter->GetAbilityLevel(), EffectContextHandle);
 		if (EffectSpecHandle.IsValid())
 		{
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, OffencePower);
-			UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *Other->GetName())
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+			UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
 			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
+			KnockBackTarget(Direction, Other);
 		}
-	}
-
-	if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Other))
-	{
-		const FVector AvatarLocation = GetActorLocation();
-		const FVector LaunchDirection = (Other->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
-		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(LaunchDirection, KnockBackPower);
-		KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 	}
 	
 	Deactivate();
+}
+
+void ALLL_ThrownObject::KnockBackTarget(const FVector& Direction, AActor* Other) const
+{
+	ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Other);
+	if (KnockBackActor && KnockBackPower != 0.0f)
+	{
+		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
+		UE_LOG(LogTemp, Log, TEXT("넉백 수행(투사체) : %f"), KnockBackPower)
+		KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
+	}
 }
 
 void ALLL_ThrownObject::TargetDeadHandle(ALLL_BaseCharacter* Character)

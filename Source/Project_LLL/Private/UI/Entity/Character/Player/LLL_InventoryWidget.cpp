@@ -28,7 +28,7 @@ void ULLL_InventoryWidget::NativeConstruct()
 	CurrentEmptyEruriaSlotIndex = 0;
 }
 
-void ULLL_InventoryWidget::SetEruriaInfo(const FAbilityDataTable* AbilityData)
+void ULLL_InventoryWidget::SetEnuriaInfo(const FAbilityDataTable* AbilityData)
 {
 	if (SetEruriaImage(CommonEruriaImages[CurrentEmptyEruriaSlotIndex], CommonEruriaLevelTexts[CurrentEmptyEruriaSlotIndex], AbilityData))
 	{
@@ -76,7 +76,7 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 {
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningPlayer()->GetCharacter());
 	TArray<FGameplayAbilitySpecHandle> SpecHandles;
-	Player->GetAbilitySystemComponent()->FindAllAbilitiesWithTags(SpecHandles, FGameplayTagContainer(TAG_GAS_ABILITY_PART_COMMON));
+	Player->GetAbilitySystemComponent()->FindAllAbilitiesWithTags(SpecHandles, FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_ALLOW));
 
 	float AbilityLevel = 0.f;
 	if (!SpecHandles.IsEmpty())
@@ -99,7 +99,7 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 	}
 	else
 	{
-		TArray<FActiveGameplayEffectHandle> EffectHandles = Player->GetAbilitySystemComponent()->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_PART_COMMON));
+		TArray<FActiveGameplayEffectHandle> EffectHandles = Player->GetAbilitySystemComponent()->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_ALLOW));
 
 		if (EffectHandles.IsEmpty())
 		{
@@ -149,6 +149,6 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 	
 	TextBlock->SetText(FText::FromString(AbilityLevelDisplayHelper.DisplayText[static_cast<uint32>(AbilityLevel)]));
 	MaterialInstanceDynamic->SetVectorParameterValue(UI_RARITY_COLOR, EruriaRarityColor[static_cast<uint32>(AbilityData->AbilityRank)]);
-	MaterialInstanceDynamic->SetTextureParameterValue(UI_ERURIA_ICON, EruriaIConTextures[static_cast<uint32>(AbilityData->AbilityType)]);
+	MaterialInstanceDynamic->SetTextureParameterValue(UI_ERURIA_ICON, EruriaIConTextures[static_cast<uint32>(AbilityData->AnimalType)]);
 	return true;
 }

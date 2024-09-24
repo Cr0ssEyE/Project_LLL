@@ -88,7 +88,7 @@ void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
 		{
 			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(this);
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(SwordDashDataAsset->DashDamageEffect, Level, EffectContextHandle);
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(SwordDashDataAsset->DashDamageEffect, AbilityLevel, EffectContextHandle);
 			if(EffectSpecHandle.IsValid())
 			{
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());

@@ -13,7 +13,7 @@ struct FRewardDataTable : public FTableRowBase
 
 	FRewardDataTable() :
 	GroupID(0),
-	ID(0),
+	ID(INT8_MAX),
 	Value(0),
 	bIsHardReward(false)
 	{

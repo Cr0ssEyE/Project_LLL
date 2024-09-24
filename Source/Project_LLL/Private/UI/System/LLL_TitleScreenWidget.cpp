@@ -72,9 +72,6 @@ void ULLL_TitleScreenWidget::NewGameStartButtonEvent()
 {
 	DisableWidgetActivation();
 	
-	ULLL_SaveGameData* NewData = Cast<ULLL_SaveGameData>(UGameplayStatics::CreateSaveGameObject(ULLL_SaveGameData::StaticClass()));
-	UGameplayStatics::SaveGameToSlot(NewData, NewData->SaveFileName, NewData->SaveFileIndex);
-	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->InitializeGameProgressInfo(NewData);
 }
 
 void ULLL_TitleScreenWidget::LoadGameButtonEvent()
@@ -137,6 +134,7 @@ void ULLL_TitleScreenWidget::OpenIntroLevel()
 void ULLL_TitleScreenWidget::OpenSavedLevel()
 {
 	const FName LastPlayedLevelName = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetLastPlayedLevelName();
+	UE_LOG(LogTemp, Log, TEXT("레벨 이동: %s"), *LastPlayedLevelName.ToString());
 	UGameplayStatics::OpenLevel(this, LastPlayedLevelName);
 }
 

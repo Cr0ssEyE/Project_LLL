@@ -20,9 +20,6 @@ protected:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 	UPROPERTY(EditAnywhere, Category = "GAS")
-	TObjectPtr<UAnimMontage> DashMontage;
-
-	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<UGameplayEffect> DashEffect;
 
 	UPROPERTY(EditAnywhere, Category = "GAS")
