@@ -12,6 +12,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
+#include "Util/LLL_AbilityDataHelper.h"
 #include "Util/LLL_MathHelper.h"
 
 ALLL_ThrownObject::ALLL_ThrownObject()
@@ -119,6 +120,17 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 
 	bIsStraight = Straight;
 	KnockBackPower = InKnockBackPower;
+	
+	if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
+	{
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		if (InKnockBackPower > 0)
+		{
+			KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
+			KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+		}
+	}
 
 	ALLL_BaseCharacter* TargetCharacter = Cast<ALLL_BaseCharacter>(Target);
 	if (IsValid(TargetCharacter))
@@ -156,6 +168,11 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 		{
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
 			UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
+			const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerCharacter);
+			if (IsValid(Player) && EffectSpecHandle.Data->Def->GetAssetTags().HasTag(TAG_GAS_BLEEDING))
+			{
+				FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, CastChecked<ULLL_ExtendedGameplayEffect>(ThrownObjectDataAsset->DamageEffect.GetDefaultObject()));
+			}
 			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
 			KnockBackTarget(Direction, Other);
 		}

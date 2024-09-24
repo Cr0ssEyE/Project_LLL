@@ -31,7 +31,7 @@ void ULLL_MonsterASC::BeginPlay()
 
 	if (ALLL_MonsterBase* OwnerMonster = Cast<ALLL_MonsterBase>(GetAvatarActor()))
 	{
-		OwnerMonster->CharacterDeadDelegate.AddDynamic(this, &ULLL_MonsterASC::ClearAllTimer);
+		OwnerMonster->CharacterDeadDelegate.AddDynamic(this, &ULLL_MonsterASC::DeadHandle);
 	}
 }
 
@@ -74,6 +74,8 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActor());
 	if (GameplayEffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_BLEEDING))
 	{
+		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING));
+		
 		if (GetWorld()->GetTimerManager().IsTimerActive(BleedingTimerHandle))
 		{
 			GetWorld()->GetTimerManager().ClearTimer(BleedingTimerHandle);
@@ -92,7 +94,7 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 			{
 				return;
 			}
-
+			
 			RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING));
 
 			Monster->SetBleedingStack(0);
@@ -107,9 +109,9 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 	}
 }
 
-void ULLL_MonsterASC::ClearAllTimer(ALLL_BaseCharacter* Character)
+void ULLL_MonsterASC::DeadHandle(ALLL_BaseCharacter* Character)
 {
-	GetWorld()->GetTimerManager().ClearTimer(BleedingTimerHandle);
-
 	BleedingTimerHandle.Invalidate();
+
+	RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING));
 }

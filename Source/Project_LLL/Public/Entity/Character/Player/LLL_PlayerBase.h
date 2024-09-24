@@ -12,6 +12,7 @@
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
+enum class EAnimalType : uint8;
 class ALLL_PlayerController;
 class ULLL_GameInstance;
 class ULLL_AbnormalStatusAttributeSet;
@@ -84,6 +85,7 @@ public:
 	
 	int32 GetEnuriaCount() const;
 	int32 GetWolfEnuriaCount() const;
+	EAnimalType GetSkillEnuriaAnimalType() const;
 
 public:
 	// 이누리아 관련 함수

@@ -8,6 +8,7 @@
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_GameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"

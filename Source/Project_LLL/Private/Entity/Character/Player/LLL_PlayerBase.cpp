@@ -533,6 +533,19 @@ int32 ALLL_PlayerBase::GetWolfEnuriaCount() const
 	return Count;
 }
 
+EAnimalType ALLL_PlayerBase::GetSkillEnuriaAnimalType() const
+{
+	for (const auto AbilityData : FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld()))
+	{
+		if (AbilityData->TagID[1] == '1')
+		{
+			return AbilityData->AnimalType;
+		}
+	}
+
+	return EAnimalType::None;
+}
+
 void ALLL_PlayerBase::StartChargeFeather(float Timer)
 {
 	ChargedFeatherCount = 0;

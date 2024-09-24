@@ -32,14 +32,8 @@ void ALLL_RangeKnockBackDetector::BeginPlay()
 	AbilityObjectAttributeSet = RangeKnockBackDetectorAttributeSet;
 	
 	OverlapCollisionBox->SetBoxExtent(RangeKnockBackDetectorDataAsset->OverlapCollisionScale);
-}
-
-void ALLL_RangeKnockBackDetector::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
 	// 이펙트가 나오기 전까지 디버그 유지
-	DrawDebugBox(GetWorld(), GetActorLocation(), OverlapCollisionBox->GetScaledBoxExtent(),  OverlapCollisionBox->GetComponentQuat(), FColor::Green, false, AbilityObjectAttributeSet->GetDestroyTimer());
+	OverlapCollisionBox->SetHiddenInGame(false);
 }
 
 void ALLL_RangeKnockBackDetector::NotifyActorBeginOverlap(AActor* OtherActor)

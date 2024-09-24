@@ -9,6 +9,7 @@
 #include "DataAsset/LLL_ThrownMagicDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Game/LLL_DebugGameInstance.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "GAS/Attribute/Object/Thrown/LLL_ThrownMagicAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -17,7 +18,7 @@ ALLL_ThrownMagic::ALLL_ThrownMagic()
 {
 	BaseObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_ThrownMagicDataAsset>(PATH_THROWN_MAGIC_DATA, EAssertionLevel::Check);
 
-	ThrownMagicAttributeSet = CreateDefaultSubobject<ULLL_ThrownMagicAttributeSet>(TEXT("StaffBasicMagicAttributeSet"));
+	ThrownMagicAttributeSet = CreateDefaultSubobject<ULLL_ThrownMagicAttributeSet>(TEXT("ThrownMagicAttributeSet"));
 	
 	HitCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit Collision"));
 	HitCollisionBox->SetCollisionProfileName(CP_MONSTER_ATTACK);
@@ -58,6 +59,7 @@ void ALLL_ThrownMagic::Activate()
 	Super::Activate();
 
 	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ProjectileMovementComponent->UpdatedComponent = HitCollisionBox;
 }
 
 void ALLL_ThrownMagic::Deactivate()

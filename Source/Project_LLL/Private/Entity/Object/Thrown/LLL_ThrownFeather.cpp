@@ -87,13 +87,6 @@ void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpee
 		OffencePower *= PlayerAttributeSet->GetFeatherOffencePowerRate();
 		OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
 		OffencePower += PlayerAttributeSet->GetFeatherOffencePowerPlus();
-
-		if (InKnockBackPower > 0)
-		{
-			KnockBackPower = InKnockBackPower;
-			KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
-			KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
-		}
 	}
 }
 

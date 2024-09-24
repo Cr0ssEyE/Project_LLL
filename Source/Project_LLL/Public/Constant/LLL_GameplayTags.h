@@ -62,6 +62,7 @@
 #define TAG_GAS_HAVE_VAMPIRE FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.Vampire"))
 #define TAG_GAS_HAVE_BLEEDING_TRANSMISSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.BleedingTransmission"))
 #define TAG_GAS_HAVE_EXCESSIVE_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.ExcessiveBleeding"))
+#define TAG_GAS_HAVE_THROW_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.ThrowBleeding"))
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))
