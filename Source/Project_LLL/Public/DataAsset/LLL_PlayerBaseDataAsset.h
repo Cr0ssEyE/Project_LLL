@@ -9,6 +9,7 @@
 enum class EPlayerDamagedTypeParameter : uint8;
 enum class EPlayerWalkMaterialParameter : uint8;
 enum class EAbilityInputName : uint8;
+class UNiagaraSystem;
 class UInputAction;
 class UInputMappingContext;
 class ULevelSequence;
@@ -25,6 +26,10 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PlayerBaseDataAsset : public ULLL_BaseCharacterDataAsset
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "허리 부착 파티클")
+	TObjectPtr<UNiagaraSystem> SpineParticle;
 	
 	// UI 관련 
 public:
@@ -45,9 +50,6 @@ public:
 	
 	// 애니메이션 관련
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
-	TObjectPtr<UAnimMontage> DeadAnimMontage;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 연출 시퀀서")
 	TObjectPtr<ULevelSequence> DeadSequencer;
 
@@ -90,6 +92,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "일시정지 입력 키")
 	TObjectPtr<UInputAction> PauseInputAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "스킬 입력 키")
+	TObjectPtr<UInputAction> SkillInputAction;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
@@ -104,4 +109,28 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "PP", DisplayName = "PP HPLow 파라미터 최소값")
 	float HPLowScalarLowValue;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "넉백된 대상이 받는 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> KnockBackCauserDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "넉백된 대상과 충돌한 대상이 받는 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> KnockBackTargetDamageEffect;
+
+	// 이누리아 관련
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "연쇄 작용 이누리아 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> KnockBackTransmissionDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "맹렬한 공세 이누리아 데미지 타임 오프셋")
+	float QuadrupleHitHitOffsetTime;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "피의 갈증 이누리아 회복 이펙트")
+	TSubclassOf<UGameplayEffect> VampireRecoveryEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "피의 역병 이누리아 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> BleedingTransmissionDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "과다출혈 이누리아 출혈 주기 변경 이펙트")
+	TSubclassOf<UGameplayEffect> ExcessiveBleedingChangePeriodEffect;
 };

@@ -10,6 +10,8 @@
 #include "Interface/LLL_KnockBackInterface.h"
 #include "LLL_MonsterBase.generated.h"
 
+struct FAbilityDataTable;
+class ALLL_PlayerBase;
 class UProjectileMovementComponent;
 class ULLL_MonsterAttributeSet;
 /**
@@ -23,12 +25,13 @@ class PROJECT_LLL_API ALLL_MonsterBase : public ALLL_BaseCharacter, public ILLL_
 public:
 	ALLL_MonsterBase();
 	
-	FORCEINLINE virtual void ResetKnockBackStack() override { StackedKnockBackVelocity = FVector::Zero(); StackedKnockBackedPower = 0.f; }
 	FORCEINLINE void SetCharging(const bool IsCharging) { bIsCharging = IsCharging; }
+	FORCEINLINE void SetKnockBackSender(ALLL_MonsterBase* InKnockBackSender) { KnockBackSender = InKnockBackSender; }
 	
-	FORCEINLINE virtual float GetKnockBackedPower() const override { return StackedKnockBackedPower; }
+	FORCEINLINE virtual float GetKnockBackedPower() const override { return bIsKnockBacking ? LastKnockBackPower : 0.0f; }
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
 	FORCEINLINE int32 GetId() const { return Id; }
+	FORCEINLINE bool IsKnockBacking() const { return bIsKnockBacking; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -42,13 +45,27 @@ public:
 	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
 	virtual void Dead() override;
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
-	virtual void ApplyStackedKnockBack() override;
 	
 	virtual float GetChargeTimer() const;
 
 	void Attack() const;
 	void RecognizePlayerToAroundMonster() const;
 	void ShowHitEffect();
+	void ConnectOwnerDeadDelegate();
+	void DisconnectOwnerDeadDelegate();
+	void DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster);
+	void DamageKnockBackCauser(ALLL_PlayerBase* Player);
+
+	// 이누리아 관련
+public:
+	FORCEINLINE void SetBleedingStack(const int32 InBleedingStack) { BleedingStack = InBleedingStack <= MaxBleedingStack ? InBleedingStack : MaxBleedingStack; }
+	FORCEINLINE void SetBleedingTransmissionOffencePower(const float InBleedingTransmissionOffencePower) { BleedingTransmissionOffencePower = InBleedingTransmissionOffencePower; }
+	
+	FORCEINLINE int32 GetBleedingStack() const { return BleedingStack; }
+	FORCEINLINE bool GetBleedingTrigger() const { return bBleedingTrigger; }
+	FORCEINLINE float GetMaxBleedingStack() const { return MaxBleedingStack; }
+
+	void ToggleBleedingTrigger();
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -63,26 +80,43 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> MaskMeshComponent;
 
-	FVector StackedKnockBackVelocity;
-	float StackedKnockBackedPower;
 	int32 Id;
 	uint8 bIsCharging : 1;
 	FName AttributeInitId;
+	uint8 bIsKnockBacking : 1;
+	FVector LastKnockBackVelocity;
+	float LastKnockBackPower;
+	uint8 bStartKnockBackVelocity : 1;
+	int32 DeflectCount;
+	TObjectPtr<ALLL_MonsterBase> KnockBackSender;
+	uint8 bKnockBackTargetDamaged : 1;
+	uint8 bKnockBackCauserDamaged : 1;
+
+	// 이누리아 관련
+protected:
+	int32 BleedingStack;
+	int32 MaxBleedingStack;
+	uint8 bBleedingTrigger : 1;
+	float BleedingTransmissionOffencePower;
+	uint8 bBleedingTransmissionTargetDamaged: 1;
 	
 public:
 	UFUNCTION()
 	void ToggleAIHandle(bool value);
+	
+	UFUNCTION()
+	void OwnerCharacterDeadHandle(ALLL_BaseCharacter* Character);
 
 	// 이펙트 관련
 public:
-	void UpdateMarkVFX(uint8 NewCount = 0, uint8 MaxCount = 0);
+	void UpdateStackVFX(uint8 NewCount = 0, uint8 MaxCount = 0);
 	void UpdateBleedingVFX(bool ActiveState = true);
 	void UpdateMonsterHitVFX();
 	
 	// 이펙트 관련
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UNiagaraComponent> MarkVFXComponent;
+	TObjectPtr<UNiagaraComponent> StackVFXComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UNiagaraComponent> BleedingVFXComponent;

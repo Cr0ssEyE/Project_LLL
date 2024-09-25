@@ -28,6 +28,9 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void Activate() override;
 	virtual void Deactivate() override;
+	
+	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower) override;
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UBoxComponent> HitCollisionBox;

@@ -21,12 +21,12 @@
 #define PATH_PLAYER_LOWHP_MATERIAL_INST TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Materials/PostProcess/PPMI_LowHP.PPMI_LowHP'")
 
 // 플레이어 어빌리티 오브젝트 관련
-#define PATH_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_FeatherStormDataAsset'/Game/DataAsset/DA_FeatherStorm.DA_FeatherStorm'")
-#define PATH_THREATENING_DEATH_DATA TEXT("/Script/Project_LLL.LLL_ThreateningDeathDataAsset'/Game/DataAsset/DA_ThreateningDeath.DA_ThreateningDeath'")
 #define PATH_RANGE_FEATHER_DETECTOR_DATA TEXT("/Script/Project_LLL.LLL_RangeFeatherDetectorDataAsset'/Game/DataAsset/DA_RangeFeatherDetector.DA_RangeFeatherDetector'")
+#define PATH_RANGE_KNOCK_BACK_DETECTOR_DATA TEXT("/Script/Project_LLL.LLL_RangeKnockBackDetectorDataAsset'/Game/DataAsset/DA_RangeKnockBackDetector.DA_RangeKnockBackDetector'")
 
 // 플레이어 투사체 관련
 #define PATH_THROWN_FEATHER_DATA TEXT("/Script/Project_LLL.LLL_ThrownFeatherDataAsset'/Game/DataAsset/DA_ThrownFeather.DA_ThrownFeather'")
+#define PATH_THROWN_BLEEDING_DATA TEXT("/Script/Project_LLL.LLL_ThrownBleedingDataAsset'/Game/DataAsset/DA_ThrownBleeding.DA_ThrownBleeding'")
 
 // 몬스터 캐릭터 관련
 #define PATH_SWORD_DASH_DATA TEXT("/Script/Project_LLL.LLL_SwordDashDataAsset'/Game/DataAsset/DA_SwordDash.DA_SwordDash'")

@@ -3,41 +3,31 @@
 
 #include "System/Reward/LLL_RewardGimmick.h"
 
-#include "AbilitySystemBlueprintLibrary.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Game/LLL_DebugGameInstance.h"
-#include "AbilitySystemComponent.h"
 #include "Algo/RandomShuffle.h"
-#include "Constant/LLL_AbilityRealNumbers.h"
-#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
-#include "GameplayEffectComponents/AssetTagsGameplayEffectComponent.h"
-#include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
-#include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetArrayLibrary.h"
 #include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
 #include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
+#include "Util/LLL_AbilityDataHelper.h"
 
 // Sets default values
 ALLL_RewardGimmick::ALLL_RewardGimmick() :
 	TotalRewardWeight(0),
-	CurrentAbilityData(nullptr),
 	bIsButtonEventSetup(false),
 	bMapGimmickIsExist(false),
-	bIsTest(false),
-	TestAbilityDataID1(110001),
-	TestAbilityDataID2(110002),
-	TestAbilityDataID3(110003)
+	bIsTest(false)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	
 }
 
 // Called when the game starts or when spawned
@@ -51,6 +41,19 @@ void ALLL_RewardGimmick::BeginPlay()
 			SetRewardButtons();
 		}
 	}));
+
+	if (bIsTest && TestAbilityDataID.IsEmpty())
+	{
+		FTestAbilityDataID TempTestAbilityDataID;
+		TempTestAbilityDataID.TestAbilityDataID1 = 11001;
+		TempTestAbilityDataID.TestAbilityDataID2 = 11002;
+		TempTestAbilityDataID.TestAbilityDataID3 = 11003;
+
+		TestAbilityDataID.Emplace(TempTestAbilityDataID);
+	}
+
+	Cast<ULLL_GameInstance>(GetGameInstance())->RewardGimmick = this;
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_RewardGimmick::WaitPlayerInitialize);
 }
 
 // Called every frame
@@ -107,12 +110,29 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	{
 		for (auto Data : AbilityData)
 		{
-			if (Data->ID == TestAbilityDataID1 || Data->ID == TestAbilityDataID2 || Data->ID == TestAbilityDataID3)
+			int32 Index = RewardWidget->Num;
+			if (Index >= TestAbilityDataID.Num())
+			{
+				Index = 0;
+			}
+
+			const int32 ID1 = TestAbilityDataID[Index].TestAbilityDataID1;
+			const int32 ID2 = TestAbilityDataID[Index].TestAbilityDataID2;
+			const int32 ID3 = TestAbilityDataID[Index].TestAbilityDataID3;
+			
+			if (Data->ID == ID1 || Data->ID == ID2 || Data->ID == ID3)
 			{
 				ButtonAbilityDataArray.Emplace(Data);
 			}
 		}
+		
 		RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
+
+		ButtonAbilityData1 = ButtonAbilityDataArray[0];
+		ButtonAbilityData2 = ButtonAbilityDataArray[1];
+		ButtonAbilityData3 = ButtonAbilityDataArray[2];
+		
+		ButtonAbilityDataArray.Empty();
 		return;
 	}
 
@@ -122,6 +142,26 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	}
 	
 	TArray<TTuple<const FAbilityDataTable*, float>> AbilityDataTables = NormalizedWeightRewardArray;
+
+	// 만약 이누리아 보상 리롤 정보가 세이브 되어있으면 가져와서 적용.
+	// 룸 넘어갈 때 Or 상점에서 이누리아 보상 상호작용 할 때 초기화 하기 때문에 문제 아마도 없?음
+	for (auto RolledAbilityID : GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->StageInfoData.SpawnedAbilityDataIDArray)
+	{
+		for (auto RewardAbilityTable : AbilityData)
+		{
+			if (RolledAbilityID == RewardAbilityTable->ID)
+			{
+				ButtonAbilityDataArray.Emplace(RewardAbilityTable);
+				break;
+			}
+		}
+	}
+	
+	if (!ButtonAbilityDataArray.IsEmpty())
+	{
+		RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
+		return;
+	}
 	
 	RollReward(AbilityDataTables);
 
@@ -138,8 +178,14 @@ void ALLL_RewardGimmick::SetRewardButtons()
 			return;
 		}
 	}
-	
+
 	RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
+
+	ButtonAbilityData1 = ButtonAbilityDataArray[0];
+	ButtonAbilityData2 = ButtonAbilityDataArray[1];
+	ButtonAbilityData3 = ButtonAbilityDataArray[2];
+
+	ButtonAbilityDataArray.Empty();
 }
 
 void ALLL_RewardGimmick::SetDataTable()
@@ -178,8 +224,10 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 				continue;
 			}
 
-			bool IsInValidReward = false;
-			if (GettenAbilityArray.IsEmpty())
+			TArray<const FAbilityDataTable*> GottenAbilityArray = FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld());
+			
+			bool IsValidReward = true;
+			if (GottenAbilityArray.IsEmpty())
 			{
 				if (Reward.Key->RequireCategory != EAbilityCategory::Null)
 				{
@@ -189,33 +237,46 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 			}
 			else
 			{
-				for (const auto GottenReward : GettenAbilityArray)
+				for (const auto GottenReward : GottenAbilityArray)
 				{
-					if (Reward.Key->AbilityName == GottenReward->AbilityName)
+					// 획득 조건이 필요한 이누리아일 경우
+					if (Reward.Key->RequireCategory != EAbilityCategory::Null)
 					{
-						IsInValidReward = true;
+						IsValidReward = false;
+						if (Reward.Key->RequireCategory == GottenReward->AbilityCategory)
+						{
+							IsValidReward = true;
+							break;
+						}
+					}
+				}
+
+				if (!IsValidReward)
+				{
+					CurrentWeight += Reward.Value;
+					continue;
+				}
+
+				for (const auto GottenReward : GottenAbilityArray)
+				{
+					// 중첩 이누리아일 경우
+					if (Reward.Key->TagID[0] == '1')
+					{
+						IsValidReward = true;
 						break;
 					}
-
-					// 획득 조건 체크
-					if (Reward.Key->RequireCategory == EAbilityCategory::Null)
+					if (Reward.Key->AbilityName == GottenReward->AbilityName && Reward.Key->ID <= GottenReward->ID)
 					{
-						continue;
-					}
-
-					IsInValidReward = false;
-					if (Reward.Key->RequireCategory == GottenReward->AbilityCategory)
-					{
-						IsInValidReward = true;
+						IsValidReward = false;
 						break;
 					}
 				}
-			}
 
-			if (IsInValidReward)
-			{
-				CurrentWeight += Reward.Value;
-				continue;
+				if (!IsValidReward)
+				{
+					CurrentWeight += Reward.Value;
+					continue;
+				}
 			}
 			
 			if (!ButtonAbilityDataArray.IsEmpty())
@@ -224,13 +285,13 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 				{
 					if (Reward.Key->AbilityName == EmplacedReward->AbilityName)
 					{
-						IsInValidReward = true;
+						IsValidReward = false;
 						break;
 					}
 				}
 			}
 
-			if (IsInValidReward)
+			if (!IsValidReward)
 			{
 				CurrentWeight += Reward.Value;
 				continue;
@@ -242,62 +303,41 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 	}
 }
 
-void ALLL_RewardGimmick::ClickFirstButton()
+void ALLL_RewardGimmick::WaitPlayerInitialize()
 {
-	if (ButtonAbilityDataArray.IsEmpty())
+	ALLL_PlayerController* PlayerController = Cast<ALLL_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (IsValid(PlayerController) && PlayerController->CheckPlayerInitialized() && !bMapGimmickIsExist)
 	{
+		SetRewardButtons();
 		return;
 	}
-	
-	ClickButtonEvent(ButtonAbilityDataArray[0]);
-	GettenAbilityArray.Emplace(ButtonAbilityDataArray[0]);
-	if (!bIsTest)
-	{
-		ButtonAbilityDataArray.Empty();
-	}
+	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_RewardGimmick::WaitPlayerInitialize);
+}
+
+void ALLL_RewardGimmick::ClickFirstButton()
+{
+	ClickButtonEvent(ButtonAbilityData1);
 }
 
 void ALLL_RewardGimmick::ClickSecondButton()
 {
-	if (ButtonAbilityDataArray.IsEmpty())
-	{
-		return;
-	}
-	
-	ClickButtonEvent(ButtonAbilityDataArray[1]);
-	GettenAbilityArray.Emplace(ButtonAbilityDataArray[1]);
-	if (!bIsTest)
-	{
-		ButtonAbilityDataArray.Empty();
-	}
+	ClickButtonEvent(ButtonAbilityData2);
 }
 
 void ALLL_RewardGimmick::ClickThirdButton()
 {
-	if (ButtonAbilityDataArray.IsEmpty())
-	{
-		return;
-	}
-	
-	ClickButtonEvent(ButtonAbilityDataArray[2]);
-	GettenAbilityArray.Emplace(ButtonAbilityDataArray[2]);
-	if (!bIsTest)
-	{
-		ButtonAbilityDataArray.Empty();
-	}
+	ClickButtonEvent(ButtonAbilityData3);
 }
 
 void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbilityData)
 {
-	CurrentAbilityData = ButtonAbilityData;
-	
 	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetWorld()->GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
 	if (IsValid(AbilityManageSubSystem))
 	{
 		//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
-		FAsyncLoadEffectDelegate AsyncLoadEffectDelegate;
+		FAsyncLoadEffectByIDDelegate AsyncLoadEffectDelegate;
 		AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_RewardGimmick::ReceivePlayerEffectsHandle);
-		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, CurrentAbilityData->ID, EEffectAccessRange::None);
+		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, ButtonAbilityData->ID, EEffectAccessRange::None);
 	}
 	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -307,166 +347,26 @@ void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbility
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange,
 				FString(TEXT("버튼 : ")).
-				Append(StaticEnum<EAbilityType>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityType))).
+				Append(StaticEnum<EAnimalType>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData->AnimalType))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityPart>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityPart))).
+				Append(StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData->AbilityRank))).
 				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityRank))).
-				Append(TEXT(" / ")).
-				Append(StaticEnum<EAbilityCategory>()->GetNameStringByValue(static_cast<int64>(CurrentAbilityData->AbilityCategory))));
+				Append(StaticEnum<EAbilityCategory>()->GetNameStringByValue(static_cast<int64>(ButtonAbilityData->AbilityCategory))));
 		}
 	}
 #endif
 }
 
-void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects)
+void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID)
 {
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
-	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
-
-	if (!IsValid(PlayerUIManager) || !IsValid(ASC))
-	{
-		ensure(false);
-		return;
-	}
-
-	if (LoadedEffects.IsEmpty())
-	{
-		Player->GetGoldComponent()->IncreaseMoney(123);
-		return;
-	}
-	
-	bool IsCommonEffect = true;
-	
-	UE_LOG(LogTemp, Log, TEXT("부여 된 플레이어 이펙트"));
-	for (auto& LoadedEffect : LoadedEffects)
-	{
-		ULLL_ExtendedGameplayEffect* Effect = CastChecked<ULLL_ExtendedGameplayEffect>(LoadedEffect.Get()->GetDefaultObject());
-		Effect->SetAbilityInfo(CurrentAbilityData);
-
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(Player);
-		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(Effect->GetClass(), 1.0, EffectContextHandle);
-		if(!EffectSpecHandle.IsValid())
-		{
-			continue;
-		}
-		
-		const FGameplayTagContainer TagContainer = Effect->GetAssetTags();
-		if (TagContainer.HasTag(TAG_GAS_ABILITY_PART) && !TagContainer.HasTagExact(TAG_GAS_ABILITY_PART_COMMON))
-		{
-			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("커먼 이펙트 아님")));
-			IsCommonEffect = false;
-			TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(TagContainer);
-			for (const auto EffectHandle : EffectHandles)
-			{
-				const ULLL_ExtendedGameplayEffect* ActiveEffect = Cast<ULLL_ExtendedGameplayEffect>(ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def);
-				if (!IsValid(ActiveEffect))
-				{
-					continue;
-				}
-				
-				if (CurrentAbilityData->AbilityPart == ActiveEffect->GetAbilityData()->AbilityPart)
-				{
-					ASC->RemoveActiveGameplayEffect(EffectHandle);
-					for (auto GameplayTag : TagContainer.GetGameplayTagArray())
-					{
-						UE_LOG(LogTemp, Log, TEXT("- %s 태그를 가진 이펙트 삭제"), *GameplayTag.ToString());
-					}
-				}
-			}
-		}
-
-		// 단순 수치 변화는 여기에서 적용.
-		float ChangeableValue = CurrentAbilityData->AbilityValue / static_cast<uint32>(CurrentAbilityData->AbilityValueType);
-		const float UnChangeableValue = CurrentAbilityData->UnchangeableValue;
-		
-		if (!EffectSpecHandle.Data->Def->Modifiers.IsEmpty())
-		{
-			switch (EffectSpecHandle.Data->Def->Modifiers[0].ModifierOp)
-			{
-			case EGameplayModOp::Multiplicitive:
-				++ChangeableValue;
-				break;
-			default: // Add, Divide, Max, Override
-				break;
-			}
-		}
-		
-		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, ChangeableValue);
-		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_UNCHANGEABLE_VALUE, UnChangeableValue);
-		
-		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-		UE_LOG(LogTemp, Log, TEXT("- %s 부여"), *LoadedEffect.Get()->GetName());
-		if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
-		{
-			Player->StartChargeFeather();
-		}
-		
-		// 어빌리티 부여 계열
-		if (ULLL_GE_GiveAbilityComponent* AbilitiesGameplayEffectComponent = &Effect->FindOrAddComponent<ULLL_GE_GiveAbilityComponent>())
-		{
-			for (const auto& AbilitySpecConfig : AbilitiesGameplayEffectComponent->GetAbilitySpecConfigs())
-			{
-				if (const FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(AbilitySpecConfig.Ability))
-				{
-					// EGameplayAbilityInstancingPolicy::InstancedPerActor로 설정된 어빌리티 한정 정상작동
-					Cast<ULLL_PGA_RewardAbilityBase>(Spec->GetPrimaryInstance())->SetAbilityInfo(CurrentAbilityData);
-					UE_LOG(LogTemp, Log, TEXT("스펙에 접근해서 값 바꾸기 시도"));
-				}
-			}
-		}
-
-		const FGameplayEventData PayLoadData;
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ABILITY_PART_GRANT, PayLoadData);
-		break;
-	}
-
-	// TODO: UI 관련 상호작용 구현.
-	if (IsCommonEffect)
-	{
-		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("커먼 이펙트 획득")));
-		PlayerUIManager->GetInventoryWidget()->SetEruriaInfo(CurrentAbilityData);
-	}
-	else
-	{
-		PlayerUIManager->GetMainEruriaWidget()->SetEruriaInfo(CurrentAbilityData);
-	}
-
-	TArray<const FAbilityDataTable*> EqualAbilities;
-	uint8 Count = 2;
-	for (auto Data : AbilityData)
-	{
-		// 전설 이누리아의 경우 For문 중단
-		if (CurrentAbilityData->ID % 10000 > ABILITY_RANK_LEGEND)
-		{
-			EqualAbilities.Emplace(Data);
-			break;
-		}
-		
-		if (Data->ID % ABILITY_INFO_ID == CurrentAbilityData->ID % ABILITY_INFO_ID)
-		{
-			EqualAbilities.Emplace(Data);
-			--Count;
-			if (!Count)
-			{
-				break;
-			}
-		}
-	}
-
-	if (!EqualAbilities.IsEmpty())
-	{
-		for (auto EqualAbility : EqualAbilities)
-		{
-			AbilityData.Remove(EqualAbility);
-		}
-	}
-	AbilityData.Remove(CurrentAbilityData);
-	// 테이블에서 중복 보상 제거 후 가중치 재계산
+	FLLL_AbilityDataHelper::ApplyEnuriaEffect(GetWorld(), LoadedEffects, EffectID, AbilityData, bIsTest);
 	SetRewardWeight();
+
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	if (IsValid(GameProgressSubSystem))
+	{
+		GameProgressSubSystem->BeginSaveGame();
+	}
 	
-	CurrentAbilityData = nullptr;
 	bIsButtonEventSetup = false;
 }

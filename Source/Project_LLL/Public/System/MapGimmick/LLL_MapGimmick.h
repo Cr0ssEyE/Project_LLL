@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "DataTable/LLL_RewardDataTable.h"
 #include "DataAsset/LLL_MapDataAsset.h"
+#include "DataTable/LLL_AbilityDataTable.h"
+#include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "GameFramework/Actor.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_MapGimmick.generated.h"
@@ -27,6 +29,49 @@ class UNiagaraComponent;
 DECLARE_DELEGATE(FOnStageChangedDelegate);
 
 USTRUCT(BlueprintType)
+struct FStageInfoData
+{
+	GENERATED_BODY()
+	
+public:
+	FStageInfoData():
+	Seed(UINT32_MAX),
+	RoomNumber(UINT32_MAX),
+	PlayerLocation(FVector::Zero()),
+	RewardPosition(FVector::Zero()),
+	LastStageState(EStageState::READY),
+	bIsLoadedFromSave(false)
+	{
+		
+	}
+
+public:
+	UPROPERTY()
+	uint32 Seed;
+	
+	UPROPERTY()
+	uint32 RoomNumber;
+
+	UPROPERTY()
+	TArray<uint8> GatesRewardID;
+
+	UPROPERTY()
+	FVector PlayerLocation;
+
+	UPROPERTY()
+	FVector RewardPosition;
+
+	UPROPERTY()
+	EStageState LastStageState;
+	
+	UPROPERTY()
+	TArray<int32> SpawnedAbilityDataIDArray;
+
+	UPROPERTY()
+	uint32 bIsLoadedFromSave : 1;
+};
+
+USTRUCT(BlueprintType)
 struct FStageChangedDelegateWrapper
 {
 	GENERATED_BODY()
@@ -44,6 +89,9 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_MapGimmick();
 
+public:
+	FStageInfoData MakeStageInfoData();
+	
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void PostInitializeComponents() override;
@@ -51,8 +99,12 @@ protected:
 
 public:
 	FORCEINLINE ALLL_MonsterSpawner* GetMonsterSpawner() const { return MonsterSpawner; }
+	FORCEINLINE bool CheckShoppingRoom() const { return ShoppingMapComponent != nullptr; }
+	FORCEINLINE ULLL_ShoppingMapComponent* GetShoppingMapComponent() const { return ShoppingMapComponent; }
+	FORCEINLINE EStageState GetStageState() const { return CurrentState; }
+	FORCEINLINE ALLL_RewardGimmick* GetRewardGimmick() const { return RewardGimmick; }
+	FORCEINLINE FVector GetRewardPosition() const { return RewardObjectPosition; }
 	
-	// Stage Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage")
 	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
@@ -81,9 +133,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_SequencerComponent> RoomSequencerPlayComponent;
 	
-	uint8 Seed;
+	uint32 Seed;
 
 protected:
+	UFUNCTION()
+	void LoadLastSessionMap(FStageInfoData StageInfoData);
+	
 	UFUNCTION()
 	void CreateMap();
 
@@ -94,14 +149,8 @@ protected:
 	void ChangeMap(AActor* DestroyedActor);
 
 private:
-	UPROPERTY()
-	uint8 GateIndex;
-
 	UPROPERTY(VisibleAnywhere)
-	uint8 RoomNumber;
-
-	UPROPERTY(VisibleAnywhere)
-	uint8 CurrentRoomNumber;
+	uint32 CurrentRoomNumber;
 
 // Gate Section
 protected:
@@ -127,6 +176,10 @@ protected:
 
 	UPROPERTY()
 	TMap<EStageState, FStageChangedDelegateWrapper> StateChangeActions;
+
+	uint8 bIsFirstLoad : 1;
+
+	uint8 bIsLoadedFromSave : 1;
 	
 protected:
 	void SetState(EStageState InNewState);
@@ -158,6 +211,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<ALLL_RewardObject> RewardObjectClass;
 
+	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
+	FVector RewardObjectPosition;
+	
 	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ALLL_RewardGimmick> RewardGimmick;
 	
@@ -193,7 +249,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
 	TObjectPtr<UNiagaraComponent> PlayerTeleportNiagara;
-	
+
+protected:
 	UFUNCTION()
 	void FadeIn();
 

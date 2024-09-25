@@ -26,10 +26,4 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그")
 	FGameplayTag TriggerRequiredTag;
 	
-	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "넉백 발생시 적용 GE")
-	TSubclassOf<UGameplayEffect> KnockBackEffect;
-
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName ="커브 테이블 내 액션 넉백 배율 변화값 행")
-	FCurveTableRowHandle KnockBackAmplifyChangeSection;
-	
 };
