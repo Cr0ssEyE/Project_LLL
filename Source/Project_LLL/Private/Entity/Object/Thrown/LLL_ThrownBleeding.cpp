@@ -6,12 +6,15 @@
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "DataAsset/LLL_ThrownBleedingDataAsset.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/Object/Thrown/LLL_ThrownBleedingAttributeSet.h"
+#include "Util/LLL_AbilityDataHelper.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_ThrownBleeding::ALLL_ThrownBleeding()
@@ -20,9 +23,9 @@ ALLL_ThrownBleeding::ALLL_ThrownBleeding()
 
 	ThrownBleedingAttributeSet = CreateDefaultSubobject<ULLL_ThrownBleedingAttributeSet>(TEXT("ThrownBleedingAttributeSet"));
 	
-	HitCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit Collision"));
-	HitCollisionBox->SetCollisionProfileName(CP_PLAYER_THROWN_OBJECT);
-	SetRootComponent(HitCollisionBox);
+	OverlapCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Overlap Collision"));
+	OverlapCollisionBox->SetCollisionProfileName(CP_PLAYER_THROWN_OBJECT_OVERLAP);
+	SetRootComponent(OverlapCollisionBox);
 }
 
 void ALLL_ThrownBleeding::BeginPlay()
@@ -32,7 +35,9 @@ void ALLL_ThrownBleeding::BeginPlay()
 	ThrownBleedingDataAsset = Cast<ULLL_ThrownBleedingDataAsset>(ThrownObjectDataAsset);
 	ThrownObjectAttributeSet = ThrownBleedingAttributeSet;
 
-	HitCollisionBox->SetBoxExtent(ThrownBleedingDataAsset->HitCollisionSize);
+	OverlapCollisionBox->SetBoxExtent(ThrownBleedingDataAsset->HitCollisionSize);
+	// 이펙트가 나오기 전까지 디버그 유지
+	OverlapCollisionBox->SetHiddenInGame(false);
 }
 
 void ALLL_ThrownBleeding::Tick(float DeltaSeconds)
@@ -44,11 +49,11 @@ void ALLL_ThrownBleeding::Tick(float DeltaSeconds)
 	{
 		if (DebugGameInstance->CheckMonsterAttackDebug())
 		{
-			HitCollisionBox->SetHiddenInGame(false);
+			//OverlapCollisionBox->SetHiddenInGame(false);
 		}
 		else
 		{
-			HitCollisionBox->SetHiddenInGame(true);
+			//OverlapCollisionBox->SetHiddenInGame(true);
 		}
 	}
 #endif
@@ -58,15 +63,16 @@ void ALLL_ThrownBleeding::Activate()
 {
 	Super::Activate();
 
-	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	ProjectileMovementComponent->UpdatedComponent = HitCollisionBox;
+	OverlapCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ProjectileMovementComponent->UpdatedComponent = OverlapCollisionBox;
 }
 
 void ALLL_ThrownBleeding::Deactivate()
 {
 	Super::Deactivate();
 	
-	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	OverlapCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	DamagedMonsters.Empty();
 }
 
 void ALLL_ThrownBleeding::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower)
@@ -77,8 +83,44 @@ void ALLL_ThrownBleeding::Throw(AActor* NewOwner, AActor* NewTarget, float InSpe
 	{
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-		OffencePower = AbilityData->AbilityValue2 / static_cast<uint32>(AbilityData->Value2Type);
+		OffencePower = AbilityData->AbilityValue1 / static_cast<uint32>(AbilityData->Value1Type);
 		OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
 		OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+
+		BleedingOffencePower = AbilityData->AbilityValue2 / static_cast<uint32>(AbilityData->Value2Type);
+		BleedingOffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
+		BleedingOffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+	}
+}
+
+void ALLL_ThrownBleeding::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+
+	if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(OtherActor))
+	{
+		if (DamagedMonsters.Contains(Monster))
+		{
+			return;
+		}
+		
+		Monster->SetBleedingStack(Monster->GetBleedingStack() + 4);
+		DamagedMonsters.Emplace(Monster);
+		
+		DamageTo(OtherActor);
+		
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownBleedingDataAsset->BleedingDamageEffect, AbilityLevel, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
+		{
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, BleedingOffencePower);
+			const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner());
+			if (IsValid(Player) && EffectSpecHandle.Data->Def->GetAssetTags().HasTag(TAG_GAS_BLEEDING))
+			{
+				FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, CastChecked<ULLL_ExtendedGameplayEffect>(ThrownBleedingDataAsset->BleedingDamageEffect.GetDefaultObject()));
+			}
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Monster->GetAbilitySystemComponent());
+		}
 	}
 }

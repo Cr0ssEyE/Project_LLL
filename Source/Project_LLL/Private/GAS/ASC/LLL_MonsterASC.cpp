@@ -81,13 +81,9 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 			GetWorld()->GetTimerManager().ClearTimer(BleedingTimerHandle);
 		}
 
+		Monster->SetBleedingStack(Monster->GetBleedingStack() + 1);
 		Monster->UpdateBleedingVFX(true);
-
-		if (Monster->GetBleedingStack() < Monster->GetMaxBleedingStack())
-		{
-			Monster->SetBleedingStack(Monster->GetBleedingStack() + 1);
-			Monster->UpdateStackVFX(Monster->GetBleedingStack(), Monster->GetMaxBleedingStack());
-		}
+		Monster->UpdateStackVFX(Monster->GetBleedingStack(), Monster->GetMaxBleedingStack());
 		
 		GetWorld()->GetTimerManager().SetTimer(BleedingTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, Monster]{
 			if (!IsValid(Monster))

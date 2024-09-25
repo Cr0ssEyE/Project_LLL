@@ -7,6 +7,7 @@
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "LLL_ThrownBleeding.generated.h"
 
+class ALLL_MonsterBase;
 class ULLL_ThrownBleedingAttributeSet;
 class UBoxComponent;
 /**
@@ -27,13 +28,18 @@ protected:
 	virtual void Deactivate() override;
 	
 	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower) override;
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override {}
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<UBoxComponent> HitCollisionBox;
+	TObjectPtr<UBoxComponent> OverlapCollisionBox;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_ThrownBleedingDataAsset> ThrownBleedingDataAsset;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_ThrownBleedingAttributeSet> ThrownBleedingAttributeSet;
+
+	TArray<TObjectPtr<ALLL_MonsterBase>> DamagedMonsters;
+	float BleedingOffencePower;
 };

@@ -50,6 +50,6 @@ void ALLL_RangeKnockBackDetector::NotifyActorBeginOverlap(AActor* OtherActor)
 		KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
 		KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
 		
-		KnockBackToOverlapActor(OtherActor);
+		KnockBackTo(OtherActor);
 	}
 }

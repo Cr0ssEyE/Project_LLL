@@ -127,7 +127,7 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 							KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
 							KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
 							
-							KnockBackTarget(Direction, Other);
+							KnockBackTo(Direction, Other);
 						}
 					}
 				}), HitOffsetTime, false);

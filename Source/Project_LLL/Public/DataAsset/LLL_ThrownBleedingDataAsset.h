@@ -15,6 +15,9 @@ class PROJECT_LLL_API ULLL_ThrownBleedingDataAsset : public ULLL_ThrownObjectDat
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "출혈 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> BleedingDamageEffect;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", DisplayName = "힛 콜리젼 사이즈")
 	FVector HitCollisionSize;
 };

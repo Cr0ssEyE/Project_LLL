@@ -58,7 +58,7 @@ public:
 
 	// 이누리아 관련
 public:
-	FORCEINLINE void SetBleedingStack(const int32 InBleedingStack) { BleedingStack = InBleedingStack; }
+	FORCEINLINE void SetBleedingStack(const int32 InBleedingStack) { BleedingStack = InBleedingStack <= MaxBleedingStack ? InBleedingStack : MaxBleedingStack; }
 	FORCEINLINE void SetBleedingTransmissionOffencePower(const float InBleedingTransmissionOffencePower) { BleedingTransmissionOffencePower = InBleedingTransmissionOffencePower; }
 	
 	FORCEINLINE int32 GetBleedingStack() const { return BleedingStack; }

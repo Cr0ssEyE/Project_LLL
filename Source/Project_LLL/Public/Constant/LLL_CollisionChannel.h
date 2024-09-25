@@ -37,6 +37,7 @@
 #define CP_STAGE_TRIGGER TEXT("StageTrigger")
 #define CP_MONSTER_ABILITY_OBJECT TEXT("MonsterAbilityObject")
 #define CP_THREW_MONSTER TEXT("ThrewMonster")
+#define CP_PLAYER_THROWN_OBJECT_OVERLAP TEXT("PlayerThrownObjectOverlap")
 
 // 감지용 콜리전 프로필
 #define CP_MAP_SOUND_MANAGER TEXT("MapSoundManager")
