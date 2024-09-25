@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "DataAsset/LLL_RewardObjectDataAsset.h"
+#include "DataTable/LLL_RewardDataTable.h"
 #include "Interface/LLL_ProductObjectInterface.h"
 #include "LLL_RewardObject.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnInteractionDelegate);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnInteractionDelegate, class ALLL_RewardObject*)
 
 class ULLL_SelectRewardWidget;
 class ULLL_ProductObjectPriceWidget;
@@ -26,10 +27,13 @@ public:
 	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 	virtual void BeginPlay() override;
 	virtual void ApplyProductEvent() override;
-	virtual void SetInformation(const FRewardDataTable* Data);
+	virtual void SetInformation(const FRewardDataTable* Data, const uint32 Index = 0);
 
 	FOnInteractionDelegate InteractionDelegate;
 
+public:
+	FORCEINLINE uint32 GetRewardDataIndex() const { return RewardIndex; }
+	FORCEINLINE uint32 GetRewardDataID() const { return RewardData->ID; }
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMesh> RewardMesh;
@@ -60,4 +64,6 @@ protected:
 	TObjectPtr<ULLL_ProductObjectPriceWidget> PriceWidget;
 	
 	const FRewardDataTable* RewardData;
+
+	uint8 RewardIndex;
 };

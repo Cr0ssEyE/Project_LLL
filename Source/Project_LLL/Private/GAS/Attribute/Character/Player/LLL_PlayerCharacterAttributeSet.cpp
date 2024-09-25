@@ -13,10 +13,51 @@
 
 ULLL_PlayerCharacterAttributeSet::ULLL_PlayerCharacterAttributeSet() :
 LowHealthPercentage(0.3f),
-BaseAttackDamageAmplifyByOther(1.f),
-TargetingCorrectionRadius(100.f)
+TargetingCorrectionRadius(100.f),
+AllOffencePowerRate(1.0f),
+AllOffencePowerPlus(0.0f),
+KnockBackPowerRate(1.0f),
+KnockBackPowerPlus(0.0f),
+KnockBackOffencePowerRate(1.0f),
+KnockBackOffencePowerPlus(0.0f),
+FeatherOffencePowerRate(1.0f),
+FeatherOffencePowerPlus(0.0f)
 {
 	
+}
+
+FPlayerCharacterStatusData ULLL_PlayerCharacterAttributeSet::MakeCharacterStatusData() const
+{
+	FPlayerCharacterStatusData CharacterStatusData;
+	CharacterStatusData.MaxHealth = MaxHealth.GetBaseValue();
+	CharacterStatusData.CurrentHealth = CurrentHealth.GetCurrentValue();
+	CharacterStatusData.OffencePower = OffencePower.GetBaseValue();
+	CharacterStatusData.MoveSpeed = MoveSpeed.GetBaseValue();
+	CharacterStatusData.AttackSpeed = AttackSpeed.GetBaseValue();
+	CharacterStatusData.CriticalChance = CriticalChance.GetBaseValue();
+	CharacterStatusData.CriticalAmplify = CriticalAmplify.GetBaseValue();
+	CharacterStatusData.MaxDashCount = MaxDashCount.GetBaseValue();
+	CharacterStatusData.DashDistance = DashDistance.GetBaseValue();
+	CharacterStatusData.KnockBackPower = KnockBackPower.GetBaseValue();
+	
+	return CharacterStatusData;
+}
+
+void ULLL_PlayerCharacterAttributeSet::InitializeSavedStatusData(const FPlayerCharacterStatusData* CharacterStatusData)
+{
+	MaxHealth.SetCurrentValue(CharacterStatusData->MaxHealth);
+	CurrentHealth.SetCurrentValue(CharacterStatusData->CurrentHealth); // (FMath::Clamp(CharacterStatusData->CurrentHealth, 0, CharacterStatusData->MaxHealth));
+	OffencePower.SetBaseValue(CharacterStatusData->OffencePower);
+	MoveSpeed.SetBaseValue(CharacterStatusData->MoveSpeed);
+	AttackSpeed.SetBaseValue(CharacterStatusData->AttackSpeed);
+	CriticalChance.SetBaseValue(CharacterStatusData->CriticalChance);
+	CriticalAmplify.SetBaseValue(CharacterStatusData->CriticalAmplify);
+	MaxDashCount.SetBaseValue(CharacterStatusData->MaxDashCount);
+	DashDistance.SetBaseValue(CharacterStatusData->DashDistance);
+	KnockBackPower.SetBaseValue(CharacterStatusData->KnockBackPower);
+
+	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
+	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }
 
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -48,14 +89,18 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 			}
 		}
 #endif
-		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-		if (GetCurrentHealth() == 0)
+
+		if (Player->GetCapsuleComponent()->GetCollisionProfileName() != CP_PLAYER_EVADE)
 		{
-			Player->Dead();
-		}
-		else
-		{
-			Player->Damaged(Attacker, DOT);
+			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+			if (GetCurrentHealth() == 0)
+			{
+				Player->Dead();
+			}
+			else
+			{
+				Player->Damaged(Attacker, DOT);
+			}
 		}
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -67,6 +112,14 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 			}
 		}
 #endif
+	}
+
+	if (Data.EvaluatedData.Attribute == GetCurrentHealthAttribute())
+	{
+		if (GetCurrentHealth() > GetMaxHealth())
+		{
+			SetCurrentHealth(GetMaxHealth());
+		}
 	}
 	
 	Super::PostGameplayEffectExecute(Data);

@@ -8,7 +8,7 @@
 #define UI_RARITY_COLOR TEXT("RarityColor")
 #define UI_ERURIA_ICON TEXT("EruriaIcon")
 
-#define PP_PLAYER_LOWHP_RADIUS TEXT("PP_PlayerLowHP_Radius")
+#define PP_PLAYER_LOW_HP_RADIUS TEXT("PP_PlayerLowHP_Radius")
 
 // 범용 파라미터 이름
 #define MAT_PARAM_TEXTURE TEXT("Texture")

@@ -28,7 +28,7 @@ public:
 
 	static FVector CalculateLaunchVelocity(const FVector& Direction, const float Multiply)
 	{
-		const FVector CalculateResult = Direction * Multiply * 10.f;
+		const FVector CalculateResult = Direction.GetSafeNormal2D() * Multiply * 10.f;
 		return CalculateResult;
 	}
 
@@ -130,17 +130,6 @@ public:
 		return CalculateResult;
 	}
 
-	static float CalculateKnockBackPower(const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet, const float ActionAmplify = 1.f)
-	{
-		if (!IsValid(PlayerCharacterAttributeSet))
-		{
-			return 0.f;
-		}
-		
-		const float CalculateResult = (PlayerCharacterAttributeSet->GetKnockBackPower() + PlayerCharacterAttributeSet->GetOffensePower() * PlayerCharacterAttributeSet->GetKnockBackOffensePowerRate()) * ActionAmplify;
-		return CalculateResult;
-	}
-
 	static float CalculateCriticalDamage(const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet, const float OffensePower)
 	{
 		const float CriticalChance = PlayerAttributeSet->GetCriticalChance();
@@ -157,7 +146,7 @@ public:
 			UE_LOG(LogTemp, Log, TEXT("치명타 발동 (확률 : %.2f%%)"), CriticalChance * 100.0f)
 		}
 		
-		return OffensePower + (bIsChance ? CriticalAmplify * OffensePower : 0);
+		return bIsChance ? CriticalAmplify * OffensePower : OffensePower;
 	}
 	
 	static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)

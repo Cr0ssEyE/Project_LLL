@@ -24,6 +24,8 @@ void ALLL_RangeFeatherDetector::BeginPlay()
 	AbilityObjectAttributeSet = RangeFeatherDetectorAttributeSet;
 
 	CastChecked<ALLL_PlayerBase>(GetOwner())->SetFeatherSpawnStartTime(AbilityObjectAttributeSet->GetDestroyTimer() + 0.01f);
+
+	OverlapCollisionSphere->SetSphereRadius(AbilityData->AbilityValue1 * 100.0f);
 }
 
 void ALLL_RangeFeatherDetector::Tick(float DeltaSeconds)
@@ -31,7 +33,7 @@ void ALLL_RangeFeatherDetector::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	// 이펙트가 나오기 전까지 디버그 유지
-	DrawDebugSphere(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius(), 16, FColor::Green, false, DeltaSeconds);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius(), 16, FColor::Green, false, AbilityObjectAttributeSet->GetDestroyTimer());
 }
 
 void ALLL_RangeFeatherDetector::NotifyActorBeginOverlap(AActor* OtherActor)

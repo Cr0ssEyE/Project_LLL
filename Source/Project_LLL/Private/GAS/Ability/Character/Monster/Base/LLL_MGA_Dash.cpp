@@ -94,12 +94,6 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Dash"), DashLocation, DashMonster->GetMaxDashDistance() / DashMonster->GetDashSpeed() / Monster->CustomTimeDilation, nullptr, nullptr);
 	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &ULLL_MGA_Dash::OnCompleteCallBack);
 	MoveToLocationTask->ReadyForActivation();
-	
-	if (IsValid(DashMontage))
-	{
-		UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("DashMontage"), DashMontage, 1.0f);
-		PlayMontageTask->ReadyForActivation();
-	}
 
 	if (IsValid(DashEffect))
 	{

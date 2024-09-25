@@ -6,6 +6,59 @@
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 #include "LLL_PlayerCharacterAttributeSet.generated.h"
 
+USTRUCT(BlueprintType)
+struct FPlayerCharacterStatusData
+{
+	GENERATED_BODY()
+
+public:
+	FPlayerCharacterStatusData():
+	MaxHealth(0),
+	CurrentHealth(0),
+	OffencePower(0),
+	MoveSpeed(0),
+	AttackSpeed(0),
+	CriticalChance(0),
+	CriticalAmplify(0),
+	MaxDashCount(0),
+	DashDistance(0),
+	KnockBackPower(0)
+	{
+		
+	}
+
+public:
+	UPROPERTY()
+	uint32 MaxHealth;
+
+	UPROPERTY()
+	uint32 CurrentHealth;
+
+	UPROPERTY()
+	uint32 OffencePower;
+
+	UPROPERTY()
+	uint32 MoveSpeed;
+
+	UPROPERTY()
+	uint32 AttackSpeed;
+
+	UPROPERTY()
+	float CriticalChance;
+
+	UPROPERTY()
+	float CriticalAmplify;
+	
+	UPROPERTY()
+	uint32 MaxDashCount;
+
+	UPROPERTY()
+	float DashDistance;
+
+	UPROPERTY()
+	uint32 KnockBackPower;
+};
+
 /**
  * 
  */
@@ -20,7 +73,6 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, LowHealthPercentage);
 	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxAttackActionCount);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, BaseAttackDamageAmplifyByOther);
 	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CriticalChance);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CriticalAmplify);
@@ -33,8 +85,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashInvincibleTime);
 	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackPower);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackRate);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackOffensePowerRate);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackOffencePower);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FalloutablePower);
 
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MinChargeAttackRange);
@@ -48,6 +99,18 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherMoveSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, TargetingCorrectionRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ImpulseStrength);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, AllOffencePowerRate);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, AllOffencePowerPlus);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackPowerRate);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackPowerPlus);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackOffencePowerRate);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackOffencePowerPlus);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherOffencePowerRate);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherOffencePowerPlus);
+
+public:
+	FPlayerCharacterStatusData MakeCharacterStatusData() const;
+	void InitializeSavedStatusData(const FPlayerCharacterStatusData* CharacterStatusData);
 	
 protected:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
@@ -61,9 +124,6 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxAttackActionCount;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData BaseAttackDamageAmplifyByOther;
 
 	// 크리티컬 관련
 protected:
@@ -97,12 +157,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData KnockBackPower;
-
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData KnockBackRate;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData KnockBackOffensePowerRate;
+	FGameplayAttributeData KnockBackOffencePower;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData FalloutablePower;
@@ -140,4 +197,28 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ImpulseStrength;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData AllOffencePowerRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData AllOffencePowerPlus;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData KnockBackPowerRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData KnockBackPowerPlus;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData KnockBackOffencePowerRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData KnockBackOffencePowerPlus;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData FeatherOffencePowerRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData FeatherOffencePowerPlus;
 };

@@ -22,8 +22,10 @@
 #include "LevelSequencePlayer.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Game/LLL_GameInstance.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Game/LLL_MapSoundSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/MapGimmick/Components/LLL_SequencerComponent.h"
@@ -43,6 +45,30 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 	FadeInSequenceActor = CreateDefaultSubobject<ALevelSequenceActor>(TEXT("SequenceActor"));
 
 	Seed = 0;
+	bIsFirstLoad = true;
+}
+
+FStageInfoData ALLL_MapGimmick::MakeStageInfoData()
+{
+	FStageInfoData StageInfoData;
+	StageInfoData.Seed = Seed;
+	StageInfoData.RoomNumber = CurrentRoomNumber;
+	for (auto Gate : Gates)
+	{
+		ALLL_GateObject* GateObject = Gate.Get();
+		if (!IsValid(GateObject))
+		{
+			continue;
+		}
+		StageInfoData.GatesRewardID.Emplace(GateObject->GetRewardData()->ID);
+	}
+
+	if (CurrentState != EStageState::READY && CurrentState != EStageState::FIGHT)
+	{
+		StageInfoData.LastStageState = CurrentState;
+	}
+	
+	return StageInfoData;
 }
 
 void ALLL_MapGimmick::OnConstruction(const FTransform& Transform)
@@ -91,12 +117,51 @@ void ALLL_MapGimmick::BeginPlay()
 	SequenceActorPtr = FadeOutSequenceActor;
 	FadeOutSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
 	FadeOutSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::SetupGateData);
-	
-	RandomMap();
-	CreateMap();
 
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayAMB();
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->RegisterMapGimmick(this);
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->OnLastSessionLoaded.AddDynamic(this, &ALLL_MapGimmick::LoadLastSessionMap);
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->LoadLastSessionMapData();
+	// 델리게이트를 통해 마지막 세션 정보를 받아온 뒤, 세션 정보를 기반으로 진행도 초기화
+}
+
+void ALLL_MapGimmick::LoadLastSessionMap(FStageInfoData StageInfoData)
+{
+	if (GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->OnLastSessionLoaded.IsAlreadyBound(this, &ALLL_MapGimmick::LoadLastSessionMap))
+	{
+		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->OnLastSessionLoaded.RemoveDynamic(this, &ALLL_MapGimmick::LoadLastSessionMap);
+	}
+
+	Seed = StageInfoData.Seed;
+	CurrentRoomNumber = StageInfoData.RoomNumber;
+	bIsLoadedFromSave = StageInfoData.bIsLoadedFromSave;
+	// StageInfoData->GatesRewardID;
+
+	// = 마지막 세션이 플레이 도중이 아님
+	if (Seed == UINT32_MAX || CurrentRoomNumber == UINT32_MAX)
+	{
+		RandomMap();
+	}
+	else
+	{
+		if (CurrentRoomNumber == MapDataAsset->StoreRoom)
+		{
+			RoomClass = MapDataAsset->Store;
+		}
+		else if (CurrentRoomNumber > MapDataAsset->MaximumRoom)
+		{
+			RoomClass = MapDataAsset->Boss;
+			GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->StopBGM();
+		}
+		else
+		{
+			RoomClass = MapDataAsset->Rooms[Seed];
+		}
+	}
+
+	ALLL_PlayerController* PlayerController = Cast<ALLL_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	PlayerController->PlayerInitializedDelegate.AddDynamic(this, &ALLL_MapGimmick::CreateMap);
 }
 
 void ALLL_MapGimmick::CreateMap()
@@ -119,7 +184,7 @@ void ALLL_MapGimmick::CreateMap()
 			ShoppingMapComponent = Cast<ULLL_ShoppingMapComponent>(ChildComponent);
 			if (IsValid(ShoppingMapComponent))
 			{
-				ShoppingMapComponent->ShopingDelegate.AddUObject(this, &ALLL_MapGimmick::SetRewardWidget);
+				ShoppingMapComponent->ShoppingDelegate.AddUObject(this, &ALLL_MapGimmick::SetRewardWidget);
 			}
 		}
 
@@ -164,11 +229,47 @@ void ALLL_MapGimmick::CreateMap()
 		}
 		SetState(EStageState::READY);
 	}
+
+	bool PlayerTeleported = false;
 	
-	// TODO: Player loaction change 
-	Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
+	// 마지막 플레이 상태 적용
+	if (bIsFirstLoad && bIsLoadedFromSave)
+	{
+		FStageInfoData LastInfoData = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->StageInfoData;
+		UE_LOG(LogTemp, Log, TEXT("불러온 맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(LastInfoData.LastStageState)));
+		CurrentState = LastInfoData.LastStageState;
+		
+		if (CurrentState == EStageState::REWARD || (CurrentState == EStageState::NEXT && !IsValid(ShoppingMapComponent)))
+		{
+			Player->SetActorLocation(LastInfoData.PlayerLocation);
+			MonsterSpawner->OnDestroyed.Clear();
+			MonsterSpawner->Destroy();
+			PlayerTeleported = true;
+		}
+
+		if (CurrentState == EStageState::REWARD)
+		{
+			RewardSpawn();
+		}
+		else if (CurrentState == EStageState::NEXT && !IsValid(ShoppingMapComponent))
+		{
+			EnableAllGates();
+		}
+	}
+	
+	// TODO: Player location change
+	if (!PlayerTeleported)
+	{
+		Player->SetActorLocationAndRotation(PlayerSpawnPointComponent->GetComponentLocation(), PlayerSpawnPointComponent->GetComponentQuat());
+		ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+		if (IsValid(GameProgressSubSystem) && !bIsFirstLoad)
+		{
+			GameProgressSubSystem->BeginSaveGame();
+		}
+	}
+	
 	Player->SetActorEnableCollision(true);
-	FadeIn();
+	FadeIn();	
 }
 
 void ALLL_MapGimmick::RandomMap()
@@ -201,6 +302,13 @@ void ALLL_MapGimmick::RandomMap()
 
 void ALLL_MapGimmick::ChangeMap(AActor* DestroyedActor)
 {
+	// 이전 룸의 임시 데이터 초기화.
+	if (!bIsFirstLoad)
+	{
+		ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+		GameProgressSubSystem->ClearInstantRoomData();
+	}
+	
 	AllGatesDestroy();
 	RandomMap();
 	CreateMap();
@@ -262,6 +370,15 @@ void ALLL_MapGimmick::SetState(EStageState InNewState)
 	
 	if (StateChangeActions.Contains(InNewState))
 	{
+		if (InNewState == EStageState::REWARD)
+		{
+			ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+			if (IsValid(GameProgressSubSystem) && !GameProgressSubSystem->CheckExitCurrentSession())
+			{
+				GameProgressSubSystem->BeginSaveGame();
+			}
+		}
+		
 		StateChangeActions[CurrentState].StageDelegate.ExecuteIfBound();
 	}
 }
@@ -290,7 +407,7 @@ void ALLL_MapGimmick::SetChooseReward()
 void ALLL_MapGimmick::SetChooseNext()
 {
 	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
-	
+
 	EnableAllGates();
 }
 
@@ -355,6 +472,13 @@ void ALLL_MapGimmick::RewardSpawn()
 		RewardTransform.SetLocation(FVector::Zero() + FVector(0.f, 0.f, 300.f));
 	}
 	RewardObject->FinishSpawning(RewardTransform);
+
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	if (bIsFirstLoad && GameProgressSubSystem->GetCurrentSaveGameData()->StageInfoData.RewardPosition != FVector::Zero())
+	{
+		RewardObject->SetActorLocation(GameProgressSubSystem->GetCurrentSaveGameData()->StageInfoData.RewardPosition);
+	}
+	RewardObjectPosition = RewardObject->GetActorLocation();
 }
 
 void ALLL_MapGimmick::SetRewardWidget()
@@ -421,6 +545,11 @@ void ALLL_MapGimmick::PlayerSetHidden()
 	}
 	FadeInSequencePlayer->RestoreState();
 	FadeOutSequencePlayer->RestoreState();
+
+	if (bIsFirstLoad)
+	{
+		bIsFirstLoad = false;
+	}
 }
 
 void ALLL_MapGimmick::PlayEncounterSequence()

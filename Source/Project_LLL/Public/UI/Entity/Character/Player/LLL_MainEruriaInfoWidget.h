@@ -48,11 +48,8 @@ class PROJECT_LLL_API ULLL_MainEruriaInfoWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	void SetEruriaInfo(const FAbilityDataTable* AbilityData);
+	void SetEnuriaInfo(const FAbilityDataTable* AbilityData);
 	void RemoveEruriaInfo(const EAbilityPart AbilityPart);
-	
-protected:
-	void SetEruriaImage(UImage* Image, UTextBlock* TextBlock, FGameplayTag AbilityPartTag, const FAbilityDataTable* AbilityData);
 	
 protected:
 	// 임시 데이터이므로 추후 테이블 연결 필요
