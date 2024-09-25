@@ -69,7 +69,7 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		{
 			Attacker = ThrownObject->GetOwner();
 		}
-		
+
 		ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
 		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
 

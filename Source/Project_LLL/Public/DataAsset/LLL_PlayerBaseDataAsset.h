@@ -125,4 +125,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "피의 역병 이누리아 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> BleedingTransmissionDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "과다출혈 이누리아 출혈 주기 변경 이펙트")
+	TSubclassOf<UGameplayEffect> ExcessiveBleedingChangePeriodEffect;
 };

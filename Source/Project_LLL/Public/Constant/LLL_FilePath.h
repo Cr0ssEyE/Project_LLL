@@ -26,6 +26,7 @@
 
 // 플레이어 투사체 관련
 #define PATH_THROWN_FEATHER_DATA TEXT("/Script/Project_LLL.LLL_ThrownFeatherDataAsset'/Game/DataAsset/DA_ThrownFeather.DA_ThrownFeather'")
+#define PATH_THROWN_BLEEDING_DATA TEXT("/Script/Project_LLL.LLL_ThrownBleedingDataAsset'/Game/DataAsset/DA_ThrownBleeding.DA_ThrownBleeding'")
 
 // 몬스터 캐릭터 관련
 #define PATH_SWORD_DASH_DATA TEXT("/Script/Project_LLL.LLL_SwordDashDataAsset'/Game/DataAsset/DA_SwordDash.DA_SwordDash'")

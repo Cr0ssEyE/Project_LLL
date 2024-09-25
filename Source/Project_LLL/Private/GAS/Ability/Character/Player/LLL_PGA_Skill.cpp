@@ -13,14 +13,16 @@ void ULLL_PGA_Skill::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	bSkillComplete = false;
+
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	
+	UAnimMontage* SkillMontage = SkillMontages[Player->GetSkillEnuriaAnimalType()];
 	if (!IsValid(SkillMontage))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s 어빌리티에 몽타주가 없음"), *GetName());
 		return;
 	}
 
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	if (Player->IsSkillRotateToMouseCursor())
 	{
 		Player->RotateToMouseCursor();

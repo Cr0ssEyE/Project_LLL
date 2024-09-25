@@ -40,7 +40,7 @@ public:
 	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
-	FORCEINLINE virtual TArray<UNiagaraComponent*> GetNiagaraComponents() const { return NiagaraComponents; }
+	FORCEINLINE virtual TArray<UNiagaraComponent*> GetNiagaraComponents() const override { return NiagaraComponents; }
 	
 	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
 	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }

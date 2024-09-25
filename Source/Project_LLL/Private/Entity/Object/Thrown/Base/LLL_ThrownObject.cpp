@@ -12,6 +12,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Object/Thrown/Base/LLL_ThrownObjectAttributeSet.h"
+#include "Util/LLL_AbilityDataHelper.h"
 #include "Util/LLL_MathHelper.h"
 
 ALLL_ThrownObject::ALLL_ThrownObject()
@@ -119,6 +120,17 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 
 	bIsStraight = Straight;
 	KnockBackPower = InKnockBackPower;
+	
+	if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
+	{
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		if (InKnockBackPower > 0)
+		{
+			KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
+			KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+		}
+	}
 
 	ALLL_BaseCharacter* TargetCharacter = Cast<ALLL_BaseCharacter>(Target);
 	if (IsValid(TargetCharacter))
@@ -142,36 +154,38 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
-		
-	const ALLL_BaseCharacter* OwnerCharacter = Cast<ALLL_BaseCharacter>(GetOwner());
-	const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other);
-	if (IsValid(OwnerCharacter) && AbilitySystemInterface)
-	{
-		const FVector Direction = (Other->GetActorLocation() - OwnerCharacter->GetActorLocation()).GetSafeNormal2D();
-		
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
-		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, OwnerCharacter->GetAbilityLevel(), EffectContextHandle);
-		if (EffectSpecHandle.IsValid())
-		{
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
-			UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
-			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
-			KnockBackTarget(Direction, Other);
-		}
-	}
+	
+	DamageTo(Other);
+	
+	const FVector Direction = (Other->GetActorLocation() - GetOwner()->GetActorLocation()).GetSafeNormal2D();
+	KnockBackTo(Direction, Other);
 	
 	Deactivate();
 }
 
-void ALLL_ThrownObject::KnockBackTarget(const FVector& Direction, AActor* Other) const
+void ALLL_ThrownObject::DamageTo(AActor* OtherActor) const
 {
-	ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Other);
-	if (KnockBackActor && KnockBackPower != 0.0f)
+	const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor);
+	if (AbilitySystemInterface && OtherActor != GetOwner())
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
+		{
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
+		}
+	}
+}
+
+void ALLL_ThrownObject::KnockBackTo(const FVector& Direction, AActor* OtherActor) const
+{
+	ILLL_KnockBackInterface* KnockBackInterface = Cast<ILLL_KnockBackInterface>(OtherActor);
+	if (KnockBackInterface && KnockBackPower != 0.0f)
 	{
 		FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
-		UE_LOG(LogTemp, Log, TEXT("넉백 수행(투사체) : %f"), KnockBackPower)
-		KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
+		KnockBackInterface->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 	}
 }
 

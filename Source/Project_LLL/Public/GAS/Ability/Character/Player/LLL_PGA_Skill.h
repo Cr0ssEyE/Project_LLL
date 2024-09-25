@@ -6,6 +6,7 @@
 #include "LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_Skill.generated.h"
 
+enum class EAnimalType : uint8;
 /**
  * 
  */
@@ -22,7 +23,7 @@ protected:
 	void SkillCompleteCallBack(FGameplayEventData Payload);
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
-	TObjectPtr<UAnimMontage> SkillMontage;
+	TMap<EAnimalType, TObjectPtr<UAnimMontage>> SkillMontages;
 
 	uint8 bSkillComplete : 1;
 };
