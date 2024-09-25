@@ -65,7 +65,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 				continue;
 			}
 			HitCountEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ATTACK_HIT_COUNT, Magnitude);
-			K2_ApplyGameplayEffectSpecToOwner(HitCountEffectSpecHandle);
+			BP_ApplyGameplayEffectToOwner(HitCountEffect);
 		}
 	}
 

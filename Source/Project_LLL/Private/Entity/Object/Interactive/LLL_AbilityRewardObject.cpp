@@ -5,10 +5,11 @@
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
-#include "Kismet/GameplayStatics.h"
+#include "Game/LLL_GameInstance.h"
+#include "System/Reward/LLL_RewardGimmick.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 
-void ALLL_AbilityRewardObject::SetInformation(const FRewardDataTable* Data)
+void ALLL_AbilityRewardObject::SetInformation(const FRewardDataTable* Data, const uint32 Index)
 {
 	Super::SetInformation(Data);
 	//매쉬 및 필수 정보 세팅
@@ -23,6 +24,13 @@ void ALLL_AbilityRewardObject::InteractiveEvent(AActor* InteractedActor)
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(InteractedActor);
 	
 	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
+
+	ALLL_RewardGimmick* RewardGimmick = Cast<ULLL_GameInstance>(GetGameInstance())->RewardGimmick;
+	if (RewardGimmick->bIsTest)
+	{
+		SelectRewardWidget->Num = Num;
+		RewardGimmick->SetRewardButtons();
+	}
 	
 	SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 	SelectRewardWidget->SetIsEnabled(true);

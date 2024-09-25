@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "LLL_GlobalParameterDataAsset.generated.h"
 
+class UGameplayEffect;
 /**
  * 
  */
@@ -32,4 +33,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Global|KnockBack", DisplayName = "몬스터 무게당 감속량(*)")
 	float DecreaseVelocityPerWeight;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Global|Reward", DisplayName = "황금사과 체력 증가 이펙트")
+	TSubclassOf<UGameplayEffect> GoldAppleIncreaseHpEffect;
+	
 };

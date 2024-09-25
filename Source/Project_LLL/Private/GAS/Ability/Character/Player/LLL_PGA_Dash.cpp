@@ -172,11 +172,6 @@ void ULLL_PGA_Dash::DashActionEvent()
 void ULLL_PGA_Dash::LocationReachedEvent()
 {
 	// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("대쉬 이동 완료")));
-	const ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	if(IsValid(PlayerCharacter))
-	{
-		PlayerCharacter->GetCapsuleComponent()->SetCollisionProfileName(CP_PLAYER);
-	}
 	const FGameplayEventData PayloadData;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_DASH_END, PayloadData);
 }

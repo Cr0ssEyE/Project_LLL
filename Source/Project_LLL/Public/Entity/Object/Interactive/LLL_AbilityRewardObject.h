@@ -17,7 +17,7 @@ class PROJECT_LLL_API ALLL_AbilityRewardObject : public ALLL_RewardObject
 	GENERATED_BODY()
 
 public:
-	virtual void SetInformation(const FRewardDataTable* Data) override;
+	virtual void SetInformation(const FRewardDataTable* Data, const uint32 Index = 0) override;
 	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 
 	void SetAbilityCategory(EAbilityCategory AbilityData);
@@ -28,5 +28,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	EAbilityCategory AbilityCategory;
 
-	
+	UPROPERTY(EditAnywhere)
+	int32 Num;
 };

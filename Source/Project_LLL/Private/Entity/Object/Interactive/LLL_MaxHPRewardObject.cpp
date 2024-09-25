@@ -5,7 +5,7 @@
 
 #include "Game/LLL_DebugGameInstance.h"
 
-void ALLL_MaxHPRewardObject::SetInformation(const FRewardDataTable* Data)
+void ALLL_MaxHPRewardObject::SetInformation(const FRewardDataTable* Data, const uint32 Index)
 {
 	Super::SetInformation(Data);
 
