@@ -29,4 +29,6 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_ShockwaveAttributeSet> ShockwaveAttributeSet;
+
+	uint8 bPlayerHit : 1;
 };

@@ -24,25 +24,25 @@ class PROJECT_LLL_API ALLL_ThrownObject : public ALLL_BaseObject, public ILLL_Ob
 public:
 	ALLL_ThrownObject();
 
-protected:
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaSeconds) override;
-
-public:
 	FORCEINLINE void SetAbilityInfo(const FAbilityDataTable* InAbilityData, float InAbilityLevel) { AbilityData = InAbilityData; AbilityLevel = InAbilityLevel; }
 	
 	FORCEINLINE UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovementComponent; }
 	FORCEINLINE virtual bool IsActivated() const override { return bIsActivated; }
-	
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void Activate() override;
 	virtual void Deactivate() override;
-	
+
+public:
 	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower);
 
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
-	void KnockBackTarget(const FVector& Direction, AActor* Other) const;
+	void DamageTo(AActor* OtherActor) const;
+	void KnockBackTo(const FVector& Direction, AActor* OtherActor) const;
 	
 	UFUNCTION()
 	void TargetDeadHandle(ALLL_BaseCharacter* Character);

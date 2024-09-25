@@ -27,7 +27,6 @@
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GAS/Ability/Character/Monster/Base/LLL_MGA_Charge.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "GAS/ASC/LLL_MonsterASC.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
@@ -70,6 +69,7 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	BleedingVFXComponent->SetAutoActivate(false);
 
 	AttributeInitId = ATTRIBUTE_INIT_MONSTER;
+	MaxBleedingStack = 5;
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -311,13 +311,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 				if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION) && ASC->HasMatchingGameplayTag(TAG_GAS_STATUS_BLEEDING) && !bBleedingTransmissionTargetDamaged)
 				{
 					bBleedingTransmissionTargetDamaged = true;
-					
-					int32 TempBleedingStack = OtherMonster->GetBleedingStack() + Player->GetBleedingTransmissionStack();
-					if (TempBleedingStack > 5)
-					{
-						TempBleedingStack = 5;
-					}
-					OtherMonster->SetBleedingStack(TempBleedingStack - 1);
+					OtherMonster->SetBleedingStack(OtherMonster->GetBleedingStack() + Player->GetBleedingTransmissionStack() - 1);
 					
 					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 					EffectContextHandle.AddSourceObject(this);
@@ -325,7 +319,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 					if (EffectSpecHandle.IsValid())
 					{
 						EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, BleedingTransmissionOffencePower);
-						FLLL_AbilityDataHelper::SetBleedingStatusAbilityDuration(Player, EffectSpecHandle.Data);
+						FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->BleedingTransmissionDamageEffect.GetDefaultObject()));
 						ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
 					}
 				}

@@ -3,10 +3,15 @@
 
 #include "Entity/Object/Ability/LLL_Shockwave.h"
 
+#include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GraphicParameterNames.h"
+#include "Constant/LLL_MeshSocketName.h"
+#include "DataAsset/Global/LLL_GlobalNiagaraDataAsset.h"
 #include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "GAS/Attribute/Object/Ability/LLL_ShockwaveAttributeSet.h"
@@ -33,6 +38,12 @@ void ALLL_Shockwave::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	FVector Scale = GetActorScale3D();
+	Scale += FVector(ShockwaveAttributeSet->GetSpeed() * DeltaSeconds);
+	SetActorScale3D(Scale);
+
+	NiagaraComponents[0]->SetFloatParameter(NS_WAVE_RADIUS, GetActorScale3D().X / 75.0f + 0.025f);
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -43,15 +54,16 @@ void ALLL_Shockwave::Tick(float DeltaSeconds)
 		}
 	}
 #endif
-	
-	FVector Scale = GetActorScale3D();
-	Scale += FVector(ShockwaveAttributeSet->GetSpeed() * DeltaSeconds);
-	SetActorScale3D(Scale);
 }
 
 void ALLL_Shockwave::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
+
+	if (bPlayerHit)
+	{
+		return;
+	}
 	
 	if (GetDistanceTo(OtherActor) < OverlapCollisionSphere->GetScaledSphereRadius() - ShockwaveAttributeSet->GetThickness())
 	{
@@ -64,6 +76,11 @@ void ALLL_Shockwave::NotifyActorBeginOverlap(AActor* OtherActor)
 		const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(ManOfStrengthASC->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 		OffencePower = MonsterAttributeSet->GetManOfStrengthShockwaveOffencePower();
 		
-		DamageToOverlapActor(OtherActor);
+		DamageTo(OtherActor);
+
+		if (Cast<ALLL_PlayerBase>(OtherActor))
+		{
+			bPlayerHit = true;
+		}
 	}
 }

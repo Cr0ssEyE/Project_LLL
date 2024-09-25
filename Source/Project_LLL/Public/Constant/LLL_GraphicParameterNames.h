@@ -17,6 +17,7 @@
 
 // 나이아가라 파라미터 이름
 #define NS_MARK_COUNT TEXT("MarkCount")
+#define NS_WAVE_RADIUS TEXT("WaveRadius")
 
 // 플레이어 관련
 #define PLAYER_CHARACTER_DISSOLVE TEXT("PlayerCharacterDissolve")
