@@ -9,6 +9,7 @@
 enum class EPlayerDamagedTypeParameter : uint8;
 enum class EPlayerWalkMaterialParameter : uint8;
 enum class EAbilityInputName : uint8;
+class UNiagaraSystem;
 class UInputAction;
 class UInputMappingContext;
 class ULevelSequence;
@@ -25,6 +26,10 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PlayerBaseDataAsset : public ULLL_BaseCharacterDataAsset
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "허리 부착 파티클")
+	TObjectPtr<UNiagaraSystem> SpineParticle;
 	
 	// UI 관련 
 public:

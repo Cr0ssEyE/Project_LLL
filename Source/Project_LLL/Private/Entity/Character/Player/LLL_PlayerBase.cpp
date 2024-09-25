@@ -11,6 +11,7 @@
 #include "GameplayAbilitySpec.h"
 #include "LevelSequenceActor.h"
 #include "MovieSceneSequencePlaybackSettings.h"
+#include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_AnimRelationNames.h"
@@ -49,6 +50,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	ASC = CreateDefaultSubobject<ULLL_PlayerASC>(TEXT("PlayerASC"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	AuraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AuraComponent"));
 	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
 	ObjectPoolingComponent = CreateDefaultSubobject<ULLL_ObjectPoolingComponent>(TEXT("ObjectPoolingComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
@@ -145,6 +147,9 @@ void ALLL_PlayerBase::BeginPlay()
 	}
 	GetMesh()->SetCustomDepthStencilValue(STENCIL_VALUE_PLAYER);
 	StartCameraMoveToCursor();
+
+	AuraComponent->SetAsset(PlayerDataAsset->SpineParticle);
+	AuraComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Spine"));
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)

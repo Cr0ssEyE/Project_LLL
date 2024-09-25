@@ -136,6 +136,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<USpringArmComponent> SpringArm;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraComponent> AuraComponent;
 
 	// 플레이어 관련 내부 객체
 protected:
