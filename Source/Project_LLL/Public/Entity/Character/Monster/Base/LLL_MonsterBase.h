@@ -80,6 +80,9 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> MaskMeshComponent;
 
+	UPROPERTY(VisibleDefaultsOnly)
+	TSubclassOf<AActor> FloatingDamageActor;
+
 	int32 Id;
 	uint8 bIsCharging : 1;
 	FName AttributeInitId;

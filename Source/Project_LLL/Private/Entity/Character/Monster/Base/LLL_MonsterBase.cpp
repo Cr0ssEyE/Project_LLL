@@ -19,6 +19,7 @@
 #include "Constant/LLL_MeshSocketName.h"
 #include "DataAsset/Global/LLL_GlobalNiagaraDataAsset.h"
 #include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
+#include "Engine/DamageEvents.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
@@ -70,6 +71,8 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 
 	AttributeInitId = ATTRIBUTE_INIT_MONSTER;
 	MaxBleedingStack = 5;
+
+	FloatingDamageActor = FLLL_ConstructorHelper::FindAndGetClass<AActor>(PATH_UI_FLOATING_DAMAGE_ACTOR, EAssertionLevel::Check);
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -347,10 +350,9 @@ void ALLL_MonsterBase::Charge()
 void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 {
 	Super::Damaged(Attacker, IsDOT);
-	
 	ShowHitEffect();
 	RecognizePlayerToAroundMonster();
-
+	AActor* FloatingDamage = GetWorld()->SpawnActor<AActor>(FloatingDamageActor, GetTransform());
 	if (Cast<ALLL_BossMonster>(this))
 	{
 		return;
