@@ -6,6 +6,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -88,6 +89,12 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION))
 		{
 			Player->SetBleedingTransmissionStack(Value1);
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_EXCESSIVE_BLEEDING))
+		{
+			Player->SetExcessiveBleedingOffencePowerPlus(Value1);
+			Player->SetExcessiveBleedingPeriod(Value2);
+			Player->SetExcessiveBleedingWolfEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
 		}
 	}
 	

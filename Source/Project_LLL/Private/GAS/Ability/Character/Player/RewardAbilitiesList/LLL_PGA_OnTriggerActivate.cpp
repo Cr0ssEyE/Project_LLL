@@ -97,7 +97,7 @@ void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandl
 
 void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 {
-	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
+	ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
 
 	const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
@@ -110,7 +110,7 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	
 	if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
 	{
-		FLLL_AbilityDataHelper::SetBleedingStatusAbilityDuration(CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo()), EffectSpecHandle.Data);
+		FLLL_AbilityDataHelper::SetBleedingPeriodValue(CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo()), Effect);
 	}
 	
 	if (Effect->GetEffectApplyTarget() == EEffectApplyTarget::Self)
@@ -163,12 +163,15 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 
-	int32 SpawnCount = AbilityData->AbilityValue1 == 0 ? 1 : AbilityData->AbilityValue1;
+	int32 SpawnCount = 1;
 	bool ThrowCircular = false;
-	bool Straight = false;
+	bool Straight = true;
 	float KnockBackPower = 0.0f;
 	if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
 	{
+		SpawnCount = AbilityData->AbilityValue1 == 0 ? 1 : AbilityData->AbilityValue1;
+		Straight = false;
+		
 		const UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
 		TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_DENY));
 		for (const auto EffectHandle : EffectHandles)
@@ -232,8 +235,15 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 		Targets.Emplace(const_cast<AActor*>(TargetByAttack));
 		if (Targets.Num() == 0)
 		{
-			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-			return;
+			if (Straight)
+			{
+				Targets.Emplace(nullptr);
+			}
+			else
+			{
+				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+				return;
+			}
 		}
 
 		FTimerHandle SpawnTimerHandle;

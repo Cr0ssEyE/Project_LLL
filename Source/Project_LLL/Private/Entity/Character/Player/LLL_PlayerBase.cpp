@@ -11,6 +11,7 @@
 #include "GameplayAbilitySpec.h"
 #include "LevelSequenceActor.h"
 #include "MovieSceneSequencePlaybackSettings.h"
+#include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_AnimRelationNames.h"
@@ -42,12 +43,14 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 #include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
+#include "Util/LLL_AbilityDataHelper.h"
 
 ALLL_PlayerBase::ALLL_PlayerBase()
 {
 	ASC = CreateDefaultSubobject<ULLL_PlayerASC>(TEXT("PlayerASC"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	AuraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AuraComponent"));
 	GoldComponent = CreateDefaultSubobject<ULLL_PlayerGoldComponent>(TEXT("PlayerGoldComponent"));
 	ObjectPoolingComponent = CreateDefaultSubobject<ULLL_ObjectPoolingComponent>(TEXT("ObjectPoolingComponent"));
 	CharacterUIManager = CreateDefaultSubobject<ULLL_PlayerUIManager>(TEXT("PlayerUIManageComponent"));
@@ -144,6 +147,9 @@ void ALLL_PlayerBase::BeginPlay()
 	}
 	GetMesh()->SetCustomDepthStencilValue(STENCIL_VALUE_PLAYER);
 	StartCameraMoveToCursor();
+
+	AuraComponent->SetAsset(PlayerDataAsset->SpineParticle);
+	AuraComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Spine"));
 }
 
 void ALLL_PlayerBase::Tick(float DeltaSeconds)
@@ -516,9 +522,33 @@ void ALLL_PlayerBase::ReadyToUseSkill()
 
 int32 ALLL_PlayerBase::GetEnuriaCount() const
 {
-	const TArray<FActiveGameplayEffectHandle> AllowEffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_ALLOW));
-	const TArray<FActiveGameplayEffectHandle> DenyEffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_DENY));
-	return AllowEffectHandles.Num() + DenyEffectHandles.Num();
+	return FLLL_AbilityDataHelper::GottenAbilityArrayEffectHandles(GetWorld()).Num();
+}
+
+int32 ALLL_PlayerBase::GetWolfEnuriaCount() const
+{
+	int32 Count = 0;
+	for (const auto AbilityData : FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld()))
+	{
+		if (AbilityData->AnimalType == EAnimalType::Wolf)
+		{
+			Count++;
+		}
+	}
+	return Count;
+}
+
+EAnimalType ALLL_PlayerBase::GetSkillEnuriaAnimalType() const
+{
+	for (const auto AbilityData : FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld()))
+	{
+		if (AbilityData->TagID[1] == '1')
+		{
+			return AbilityData->AnimalType;
+		}
+	}
+
+	return EAnimalType::None;
 }
 
 void ALLL_PlayerBase::StartChargeFeather(float Timer)

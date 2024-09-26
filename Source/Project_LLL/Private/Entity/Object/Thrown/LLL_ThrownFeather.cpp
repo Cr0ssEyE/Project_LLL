@@ -87,13 +87,6 @@ void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpee
 		OffencePower *= PlayerAttributeSet->GetFeatherOffencePowerRate();
 		OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
 		OffencePower += PlayerAttributeSet->GetFeatherOffencePowerPlus();
-
-		if (InKnockBackPower > 0)
-		{
-			KnockBackPower = InKnockBackPower;
-			KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
-			KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
-		}
 	}
 }
 
@@ -134,7 +127,7 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 							KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
 							KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
 							
-							KnockBackTarget(Direction, Other);
+							KnockBackTo(Direction, Other);
 						}
 					}
 				}), HitOffsetTime, false);

@@ -10,6 +10,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "GAS/Attribute/Object/Ability/Base/LLL_AbilityObjectAttributeSet.h"
 #include "Interface/LLL_KnockBackInterface.h"
+#include "Util/LLL_AbilityDataHelper.h"
 #include "Util/LLL_MathHelper.h"
 
 ALLL_AbilityObject::ALLL_AbilityObject()
@@ -38,7 +39,7 @@ void ALLL_AbilityObject::BeginPlay()
 	}));
 }
 
-void ALLL_AbilityObject::DamageToOverlapActor(AActor* OtherActor)
+void ALLL_AbilityObject::DamageTo(AActor* OtherActor)
 {
 	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&, OtherActor]{
 		const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor);
@@ -56,7 +57,7 @@ void ALLL_AbilityObject::DamageToOverlapActor(AActor* OtherActor)
 	}));
 }
 
-void ALLL_AbilityObject::KnockBackToOverlapActor(AActor* OtherActor)
+void ALLL_AbilityObject::KnockBackTo(AActor* OtherActor)
 {
 	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&, OtherActor]{
 		ILLL_KnockBackInterface* KnockBackInterface = Cast<ILLL_KnockBackInterface>(OtherActor);

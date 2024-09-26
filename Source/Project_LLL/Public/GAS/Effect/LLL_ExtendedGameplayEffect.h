@@ -35,6 +35,7 @@ public:
 	FORCEINLINE TArray<int32> GetID() const { return IdList; }
 	FORCEINLINE const FAbilityDataTable* GetAbilityData() const { return AbilityData; }
 	FORCEINLINE void SetAbilityInfo(const FAbilityDataTable* InAbilityData) { AbilityData = InAbilityData; }
+	FORCEINLINE void SetPeriodValue(const float InPeriodValue) { Period.Value = InPeriodValue; }
 	
 public:
 	FPrimaryAssetId GetPrimaryAssetId() const override

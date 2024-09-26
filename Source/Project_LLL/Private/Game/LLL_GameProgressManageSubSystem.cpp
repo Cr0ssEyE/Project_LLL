@@ -395,5 +395,8 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEnuriaEffect(TArray<
 	// 이누리아 개편으로 몇몇 이누리아는 제대로 로드 안될 가능성 있어 체크 필요.
 	ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetGameInstance());
 	TArray<const FAbilityDataTable*> AbilityData = GameInstance->GetAbilityDataTable();
-	FLLL_AbilityDataHelper::ApplyEnuriaEffect(GetWorld(), LoadedEffects, EffectID, AbilityData, GameInstance->RewardGimmick->bIsTest);
+	if (IsValid(GameInstance->RewardGimmick))
+	{
+		FLLL_AbilityDataHelper::ApplyEnuriaEffect(GetWorld(), LoadedEffects, EffectID, AbilityData, GameInstance->RewardGimmick->bIsTest);
+	}
 }

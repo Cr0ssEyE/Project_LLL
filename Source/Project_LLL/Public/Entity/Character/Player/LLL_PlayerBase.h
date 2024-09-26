@@ -12,6 +12,7 @@
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
 
+enum class EAnimalType : uint8;
 class ALLL_PlayerController;
 class ULLL_GameInstance;
 class ULLL_AbnormalStatusAttributeSet;
@@ -83,6 +84,8 @@ public:
 	void ReadyToUseSkill();
 	
 	int32 GetEnuriaCount() const;
+	int32 GetWolfEnuriaCount() const;
+	EAnimalType GetSkillEnuriaAnimalType() const;
 
 public:
 	// 이누리아 관련 함수
@@ -96,6 +99,9 @@ public:
 	FORCEINLINE float GetIncreaseKnockBackDamageByEnuriaCountDamageRate() const { return IncreaseKnockBackDamageByEnuriaCountDamageRate; }
 	FORCEINLINE float GetRangeKnockBackKnockBackPower() const { return RangeKnockBackKnockBackPower; }
 	FORCEINLINE int32 GetBleedingTransmissionStack() const { return BleedingTransmissionStack; }
+	FORCEINLINE float GetExcessiveBleedingOffencePowerPlus() const { return ExcessiveBleedingOffencePowerPlus; }
+	FORCEINLINE float GetExcessiveBleedingPeriod() const { return ExcessiveBleedingPeriod; }
+	FORCEINLINE int32 GetExcessiveBleedingWolfEnuriaCheckCount() const { return ExcessiveBleedingWolfEnuriaCheckCount; }
 	
 	FORCEINLINE void SetFeatherSpawnStartTime(const float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
 	FORCEINLINE void SetDeflectCount(const int32 InDeflectCount) { DeflectCount = InDeflectCount; }
@@ -107,6 +113,9 @@ public:
 	FORCEINLINE void SetRangeKnockBackKnockBackPower(const float InRangeKnockBackKnockBackPower) { RangeKnockBackKnockBackPower = InRangeKnockBackKnockBackPower; }
 	FORCEINLINE void SetVampireRecoveryRate(const float InVampireRecoveryRate) { VampireRecoveryRate = InVampireRecoveryRate; }
 	FORCEINLINE void SetBleedingTransmissionStack(const int32 InBleedingTransmissionStack) { BleedingTransmissionStack = InBleedingTransmissionStack; }
+	FORCEINLINE void SetExcessiveBleedingOffencePowerPlus(const float InExcessiveBleedingOffencePowerPlus) { ExcessiveBleedingOffencePowerPlus = InExcessiveBleedingOffencePowerPlus; }
+	FORCEINLINE void SetExcessiveBleedingPeriod(const float InExcessiveBleedingPeriod) { ExcessiveBleedingPeriod = InExcessiveBleedingPeriod; }
+	FORCEINLINE void SetExcessiveBleedingWolfEnuriaCheckCount(const float InExcessiveBleedingWolfEnuriaCheckCount) { ExcessiveBleedingWolfEnuriaCheckCount = InExcessiveBleedingWolfEnuriaCheckCount; }
 	
 	void StartChargeFeather(float Timer);
 	void AddRangeFeatherTargets(AActor* Target);
@@ -127,6 +136,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<USpringArmComponent> SpringArm;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraComponent> AuraComponent;
 
 	// 플레이어 관련 내부 객체
 protected:
@@ -198,6 +210,9 @@ private:
 	float RangeKnockBackKnockBackPower;
 	float VampireRecoveryRate;
 	int32 BleedingTransmissionStack;
+	float ExcessiveBleedingOffencePowerPlus;
+	float ExcessiveBleedingPeriod;
+	int32 ExcessiveBleedingWolfEnuriaCheckCount;
 
 	// 상태 관련 함수
 protected:

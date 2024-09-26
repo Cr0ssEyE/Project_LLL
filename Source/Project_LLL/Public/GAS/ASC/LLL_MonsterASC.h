@@ -29,7 +29,7 @@ protected:
     virtual void CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEffectSpec);
 
 	UFUNCTION()
-	void ClearAllTimer(ALLL_BaseCharacter* Character);
+	void DeadHandle(ALLL_BaseCharacter* Character);
 	
 protected:
 	FTimerHandle MarkTimerHandle;

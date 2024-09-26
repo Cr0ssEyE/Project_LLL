@@ -9,6 +9,7 @@
 enum class EPlayerDamagedTypeParameter : uint8;
 enum class EPlayerWalkMaterialParameter : uint8;
 enum class EAbilityInputName : uint8;
+class UNiagaraSystem;
 class UInputAction;
 class UInputMappingContext;
 class ULevelSequence;
@@ -25,6 +26,10 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PlayerBaseDataAsset : public ULLL_BaseCharacterDataAsset
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "허리 부착 파티클")
+	TObjectPtr<UNiagaraSystem> SpineParticle;
 	
 	// UI 관련 
 public:
@@ -125,4 +130,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "피의 역병 이누리아 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> BleedingTransmissionDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "과다출혈 이누리아 출혈 주기 변경 이펙트")
+	TSubclassOf<UGameplayEffect> ExcessiveBleedingChangePeriodEffect;
 };

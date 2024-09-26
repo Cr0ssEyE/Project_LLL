@@ -29,11 +29,11 @@ public:
 	FORCEINLINE void SetKnockBackDirection(const FVector& InKnockBackDirection) { KnockBackDirection = InKnockBackDirection; }
 	FORCEINLINE void SetKnockBackPower(const float InKnockBackPower) { KnockBackPower = InKnockBackPower; }
 
+protected:
 	virtual void BeginPlay() override;
 
-protected:
-	void DamageToOverlapActor(AActor* OtherActor);
-	void KnockBackToOverlapActor(AActor* OtherActor);
+	void DamageTo(AActor* OtherActor);
+	void KnockBackTo(AActor* OtherActor);
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<USphereComponent> OverlapCollisionSphere;
