@@ -55,6 +55,7 @@ public:
 	void DisconnectOwnerDeadDelegate();
 	void DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster);
 	void DamageKnockBackCauser(ALLL_PlayerBase* Player);
+	void Stun();
 
 	// 이누리아 관련
 public:

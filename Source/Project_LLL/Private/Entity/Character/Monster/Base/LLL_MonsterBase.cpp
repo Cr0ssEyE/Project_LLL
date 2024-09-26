@@ -215,9 +215,26 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 		GetMesh()->SetCollisionProfileName(CP_MONSTER);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 
-		const ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(GetOwner());
+		bool CanDamage = false;
+		ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(GetOwner());
 		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Other);
 		if (IsValid(ManOfStrength) && IsValid(Player))
+		{
+			CanDamage = true;
+		}
+		else
+		{
+			ManOfStrength = Cast<ALLL_ManOfStrength>(Other);
+			Player = Cast<ALLL_PlayerBase>(GetOwner());
+			if (IsValid(ManOfStrength) && IsValid(Player))
+			{
+				CanDamage = true;
+				ManOfStrength->ShowHitEffect();
+				ManOfStrength->Stun();
+			}
+		}
+
+		if (CanDamage)
 		{
 			const ULLL_ManOfStrengthDataAsset* ManOfStrengthDataAsset = CastChecked<ULLL_ManOfStrengthDataAsset>(ManOfStrength->GetCharacterDataAsset());
 			const ULLL_MonsterAttributeSet* OwnerMonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(ManOfStrength->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
@@ -235,92 +252,91 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 		}
 		
 		SetOwner(nullptr);
-		if (!CheckCharacterIsDead())
-		{
-			CastChecked<ALLL_MonsterBaseAIController>(GetController())->StartLogic();
-		}
+		MonsterAttributeSet->SetCurrentHealth(0.0f);
+		Dead();
 	}
-
-	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (IsValid(Player) && bIsKnockBacking)
+	else if (bIsKnockBacking)
 	{
-		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-		
-		if (!Cast<ALLL_BaseCharacter>(Other) && !Cast<ALLL_FallableWallGimmick>(Other))
+		if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 		{
-			float DotProduct = FVector::DotProduct(HitNormal, FVector::UpVector);
-			float AngleInRadians = FMath::Acos(DotProduct);
-			float AngleInDegrees = FMath::RadiansToDegrees(AngleInRadians);
-			if (AngleInDegrees > 45.0f)
+			const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		
+			if (!Cast<ALLL_BaseCharacter>(Other) && !Cast<ALLL_FallableWallGimmick>(Other))
 			{
-				DamageKnockBackCauser(Player);
-
-				// 리바운드 이누리아
-				if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DEFLECT_BY_WALL) && DeflectCount < Player->GetDeflectCount())
+				float DotProduct = FVector::DotProduct(HitNormal, FVector::UpVector);
+				float AngleInRadians = FMath::Acos(DotProduct);
+				float AngleInDegrees = FMath::RadiansToDegrees(AngleInRadians);
+				if (AngleInDegrees > 45.0f)
 				{
-					// 반사 벡터 구하기
-					LastKnockBackVelocity = LastKnockBackVelocity - 2 * FVector::DotProduct(LastKnockBackVelocity, HitNormal) * HitNormal;
-					DeflectCount++;
-					UE_LOG(LogTemp, Log, TEXT("벽에 %d번 튕김"), DeflectCount)
-					AddKnockBackVelocity(LastKnockBackVelocity, LastKnockBackPower);
-					bStartKnockBackVelocity = false;
+					DamageKnockBackCauser(Player);
+
+					// 리바운드 이누리아
+					if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DEFLECT_BY_WALL) && DeflectCount < Player->GetDeflectCount())
+					{
+						// 반사 벡터 구하기
+						LastKnockBackVelocity = LastKnockBackVelocity - 2 * FVector::DotProduct(LastKnockBackVelocity, HitNormal) * HitNormal;
+						DeflectCount++;
+						UE_LOG(LogTemp, Log, TEXT("벽에 %d번 튕김"), DeflectCount)
+						AddKnockBackVelocity(LastKnockBackVelocity, LastKnockBackPower);
+						bStartKnockBackVelocity = false;
+					}
 				}
 			}
-		}
 
-		ALLL_MonsterBase* OtherMonster = Cast<ALLL_MonsterBase>(Other);
-		if (IsValid(OtherMonster))
-		{
-			DamageKnockBackTarget(Player, OtherMonster);
-			DamageKnockBackCauser(Player);
-
-			if ((!IsValid(KnockBackSender) || OtherMonster != KnockBackSender) && !OtherMonster->IsKnockBacking())
+			ALLL_MonsterBase* OtherMonster = Cast<ALLL_MonsterBase>(Other);
+			if (IsValid(OtherMonster))
 			{
-				const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
-				
-				// 연쇄 작용 이누리아
-				if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION))
-				{
-					float OffencePower = Player->GetKnockBackTransmissionOffencePower();
-					OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
-					OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+				DamageKnockBackTarget(Player, OtherMonster);
+				DamageKnockBackCauser(Player);
 
-					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-					EffectContextHandle.AddSourceObject(this);
-					const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->KnockBackTransmissionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
-					if (EffectSpecHandle.IsValid())
+				if ((!IsValid(KnockBackSender) || OtherMonster != KnockBackSender) && !OtherMonster->IsKnockBacking())
+				{
+					const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+				
+					// 연쇄 작용 이누리아
+					if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION))
 					{
-						EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
-						UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
-						ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
+						float OffencePower = Player->GetKnockBackTransmissionOffencePower();
+						OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
+						OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+
+						FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+						EffectContextHandle.AddSourceObject(this);
+						const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->KnockBackTransmissionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
+						if (EffectSpecHandle.IsValid())
+						{
+							EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+							UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 데미지"), *Other->GetName(), OffencePower)
+							ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
+						}
+
+						FVector Direction = (OtherMonster->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+					
+						float KnockBackPower = Player->GetKnockBackTransmissionKnockBackPower();
+						KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
+						KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+			
+						UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 넉백"), *Other->GetName(), KnockBackPower)
+						FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
+						OtherMonster->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 					}
 
-					FVector Direction = (OtherMonster->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
-					
-					float KnockBackPower = Player->GetKnockBackTransmissionKnockBackPower();
-					KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
-					KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
-			
-					UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 넉백"), *Other->GetName(), KnockBackPower)
-					FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
-					OtherMonster->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
-				}
-
-				// 피의 역병 이누리아
-				if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION) && ASC->HasMatchingGameplayTag(TAG_GAS_STATUS_BLEEDING) && !bBleedingTransmissionTargetDamaged)
-				{
-					bBleedingTransmissionTargetDamaged = true;
-					OtherMonster->SetBleedingStack(OtherMonster->GetBleedingStack() + Player->GetBleedingTransmissionStack() - 1);
-					
-					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-					EffectContextHandle.AddSourceObject(this);
-					const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->BleedingTransmissionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
-					if (EffectSpecHandle.IsValid())
+					// 피의 역병 이누리아
+					if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION) && ASC->HasMatchingGameplayTag(TAG_GAS_STATUS_BLEEDING) && !bBleedingTransmissionTargetDamaged)
 					{
-						EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, BleedingTransmissionOffencePower);
-						FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->BleedingTransmissionDamageEffect.GetDefaultObject()));
-						ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
+						bBleedingTransmissionTargetDamaged = true;
+						OtherMonster->SetBleedingStack(OtherMonster->GetBleedingStack() + Player->GetBleedingTransmissionStack() - 1);
+					
+						FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+						EffectContextHandle.AddSourceObject(this);
+						const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->BleedingTransmissionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
+						if (EffectSpecHandle.IsValid())
+						{
+							EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, BleedingTransmissionOffencePower);
+							FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->BleedingTransmissionDamageEffect.GetDefaultObject()));
+							ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
+						}
 					}
 				}
 			}
@@ -356,54 +372,12 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
 		return;
 	}
 
-	if (bIsAttacking)
+	if (bIsAttacking || IsDOT)
 	{
 		return;
 	}
 
-	ULLL_BaseCharacterAnimInstance* AnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-	if (!IsValid(AnimInstance) || IsDOT)
-	{
-		return;
-	}
-
-	AnimInstance->StopAllMontages(1.0f);
-	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_STATE_COLLIDE_OTHER) && IsValid(MonsterBaseDataAsset->KnockBackCollideMontage))
-	{
-		FVector HitDirection = (GetActorLocation() - GetLastCollideLocation()).GetSafeNormal2D();
-		HitDirection.Z = 0.f;
-		SetActorRotation(HitDirection.Rotation(), ETeleportType::TeleportPhysics);
-		
-		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충돌 경직")));
-		PlayAnimMontage(MonsterBaseDataAsset->KnockBackCollideMontage);
-	}
-	else if (IsValid(MonsterBaseDataAsset->DamagedAnimMontage))
-	{
-		// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("일반 경직")));
-		PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
-	}
-
-	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
-	for (auto TempNiagaraComponent : TempNiagaraComponents)
-	{
-		if (!IsValid(TempNiagaraComponent))
-		{
-			continue;
-		}
-		
-		TempNiagaraComponent->DestroyComponent();
-		NiagaraComponents.Remove(TempNiagaraComponent);
-	}
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
-	{
-		if (DebugGameInstance->CheckMonsterCollisionDebug())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 경직"), *GetName()));
-		}
-	}
-#endif
+	Stun();
 }
 
 void ALLL_MonsterBase::Dead()
@@ -675,6 +649,51 @@ void ALLL_MonsterBase::DamageKnockBackCauser(ALLL_PlayerBase* Player)
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 	}
+}
+
+void ALLL_MonsterBase::Stun()
+{
+	ULLL_BaseCharacterAnimInstance* AnimInstance = Cast<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	if (IsValid(AnimInstance))
+	{
+		AnimInstance->StopAllMontages(1.0f);
+		if (GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_GAS_STATE_COLLIDE_OTHER) && IsValid(MonsterBaseDataAsset->KnockBackCollideMontage))
+		{
+			FVector HitDirection = (GetActorLocation() - GetLastCollideLocation()).GetSafeNormal2D();
+			HitDirection.Z = 0.f;
+			SetActorRotation(HitDirection.Rotation(), ETeleportType::TeleportPhysics);
+		
+			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충돌 경직")));
+			PlayAnimMontage(MonsterBaseDataAsset->KnockBackCollideMontage);
+		}
+		else if (IsValid(MonsterBaseDataAsset->DamagedAnimMontage))
+		{
+			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("일반 경직")));
+			PlayAnimMontage(MonsterBaseDataAsset->DamagedAnimMontage);
+		}
+	}
+
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
+	{
+		if (!IsValid(TempNiagaraComponent))
+		{
+			continue;
+		}
+		
+		TempNiagaraComponent->DestroyComponent();
+		NiagaraComponents.Remove(TempNiagaraComponent);
+	}
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (DebugGameInstance->CheckMonsterCollisionDebug())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 경직"), *GetName()));
+		}
+	}
+#endif
 }
 
 void ALLL_MonsterBase::ToggleBleedingTrigger()

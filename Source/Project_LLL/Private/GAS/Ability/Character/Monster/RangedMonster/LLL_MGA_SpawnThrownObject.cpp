@@ -27,7 +27,7 @@ void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 
 	if (IsValid(Player))
 	{
-		const FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(RangedMonster, Player, PlayerAttributeSet->GetMoveSpeed(), MonsterAttributeSet->GetClawBasicPredictionRate());
+		const FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(ThrownObject, Player, PlayerAttributeSet->GetMoveSpeed(), MonsterAttributeSet->GetClawBasicPredictionRate());
 		const FVector StartLocation = RangedMonster->GetActorLocation();
 		const FVector PredictedDirection = (PredictedLocation - StartLocation).GetSafeNormal();
 		const FRotator PredictedRotation = FRotationMatrix::MakeFromX(PredictedDirection).Rotator();
