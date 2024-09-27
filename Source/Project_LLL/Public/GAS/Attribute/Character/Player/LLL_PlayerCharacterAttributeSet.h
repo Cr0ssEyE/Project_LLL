@@ -22,7 +22,9 @@ public:
 	CriticalAmplify(0),
 	MaxDashCount(0),
 	DashDistance(0),
-	KnockBackPower(0)
+	KnockBackPower1(0),
+	KnockBackPower2(0),
+	KnockBackConstant(0.0)
 	{
 		
 	}
@@ -56,7 +58,13 @@ public:
 	float DashDistance;
 
 	UPROPERTY()
-	uint32 KnockBackPower;
+	uint32 KnockBackPower1;
+
+	UPROPERTY()
+	uint32 KnockBackPower2;
+
+	UPROPERTY()
+	float KnockBackConstant;
 };
 
 /**
@@ -84,8 +92,9 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashInvincibleTime);
 	
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackPower);
-	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackOffencePower);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackPower1);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackPower2);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackConstant);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FalloutablePower);
 
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MinChargeAttackRange);
@@ -156,10 +165,13 @@ protected:
 	// 넉백 관련
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData KnockBackPower;
+	FGameplayAttributeData KnockBackPower1;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData KnockBackOffencePower;
+	FGameplayAttributeData KnockBackPower2;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData KnockBackConstant;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData FalloutablePower;

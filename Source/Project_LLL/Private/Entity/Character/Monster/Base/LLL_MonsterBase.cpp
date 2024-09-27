@@ -215,26 +215,9 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 		GetMesh()->SetCollisionProfileName(CP_MONSTER);
 		GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 
-		bool CanDamage = false;
 		ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(GetOwner());
 		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Other);
 		if (IsValid(ManOfStrength) && IsValid(Player))
-		{
-			CanDamage = true;
-		}
-		else
-		{
-			ManOfStrength = Cast<ALLL_ManOfStrength>(Other);
-			Player = Cast<ALLL_PlayerBase>(GetOwner());
-			if (IsValid(ManOfStrength) && IsValid(Player))
-			{
-				CanDamage = true;
-				ManOfStrength->ShowHitEffect();
-				ManOfStrength->Stun();
-			}
-		}
-
-		if (CanDamage)
 		{
 			const ULLL_ManOfStrengthDataAsset* ManOfStrengthDataAsset = CastChecked<ULLL_ManOfStrengthDataAsset>(ManOfStrength->GetCharacterDataAsset());
 			const ULLL_MonsterAttributeSet* OwnerMonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(ManOfStrength->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
@@ -248,6 +231,30 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
 				UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *Other->GetName())
 				ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());
+			}
+		}
+		else
+		{
+			ManOfStrength = Cast<ALLL_ManOfStrength>(Other);
+			Player = Cast<ALLL_PlayerBase>(GetOwner());
+			if (IsValid(ManOfStrength) && IsValid(Player))
+			{
+				const ULLL_ManOfStrengthDataAsset* ManOfStrengthDataAsset = CastChecked<ULLL_ManOfStrengthDataAsset>(ManOfStrength->GetCharacterDataAsset());
+				const ULLL_MonsterAttributeSet* OwnerMonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(ManOfStrength->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+				const float OffencePower = OwnerMonsterAttributeSet->GetManOfStrengthThrowOffencePower();
+			
+				FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+				EffectContextHandle.AddSourceObject(this);
+				const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->ThrowDamageEffect, ManOfStrength->GetAbilityLevel(), EffectContextHandle);
+				if (EffectSpecHandle.IsValid())
+				{
+					EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+					UE_LOG(LogTemp, Log, TEXT("%s에게 데미지"), *Other->GetName())
+					ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, ManOfStrength->GetAbilitySystemComponent());
+				}
+				
+				ManOfStrength->ShowHitEffect();
+				ManOfStrength->Stun();
 			}
 		}
 		
@@ -430,7 +437,7 @@ void ALLL_MonsterBase::Dead()
 			continue;
 		}
 		
-    	TempNiagaraComponent->DestroyComponent();
+		TempNiagaraComponent->Deactivate();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 	BleedingVFXComponent->SetHiddenInGame(true);
@@ -681,7 +688,7 @@ void ALLL_MonsterBase::Stun()
 			continue;
 		}
 		
-		TempNiagaraComponent->DestroyComponent();
+		TempNiagaraComponent->Deactivate();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 

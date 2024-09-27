@@ -38,7 +38,9 @@ FPlayerCharacterStatusData ULLL_PlayerCharacterAttributeSet::MakeCharacterStatus
 	CharacterStatusData.CriticalAmplify = CriticalAmplify.GetBaseValue();
 	CharacterStatusData.MaxDashCount = MaxDashCount.GetBaseValue();
 	CharacterStatusData.DashDistance = DashDistance.GetBaseValue();
-	CharacterStatusData.KnockBackPower = KnockBackPower.GetBaseValue();
+	CharacterStatusData.KnockBackPower1 = KnockBackPower1.GetBaseValue();
+	CharacterStatusData.KnockBackPower2 = KnockBackPower2.GetBaseValue();
+	CharacterStatusData.KnockBackConstant = KnockBackConstant.GetBaseValue();
 	
 	return CharacterStatusData;
 }
@@ -54,7 +56,9 @@ void ULLL_PlayerCharacterAttributeSet::InitializeSavedStatusData(const FPlayerCh
 	CriticalAmplify.SetBaseValue(CharacterStatusData->CriticalAmplify);
 	MaxDashCount.SetBaseValue(CharacterStatusData->MaxDashCount);
 	DashDistance.SetBaseValue(CharacterStatusData->DashDistance);
-	KnockBackPower.SetBaseValue(CharacterStatusData->KnockBackPower);
+	KnockBackPower1.SetBaseValue(CharacterStatusData->KnockBackPower1);
+	KnockBackPower2.SetBaseValue(CharacterStatusData->KnockBackPower2);
+	KnockBackConstant.SetBaseValue(CharacterStatusData->KnockBackConstant);
 
 	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();

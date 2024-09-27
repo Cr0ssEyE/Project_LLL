@@ -32,6 +32,7 @@ public:
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
 	FORCEINLINE int32 GetId() const { return Id; }
 	FORCEINLINE bool IsKnockBacking() const { return bIsKnockBacking; }
+	FORCEINLINE float GetLastKnockBackPower() const { return LastKnockBackPower; }
 
 protected:
 	virtual void BeginPlay() override;

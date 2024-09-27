@@ -4,6 +4,7 @@
 #include "GAS/CustomCalculations/LLL_CC_KnockBackDamageCalculate.h"
 
 #include "Constant/LLL_GameplayTags.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 
@@ -12,14 +13,16 @@ float ULLL_CC_KnockBackDamageCalculate::CalculateBaseMagnitude_Implementation(co
 	float Result = Super::CalculateBaseMagnitude_Implementation(Spec);
 	
 	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Spec.GetEffectContext().GetInstigator());
-	if (!IsValid(Player))
+	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Spec.GetEffectContext().GetSourceObject());
+	if (!IsValid(Player) || !IsValid(Monster))
 	{
 		return Result;
 	}
 
+	const float KnockBackPower = Monster->GetLastKnockBackPower();
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-	Result = PlayerAttributeSet->GetKnockBackOffencePower();
+	Result = FMath::Sqrt(KnockBackPower) + FMath::Sqrt(KnockBackPower + KnockBackPower * PlayerAttributeSet->GetKnockBackConstant());
 	Result *= PlayerAttributeSet->GetAllOffencePowerRate();
 	Result *= PlayerAttributeSet->GetKnockBackOffencePowerRate();
 	

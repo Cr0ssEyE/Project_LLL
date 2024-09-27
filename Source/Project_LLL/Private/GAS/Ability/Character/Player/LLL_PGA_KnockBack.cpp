@@ -12,23 +12,28 @@
 void ULLL_PGA_KnockBack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	if (TriggerRequiredTag.IsValid() && !TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag))
-	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-		return;
-	}
 	
 	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(CurrentEventData.TargetData, 0))
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}
-	
-	KnockBackTarget();
+
+	if (TriggerRequiredTag1.IsValid() && TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag1))
+	{
+		KnockBackTarget(TriggerEventData);
+	}
+	else if (TriggerRequiredTag2.IsValid() && TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag2))
+	{
+		KnockBackTarget(TriggerEventData);
+	}
+	else
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	}
 }
 
-void ULLL_PGA_KnockBack::KnockBackTarget()
+void ULLL_PGA_KnockBack::KnockBackTarget(const FGameplayEventData* TriggerEventData)
 {
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
@@ -38,7 +43,17 @@ void ULLL_PGA_KnockBack::KnockBackTarget()
 		
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-		float KnockBackPower = PlayerAttributeSet->GetKnockBackPower();
+
+		float KnockBackPower = 0;
+		if (TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag1))
+		{
+			KnockBackPower = PlayerAttributeSet->GetKnockBackPower1();
+		}
+	
+		if (TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag2))
+		{
+			KnockBackPower = PlayerAttributeSet->GetKnockBackPower2();
+		}
 		KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
 		KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
 		

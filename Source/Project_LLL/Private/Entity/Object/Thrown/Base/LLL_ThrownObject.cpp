@@ -90,7 +90,7 @@ void ALLL_ThrownObject::Deactivate()
 			continue;
 		}
 		
-		TempNiagaraComponent->DestroyComponent();
+		TempNiagaraComponent->Deactivate();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 	BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);

@@ -103,6 +103,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	PayloadData.EventMagnitude = CurrentEventData.EventMagnitude;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
 
+	// 날아온 몬스터 받아치기
 	for (auto TargetActor : TargetDataHandle.Data[0]->GetActors())
 	{
 		if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(TargetActor))
@@ -122,7 +123,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 				const FVector Direction = (ManOfStrength->GetActorLocation() - Monster->GetActorLocation()).GetSafeNormal();
 				MonsterMovement->Deactivate();
 				MonsterMovement->Activate();
-				MonsterMovement->Velocity = Direction * Speed;
+				MonsterMovement->Velocity = Direction * Speed * 2.0f;
 			}
 		}
 	}
