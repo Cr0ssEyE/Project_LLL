@@ -107,10 +107,11 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_1, MagnitudeValue1 * 100.0f);
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_2, MagnitudeValue2 * 100.0f);
-	
+
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
 	{
-		FLLL_AbilityDataHelper::SetBleedingPeriodValue(CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo()), Effect);
+		FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, Effect);
 	}
 	
 	if (Effect->GetEffectApplyTarget() == EEffectApplyTarget::Self)
@@ -133,6 +134,11 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 						continue;
 					}
 					Monster->ToggleBleedingTrigger();
+					
+					if (FLLL_AbilityDataHelper::CheckBleedingExplosion(Player, Monster))
+					{
+						continue;
+					}
 				}
 			}
 			NewActors.Add(Target);

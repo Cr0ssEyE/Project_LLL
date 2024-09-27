@@ -103,24 +103,26 @@ void ALLL_ThrownBleeding::NotifyActorBeginOverlap(AActor* OtherActor)
 		{
 			return;
 		}
-		
-		Monster->SetBleedingStack(Monster->GetBleedingStack() + 4);
+
 		DamagedMonsters.Emplace(Monster);
+		Monster->SetBleedingStack(Monster->GetBleedingStack() + 4);
+
+		if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
+		{
+			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+			EffectContextHandle.AddSourceObject(this);
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownBleedingDataAsset->BleedingDamageEffect, AbilityLevel, EffectContextHandle);
+			if(EffectSpecHandle.IsValid())
+			{
+				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, BleedingOffencePower);
+				FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, CastChecked<ULLL_ExtendedGameplayEffect>(ThrownBleedingDataAsset->BleedingDamageEffect.GetDefaultObject()));
+				if (!FLLL_AbilityDataHelper::CheckBleedingExplosion(Player, Monster))
+				{
+					ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Monster->GetAbilitySystemComponent());
+				}
+			}
+		}
 		
 		DamageTo(OtherActor);
-		
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
-		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownBleedingDataAsset->BleedingDamageEffect, AbilityLevel, EffectContextHandle);
-		if(EffectSpecHandle.IsValid())
-		{
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, BleedingOffencePower);
-			const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner());
-			if (IsValid(Player) && EffectSpecHandle.Data->Def->GetAssetTags().HasTag(TAG_GAS_BLEEDING))
-			{
-				FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, CastChecked<ULLL_ExtendedGameplayEffect>(ThrownBleedingDataAsset->BleedingDamageEffect.GetDefaultObject()));
-			}
-			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Monster->GetAbilitySystemComponent());
-		}
 	}
 }

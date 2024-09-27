@@ -25,7 +25,8 @@ public:
 	{
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 		const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(PlayerASC->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
-		
+
+		// 과다출혈 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EXCESSIVE_BLEEDING) && Player->GetWolfEnuriaCount() >= Player->GetExcessiveBleedingWolfEnuriaCheckCount())
 		{
 			Effect->SetPeriodValue(Player->GetExcessiveBleedingPeriod());
@@ -34,6 +35,38 @@ public:
 		{
 			Effect->SetPeriodValue(AbnormalStatusAttributeSet->GetBleedingStatusPeriod());
 		}
+	}
+
+	static bool CheckBleedingExplosion(const ALLL_PlayerBase* Player, ALLL_MonsterBase* Monster)
+	{
+		Monster->SetMaxBleedingStack(5);
+		
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+
+		// 혈우병 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_EXPLOSION))
+		{
+			Monster->SetMaxBleedingStack(3);
+			if (Monster->GetBleedingStack() == Monster->GetMaxBleedingStack() - 1)
+			{
+				UAbilitySystemComponent* MonsterASC = Monster->GetAbilitySystemComponent();
+				MonsterASC->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING));
+							
+				Monster->SetBleedingStack(0);
+				if (Monster->GetBleedingTrigger())
+				{
+					Monster->ToggleBleedingTrigger();
+				}
+
+				Monster->UpdateBleedingVFX(false);
+				Monster->UpdateStackVFX(Monster->GetBleedingStack(), Monster->GetMaxBleedingStack());
+
+				UE_LOG(LogTemp, Log, TEXT("혈우병 발동"))
+				
+				return true;
+			}
+		}
+		return false;
 	}
 
 	static bool SpawnAbilityObject(const ULLL_CharacterGameplayAbilityBase* OwnerAbility, const TSubclassOf<ALLL_AbilityObject>& AbilityObjectClass, FGameplayEventData EventData = FGameplayEventData(), const EEffectApplyTarget AbilityObjectLocationTarget = EEffectApplyTarget::Self, const FVector& OffsetLocation = FVector::ZeroVector, const FRotator& OffsetRotator = FRotator::ZeroRotator)
