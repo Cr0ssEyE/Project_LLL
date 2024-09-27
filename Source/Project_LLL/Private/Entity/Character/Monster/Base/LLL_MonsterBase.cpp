@@ -35,6 +35,7 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "System/MapGimmick/LLL_FallableWallGimmick.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
+#include "UI/Entity/Character/Monster/LLL_FloatingDamageActor.h"
 #include "Util/LLL_AbilityDataHelper.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Util/LLL_MathHelper.h"
@@ -347,12 +348,15 @@ void ALLL_MonsterBase::Charge()
 	}
 }
 
-void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
+void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
 	Super::Damaged(Attacker, IsDOT);
 	ShowHitEffect();
 	RecognizePlayerToAroundMonster();
-	AActor* FloatingDamage = GetWorld()->SpawnActor<AActor>(FloatingDamageActor, GetTransform());
+	ALLL_FloatingDamageActor* FloatingDamage = GetWorld()->SpawnActor<ALLL_FloatingDamageActor>(FloatingDamageActor);
+	FloatingDamage->SetActorLocation(GetActorLocation()+FVector(0, 0, 100.0f));
+	FloatingDamage->SetWidgetText(Damage);
+	
 	if (Cast<ALLL_BossMonster>(this))
 	{
 		return;

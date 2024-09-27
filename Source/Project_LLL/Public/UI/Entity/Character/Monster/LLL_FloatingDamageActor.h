@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "LLL_FloatingDamageActor.generated.h"
 
+class UWidgetComponent;
 UCLASS()
 class PROJECT_LLL_API ALLL_FloatingDamageActor : public AActor
 {
@@ -17,12 +18,17 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_FloatingDamageActor();
 
+	FORCEINLINE void SetWidgetText(float Damage) { DamageWidget->SetText(Damage); }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void DestroySelf();
 	
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<USphereComponent> RootComponent;
+	TObjectPtr<USphereComponent> SphereComponent;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TSubclassOf<ULLL_DamageWidget> DamageWidgetClass;

@@ -3,3 +3,7 @@
 
 #include "UI/Entity/Character/Monster/LLL_DamageWidget.h"
 
+void ULLL_DamageWidget::IsAnimationEnd()
+{
+	AnimationEndDelegate.Broadcast();
+}

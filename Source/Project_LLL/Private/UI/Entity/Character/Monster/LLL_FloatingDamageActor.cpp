@@ -7,12 +7,15 @@
 #include "Constant/LLL_FilePath.h"
 #include "Util/LLL_ConstructorHelper.h"
 
+FVector impulse = FVector(200.0f, 100.0f, 400.0f);
 // Sets default values
 ALLL_FloatingDamageActor::ALLL_FloatingDamageActor()
 {
-	RootComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
-	RootComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	RootComponent->SetVisibility(false);
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SphereComponent->SetVisibility(false);
+	SetRootComponent(SphereComponent);
+	SphereComponent->SetSimulatePhysics(true);
 	
 	DamageWidgetClass = FLLL_ConstructorHelper::FindAndGetClass<ULLL_DamageWidget>(PATH_UI_FLOATING_DAMAGE, EAssertionLevel::Check);
 	DamageWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DamageWidgetComponent"));
@@ -31,4 +34,12 @@ void ALLL_FloatingDamageActor::BeginPlay()
 	DamageWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	DamageWidgetComponent->SetRelativeLocation(GetActorLocation());
 	DamageWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	SphereComponent->AddImpulse(impulse);
+	DamageWidget->AnimationEndDelegate.AddUObject(this, &ALLL_FloatingDamageActor::DestroySelf);
+}
+
+void ALLL_FloatingDamageActor::DestroySelf()
+{
+	Destroy();
 }
