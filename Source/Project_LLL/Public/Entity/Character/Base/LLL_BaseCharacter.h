@@ -64,7 +64,7 @@ protected:
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) {}
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false, float Damage = 0) {}
 	virtual void Dead();
 
 	void SetOnceParameterByTupleValue(EFModParameter FModParameter, float value) const;

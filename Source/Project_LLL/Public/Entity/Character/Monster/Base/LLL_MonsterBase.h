@@ -14,6 +14,7 @@ struct FAbilityDataTable;
 class ALLL_PlayerBase;
 class UProjectileMovementComponent;
 class ULLL_MonsterAttributeSet;
+class ALLL_FloatingDamageActor;
 /**
  * 
  */
@@ -42,7 +43,7 @@ protected:
 	
 public:
 	virtual void Charge();
-	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false, float Damage = 0) override;
 	virtual void Dead() override;
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	
@@ -79,6 +80,9 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> MaskMeshComponent;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TSubclassOf<ALLL_FloatingDamageActor> FloatingDamageActor;
 
 	int32 Id;
 	uint8 bIsCharging : 1;
