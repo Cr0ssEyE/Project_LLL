@@ -96,6 +96,10 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 			Player->SetExcessiveBleedingPeriod(Value2);
 			Player->SetExcessiveBleedingWolfEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
 		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_BLEEDING_EXPLOSION))
+		{
+			Player->SetBleedingExplosionOffencePower(Value1);
+		}
 	}
 	
 	return Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);

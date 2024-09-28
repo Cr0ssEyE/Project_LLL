@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Constant/LLL_AbilityRealNumbers.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
@@ -41,7 +41,7 @@ public:
 	{
 		Monster->SetMaxBleedingStack(5);
 		
-		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 
 		// 혈우병 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_EXPLOSION))
@@ -61,7 +61,22 @@ public:
 				Monster->UpdateBleedingVFX(false);
 				Monster->UpdateStackVFX(Monster->GetBleedingStack(), Monster->GetMaxBleedingStack());
 
-				UE_LOG(LogTemp, Log, TEXT("혈우병 발동"))
+				const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+				const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+
+				float OffencePower = Player->GetBleedingExplosionOffencePower();
+				OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
+				OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+
+				FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
+				EffectContextHandle.AddSourceObject(Player);
+				const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(PlayerDataAsset->BleedingExplosionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
+				if (EffectSpecHandle.IsValid())
+				{
+					EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+					UE_LOG(LogTemp, Log, TEXT("혈우병으로 %s에게 %f만큼 데미지"), *Monster->GetName(), OffencePower)
+					PlayerASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Monster->GetAbilitySystemComponent());
+				}
 				
 				return true;
 			}

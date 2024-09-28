@@ -102,6 +102,7 @@ public:
 	FORCEINLINE float GetExcessiveBleedingOffencePowerPlus() const { return ExcessiveBleedingOffencePowerPlus; }
 	FORCEINLINE float GetExcessiveBleedingPeriod() const { return ExcessiveBleedingPeriod; }
 	FORCEINLINE int32 GetExcessiveBleedingWolfEnuriaCheckCount() const { return ExcessiveBleedingWolfEnuriaCheckCount; }
+	FORCEINLINE float GetBleedingExplosionOffencePower() const { return BleedingExplosionOffencePower; }
 	
 	FORCEINLINE void SetFeatherSpawnStartTime(const float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
 	FORCEINLINE void SetDeflectCount(const int32 InDeflectCount) { DeflectCount = InDeflectCount; }
@@ -116,6 +117,7 @@ public:
 	FORCEINLINE void SetExcessiveBleedingOffencePowerPlus(const float InExcessiveBleedingOffencePowerPlus) { ExcessiveBleedingOffencePowerPlus = InExcessiveBleedingOffencePowerPlus; }
 	FORCEINLINE void SetExcessiveBleedingPeriod(const float InExcessiveBleedingPeriod) { ExcessiveBleedingPeriod = InExcessiveBleedingPeriod; }
 	FORCEINLINE void SetExcessiveBleedingWolfEnuriaCheckCount(const float InExcessiveBleedingWolfEnuriaCheckCount) { ExcessiveBleedingWolfEnuriaCheckCount = InExcessiveBleedingWolfEnuriaCheckCount; }
+	FORCEINLINE void SetBleedingExplosionOffencePower(const float InBleedingExplosionOffencePower) { BleedingExplosionOffencePower = InBleedingExplosionOffencePower; }
 	
 	void StartChargeFeather(float Timer);
 	void AddRangeFeatherTargets(AActor* Target);
@@ -213,6 +215,7 @@ private:
 	float ExcessiveBleedingOffencePowerPlus;
 	float ExcessiveBleedingPeriod;
 	int32 ExcessiveBleedingWolfEnuriaCheckCount;
+	float BleedingExplosionOffencePower;
 
 	// 상태 관련 함수
 protected:
