@@ -49,7 +49,7 @@ public:
 	virtual void InitAttributeSet() override;
 	virtual void SetFModParameter(EFModParameter FModParameter) override;
 	
-	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false, float Damage = 0) override;
 	virtual void Dead() override;
 	
 	// 외부 접근용

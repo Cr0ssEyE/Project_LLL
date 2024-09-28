@@ -19,6 +19,7 @@
 #include "Constant/LLL_MeshSocketName.h"
 #include "DataAsset/Global/LLL_GlobalNiagaraDataAsset.h"
 #include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
+#include "Engine/DamageEvents.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAIController.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
@@ -34,6 +35,7 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "System/MapGimmick/LLL_FallableWallGimmick.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
+#include "UI/Entity/Character/Monster/LLL_FloatingDamageActor.h"
 #include "Util/LLL_AbilityDataHelper.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Util/LLL_MathHelper.h"
@@ -70,6 +72,8 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 
 	AttributeInitId = ATTRIBUTE_INIT_MONSTER;
 	MaxBleedingStack = 5;
+
+	FloatingDamageActor = FLLL_ConstructorHelper::FindAndGetClass<AActor>(PATH_UI_FLOATING_DAMAGE_ACTOR, EAssertionLevel::Check);
 }
 
 void ALLL_MonsterBase::BeginPlay()
@@ -370,13 +374,15 @@ void ALLL_MonsterBase::Charge()
 	}
 }
 
-void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT)
+void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
 	Super::Damaged(Attacker, IsDOT);
-	
 	ShowHitEffect();
 	RecognizePlayerToAroundMonster();
-
+	ALLL_FloatingDamageActor* FloatingDamage = GetWorld()->SpawnActor<ALLL_FloatingDamageActor>(FloatingDamageActor);
+	FloatingDamage->SetActorLocation(GetActorLocation()+FVector(0, 0, 100.0f));
+	FloatingDamage->SetWidgetText(Damage);
+	
 	if (Cast<ALLL_BossMonster>(this))
 	{
 		return;

@@ -68,6 +68,8 @@
 #define PATH_REWARD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Reward/WBP_SelectRewordWidget.WBP_SelectRewordWidget_C'")
 #define PATH_PLAYER_GOLD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Player/WBP_PlayerGoldWidget.WBP_PlayerGoldWidget_C'")
 #define PATH_UI_PROGRESSBAR_MATERIAL TEXT("/Script/Engine.Material'/Game/Materials/MasterMaterials/M_UI_CircleProgressBer.M_UI_CircleProgressBer'")
+#define PATH_UI_FLOATING_DAMAGE TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Monster/WBP_DamageWidget.WBP_DamageWidget_C'")
+#define PATH_UI_FLOATING_DAMAGE_ACTOR TEXT("/Script/Engine.Blueprint'/Game/Blueprints/UI/Monster/BP_FloatingDamageActor.BP_FloatingDamageActor_C'")
 
 // 머티리얼 파라미터 관련
 #define PATH_MONSTER_MPC TEXT("/Script/Engine.MaterialParameterCollection'/Game/Materials/MaterialParameters/MPC_Monster.MPC_Monster'")
