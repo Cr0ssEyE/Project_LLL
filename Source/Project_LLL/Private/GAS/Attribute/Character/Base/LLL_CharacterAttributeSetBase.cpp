@@ -7,9 +7,7 @@
 #include "GameplayEffectExtension.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
-#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 
@@ -23,10 +21,11 @@ void ULLL_CharacterAttributeSetBase::PostAttributeChange(const FGameplayAttribut
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
 	
-	if(Attribute == GetMoveSpeedAttribute())
+	if (Attribute == GetMoveSpeedAttribute())
 	{
 		const ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwningActor());
 		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GetMoveSpeed();
+		UE_LOG(LogTemp, Log, TEXT("속도 변환 : %f"), GetMoveSpeed())
 	}
 	
 	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());

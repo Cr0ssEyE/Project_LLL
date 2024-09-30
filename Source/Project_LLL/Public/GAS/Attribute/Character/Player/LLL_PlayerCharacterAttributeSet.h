@@ -116,12 +116,14 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackOffencePowerPlus);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherOffencePowerRate);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherOffencePowerPlus);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MoveSpeedPlus);
 
 public:
 	FPlayerCharacterStatusData MakeCharacterStatusData() const;
 	void InitializeSavedStatusData(const FPlayerCharacterStatusData* CharacterStatusData);
 	
 protected:
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 	// 스테이터스 관련
@@ -233,4 +235,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData FeatherOffencePowerPlus;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MoveSpeedPlus;
 };

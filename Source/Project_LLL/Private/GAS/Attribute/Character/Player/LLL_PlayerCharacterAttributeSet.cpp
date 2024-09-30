@@ -64,6 +64,21 @@ void ULLL_PlayerCharacterAttributeSet::InitializeSavedStatusData(const FPlayerCh
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }
 
+void ULLL_PlayerCharacterAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetMoveSpeedPlusAttribute())
+	{
+		UE_LOG(LogTemp, Log, TEXT("%f"), GetMoveSpeedPlus())
+	}
+	else if (Attribute == GetDashDistanceAttribute())
+	{
+		SetDashCorrectionDistance(GetDashCorrectionDistance() + NewValue - OldValue);
+		SetDashSpeed(GetDashSpeed() * (NewValue / OldValue));
+	}
+}
+
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())

@@ -167,22 +167,27 @@ public:
 				continue;
 			}
 
-			for (const auto GottenAbilityArrayEffectHandle : GottenAbilityArrayEffectHandles(World))
+			// 중첩 이누리아가 아닐 경우
+			if (CurrentAbilityData->TagID[0] != '1')
 			{
-				const ULLL_ExtendedGameplayEffect* GottenEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerASC->GetActiveGameplayEffect(GottenAbilityArrayEffectHandle)->Spec.Def);
-				if (CurrentAbilityData->TagID[1] == '1' && GottenEffect->GetAbilityData()->TagID[1] == '1')
+				for (const auto GottenAbilityArrayEffectHandle : GottenAbilityArrayEffectHandles(World))
 				{
-					PlayerASC->RemoveActiveGameplayEffect(GottenAbilityArrayEffectHandle);
-					if (CurrentAbilityData->AbilityName != GottenEffect->GetAbilityData()->AbilityName)
+					const ULLL_ExtendedGameplayEffect* GottenEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerASC->GetActiveGameplayEffect(GottenAbilityArrayEffectHandle)->Spec.Def);
+				
+					if (CurrentAbilityData->TagID[1] == '1' && GottenEffect->GetAbilityData()->TagID[1] == '1')
 					{
-						AbilityData.Emplace(GottenEffect->GetAbilityData());
+						PlayerASC->RemoveActiveGameplayEffect(GottenAbilityArrayEffectHandle);
+						if (CurrentAbilityData->AbilityName != GottenEffect->GetAbilityData()->AbilityName)
+						{
+							AbilityData.Emplace(GottenEffect->GetAbilityData());
+						}
+						UE_LOG(LogTemp, Log, TEXT("사용 타입 이펙트 삭제"));
 					}
-					UE_LOG(LogTemp, Log, TEXT("사용 타입 이펙트 삭제"));
-				}
-				else if (CurrentAbilityData->AbilityName == GottenEffect->GetAbilityData()->AbilityName)
-				{
-					PlayerASC->RemoveActiveGameplayEffect(GottenAbilityArrayEffectHandle);
-					UE_LOG(LogTemp, Log, TEXT("낮은 티어 이펙트 삭제"));
+					else if (CurrentAbilityData->AbilityName == GottenEffect->GetAbilityData()->AbilityName)
+					{
+						PlayerASC->RemoveActiveGameplayEffect(GottenAbilityArrayEffectHandle);
+						UE_LOG(LogTemp, Log, TEXT("낮은 티어 이펙트 삭제"));
+					}
 				}
 			}
 
@@ -199,13 +204,17 @@ public:
 			// 어빌리티 부여 계열
 			if (ULLL_GE_GiveAbilityComponent* AbilitiesGameplayEffectComponent = &Effect->FindOrAddComponent<ULLL_GE_GiveAbilityComponent>())
 			{
-				for (const auto& AbilitySpecConfig : AbilitiesGameplayEffectComponent->GetAbilitySpecConfigs())
+				for (auto& AbilitySpecConfig : AbilitiesGameplayEffectComponent->GetAbilitySpecConfigs())
 				{
-					if (FGameplayAbilitySpec* Spec = PlayerASC->FindAbilitySpecFromClass(AbilitySpecConfig.Ability))
+					for (auto& Spec : PlayerASC->GetActivatableAbilities())
 					{
-						// EGameplayAbilityInstancingPolicy::InstancedPerActor로 설정된 어빌리티 한정 정상작동
-						Cast<ULLL_PGA_RewardAbilityBase>(Spec->GetPrimaryInstance())->SetAbilityInfo(CurrentAbilityData);
-						UE_LOG(LogTemp, Log, TEXT("스펙에 접근해서 값 바꾸기 시도"));
+						if (Spec.Ability->GetClass() == AbilitySpecConfig.Ability)
+						{
+							// EGameplayAbilityInstancingPolicy::InstancedPerActor로 설정된 어빌리티 한정 정상작동
+							ULLL_PGA_RewardAbilityBase* RewardAbility = CastChecked<ULLL_PGA_RewardAbilityBase>(Spec.GetPrimaryInstance());
+							RewardAbility->SetAbilityInfo(CurrentAbilityData);
+							UE_LOG(LogTemp, Log, TEXT("%s 어빌리티에 데이터 전달"), *RewardAbility->GetName());
+						}
 					}
 				}
 			}

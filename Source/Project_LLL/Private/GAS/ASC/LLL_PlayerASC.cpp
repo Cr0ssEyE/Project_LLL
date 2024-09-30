@@ -101,6 +101,11 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 			Player->SetBleedingExplosionOffencePower(Value1);
 		}
 	}
+
+	if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_MOVE_FASTER))
+	{
+		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_MOVE_FASTER));
+	}
 	
 	return Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
 }
