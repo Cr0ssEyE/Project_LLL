@@ -44,6 +44,7 @@
 #define PATH_INTERACTIVE_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_InteractiveObjectData'/Game/DataAsset/DA_InteractiveObject.DA_InteractiveObject'")
 #define PATH_BREAKABLE_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_Statue.SM_Statue'")
 #define PATH_BREAKABLE_OBJECT_TEST_EFFECT TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'")
+#define PATH_2D_RESOURCE_PLANE TEXT("/Script/Engine.StaticMesh'/Game/Meshes/ResourceMesh/SM_2DResource_Plane.SM_2DResource_Plane'")
 
 // 시스템 관련
 #define PATH_MONSTER_SPAWNER_DATA TEXT("/Script/Project_LLL.LLL_MonsterSpawnerDataAsset'/Game/DataAsset/DA_MonsterSpawner.DA_MonsterSpawner'")
@@ -68,6 +69,8 @@
 #define PATH_REWARD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Reward/WBP_SelectRewordWidget.WBP_SelectRewordWidget_C'")
 #define PATH_PLAYER_GOLD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Player/WBP_PlayerGoldWidget.WBP_PlayerGoldWidget_C'")
 #define PATH_UI_PROGRESSBAR_MATERIAL TEXT("/Script/Engine.Material'/Game/Materials/MasterMaterials/M_UI_CircleProgressBer.M_UI_CircleProgressBer'")
+#define PATH_UI_FLOATING_DAMAGE TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Monster/WBP_DamageWidget.WBP_DamageWidget_C'")
+#define PATH_UI_FLOATING_DAMAGE_ACTOR TEXT("/Script/Engine.Blueprint'/Game/Blueprints/UI/Monster/BP_FloatingDamageActor.BP_FloatingDamageActor_C'")
 
 // 머티리얼 파라미터 관련
 #define PATH_MONSTER_MPC TEXT("/Script/Engine.MaterialParameterCollection'/Game/Materials/MaterialParameters/MPC_Monster.MPC_Monster'")

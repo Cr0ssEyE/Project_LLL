@@ -649,7 +649,7 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::MoveCameraToMouseCursor);
 }
 
-void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT)
+void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
 	Super::Damaged(Attacker, IsDOT);
 	
