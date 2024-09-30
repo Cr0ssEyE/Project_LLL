@@ -19,7 +19,7 @@
 #include "Util/LLL_AbilityDataHelper.h"
 
 ULLL_PGA_OnTriggerActivate::ULLL_PGA_OnTriggerActivate() :
-	bUseOnAttackHitEffect(false),
+	bUseApplyEffect(false),
 	bUseSpawnAbilityObject(false),
 	AbilityObjectLocationTarget(EEffectApplyTarget::Target),
 	bUseSpawnThrownObject(false),
@@ -55,6 +55,12 @@ void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandl
 	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(CurrentEventData.TargetData, 0))
 	{
 		bool Valid = false;
+		if (bUseApplyEffect && IsValid(ApplyEffect))
+		{
+			Valid = true;
+			ApplyEffectWhenHit();
+		}
+		
 		if (bUseSpawnAbilityObject && IsValid(AbilityObjectClass) && AbilityObjectLocationTarget == EEffectApplyTarget::Self)
 		{
 			Valid = true;
@@ -74,7 +80,7 @@ void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandl
 		return;
 	}
 
-	if (bUseOnAttackHitEffect && IsValid(OnAttackHitEffect))
+	if (bUseApplyEffect && IsValid(ApplyEffect))
 	{
 		ApplyEffectWhenHit();
 	}
@@ -97,8 +103,8 @@ void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandl
 
 void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 {
-	ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
-	const FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
+	ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(ApplyEffect.GetDefaultObject());
+	const FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ApplyEffect, GetAbilityLevel());
 
 	const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
 	const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
@@ -116,11 +122,10 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	
 	if (Effect->GetEffectApplyTarget() == EEffectApplyTarget::Self)
 	{
-		BP_ApplyGameplayEffectToOwner(OnAttackHitEffect);
+		BP_ApplyGameplayEffectToOwner(ApplyEffect);
 	}
 	else
 	{
-		FGameplayAbilityTargetDataHandle NewTargetDataHandle;
 		TArray<TWeakObjectPtr<AActor>> NewActors;
 		for (auto Target : CurrentEventData.TargetData.Data[0]->GetActors())
 		{
@@ -146,13 +151,14 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 
 		if (NewActors.Num() > 0)
 		{
+			FGameplayAbilityTargetDataHandle NewTargetDataHandle;
 			FGameplayAbilityTargetData_ActorArray* NewTargetData = new FGameplayAbilityTargetData_ActorArray();
 			NewTargetData->TargetActorArray = NewActors;
 			NewTargetDataHandle.Add(NewTargetData);
+			CurrentEventData.TargetData = NewTargetDataHandle;
 		}
-
-		CurrentEventData.TargetData = NewTargetDataHandle;
-		BP_ApplyGameplayEffectToTarget(CurrentEventData.TargetData, OnAttackHitEffect);
+		
+		BP_ApplyGameplayEffectToTarget(CurrentEventData.TargetData, ApplyEffect);
 	}
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

@@ -4,6 +4,7 @@
 #include "GAS/Ability/Character/Player/LLL_PGA_KnockBack.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Task/LLL_AT_Trace.h"
 #include "Interface/LLL_KnockBackInterface.h"
@@ -35,13 +36,15 @@ void ULLL_PGA_KnockBack::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 
 void ULLL_PGA_KnockBack::KnockBackTarget(const FGameplayEventData* TriggerEventData)
 {
+	bool KnockBackSuccess = false;
+	
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
 	{
 		const FVector AvatarLocation = CurrentActorInfo->AvatarActor->GetActorLocation();
 		const FVector Direction = (Actor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
 		
-		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 		float KnockBackPower = 0;
@@ -56,13 +59,21 @@ void ULLL_PGA_KnockBack::KnockBackTarget(const FGameplayEventData* TriggerEventD
 		}
 		KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
 		KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+		KnockBackPower += PlayerAttributeSet->GetBaseAttackKnockBackPowerPlus();
 		
 		if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor))
 		{
 			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
 			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
+
+			KnockBackSuccess = true;
 		}
 	}
 
+	if (KnockBackSuccess)
+	{
+		PlayerASC->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_MORE_ATTACK_KNOCK_BACK));
+	}
+	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

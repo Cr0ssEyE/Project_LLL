@@ -38,11 +38,11 @@ protected:
 	
 	// GE
 protected:
-	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "적중시 GE 발생 여부")
-	uint8 bUseOnAttackHitEffect : 1;
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "GE 발생 여부")
+	uint8 bUseApplyEffect : 1;
 	
-	UPROPERTY(EditAnywhere, Category = "GAS|ApplyEffect", DisplayName = "적중시 발생하는 GE", meta =(EditCondition = "bUseOnAttackHitEffect == true", EditConditionHides))
-	TSubclassOf<UGameplayEffect> OnAttackHitEffect;
+	UPROPERTY(EditAnywhere, Category = "GAS|ApplyEffect", DisplayName = "발생하는 GE", meta =(EditCondition = "bUseApplyEffect == true", EditConditionHides))
+	TSubclassOf<UGameplayEffect> ApplyEffect;
 
 	// Object
 protected:

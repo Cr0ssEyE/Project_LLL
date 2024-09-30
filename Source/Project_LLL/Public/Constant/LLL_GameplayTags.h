@@ -10,6 +10,7 @@
 // 캐릭터 상태 관련 게임플레이 태그
 #define TAG_GAS_STATUS_BLEEDING FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding"))
 #define TAG_GAS_STATUS_MOVE_FASTER FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.MoveFaster"))
+#define TAG_GAS_STATUS_MORE_ATTACK_KNOCK_BACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.MoreAttackKnockBack"))
 #define TAG_GAS_STATE_COLLIDE_OTHER FGameplayTag::RequestGameplayTag(FName("Character.State.CollideOther"))
 
 // 플레이어 이벤트 게임플레이 태그
@@ -31,6 +32,7 @@
 // 플레이어 공격 효과 관련 게임플레이 태그
 #define TAG_GAS_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Bleeding"))
 #define TAG_GAS_MOVE_FASTER FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.MoveFaster"))
+#define TAG_GAS_MORE_ATTACK_KNOCK_BACK FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.MoreAttackKnockBack"))
 
 // 플레이어 부가 효과 구분용 게임플레이 태그
 #define TAG_GAS_PERKS_ATTACK FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Attack")

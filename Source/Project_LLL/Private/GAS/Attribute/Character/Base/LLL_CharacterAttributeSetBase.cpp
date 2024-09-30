@@ -25,7 +25,6 @@ void ULLL_CharacterAttributeSetBase::PostAttributeChange(const FGameplayAttribut
 	{
 		const ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwningActor());
 		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GetMoveSpeed();
-		UE_LOG(LogTemp, Log, TEXT("속도 변환 : %f"), GetMoveSpeed())
 	}
 	
 	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
