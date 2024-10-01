@@ -163,7 +163,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 		FGameplayTagContainer OwnedTagsContainer;
 		GetAbilitySystemComponentFromActorInfo_Checked()->GetOwnedGameplayTags(OwnedTagsContainer);
 		
-		if(CurrentComboAction == MaxAttackAction)
+		if (CurrentComboAction == MaxAttackAction)
 		{
 			CurrentComboAction = 0;
 		}

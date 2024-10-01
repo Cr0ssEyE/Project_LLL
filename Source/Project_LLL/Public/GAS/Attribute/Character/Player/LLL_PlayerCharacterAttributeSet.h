@@ -118,6 +118,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherOffencePowerPlus);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MoveSpeedPlus);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, BaseAttackKnockBackPowerPlus);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashDistancePlus);
 
 public:
 	FPlayerCharacterStatusData MakeCharacterStatusData() const;
@@ -242,4 +243,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData BaseAttackKnockBackPowerPlus;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData DashDistancePlus;
 };

@@ -538,6 +538,19 @@ int32 ALLL_PlayerBase::GetWolfEnuriaCount() const
 	return Count;
 }
 
+int32 ALLL_PlayerBase::GetHorseEnuriaCount() const
+{
+	int32 Count = 0;
+	for (const auto AbilityData : FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld()))
+	{
+		if (AbilityData->AnimalType == EAnimalType::Horse)
+		{
+			Count++;
+		}
+	}
+	return Count;
+}
+
 EAnimalType ALLL_PlayerBase::GetSkillEnuriaAnimalType() const
 {
 	for (const auto AbilityData : FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld()))

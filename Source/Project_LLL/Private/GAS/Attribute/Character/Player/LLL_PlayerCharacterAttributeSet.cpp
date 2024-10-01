@@ -23,7 +23,8 @@ KnockBackOffencePowerPlus(0.0f),
 FeatherOffencePowerRate(1.0f),
 FeatherOffencePowerPlus(0.0f),
 MoveSpeedPlus(0.0f),
-BaseAttackKnockBackPowerPlus(0.0f)
+BaseAttackKnockBackPowerPlus(0.0f),
+DashDistancePlus(0.0f)
 {
 	
 }
@@ -72,12 +73,6 @@ void ULLL_PlayerCharacterAttributeSet::PostAttributeChange(const FGameplayAttrib
 
 	if (Attribute == GetMoveSpeedPlusAttribute())
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s가 변경 %f -> %f"), *Attribute.GetName(), OldValue, NewValue)
-	}
-	else if (Attribute == GetDashDistanceAttribute())
-	{
-		SetDashCorrectionDistance(GetDashCorrectionDistance() + NewValue - OldValue);
-		SetDashSpeed(GetDashSpeed() * (NewValue / OldValue));
 		UE_LOG(LogTemp, Log, TEXT("%s가 변경 %f -> %f"), *Attribute.GetName(), OldValue, NewValue)
 	}
 	else if (Attribute == GetBaseAttackKnockBackPowerPlusAttribute())

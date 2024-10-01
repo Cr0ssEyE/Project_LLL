@@ -100,6 +100,11 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		{
 			Player->SetBleedingExplosionOffencePower(Value1);
 		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_DOUBLE_DASH))
+		{
+			Player->SetDoubleDashDashRate(Value1);
+			Player->SetDoubleDashHorseEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
+		}
 	}
 
 	if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_MOVE_FASTER))
