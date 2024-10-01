@@ -18,10 +18,10 @@ public:
 	ALLL_InstancedMeshObject();
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess))
 	TObjectPtr<UInstancedStaticMeshComponent> InstancedStaticMesh;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess))
 	TArray<FTransform> Instances;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess))
@@ -32,4 +32,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void SetInstance();
+
+	uint8 InstanceCount;
+	uint8 ArrayCount;
 };
