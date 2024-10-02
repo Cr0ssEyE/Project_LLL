@@ -114,15 +114,24 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 			}
 		}
 #endif
-
-		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-		if (GetCurrentHealth() == 0)
+		
+		bool bIsEvasion = false;
+		if (GetEvasionRate() != 0.0f)
 		{
-			Player->Dead();
+			bIsEvasion = FMath::RandRange(0.0f, 1.0f) <= GetEvasionRate();
 		}
-		else
+		
+		if (!bIsEvasion)
 		{
-			Player->Damaged(Attacker, DOT);
+			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+			if (GetCurrentHealth() == 0)
+			{
+				Player->Dead();
+			}
+			else
+			{
+				Player->Damaged(Attacker, DOT);
+			}
 		}
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
