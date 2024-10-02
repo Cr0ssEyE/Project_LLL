@@ -376,6 +376,16 @@ void ALLL_MonsterBase::Charge()
 void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
 	Super::Damaged(Attacker, IsDOT);
+
+	TotalDamage += Damage;
+	UE_LOG(LogTemp, Log, TEXT("%s의 총합 데미지: %f"), *GetName(), TotalDamage)
+
+	GetWorldTimerManager().ClearTimer(TotalDamageTimerHandle);
+	GetWorldTimerManager().SetTimer(TotalDamageTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+		UE_LOG(LogTemp, Log, TEXT("%s의 총합 데미지 초기화"), *GetName())
+		TotalDamage = 0.0f;
+	}), 3.0f, false);
+	
 	ShowHitEffect();
 	RecognizePlayerToAroundMonster();
 	ALLL_FloatingDamageActor* FloatingDamage = GetWorld()->SpawnActor<ALLL_FloatingDamageActor>(FloatingDamageActor);

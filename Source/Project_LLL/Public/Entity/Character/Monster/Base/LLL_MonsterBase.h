@@ -99,6 +99,11 @@ protected:
 	uint8 bKnockBackTargetDamaged : 1;
 	uint8 bKnockBackCauserDamaged : 1;
 
+	// 총합 데미지 계산 관련
+protected:
+	float TotalDamage;
+	FTimerHandle TotalDamageTimerHandle;
+
 	// 이누리아 관련
 protected:
 	int32 BleedingStack;
