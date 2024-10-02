@@ -15,6 +15,7 @@ ALLL_InstancedMeshObject::ALLL_InstancedMeshObject()
 	InstancedStaticMesh = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Instanced Static Mesh"));
 	InstancedStaticMesh->SetStaticMesh(Plane);
 	InstancedStaticMesh->SetCollisionProfileName(CP_NO_COLLISION);
+	InstancedStaticMesh->SetNumCustomDataFloats(3);
 	SetRootComponent(InstancedStaticMesh);
 	
 	FTransform Transform = FTransform(FVector(0.0f, 0.0f, 0.0f));
@@ -25,12 +26,8 @@ ALLL_InstancedMeshObject::ALLL_InstancedMeshObject()
 
 void ALLL_InstancedMeshObject::SetInstance()
 {
-	uint8 InstanceCount = InstancedStaticMesh->GetInstanceCount();
-	uint8 ArrayCount = 0;
-	if (!Instances.IsEmpty())
-	{
-		ArrayCount = Instances.Num();
-	}
+	InstanceCount = IsValid(InstancedStaticMesh) ? InstancedStaticMesh->GetInstanceCount() : 0;
+	ArrayCount = Instances.IsEmpty() ? 0 : Instances.Num();
 	
 	if (InstanceCount > ArrayCount)
 	{
