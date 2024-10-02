@@ -60,13 +60,14 @@
 #define TAG_GAS_HAVE_DEFLECT_BY_WALL FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.DeflectByWall"))
 #define TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.KnockBackTransmission"))
 #define TAG_GAS_HAVE_FASTER_KNOCK_BACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.FasterKnockBack"))
-#define TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE_BY_ENURIA_COUNT FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.IncreaseKnockBackDamageByEnuriaCount"))
+#define TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.IncreaseKnockBackDamage"))
 #define TAG_GAS_HAVE_VAMPIRE FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.Vampire"))
 #define TAG_GAS_HAVE_BLEEDING_TRANSMISSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.BleedingTransmission"))
 #define TAG_GAS_HAVE_EXCESSIVE_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.ExcessiveBleeding"))
 #define TAG_GAS_HAVE_THROW_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.ThrowBleeding"))
 #define TAG_GAS_HAVE_BLEEDING_EXPLOSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.BleedingExplosion"))
 #define TAG_GAS_HAVE_DOUBLE_DASH FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.DoubleDash"))
+#define TAG_GAS_HAVE_FASTER_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.FasterAttack"))
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))

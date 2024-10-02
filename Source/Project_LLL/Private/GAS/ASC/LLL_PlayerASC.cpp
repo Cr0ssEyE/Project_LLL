@@ -78,7 +78,7 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		{
 			Player->SetFasterKnockBackSpeedRate(Value1);
 		}
-		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE_BY_ENURIA_COUNT))
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE))
 		{
 			Player->SetIncreaseKnockBackDamageByEnuriaCountDamageRate(Value1);
 		}
@@ -104,6 +104,12 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		{
 			Player->SetDoubleDashDashRate(Value1);
 			Player->SetDoubleDashHorseEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_FASTER_ATTACK))
+		{
+			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+			ULLL_ExtendedGameplayEffect* FasterAttackResetAttackSpeedEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->FasterAttackResetAttackSpeedEffect.GetDefaultObject());
+			FasterAttackResetAttackSpeedEffect->SetAbilityInfo(Effect->GetAbilityData());
 		}
 	}
 

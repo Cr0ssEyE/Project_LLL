@@ -9,7 +9,6 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/LLL_DebugGameInstance.h"
-#include "Util/LLL_MathHelper.h"
 
 ULLL_PlayerCharacterAttributeSet::ULLL_PlayerCharacterAttributeSet() :
 LowHealthPercentage(0.3f),
@@ -24,7 +23,8 @@ FeatherOffencePowerRate(1.0f),
 FeatherOffencePowerPlus(0.0f),
 MoveSpeedPlus(0.0f),
 BaseAttackKnockBackPowerPlus(0.0f),
-DashDistancePlus(0.0f)
+DashDistancePlus(0.0f),
+FasterAttackAttackSpeedRate(1.0f)
 {
 	
 }
@@ -79,6 +79,10 @@ void ULLL_PlayerCharacterAttributeSet::PostAttributeChange(const FGameplayAttrib
 	{
 		UE_LOG(LogTemp, Log, TEXT("%s가 변경 %f -> %f"), *Attribute.GetName(), OldValue, NewValue)
 	}
+	else if (Attribute == GetFasterAttackAttackSpeedRateAttribute())
+	{
+		UE_LOG(LogTemp, Log, TEXT("%s가 변경 %f -> %f"), *Attribute.GetName(), OldValue, NewValue)
+	}
 }
 
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -111,17 +115,14 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		}
 #endif
 
-		if (Player->GetCapsuleComponent()->GetCollisionProfileName() != CP_PLAYER_EVADE)
+		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+		if (GetCurrentHealth() == 0)
 		{
-			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-			if (GetCurrentHealth() == 0)
-			{
-				Player->Dead();
-			}
-			else
-			{
-				Player->Damaged(Attacker, DOT);
-			}
+			Player->Dead();
+		}
+		else
+		{
+			Player->Damaged(Attacker, DOT);
 		}
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)

@@ -682,12 +682,26 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 	}
 
 	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Attacker);
-	if (!IsValid(Monster))
+	if (IsValid(Monster))
 	{
-		return;
+		LastAttackerMonsterId = Monster->GetId();
 	}
 
-	LastAttackerMonsterId = Monster->GetId();
+	// 쾌속난타 이누리아
+	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_FASTER_ATTACK))
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->FasterAttackResetAttackSpeedEffect, GetAbilityLevel(), EffectContextHandle);
+		if (EffectSpecHandle.IsValid())
+		{
+			const ULLL_ExtendedGameplayEffect* FasterAttackResetAttackSpeedEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->FasterAttackResetAttackSpeedEffect.GetDefaultObject());
+			const FAbilityDataTable* AbilityData = FasterAttackResetAttackSpeedEffect->GetAbilityData();
+			const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
 }
 
 void ALLL_PlayerBase::Dead()

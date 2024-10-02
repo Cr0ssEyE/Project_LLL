@@ -133,4 +133,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "혈우병 이누리아 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> BleedingExplosionDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "쾌속난타 이누리아 속도 리셋 이펙트")
+	TSubclassOf<UGameplayEffect> FasterAttackResetAttackSpeedEffect;
 };
