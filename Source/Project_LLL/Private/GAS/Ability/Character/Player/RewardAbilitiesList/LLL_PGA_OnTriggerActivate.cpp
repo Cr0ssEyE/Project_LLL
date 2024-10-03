@@ -119,7 +119,7 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	{
 		FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, Effect);
 	}
-	
+
 	if (Effect->GetEffectApplyTarget() == EEffectApplyTarget::Self)
 	{
 		BP_ApplyGameplayEffectToOwner(ApplyEffect);
@@ -149,15 +149,15 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 			NewActors.Add(Target);
 		}
 
+		FGameplayAbilityTargetDataHandle NewTargetDataHandle;
 		if (NewActors.Num() > 0)
 		{
-			FGameplayAbilityTargetDataHandle NewTargetDataHandle;
 			FGameplayAbilityTargetData_ActorArray* NewTargetData = new FGameplayAbilityTargetData_ActorArray();
 			NewTargetData->TargetActorArray = NewActors;
 			NewTargetDataHandle.Add(NewTargetData);
-			CurrentEventData.TargetData = NewTargetDataHandle;
 		}
-		
+
+		CurrentEventData.TargetData = NewTargetDataHandle;
 		BP_ApplyGameplayEffectToTarget(CurrentEventData.TargetData, ApplyEffect);
 	}
 
