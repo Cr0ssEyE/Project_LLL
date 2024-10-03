@@ -5,6 +5,8 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
+#include "Components/CapsuleComponent.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
@@ -119,6 +121,11 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		if (GetEvasionRate() != 0.0f)
 		{
 			bIsEvasion = FMath::RandRange(0.0f, 1.0f) <= GetEvasionRate();
+		}
+
+		if (Player->GetCapsuleComponent()->GetCollisionProfileName() == CP_PLAYER_EVADE)
+		{
+			bIsEvasion = true;
 		}
 		
 		if (!bIsEvasion)
