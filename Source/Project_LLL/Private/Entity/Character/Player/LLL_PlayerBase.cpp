@@ -431,9 +431,11 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 {
 	if (!bCanSkill)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 쿨타임이 끝나지 않음")));
 		return;
 	}
-	
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 사용")));
 	const int32 InputID = static_cast<int32>(InputName);
 	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
@@ -449,6 +451,7 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 			bCanSkill = false;
 			GetWorldTimerManager().SetTimer(SkillCoolTimeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 				bCanSkill = true;
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 쿨타임 완료")));
 			}), SkillCoolTime, false);
 		}
 	}
@@ -516,8 +519,6 @@ void ALLL_PlayerBase::PauseCameraMoveToCursor() const
 void ALLL_PlayerBase::ReadyToUseSkill()
 {
 	bCanSkill = true;
-
-	SkillCoolTimeTimerHandle.Invalidate();
 }
 
 int32 ALLL_PlayerBase::GetEnuriaCount() const

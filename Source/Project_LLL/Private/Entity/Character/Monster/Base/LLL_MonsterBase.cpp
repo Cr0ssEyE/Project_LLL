@@ -130,6 +130,11 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	if (GetActorLocation().Z < -1000.0f)
+	{
+		Dead();
+	}
+
 	if (bIsKnockBacking)
 	{
 		FVector VelocityWithKnockBack = GetVelocity();

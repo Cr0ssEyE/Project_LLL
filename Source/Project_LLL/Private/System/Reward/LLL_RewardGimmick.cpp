@@ -373,7 +373,7 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 
 void ALLL_RewardGimmick::GiveAllEnuria()
 {
-	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetWorld()->GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
+	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
 	if (IsValid(AbilityManageSubSystem))
 	{
 		//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
