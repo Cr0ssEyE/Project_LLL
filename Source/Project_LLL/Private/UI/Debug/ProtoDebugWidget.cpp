@@ -6,6 +6,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "Enumeration/LLL_UserInterfaceEnumHelper.h"
 #include "Game/LLL_DebugGameInstance.h"
+#include "System/Reward/LLL_RewardGimmick.h"
 
 void UProtoDebugWidget::NativeConstruct()
 {
@@ -14,6 +15,7 @@ void UProtoDebugWidget::NativeConstruct()
 	MonsterDebugButton->OnClicked.AddDynamic(this, &UProtoDebugWidget::EnableMonsterDebugWidget);
 	ObjectDebugButton->OnClicked.AddDynamic(this, &UProtoDebugWidget::EnableObjectDebugWidget);
 	SoundDebugButton->OnClicked.AddDynamic(this, &UProtoDebugWidget::ToggleSoundMessage);
+	AllEnuriaDebugButton->OnClicked.AddDynamic(this, &UProtoDebugWidget::AllEnuriaDebug);
 	SetIsEnabled(false);
 	SetVisibility(ESlateVisibility::Hidden);
 }
@@ -42,4 +44,9 @@ void UProtoDebugWidget::ToggleWidget()
 void UProtoDebugWidget::ToggleSoundMessage()
 {
 	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->ToggleSoundMessageDebug();
+}
+
+void UProtoDebugWidget::AllEnuriaDebug()
+{
+	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->RewardGimmick->GiveAllEnuria();
 }

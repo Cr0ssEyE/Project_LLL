@@ -370,3 +370,34 @@ void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_Ex
 	
 	bIsButtonEventSetup = false;
 }
+
+void ALLL_RewardGimmick::GiveAllEnuria()
+{
+	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetWorld()->GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
+	if (IsValid(AbilityManageSubSystem))
+	{
+		//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
+		FAsyncLoadEffectByIDDelegate AsyncLoadEffectDelegate;
+		AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_RewardGimmick::ReceivePlayerEffectsHandle);
+
+		int32 LastID = 0;
+		TArray<const FAbilityDataTable*> TempAbilityData = AbilityData;
+		for (int32 i = TempAbilityData.Num() - 1; i >= 0; --i)
+		{
+			if (LastID % 100 == TempAbilityData[i]->ID % 100)
+			{
+				continue;
+			}
+
+			if (TempAbilityData[i]->TagID[0] == '1' || TempAbilityData[i]->TagID[1] == '1')
+			{
+				continue;
+			}
+			
+			LastID = TempAbilityData[i]->ID;
+			AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, LastID, EEffectAccessRange::None);
+		}
+
+		UE_LOG(LogTemp, Log, TEXT("구현된 이누리아 전부 적용 (중첩 타입, 사용 타입 제외)"))
+	}
+}

@@ -123,6 +123,7 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		
 		if (!bIsEvasion)
 		{
+			SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
 			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
 			if (GetCurrentHealth() == 0)
 			{

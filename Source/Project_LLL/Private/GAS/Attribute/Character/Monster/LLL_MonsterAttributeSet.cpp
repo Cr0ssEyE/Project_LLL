@@ -42,6 +42,7 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		bool Damaged = false;
 		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 
+		SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
 		if (GetCurrentShield() > 0)
 		{
 			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));

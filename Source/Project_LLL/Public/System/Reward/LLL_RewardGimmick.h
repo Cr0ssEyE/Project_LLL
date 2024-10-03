@@ -106,4 +106,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
 	TArray<FTestAbilityDataID> TestAbilityDataID;
+
+	void GiveAllEnuria();
 };

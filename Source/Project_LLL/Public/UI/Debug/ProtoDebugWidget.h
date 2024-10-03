@@ -40,6 +40,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ToggleSoundMessage();
 
+	UFUNCTION(BlueprintCallable)
+	void AllEnuriaDebug();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UWidgetSwitcher> DebugWidgetSwitcher;
@@ -65,4 +68,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> SoundDebugButton;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UButton> AllEnuriaDebugButton;
 };

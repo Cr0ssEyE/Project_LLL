@@ -22,7 +22,7 @@ float ULLL_CC_KnockBackDamageCalculate::CalculateBaseMagnitude_Implementation(co
 	const float KnockBackPower = Monster->GetLastKnockBackPower();
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-	Result = FMath::Floor(FMath::Sqrt(KnockBackPower) + FMath::Sqrt(KnockBackPower + KnockBackPower * PlayerAttributeSet->GetKnockBackConstant()));
+	Result = FMath::Sqrt(KnockBackPower) + FMath::Sqrt(KnockBackPower + KnockBackPower * PlayerAttributeSet->GetKnockBackConstant());
 	Result *= PlayerAttributeSet->GetAllOffencePowerRate();
 	Result *= PlayerAttributeSet->GetKnockBackOffencePowerRate();
 	
