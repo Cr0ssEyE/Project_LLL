@@ -136,4 +136,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "쾌속난타 이누리아 속도 리셋 이펙트")
 	TSubclassOf<UGameplayEffect> FasterAttackResetAttackSpeedEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "재빠른 몸놀림 이누리아 회피 이펙트")
+	TSubclassOf<UGameplayEffect> EvasionDashEvasionEffect;
 };

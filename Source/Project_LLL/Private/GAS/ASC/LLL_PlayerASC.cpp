@@ -111,6 +111,14 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 			ULLL_ExtendedGameplayEffect* FasterAttackResetAttackSpeedEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->FasterAttackResetAttackSpeedEffect.GetDefaultObject());
 			FasterAttackResetAttackSpeedEffect->SetAbilityInfo(Effect->GetAbilityData());
 		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_EVASION_DASH))
+		{
+			Player->SetEvasionDashHorseEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
+			
+			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+			ULLL_ExtendedGameplayEffect* EvasionDashEvasionEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->EvasionDashEvasionEffect.GetDefaultObject());
+			EvasionDashEvasionEffect->SetAbilityInfo(Effect->GetAbilityData());
+		}
 	}
 
 	if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_MOVE_FASTER))

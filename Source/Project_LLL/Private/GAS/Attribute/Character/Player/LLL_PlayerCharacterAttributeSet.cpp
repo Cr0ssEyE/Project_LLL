@@ -132,21 +132,21 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 			{
 				Player->Damaged(Attacker, DOT);
 			}
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+			if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+			{
+				if (DebugGameInstance->CheckPlayerHitDebug())
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 데미지 입음. : %f"), Data.EvaluatedData.Magnitude));
+				}
+			}
+#endif
 		}
 		else
 		{
 			UE_LOG(LogTemp, Log, TEXT("%.2f 확률로 회피 발동"), GetEvasionRate() * 100.0f)
 		}
-		
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (DebugGameInstance->CheckPlayerHitDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 데미지 입음. : %f"), Data.EvaluatedData.Magnitude));
-			}
-		}
-#endif
 	}
 
 	if (Data.EvaluatedData.Attribute == GetCurrentHealthAttribute())

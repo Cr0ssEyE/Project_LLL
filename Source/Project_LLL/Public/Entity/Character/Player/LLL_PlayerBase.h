@@ -105,7 +105,8 @@ public:
 	FORCEINLINE int32 GetExcessiveBleedingWolfEnuriaCheckCount() const { return ExcessiveBleedingWolfEnuriaCheckCount; }
 	FORCEINLINE float GetBleedingExplosionOffencePower() const { return BleedingExplosionOffencePower; }
 	FORCEINLINE float GetDoubleDashDashRate() const { return DoubleDashDashRate; }
-	FORCEINLINE float GetDoubleDashHorseEnuriaCheckCount() const { return DoubleDashHorseEnuriaCheckCount; }
+	FORCEINLINE int32 GetDoubleDashHorseEnuriaCheckCount() const { return DoubleDashHorseEnuriaCheckCount; }
+	FORCEINLINE int32 GetEvasionDashHorseEnuriaCheckCount() const { return EvasionDashHorseEnuriaCheckCount; }
 	
 	FORCEINLINE void SetFeatherSpawnStartTime(const float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
 	FORCEINLINE void SetDeflectCount(const int32 InDeflectCount) { DeflectCount = InDeflectCount; }
@@ -119,10 +120,11 @@ public:
 	FORCEINLINE void SetBleedingTransmissionStack(const int32 InBleedingTransmissionStack) { BleedingTransmissionStack = InBleedingTransmissionStack; }
 	FORCEINLINE void SetExcessiveBleedingOffencePowerPlus(const float InExcessiveBleedingOffencePowerPlus) { ExcessiveBleedingOffencePowerPlus = InExcessiveBleedingOffencePowerPlus; }
 	FORCEINLINE void SetExcessiveBleedingPeriod(const float InExcessiveBleedingPeriod) { ExcessiveBleedingPeriod = InExcessiveBleedingPeriod; }
-	FORCEINLINE void SetExcessiveBleedingWolfEnuriaCheckCount(const float InExcessiveBleedingWolfEnuriaCheckCount) { ExcessiveBleedingWolfEnuriaCheckCount = InExcessiveBleedingWolfEnuriaCheckCount; }
+	FORCEINLINE void SetExcessiveBleedingWolfEnuriaCheckCount(const int32 InExcessiveBleedingWolfEnuriaCheckCount) { ExcessiveBleedingWolfEnuriaCheckCount = InExcessiveBleedingWolfEnuriaCheckCount; }
 	FORCEINLINE void SetBleedingExplosionOffencePower(const float InBleedingExplosionOffencePower) { BleedingExplosionOffencePower = InBleedingExplosionOffencePower; }
 	FORCEINLINE void SetDoubleDashDashRate(const float InDoubleDashDashRate) { DoubleDashDashRate = InDoubleDashDashRate; }
-	FORCEINLINE void SetDoubleDashHorseEnuriaCheckCount(const float InDoubleDashHorseEnuriaCheckCount) { DoubleDashHorseEnuriaCheckCount = InDoubleDashHorseEnuriaCheckCount; }
+	FORCEINLINE void SetDoubleDashHorseEnuriaCheckCount(const int32 InDoubleDashHorseEnuriaCheckCount) { DoubleDashHorseEnuriaCheckCount = InDoubleDashHorseEnuriaCheckCount; }
+	FORCEINLINE void SetEvasionDashHorseEnuriaCheckCount(const int32 InEvasionDashHorseEnuriaCheckCount) { EvasionDashHorseEnuriaCheckCount = InEvasionDashHorseEnuriaCheckCount; }
 	
 	void StartChargeFeather(float Timer);
 	void AddRangeFeatherTargets(AActor* Target);
@@ -223,6 +225,7 @@ private:
 	float BleedingExplosionOffencePower;
 	float DoubleDashDashRate;
 	int32 DoubleDashHorseEnuriaCheckCount;
+	int32 EvasionDashHorseEnuriaCheckCount;
 
 	// 상태 관련 함수
 protected:

@@ -15,6 +15,7 @@
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "Util/LLL_MathHelper.h"
 
 ULLL_PGA_Dash::ULLL_PGA_Dash()
@@ -192,9 +193,35 @@ void ULLL_PGA_Dash::DashActionEvent()
 
 void ULLL_PGA_Dash::LocationReachedEvent()
 {
-	// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("대쉬 이동 완료")));
+	UE_LOG(LogTemp, Log, TEXT("대시 종료"))
 	const FGameplayEventData PayloadData;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_DASH_END, PayloadData);
+
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+
+	// 재빠른 몸놀림 이누리아
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EVASION_DASH))
+	{
+		FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(PlayerDataAsset->EvasionDashEvasionEffect, GetAbilityLevel(), EffectContextHandle);
+		if (EffectSpecHandle.IsValid())
+		{
+			const ULLL_ExtendedGameplayEffect* EvasionDashEvasionEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->EvasionDashEvasionEffect.GetDefaultObject());
+			const FAbilityDataTable* AbilityData = EvasionDashEvasionEffect->GetAbilityData();
+			const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
+			float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
+			if (Player->GetHorseEnuriaCount() >= Player->GetEvasionDashHorseEnuriaCheckCount())
+			{
+				MagnitudeValue2 = 1.0f;
+			}
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
+			PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
 }
 
 void ULLL_PGA_Dash::CheckInputPressed(FGameplayEventData EventData)
