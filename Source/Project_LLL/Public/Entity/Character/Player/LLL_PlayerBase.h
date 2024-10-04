@@ -199,6 +199,7 @@ private:
 	float SkillCoolTime;
 	uint8 bCanSkill : 1;
 	uint8 bSkillRotateToMouseCursor : 1;
+	FTimerHandle SkillCoolTimeTimerHandle;
 
 	// 이누리아 관련 변수
 private:

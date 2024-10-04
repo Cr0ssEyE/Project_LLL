@@ -449,7 +449,6 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 			ASC->TryActivateAbility(SkillSpec->Handle);
 
 			bCanSkill = false;
-			FTimerHandle SkillCoolTimeTimerHandle;
 			GetWorldTimerManager().SetTimer(SkillCoolTimeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 				bCanSkill = true;
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 쿨타임 완료")));
