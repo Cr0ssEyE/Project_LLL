@@ -47,7 +47,7 @@ public:
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_EXPLOSION))
 		{
 			Monster->SetMaxBleedingStack(3);
-			if (Monster->GetBleedingStack() == Monster->GetMaxBleedingStack() - 1)
+			if (Monster->GetBleedingStack() >= Monster->GetMaxBleedingStack() - 1)
 			{
 				UAbilitySystemComponent* MonsterASC = Monster->GetAbilitySystemComponent();
 				MonsterASC->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING));
@@ -64,7 +64,7 @@ public:
 				const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
 				const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
-				float OffencePower = Player->GetBleedingExplosionOffencePower();
+				float OffencePower = PlayerAttributeSet->GetBleedingExplosionOffencePower();
 				OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
 				OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
 

@@ -103,7 +103,6 @@ public:
 	FORCEINLINE float GetExcessiveBleedingOffencePowerPlus() const { return ExcessiveBleedingOffencePowerPlus; }
 	FORCEINLINE float GetExcessiveBleedingPeriod() const { return ExcessiveBleedingPeriod; }
 	FORCEINLINE int32 GetExcessiveBleedingWolfEnuriaCheckCount() const { return ExcessiveBleedingWolfEnuriaCheckCount; }
-	FORCEINLINE float GetBleedingExplosionOffencePower() const { return BleedingExplosionOffencePower; }
 	FORCEINLINE float GetDoubleDashDashRate() const { return DoubleDashDashRate; }
 	FORCEINLINE int32 GetDoubleDashHorseEnuriaCheckCount() const { return DoubleDashHorseEnuriaCheckCount; }
 	FORCEINLINE int32 GetEvasionDashHorseEnuriaCheckCount() const { return EvasionDashHorseEnuriaCheckCount; }
@@ -121,7 +120,6 @@ public:
 	FORCEINLINE void SetExcessiveBleedingOffencePowerPlus(const float InExcessiveBleedingOffencePowerPlus) { ExcessiveBleedingOffencePowerPlus = InExcessiveBleedingOffencePowerPlus; }
 	FORCEINLINE void SetExcessiveBleedingPeriod(const float InExcessiveBleedingPeriod) { ExcessiveBleedingPeriod = InExcessiveBleedingPeriod; }
 	FORCEINLINE void SetExcessiveBleedingWolfEnuriaCheckCount(const int32 InExcessiveBleedingWolfEnuriaCheckCount) { ExcessiveBleedingWolfEnuriaCheckCount = InExcessiveBleedingWolfEnuriaCheckCount; }
-	FORCEINLINE void SetBleedingExplosionOffencePower(const float InBleedingExplosionOffencePower) { BleedingExplosionOffencePower = InBleedingExplosionOffencePower; }
 	FORCEINLINE void SetDoubleDashDashRate(const float InDoubleDashDashRate) { DoubleDashDashRate = InDoubleDashDashRate; }
 	FORCEINLINE void SetDoubleDashHorseEnuriaCheckCount(const int32 InDoubleDashHorseEnuriaCheckCount) { DoubleDashHorseEnuriaCheckCount = InDoubleDashHorseEnuriaCheckCount; }
 	FORCEINLINE void SetEvasionDashHorseEnuriaCheckCount(const int32 InEvasionDashHorseEnuriaCheckCount) { EvasionDashHorseEnuriaCheckCount = InEvasionDashHorseEnuriaCheckCount; }
@@ -201,7 +199,6 @@ private:
 	float SkillCoolTime;
 	uint8 bCanSkill : 1;
 	uint8 bSkillRotateToMouseCursor : 1;
-	FTimerHandle SkillCoolTimeTimerHandle;
 
 	// 이누리아 관련 변수
 private:
@@ -222,7 +219,6 @@ private:
 	float ExcessiveBleedingOffencePowerPlus;
 	float ExcessiveBleedingPeriod;
 	int32 ExcessiveBleedingWolfEnuriaCheckCount;
-	float BleedingExplosionOffencePower;
 	float DoubleDashDashRate;
 	int32 DoubleDashHorseEnuriaCheckCount;
 	int32 EvasionDashHorseEnuriaCheckCount;

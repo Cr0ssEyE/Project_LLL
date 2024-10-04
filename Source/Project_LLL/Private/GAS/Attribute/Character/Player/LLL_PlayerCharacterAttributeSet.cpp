@@ -26,7 +26,8 @@ FeatherOffencePowerPlus(0.0f),
 MoveSpeedPlus(0.0f),
 BaseAttackKnockBackPowerPlus(0.0f),
 DashDistancePlus(0.0f),
-FasterAttackAttackSpeedRate(1.0f)
+FasterAttackAttackSpeedRate(1.0f),
+BleedingExplosionOffencePower(0.0f)
 {
 	
 }

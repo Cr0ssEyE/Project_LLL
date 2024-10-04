@@ -121,6 +121,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, BaseAttackKnockBackPowerPlus);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, DashDistancePlus);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FasterAttackAttackSpeedRate);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, BleedingExplosionOffencePower);
 
 public:
 	FPlayerCharacterStatusData MakeCharacterStatusData() const;
@@ -256,4 +257,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData FasterAttackAttackSpeedRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData BleedingExplosionOffencePower;
 };

@@ -71,4 +71,8 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> AllEnuriaDebugButton;
+
+protected:
+	UFUNCTION()
+	void ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID);
 };

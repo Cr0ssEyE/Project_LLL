@@ -112,6 +112,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 			UCharacterMovementComponent* MonsterMovement = Monster->GetCharacterMovement();
 			if (IsValid(ManOfStrength) && MonsterMovement->MovementMode == MOVE_Flying)
 			{
+				UE_LOG(LogTemp, Log, TEXT("%s가 %s에게 받아치기"), *Player->GetName(), *ManOfStrength->GetName())
 				Monster->GetMesh()->SetCollisionProfileName(CP_THREW_MONSTER_BY_PLAYER);
 				Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_THREW_MONSTER_BY_PLAYER);
 				Monster->SetOwner(Player);
