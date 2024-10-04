@@ -4,6 +4,7 @@
 #include "GAS/TargetActor/LLL_TA_SweepMultiTrace.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
@@ -41,7 +42,23 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 	}
 	
 	const FVector SweepStartLocation = OriginLocation + SourceActor->GetTransform().GetRotation().RotateVector(TraceStartLocation);
-	const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetTransform().GetRotation().RotateVector(TraceEndLocation);
+	FVector TempTraceEndLocation = TraceEndLocation;
+	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(SourceActor))
+	{
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+	
+		// 과충전 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
+		{
+			float OffsetAttackRange = PlayerAttributeSet->GetMaxChargeAttackRange() - PlayerAttributeSet->GetMinChargeAttackRange();
+			float TempAttackRangePlus = PlayerAttributeSet->GetMinChargeAttackRange() + Player->GetChargeAttackChargeRate() * OffsetAttackRange;
+			UE_LOG(LogTemp, Log, TEXT("과충전 이누리아로 사거리 %f만큼 확장"), TempAttackRangePlus)
+			TempTraceEndLocation.X += TempAttackRangePlus;
+		}
+	}
+	const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetTransform().GetRotation().RotateVector(TempTraceEndLocation);
+	
 	FQuat SweepQuat = SourceActor->GetActorQuat();
 
 	if (TraceShape.ShapeType == ECollisionShape::Capsule)
@@ -96,9 +113,6 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 
 		if (Debug)
 		{
-			const FVector DistanceVector = SweepEndLocation - SweepStartLocation;
-			const FVector SweepCenter = SweepStartLocation + DistanceVector / 2.0f;
-			
 			FColor DebugColor = FColor::Blue;
 			for (auto HitActor : HitActors)
 			{
@@ -113,7 +127,8 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 					break;
 				}
 			}
-			FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, DebugColor, 2.f, BoxExtents, CapsuleExtents, SphereRadius, ConeDistance, ConeFieldOfView, ConeRotation, SweepQuat);
+			FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepStartLocation, DebugColor, 2.f, BoxExtents, CapsuleExtents, SphereRadius, ConeDistance, ConeFieldOfView, ConeRotation, SweepQuat);
+			FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepEndLocation, DebugColor, 2.f, BoxExtents, CapsuleExtents, SphereRadius, ConeDistance, ConeFieldOfView, ConeRotation, SweepQuat);
 		}
 	}
 #endif

@@ -20,6 +20,7 @@
 #define TAG_GAS_ATTACK_HIT_CHECK_MELEE FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.BaseAttack"))
 #define TAG_GAS_ATTACK_HIT_CHECK_COMPLETE FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.CheckComplete"))
 #define TAG_GAS_ATTACK_HIT_CHECK_SUCCESS FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.Success"))
+#define TAG_GAS_FULL_CHARGE_CHECK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.FullChargeCheck"))
 
 // 플레이어 행동 관련 게임플레이 태그
 #define TAG_GAS_PLAYER_DASH_START FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash.Start"))
@@ -69,6 +70,7 @@
 #define TAG_GAS_HAVE_DOUBLE_DASH FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.DoubleDash"))
 #define TAG_GAS_HAVE_FASTER_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.FasterAttack"))
 #define TAG_GAS_HAVE_EVASION_DASH FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.EvasionDash"))
+#define TAG_GAS_HAVE_CHARGE_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.ChargeAttack"))
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))

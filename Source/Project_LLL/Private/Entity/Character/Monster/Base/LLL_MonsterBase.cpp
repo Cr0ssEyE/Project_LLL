@@ -267,12 +267,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 		}
 		
 		SetOwner(nullptr);
-		//Dead();
-		const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
-		if (!CheckCharacterIsDead())
-		{
-			MonsterBaseAIController->StartLogic();
-		}
+		Dead();
 	}
 	else if (bIsKnockBacking)
 	{

@@ -185,6 +185,7 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::SetMoveInputPressed, false);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::AttackActionCompleted, EAbilityInputName::Attack);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
@@ -423,6 +424,23 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 		else
 		{
 			ASC->TryActivateAbility(AttackSpec->Handle);
+		}
+	}
+}
+
+void ALLL_PlayerBase::AttackActionCompleted(const FInputActionValue& Value, EAbilityInputName InputName)
+{
+	// 과충전 이누리아
+	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
+	{
+		const int32 InputID = static_cast<int32>(InputName);
+		if(FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID))
+		{
+			AttackSpec->InputPressed = true;
+			if (AttackSpec->IsActive())
+			{
+				ASC->AbilitySpecInputPressed(*AttackSpec);
+			}
 		}
 	}
 }

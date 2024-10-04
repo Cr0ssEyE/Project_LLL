@@ -48,15 +48,28 @@ void ULLL_PGA_KnockBack::KnockBackTarget(const FGameplayEventData* TriggerEventD
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 		float KnockBackPower = 0;
-		if (TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag1))
+		
+		// 과충전 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
 		{
-			KnockBackPower = PlayerAttributeSet->GetKnockBackPower1();
+			const float OffsetKnockBackPower = PlayerAttributeSet->GetMaxChargeAttackKnockBackPower() - PlayerAttributeSet->GetMinChargeAttackKnockBackPower();
+			const float TempKnockBackPower = PlayerAttributeSet->GetMinChargeAttackKnockBackPower() + Player->GetChargeAttackChargeRate() * OffsetKnockBackPower;
+			UE_LOG(LogTemp, Log, TEXT("과충전 이누리아로 넉백 수치 %f로 적용"), TempKnockBackPower)
+			KnockBackPower = TempKnockBackPower;
 		}
+		else
+		{
+			if (TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag1))
+			{
+				KnockBackPower = PlayerAttributeSet->GetKnockBackPower1();
+			}
 	
-		if (TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag2))
-		{
-			KnockBackPower = PlayerAttributeSet->GetKnockBackPower2();
+			if (TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag2))
+			{
+				KnockBackPower = PlayerAttributeSet->GetKnockBackPower2();
+			}
 		}
+		
 		KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
 		KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
 		KnockBackPower += PlayerAttributeSet->GetBaseAttackKnockBackPowerPlus();

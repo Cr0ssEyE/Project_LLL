@@ -28,8 +28,14 @@ protected:
 protected:
 	UFUNCTION()
 	void CheckInputPressed(FGameplayEventData EventData);
-	
+
+	UFUNCTION()
+	void CheckFullCharge(FGameplayEventData EventData);
+
+	void BaseAttack();
 	void SetNextAttackAction();
+	void ChargeAttack();
+	float GetFullChargeNotifyTriggerTime() const;
 
 protected:
 	UPROPERTY()
@@ -39,9 +45,11 @@ protected:
 	UPROPERTY(EditAnywhere, DisplayName = "공격 애님 몽타주")
 	TObjectPtr<UAnimMontage> AttackAnimMontage;
 
-	uint32 CurrentComboAction;
+	UPROPERTY(EditAnywhere, DisplayName = "충전 공격 애님 몽타주")
+	TObjectPtr<UAnimMontage> ChargeAttackAnimMontage;
 
+	uint32 CurrentComboAction;
 	uint32 MaxAttackAction;
-	
 	uint8 bIsCanPlayNextAction : 1;
+	uint8 bStopCharge : 1;
 };
