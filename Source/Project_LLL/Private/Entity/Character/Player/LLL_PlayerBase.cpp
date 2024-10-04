@@ -573,7 +573,6 @@ void ALLL_PlayerBase::StartChargeFeather(float Timer)
 	GetWorldTimerManager().SetTimer(ChargeFeatherTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		ChargedFeatherCount++;
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
-		// Todo : 추후 데이터화 예정
 		if (ChargedFeatherCount == 10)
 		{
 			GetWorldTimerManager().PauseTimer(ChargeFeatherTimerHandle);

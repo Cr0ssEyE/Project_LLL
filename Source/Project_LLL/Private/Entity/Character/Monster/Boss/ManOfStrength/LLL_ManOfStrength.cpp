@@ -13,6 +13,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_Monster_Id.h"
 #include "DataAsset/LLL_ManOfStrengthDataAsset.h"
+#include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrengthAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Enumeration/LLL_BossMonsterPatternEnumHelper.h"
 #include "Game/LLL_DebugGameInstance.h"
@@ -21,6 +22,8 @@
 
 ALLL_ManOfStrength::ALLL_ManOfStrength()
 {
+	AIControllerClass = ALLL_ManOfStrengthAIController::StaticClass();
+	
 	CharacterDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_ManOfStrengthDataAsset>(PATH_MAN_OF_STRENGTH_DATA, EAssertionLevel::Check);
 
 	Id = ID_MAN_OF_STRENGTH;
