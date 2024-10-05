@@ -48,18 +48,19 @@ public:
 	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(SwordDash, DashDamageRange, MonsterData4);
 	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(SwordDash, DashSpeed, MonsterData6);
 	
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashDistance, MonsterData1);
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashSpeed, MonsterData2);
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashDamageRange, MonsterData3);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashPunchDashDistance, MonsterData1);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashPunchDashSpeed, MonsterData2);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashPunchDashDamageRange, MonsterData3);
 	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ShockwaveChargeTimer, MonsterData4);
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaDashDistance, MonsterData6);
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaDashSpeed, MonsterData7);
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaAttackCount, MonsterData8);
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaChargeTimer, MonsterData10);
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ThrowSpeed, MonsterData11);
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, OtherMonsterDetectRange, MonsterData12);
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, PredictionRate, MonsterData13);
-	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ThrowOffencePower, MonsterData14);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ShockwaveOffencePower, MonsterData5);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaDashDistance, MonsterData7);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaDashSpeed, MonsterData8);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaAttackCount, MonsterData9);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaChargeTimer, MonsterData11);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ThrowSpeed, MonsterData12);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, OtherMonsterDetectRange, MonsterData13);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, PredictionRate, MonsterData14);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ThrowOffencePower, MonsterData15);
 
 protected:
 	virtual void CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data);
@@ -143,4 +144,7 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MonsterData14;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData15;
 };

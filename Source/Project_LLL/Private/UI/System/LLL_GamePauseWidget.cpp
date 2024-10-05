@@ -121,6 +121,20 @@ void ULLL_GamePauseWidget::ExitButtonEvent()
 	PlayAnimationForward(FadeAnim);
 }
 
+void ULLL_GamePauseWidget::OpenTitle()
+{
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	GameProgressSubSystem->SetExitCurrentSession(false);
+	UGameplayStatics::OpenLevel(this, LEVEL_TITLE);
+}
+
+void ULLL_GamePauseWidget::OutGame()
+{
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	GameProgressSubSystem->SetExitCurrentSession(false);
+	UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
+}
+
 void ULLL_GamePauseWidget::OnAnimationFinished_Implementation(const UWidgetAnimation* Animation)
 {
 	Super::OnAnimationFinished_Implementation(Animation);
@@ -130,21 +144,34 @@ void ULLL_GamePauseWidget::OnAnimationFinished_Implementation(const UWidgetAnima
 		return;
 	}
 
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	
 	if (LastClickButton == TitleButton && Animation == FadeAnim)
 	{
-		UGameplayStatics::OpenLevel(this, LEVEL_TITLE);
-		return;
-	}
-
-	if (LastClickButton == ExitButton && Animation == FadeAnim)
-	{
-		ULLL_GameProgressManageSubSystem* SubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-		ULLL_SaveGameData* CurrentSaveGameData = SubSystem->GetCurrentSaveGameData();
-		if (IsValid(CurrentSaveGameData))
+		if (GetWorld()->GetName() == LEVEL_LOBBY)
 		{
-			CurrentSaveGameData->LastPlayLevelName = *GetWorld()->GetCurrentLevel()->GetName();
+			GameProgressSubSystem->OnSaveCompleted.AddDynamic(this, &ULLL_GamePauseWidget::OpenTitle);
+			GameProgressSubSystem->SetExitCurrentSession(true);
+			GameProgressSubSystem->BeginSaveGame();
 		}
-	
-		UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
+		else
+		{
+			GameProgressSubSystem->SetExitCurrentSession(true);
+			OpenTitle();
+		}
+	}
+	else if (LastClickButton == ExitButton && Animation == FadeAnim)
+	{
+		if (GetWorld()->GetName() == LEVEL_LOBBY)
+		{
+			GameProgressSubSystem->OnSaveCompleted.AddDynamic(this, &ULLL_GamePauseWidget::OutGame);
+			GameProgressSubSystem->SetExitCurrentSession(true);
+			GameProgressSubSystem->BeginSaveGame();
+		}
+		else
+		{
+			GameProgressSubSystem->SetExitCurrentSession(true);
+			OutGame();
+		}
 	}
 }

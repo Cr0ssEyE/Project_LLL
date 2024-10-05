@@ -38,9 +38,10 @@ protected:
 	
 public:
 	virtual void Charge() override;
-	virtual void Dash() override;
+	virtual void Dash() override {};
 
 	void Shockwave() const;
+	void DashPunch();
 	void AttackInApnea();
 	void SnapOtherMonster() const;
 	void ThrowOtherMonster() const;

@@ -29,6 +29,9 @@ public:
 	FORCEINLINE UButton* GetSecondButton() const { return RewardButton2; }
 	FORCEINLINE UButton* GetThirdButton() const { return RewardButton3; }
 
+	//테스트용
+	int32 Num;
+
 public:
 	void SetWidgetInfo(TArray<const FAbilityDataTable*> AbilityDataArray);
 	void FocusToUI();

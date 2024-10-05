@@ -16,6 +16,7 @@
 #include "Game/LLL_DebugGameInstance.h"
 #include "UI/Object/LLL_ProductObjectPriceWidget.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 
@@ -71,10 +72,11 @@ void ALLL_RewardObject::ApplyProductEvent()
 	PriceWidget->SetPrice(Price);
 }
 
-void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data)
+void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data, const uint32 Index)
 {
 	RewardData = Data;
-
+	RewardIndex = Index;
+	
 	switch (RewardData->ID)
 	{
 			// 능력
@@ -136,7 +138,7 @@ void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 	{
 		// 능력
 	case 1:
-		InteractionDelegate.Broadcast();
+		InteractionDelegate.Broadcast(this);
 		SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 		SelectRewardWidget->SetIsEnabled(true);
 		SelectRewardWidget->FocusToUI();
@@ -150,6 +152,7 @@ void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 		if(EffectSpecHandle.IsValid())
 		{
 			Player->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+			GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->PlayerPlayProgressData.AcquiredGoldAppleCount++;
 		}
 
 		break;
@@ -167,6 +170,6 @@ void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 		break;
 	default:;
 	}
-	
+
 	Destroy();
 }

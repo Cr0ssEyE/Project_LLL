@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "LLL_PlayerController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerInitializedDelegate);
+
 /**
  * 
  */
@@ -22,4 +24,19 @@ public:
 	
 	void SetGameInputMode();
 	void SetUIInputMode(const TSharedPtr<SWidget>& FocusWidget = nullptr);
+
+public:
+	FORCEINLINE void SetCharacterInitialized() { bIsCharacterInitialized = true; }
+	FORCEINLINE void SetWidgetInitialized() { bIsWidgetInitialized = true; }
+	FORCEINLINE bool CheckPlayerInitialized() const { return bIsCharacterInitialized && bIsWidgetInitialized; }
+
+public:
+	FOnPlayerInitializedDelegate PlayerInitializedDelegate;
+	
+protected:
+	void WaitPlayerCharacterInitialize();
+
+protected:
+	uint8 bIsCharacterInitialized : 1;
+	uint8 bIsWidgetInitialized : 1;
 };

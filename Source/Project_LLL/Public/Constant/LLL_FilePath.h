@@ -21,12 +21,12 @@
 #define PATH_PLAYER_LOWHP_MATERIAL_INST TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Materials/PostProcess/PPMI_LowHP.PPMI_LowHP'")
 
 // 플레이어 어빌리티 오브젝트 관련
-#define PATH_FEATHER_STORM_DATA TEXT("/Script/Project_LLL.LLL_FeatherStormDataAsset'/Game/DataAsset/DA_FeatherStorm.DA_FeatherStorm'")
-#define PATH_THREATENING_DEATH_DATA TEXT("/Script/Project_LLL.LLL_ThreateningDeathDataAsset'/Game/DataAsset/DA_ThreateningDeath.DA_ThreateningDeath'")
 #define PATH_RANGE_FEATHER_DETECTOR_DATA TEXT("/Script/Project_LLL.LLL_RangeFeatherDetectorDataAsset'/Game/DataAsset/DA_RangeFeatherDetector.DA_RangeFeatherDetector'")
+#define PATH_RANGE_KNOCK_BACK_DETECTOR_DATA TEXT("/Script/Project_LLL.LLL_RangeKnockBackDetectorDataAsset'/Game/DataAsset/DA_RangeKnockBackDetector.DA_RangeKnockBackDetector'")
 
 // 플레이어 투사체 관련
 #define PATH_THROWN_FEATHER_DATA TEXT("/Script/Project_LLL.LLL_ThrownFeatherDataAsset'/Game/DataAsset/DA_ThrownFeather.DA_ThrownFeather'")
+#define PATH_THROWN_BLEEDING_DATA TEXT("/Script/Project_LLL.LLL_ThrownBleedingDataAsset'/Game/DataAsset/DA_ThrownBleeding.DA_ThrownBleeding'")
 
 // 몬스터 캐릭터 관련
 #define PATH_SWORD_DASH_DATA TEXT("/Script/Project_LLL.LLL_SwordDashDataAsset'/Game/DataAsset/DA_SwordDash.DA_SwordDash'")
@@ -44,6 +44,7 @@
 #define PATH_INTERACTIVE_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_InteractiveObjectData'/Game/DataAsset/DA_InteractiveObject.DA_InteractiveObject'")
 #define PATH_BREAKABLE_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_Statue.SM_Statue'")
 #define PATH_BREAKABLE_OBJECT_TEST_EFFECT TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'")
+#define PATH_2D_RESOURCE_PLANE TEXT("/Script/Engine.StaticMesh'/Game/Meshes/ResourceMesh/SM_2DResource_Plane.SM_2DResource_Plane'")
 
 // 시스템 관련
 #define PATH_MONSTER_SPAWNER_DATA TEXT("/Script/Project_LLL.LLL_MonsterSpawnerDataAsset'/Game/DataAsset/DA_MonsterSpawner.DA_MonsterSpawner'")
@@ -68,6 +69,8 @@
 #define PATH_REWARD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Reward/WBP_SelectRewordWidget.WBP_SelectRewordWidget_C'")
 #define PATH_PLAYER_GOLD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Player/WBP_PlayerGoldWidget.WBP_PlayerGoldWidget_C'")
 #define PATH_UI_PROGRESSBAR_MATERIAL TEXT("/Script/Engine.Material'/Game/Materials/MasterMaterials/M_UI_CircleProgressBer.M_UI_CircleProgressBer'")
+#define PATH_UI_FLOATING_DAMAGE TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Monster/WBP_DamageWidget.WBP_DamageWidget_C'")
+#define PATH_UI_FLOATING_DAMAGE_ACTOR TEXT("/Script/Engine.Blueprint'/Game/Blueprints/UI/Monster/BP_FloatingDamageActor.BP_FloatingDamageActor_C'")
 
 // 머티리얼 파라미터 관련
 #define PATH_MONSTER_MPC TEXT("/Script/Engine.MaterialParameterCollection'/Game/Materials/MaterialParameters/MPC_Monster.MPC_Monster'")

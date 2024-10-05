@@ -54,5 +54,5 @@ protected:
 	
 	const FRewardDataTable* RewardData;
 
-	EAbilityType AbilityType;
+	EAnimalType AbilityType;
 };
