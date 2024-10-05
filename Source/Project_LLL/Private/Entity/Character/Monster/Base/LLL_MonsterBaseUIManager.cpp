@@ -21,9 +21,12 @@ void ULLL_MonsterBaseUIManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	const ULLL_BaseCharacterDataAsset* CharacterDataAsset = CastChecked<ALLL_MonsterBase>(GetOwner())->GetCharacterDataAsset();
-	CharacterStatusWidgetClass = CharacterDataAsset->StatusWidgetClass;
-	CharacterStatusWidget = CastChecked<ULLL_CharacterStatusWidget>(CreateWidget(GetWorld(), CharacterStatusWidgetClass));
+	const ULLL_BaseCharacterDataAsset* CharacterDataAsset = Cast<ALLL_MonsterBase>(GetOwner())->GetCharacterDataAsset();
+	if (IsValid(CharacterDataAsset))
+	{
+		CharacterStatusWidgetClass = CharacterDataAsset->StatusWidgetClass;
+		CharacterStatusWidget = CastChecked<ULLL_CharacterStatusWidget>(CreateWidget(GetWorld(), CharacterStatusWidgetClass));
+	}
 }
 
 

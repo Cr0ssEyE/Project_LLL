@@ -58,6 +58,7 @@ public:
 	void DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster);
 	void DamageKnockBackCauser(ALLL_PlayerBase* Player);
 	void Stun();
+	void ShowDamageValue(const float Damage) const;
 
 	// 이누리아 관련
 public:
@@ -98,11 +99,6 @@ protected:
 	TObjectPtr<ALLL_MonsterBase> KnockBackSender;
 	uint8 bKnockBackTargetDamaged : 1;
 	uint8 bKnockBackCauserDamaged : 1;
-
-	// 총합 데미지 계산 관련
-protected:
-	float TotalDamage;
-	FTimerHandle TotalDamageTimerHandle;
 
 	// 이누리아 관련
 protected:

@@ -23,6 +23,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseAnimInstance.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
+#include "Entity/Character/Monster/DPSTester/LLL_DPSTester.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -52,7 +53,6 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-	AIControllerClass = ALLL_MonsterBaseAIController::StaticClass();
 
 	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
 	DropGoldEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'"), EAssertionLevel::Check);
@@ -135,12 +135,21 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 		Dead();
 	}
 
+	//UE_LOG(LogTemp, Log, TEXT("bIsKnockBacking 설정 객체 주소: %p, %s"), this, *GetName());
+	//UE_LOG(LogTemp, Log, TEXT("Tick 함수에서의 bIsKnockBacking: %d"), bIsKnockBacking);
 	if (bIsKnockBacking)
 	{
 		FVector VelocityWithKnockBack = GetVelocity();
 		
 		// 넉백 끝났을때 처리
-		bool IsMoving = CastChecked<ALLL_MonsterBaseAIController>(GetController())->GetPathFollowingComponent()->GetStatus() == EPathFollowingStatus::Moving;
+		ALLL_MonsterBaseAIController* MonsterAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
+		
+		bool IsMoving = false;
+		if (IsValid(MonsterAIController))
+		{
+			IsMoving = CastChecked<ALLL_MonsterBaseAIController>(GetController())->GetPathFollowingComponent()->GetStatus() == EPathFollowingStatus::Moving;
+		}
+		
 		if ((VelocityWithKnockBack == FVector::ZeroVector || IsMoving) && bStartKnockBackVelocity)
 		{
 			CustomTimeDilation = 1.f;
@@ -152,13 +161,15 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 			bKnockBackTargetDamaged = false;
 			bKnockBackCauserDamaged = false;
 			bBleedingTransmissionTargetDamaged = false;
-			
-			const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
-			if (!CheckCharacterIsDead())
+
+			if (IsValid(MonsterAIController))
 			{
-				MonsterBaseAIController->StartLogic();
+				if (!CheckCharacterIsDead())
+				{
+					MonsterAIController->StartLogic();
+				}
+				MonsterAIController->ResumeMove(FAIRequestID::AnyRequest);
 			}
-			CastChecked<ALLL_MonsterBaseAIController>(GetController())->ResumeMove(FAIRequestID::AnyRequest);
 		}
 		else
 		{
@@ -173,7 +184,7 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 		{
 			GetCapsuleComponent()->SetHiddenInGame(false);
 		}
-		else
+		else if (!Cast<ALLL_DPSTester>(this))
 		{
 			GetCapsuleComponent()->SetHiddenInGame(true);
 		}
@@ -261,7 +272,6 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 					ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, ManOfStrength->GetAbilitySystemComponent());
 				}
 				
-				ManOfStrength->ShowHitEffect();
 				ManOfStrength->Stun();
 			}
 		}
@@ -380,21 +390,10 @@ void ALLL_MonsterBase::Charge()
 void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
 	Super::Damaged(Attacker, IsDOT);
-
-	TotalDamage += Damage;
-	UE_LOG(LogTemp, Log, TEXT("%s의 총합 데미지: %f"), *GetName(), TotalDamage)
-
-	GetWorldTimerManager().ClearTimer(TotalDamageTimerHandle);
-	GetWorldTimerManager().SetTimer(TotalDamageTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
-		UE_LOG(LogTemp, Log, TEXT("%s의 총합 데미지 초기화"), *GetName())
-		TotalDamage = 0.0f;
-	}), 3.0f, false);
 	
 	ShowHitEffect();
 	RecognizePlayerToAroundMonster();
-	ALLL_FloatingDamageActor* FloatingDamage = GetWorld()->SpawnActor<ALLL_FloatingDamageActor>(FloatingDamageActor);
-	FloatingDamage->SetActorLocation(GetActorLocation()+FVector(0, 0, 100.0f));
-	FloatingDamage->SetWidgetText(Damage);
+	ShowDamageValue(Damage);
 	
 	if (Cast<ALLL_BossMonster>(this))
 	{
@@ -412,7 +411,7 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 void ALLL_MonsterBase::Dead()
 {
 	Super::Dead();
-
+	
 	CharacterAnimInstance->StopAllMontages(1.0f);
 
 	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
@@ -476,7 +475,11 @@ void ALLL_MonsterBase::Dead()
 
 void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower)
 {
-	CastChecked<ALLL_MonsterBaseAIController>(GetController())->PauseMove(FAIRequestID::AnyRequest);
+	ALLL_MonsterBaseAIController* MonsterAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
+	if (IsValid(MonsterAIController))
+	{
+		MonsterAIController->PauseMove(FAIRequestID::AnyRequest);
+	}
 	
 	const float DecreaseVelocityByWeight = FMath::Max(0.f, (MonsterAttributeSet->GetWeight() - 1) * GetGameInstance<ULLL_GameInstance>()->GetGlobalParametersDataAsset()->DecreaseVelocityPerWeight);
 	KnockBackVelocity *= 1 - DecreaseVelocityByWeight;
@@ -493,8 +496,10 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 		LastKnockBackPower = KnockBackPower;
 		
 		CharacterAnimInstance->StopAllMontages(1.0f);
-		const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
-		MonsterBaseAIController->StopLogic("Monster Is Fallable");
+		if (IsValid(MonsterAIController))
+		{
+			MonsterAIController->StopLogic("Monster Is Fallable");
+		}
 		return;
 	}
 	
@@ -579,14 +584,16 @@ void ALLL_MonsterBase::RecognizePlayerToAroundMonster() const
 		{
 			if (const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitResult.GetActor()))
 			{
-				const ALLL_MonsterBaseAIController* MonsterAIController = CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController());
-				ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(MonsterAIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
-				if (!IsValid(Player))
+				if (ALLL_MonsterBaseAIController* MonsterAIController = Cast<ALLL_MonsterBaseAIController>(Monster->GetController()))
 				{
-					Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+					ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(MonsterAIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
+					if (!IsValid(Player))
+					{
+						Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+					}
+					MonsterAIController->SetPlayer(Player);
+					DebugColor = FColor::Green;
 				}
-				MonsterAIController->SetPlayer(Player);
-				DebugColor = FColor::Green;
 			}
 		}
 	}
@@ -723,6 +730,13 @@ void ALLL_MonsterBase::Stun()
 		}
 	}
 #endif
+}
+
+void ALLL_MonsterBase::ShowDamageValue(const float Damage) const
+{
+	ALLL_FloatingDamageActor* FloatingDamage = GetWorld()->SpawnActor<ALLL_FloatingDamageActor>(FloatingDamageActor);
+	FloatingDamage->SetActorLocation(GetActorLocation() + FVector(0, 0, 100.0f));
+	FloatingDamage->SetWidgetText(Damage);
 }
 
 void ALLL_MonsterBase::ToggleBleedingTrigger()

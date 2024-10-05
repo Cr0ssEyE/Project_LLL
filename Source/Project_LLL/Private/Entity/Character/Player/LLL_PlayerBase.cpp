@@ -773,7 +773,10 @@ void ALLL_PlayerBase::Dead()
 		{
 			if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitResult.GetActor()))
 			{
-				CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController())->StopLogic(TEXT("PlayerDead"));
+				if (const ALLL_MonsterBaseAIController* MonsterAIController = Cast<ALLL_MonsterBaseAIController>(Monster->GetController()))
+				{
+					MonsterAIController->StopLogic(TEXT("PlayerDead"));
+				}
 				Monster->StopAnimMontage();
 			}
 			HitResult.GetActor()->CustomTimeDilation = 0.01f;
