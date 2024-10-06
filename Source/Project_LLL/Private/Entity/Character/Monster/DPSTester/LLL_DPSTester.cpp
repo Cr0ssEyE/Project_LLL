@@ -64,7 +64,7 @@ void ALLL_DPSTester::BeginPlay()
 
 void ALLL_DPSTester::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
-	ShowDamageValue(Damage);
+	Super::Damaged(Attacker, IsDOT, Damage);
 	
 	if (StartTime == 0.0f)
 	{

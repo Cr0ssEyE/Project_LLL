@@ -74,18 +74,12 @@ void ULLL_PlayerCharacterAttributeSet::PostAttributeChange(const FGameplayAttrib
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
 
-	if (Attribute == GetMoveSpeedPlusAttribute())
+	if (Attribute == GetReceiveDamageAttribute() || Attribute == GetCurrentHealthAttribute())
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s가 변경 %f -> %f"), *Attribute.GetName(), OldValue, NewValue)
+		return;
 	}
-	else if (Attribute == GetBaseAttackKnockBackPowerPlusAttribute())
-	{
-		UE_LOG(LogTemp, Log, TEXT("%s가 변경 %f -> %f"), *Attribute.GetName(), OldValue, NewValue)
-	}
-	else if (Attribute == GetFasterAttackAttackSpeedRateAttribute())
-	{
-		UE_LOG(LogTemp, Log, TEXT("%s가 변경 %f -> %f"), *Attribute.GetName(), OldValue, NewValue)
-	}
+
+	UE_LOG(LogTemp, Log, TEXT("%s가 변경 %f -> %f"), *Attribute.GetName(), OldValue, NewValue)
 }
 
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)

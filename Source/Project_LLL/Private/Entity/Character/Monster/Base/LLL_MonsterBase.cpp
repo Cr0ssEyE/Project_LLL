@@ -136,8 +136,6 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 		Dead();
 	}
 
-	//UE_LOG(LogTemp, Log, TEXT("bIsKnockBacking 설정 객체 주소: %p, %s"), this, *GetName());
-	//UE_LOG(LogTemp, Log, TEXT("Tick 함수에서의 bIsKnockBacking: %d"), bIsKnockBacking);
 	if (bIsKnockBacking)
 	{
 		FVector VelocityWithKnockBack = GetVelocity();
@@ -185,7 +183,7 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 		{
 			GetCapsuleComponent()->SetHiddenInGame(false);
 		}
-		else if (!Cast<ALLL_DPSTester>(this))
+		else
 		{
 			GetCapsuleComponent()->SetHiddenInGame(true);
 		}
@@ -392,11 +390,39 @@ void ALLL_MonsterBase::Charge()
 
 void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
-	Super::Damaged(Attacker, IsDOT);
+	Super::Damaged(Attacker, IsDOT, Damage);
+
+	ShowDamageValue(Damage);
+
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Attacker);
+	const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+
+	// 먹이 농락 이누리아
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_WAIT_ATTACK))
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->WaitAttackResetOffencePowerEffect, GetAbilityLevel(), EffectContextHandle);
+		if (EffectSpecHandle.IsValid())
+		{
+			const ULLL_ExtendedGameplayEffect* WaitAttackResetOffencePowerEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->WaitAttackResetOffencePowerEffect.GetDefaultObject());
+			const FAbilityDataTable* AbilityData = WaitAttackResetOffencePowerEffect->GetAbilityData();
+			const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
+			const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
+			PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
+	
+	if (Cast<ALLL_DPSTester>(this))
+	{
+		return;
+	}
 	
 	ShowHitEffect();
 	RecognizePlayerToAroundMonster();
-	ShowDamageValue(Damage);
 	
 	if (Cast<ALLL_BossMonster>(this))
 	{

@@ -716,7 +716,9 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 			const ULLL_ExtendedGameplayEffect* FasterAttackResetAttackSpeedEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->FasterAttackResetAttackSpeedEffect.GetDefaultObject());
 			const FAbilityDataTable* AbilityData = FasterAttackResetAttackSpeedEffect->GetAbilityData();
 			const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
+			const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type) * -1.0f;
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 	}
