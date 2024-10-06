@@ -42,7 +42,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-
+	
 	// 과충전 이누리아
 	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
 	{
@@ -108,7 +108,6 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 	}
 
 	bStopCharge = false;
-	Player->GetCharacterMovement()->MovementMode = MOVE_Walking;
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -138,7 +137,6 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		Player->SetChargeAttackChargeRate(ChargeRate);
 		
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-
 		float AttackSpeed = PlayerAttributeSet->GetAttackSpeed();
 		AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 
@@ -184,8 +182,6 @@ void ULLL_PGA_AttackBase::CheckFullCharge(FGameplayEventData EventData)
 	ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance());
 	PlayerAnimInstance->Montage_Pause(ChargeAttackAnimMontage);
 	PlayerAnimInstance->Montage_SetPosition(ChargeAttackAnimMontage, GetFullChargeNotifyTriggerTime());
-
-	Player->GetCharacterMovement()->MovementMode = MOVE_None;
 }
 
 void ULLL_PGA_AttackBase::BaseAttack()
@@ -281,6 +277,7 @@ void ULLL_PGA_AttackBase::ChargeAttack()
 	AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 
 	Player->PlayAnimMontage(ChargeAttackAnimMontage, AttackSpeed);
+	Player->GetCharacterMovement()->SetMovementMode(MOVE_None);
 
 	UAbilityTask_WaitGameplayEvent* WaitChargeTagTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_FULL_CHARGE_CHECK, nullptr, true);
 	WaitChargeTagTask->EventReceived.AddDynamic(this, &ULLL_PGA_AttackBase::CheckFullCharge);

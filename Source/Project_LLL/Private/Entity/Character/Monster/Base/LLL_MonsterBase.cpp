@@ -394,7 +394,7 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 
 	ShowDamageValue(Damage);
 
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Attacker);
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
 	const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
 	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 

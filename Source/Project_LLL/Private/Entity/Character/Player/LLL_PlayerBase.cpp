@@ -682,7 +682,7 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 
 void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
-	Super::Damaged(Attacker, IsDOT);
+	Super::Damaged(Attacker, IsDOT, Damage);
 	
 	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
 	ASC->CancelAbilities(nullptr, &WithOutTags);
