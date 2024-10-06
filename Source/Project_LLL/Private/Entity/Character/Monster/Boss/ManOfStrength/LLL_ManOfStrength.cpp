@@ -79,6 +79,7 @@ void ALLL_ManOfStrength::NotifyActorBeginOverlap(AActor* OtherActor)
 		{
 			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(this);
+			EffectContextHandle.AddInstigator(this, this);
 			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->DashDamageEffect, AbilityLevel, EffectContextHandle);
 			if(EffectSpecHandle.IsValid())
 			{

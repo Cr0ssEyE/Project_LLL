@@ -197,7 +197,7 @@ void ULLL_PGA_Dash::LocationReachedEvent()
 	const FGameplayEventData PayloadData;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_DASH_END, PayloadData);
 
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
 	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 
@@ -206,6 +206,7 @@ void ULLL_PGA_Dash::LocationReachedEvent()
 	{
 		FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
+		EffectContextHandle.AddInstigator(Player, Player);
 		const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(PlayerDataAsset->EvasionDashEvasionEffect, GetAbilityLevel(), EffectContextHandle);
 		if (EffectSpecHandle.IsValid())
 		{

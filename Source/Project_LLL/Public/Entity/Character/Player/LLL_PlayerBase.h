@@ -129,7 +129,7 @@ public:
 	void StartChargeFeather(float Timer);
 	void AddRangeFeatherTargets(AActor* Target);
 	TArray<AActor*> GetRangeFeatherTargetsAndClear();
-	void VampireRecovery(float OffencePower) const;
+	void VampireRecovery(float OffencePower);
 
 public:
 	FDissolveCompleteDelegate DissolveCompleteDelegate;

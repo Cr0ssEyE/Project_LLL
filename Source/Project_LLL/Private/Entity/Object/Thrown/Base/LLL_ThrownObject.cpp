@@ -163,13 +163,14 @@ void ALLL_ThrownObject::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UP
 	Deactivate();
 }
 
-void ALLL_ThrownObject::DamageTo(AActor* OtherActor) const
+void ALLL_ThrownObject::DamageTo(AActor* OtherActor)
 {
 	const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor);
 	if (AbilitySystemInterface && OtherActor != GetOwner())
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
+		EffectContextHandle.AddInstigator(GetOwner(), this);
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{

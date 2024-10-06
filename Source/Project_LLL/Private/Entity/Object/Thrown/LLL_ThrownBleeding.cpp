@@ -107,16 +107,17 @@ void ALLL_ThrownBleeding::NotifyActorBeginOverlap(AActor* OtherActor)
 		DamagedMonsters.Emplace(Monster);
 		Monster->SetBleedingStack(Monster->GetBleedingStack() + 4);
 
-		if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
+		if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
 		{
 			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(this);
+			EffectContextHandle.AddInstigator(Player, this);
 			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownBleedingDataAsset->BleedingDamageEffect, AbilityLevel, EffectContextHandle);
 			if(EffectSpecHandle.IsValid())
 			{
 				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, BleedingOffencePower);
 				FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, CastChecked<ULLL_ExtendedGameplayEffect>(ThrownBleedingDataAsset->BleedingDamageEffect.GetDefaultObject()));
-				if (!FLLL_AbilityDataHelper::CheckBleedingExplosion(Player, Monster))
+				if (!FLLL_AbilityDataHelper::CheckBleedingExplosion(Player, Monster, this))
 				{
 					ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Monster->GetAbilitySystemComponent());
 				}

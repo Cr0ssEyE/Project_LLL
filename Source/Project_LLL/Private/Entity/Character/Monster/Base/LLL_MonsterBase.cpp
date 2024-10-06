@@ -84,6 +84,7 @@ void ALLL_MonsterBase::BeginPlay()
 
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
+	EffectContextHandle.AddInstigator(this, this);
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(DropGoldEffect, 1.0, EffectContextHandle);
 	if(EffectSpecHandle.IsValid())
 	{
@@ -234,15 +235,16 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 		GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 
 		ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(GetOwner());
-		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Other);
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Other);
 		if (IsValid(ManOfStrength) && IsValid(Player))
 		{
 			const ULLL_ManOfStrengthDataAsset* ManOfStrengthDataAsset = CastChecked<ULLL_ManOfStrengthDataAsset>(ManOfStrength->GetCharacterDataAsset());
-			const ULLL_MonsterAttributeSet* OwnerMonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(ManOfStrength->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
-			const float OffencePower = OwnerMonsterAttributeSet->GetManOfStrengthThrowOffencePower();
+			const ULLL_MonsterAttributeSet* ManOfStrengthAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(ManOfStrength->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+			const float OffencePower = ManOfStrengthAttributeSet->GetManOfStrengthThrowOffencePower();
 			
 			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(this);
+			EffectContextHandle.AddInstigator(ManOfStrength, this);
 			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->ThrowDamageEffect, ManOfStrength->GetAbilityLevel(), EffectContextHandle);
 			if (EffectSpecHandle.IsValid())
 			{
@@ -263,6 +265,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 			
 				FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 				EffectContextHandle.AddSourceObject(this);
+				EffectContextHandle.AddInstigator(Player, this);
 				const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ManOfStrengthDataAsset->ThrowDamageEffect, ManOfStrength->GetAbilityLevel(), EffectContextHandle);
 				if (EffectSpecHandle.IsValid())
 				{
@@ -328,6 +331,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 
 						FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 						EffectContextHandle.AddSourceObject(this);
+						EffectContextHandle.AddInstigator(Player, this);
 						const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->KnockBackTransmissionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
 						if (EffectSpecHandle.IsValid())
 						{
@@ -355,12 +359,13 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 					
 						FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 						EffectContextHandle.AddSourceObject(this);
+						EffectContextHandle.AddInstigator(Player, this);
 						const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->BleedingTransmissionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
 						if (EffectSpecHandle.IsValid())
 						{
 							EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, BleedingTransmissionOffencePower);
 							FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->BleedingTransmissionDamageEffect.GetDefaultObject()));
-							if (!FLLL_AbilityDataHelper::CheckBleedingExplosion(Player, OtherMonster))
+							if (!FLLL_AbilityDataHelper::CheckBleedingExplosion(Player, OtherMonster, this))
 							{
 								ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
 							}
@@ -394,25 +399,28 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 
 	ShowDamageValue(Damage);
 
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
-	const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
-	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-
-	// 먹이 농락 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_WAIT_ATTACK))
+	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Attacker))
 	{
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
-		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->WaitAttackResetOffencePowerEffect, GetAbilityLevel(), EffectContextHandle);
-		if (EffectSpecHandle.IsValid())
+		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+
+		// 먹이 농락 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_WAIT_ATTACK))
 		{
-			const ULLL_ExtendedGameplayEffect* WaitAttackResetOffencePowerEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->WaitAttackResetOffencePowerEffect.GetDefaultObject());
-			const FAbilityDataTable* AbilityData = WaitAttackResetOffencePowerEffect->GetAbilityData();
-			const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
-			const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
-			PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+			EffectContextHandle.AddSourceObject(this);
+			EffectContextHandle.AddInstigator(Player, this);
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->WaitAttackResetOffencePowerEffect, GetAbilityLevel(), EffectContextHandle);
+			if (EffectSpecHandle.IsValid())
+			{
+				const ULLL_ExtendedGameplayEffect* WaitAttackResetOffencePowerEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->WaitAttackResetOffencePowerEffect.GetDefaultObject());
+				const FAbilityDataTable* AbilityData = WaitAttackResetOffencePowerEffect->GetAbilityData();
+				const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
+				const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
+				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
+				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
+				PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+			}
 		}
 	}
 	

@@ -20,7 +20,6 @@
 class PROJECT_LLL_API FLLL_AbilityDataHelper
 {
 public:
-	// 이펙트의 상태이상 설정 관련,
 	static void SetBleedingPeriodValue(const ALLL_PlayerBase* Player, ULLL_ExtendedGameplayEffect* Effect)
 	{
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
@@ -37,7 +36,7 @@ public:
 		}
 	}
 
-	static bool CheckBleedingExplosion(const ALLL_PlayerBase* Player, ALLL_MonsterBase* Monster)
+	static bool CheckBleedingExplosion(ALLL_PlayerBase* Player, ALLL_MonsterBase* Monster, AActor* EffectCauser)
 	{
 		Monster->SetMaxBleedingStack(5);
 		
@@ -70,6 +69,7 @@ public:
 
 				FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
 				EffectContextHandle.AddSourceObject(Player);
+				EffectContextHandle.AddInstigator(Player, EffectCauser);
 				const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(PlayerDataAsset->BleedingExplosionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
 				if (EffectSpecHandle.IsValid())
 				{
@@ -137,7 +137,7 @@ public:
 			}
 		}
 
-		const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(World, 0));
+		ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(World, 0));
 		const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
 		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 
@@ -161,6 +161,7 @@ public:
 
 			FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(Player);
+			EffectContextHandle.AddInstigator(Player, Player);
 			const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(Effect->GetClass(), 1.0, EffectContextHandle);
 			if(!EffectSpecHandle.IsValid())
 			{

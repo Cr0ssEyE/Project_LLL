@@ -611,12 +611,13 @@ TArray<AActor*> ALLL_PlayerBase::GetRangeFeatherTargetsAndClear()
 	return TempRangeFeatherTargets;
 }
 
-void ALLL_PlayerBase::VampireRecovery(float OffencePower) const
+void ALLL_PlayerBase::VampireRecovery(float OffencePower)
 {
 	OffencePower *= VampireRecoveryRate;
 	
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
+	EffectContextHandle.AddInstigator(this, this);
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->VampireRecoveryEffect, GetAbilityLevel(), EffectContextHandle);
 	if (EffectSpecHandle.IsValid())
 	{
@@ -710,6 +711,7 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
+		EffectContextHandle.AddInstigator(this, this);
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->FasterAttackResetAttackSpeedEffect, GetAbilityLevel(), EffectContextHandle);
 		if (EffectSpecHandle.IsValid())
 		{
