@@ -19,6 +19,8 @@ class PROJECT_LLL_API ULLL_AnimNotify_GameplayTag : public UAnimNotify
 
 public:
 	ULLL_AnimNotify_GameplayTag();
+
+	FORCEINLINE FGameplayTagContainer GetTriggerGameplayTag() const { return TriggerGameplayTag; }
 	
 protected:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;

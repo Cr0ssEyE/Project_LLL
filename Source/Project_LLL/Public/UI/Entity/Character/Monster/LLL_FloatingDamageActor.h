@@ -18,7 +18,7 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_FloatingDamageActor();
 
-	FORCEINLINE void SetWidgetText(float Damage) { DamageWidget->SetText(Damage); }
+	FORCEINLINE void SetWidgetText(float Damage) const { DamageWidget->SetText(Damage); }
 
 protected:
 	// Called when the game starts or when spawned

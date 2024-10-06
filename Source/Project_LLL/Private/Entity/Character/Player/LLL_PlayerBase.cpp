@@ -185,6 +185,7 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::SetMoveInputPressed, false);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::AttackActionCompleted, EAbilityInputName::Attack);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
@@ -427,13 +428,32 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 	}
 }
 
+void ALLL_PlayerBase::AttackActionCompleted(const FInputActionValue& Value, EAbilityInputName InputName)
+{
+	// 과충전 이누리아
+	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
+	{
+		const int32 InputID = static_cast<int32>(InputName);
+		if(FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID))
+		{
+			AttackSpec->InputPressed = true;
+			if (AttackSpec->IsActive())
+			{
+				ASC->AbilitySpecInputPressed(*AttackSpec);
+			}
+		}
+	}
+}
+
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
 	if (!bCanSkill)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 쿨타임이 끝나지 않음")));
 		return;
 	}
-	
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 사용")));
 	const int32 InputID = static_cast<int32>(InputName);
 	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
@@ -449,6 +469,7 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 			bCanSkill = false;
 			GetWorldTimerManager().SetTimer(SkillCoolTimeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 				bCanSkill = true;
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 쿨타임 완료")));
 			}), SkillCoolTime, false);
 		}
 	}
@@ -516,8 +537,6 @@ void ALLL_PlayerBase::PauseCameraMoveToCursor() const
 void ALLL_PlayerBase::ReadyToUseSkill()
 {
 	bCanSkill = true;
-
-	SkillCoolTimeTimerHandle.Invalidate();
 }
 
 int32 ALLL_PlayerBase::GetEnuriaCount() const
@@ -531,6 +550,19 @@ int32 ALLL_PlayerBase::GetWolfEnuriaCount() const
 	for (const auto AbilityData : FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld()))
 	{
 		if (AbilityData->AnimalType == EAnimalType::Wolf)
+		{
+			Count++;
+		}
+	}
+	return Count;
+}
+
+int32 ALLL_PlayerBase::GetHorseEnuriaCount() const
+{
+	int32 Count = 0;
+	for (const auto AbilityData : FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld()))
+	{
+		if (AbilityData->AnimalType == EAnimalType::Horse)
 		{
 			Count++;
 		}
@@ -559,7 +591,6 @@ void ALLL_PlayerBase::StartChargeFeather(float Timer)
 	GetWorldTimerManager().SetTimer(ChargeFeatherTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		ChargedFeatherCount++;
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
-		// Todo : 추후 데이터화 예정
 		if (ChargedFeatherCount == 10)
 		{
 			GetWorldTimerManager().PauseTimer(ChargeFeatherTimerHandle);
@@ -651,7 +682,7 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 
 void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
-	Super::Damaged(Attacker, IsDOT);
+	Super::Damaged(Attacker, IsDOT, Damage);
 	
 	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
 	ASC->CancelAbilities(nullptr, &WithOutTags);
@@ -669,12 +700,28 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 	}
 
 	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Attacker);
-	if (!IsValid(Monster))
+	if (IsValid(Monster))
 	{
-		return;
+		LastAttackerMonsterId = Monster->GetId();
 	}
 
-	LastAttackerMonsterId = Monster->GetId();
+	// 쾌속난타 이누리아
+	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_FASTER_ATTACK))
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->FasterAttackResetAttackSpeedEffect, GetAbilityLevel(), EffectContextHandle);
+		if (EffectSpecHandle.IsValid())
+		{
+			const ULLL_ExtendedGameplayEffect* FasterAttackResetAttackSpeedEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->FasterAttackResetAttackSpeedEffect.GetDefaultObject());
+			const FAbilityDataTable* AbilityData = FasterAttackResetAttackSpeedEffect->GetAbilityData();
+			const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
+			const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type) * -1.0f;
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
 }
 
 void ALLL_PlayerBase::Dead()
@@ -728,7 +775,10 @@ void ALLL_PlayerBase::Dead()
 		{
 			if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(HitResult.GetActor()))
 			{
-				CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController())->StopLogic(TEXT("PlayerDead"));
+				if (const ALLL_MonsterBaseAIController* MonsterAIController = Cast<ALLL_MonsterBaseAIController>(Monster->GetController()))
+				{
+					MonsterAIController->StopLogic(TEXT("PlayerDead"));
+				}
 				Monster->StopAnimMontage();
 			}
 			HitResult.GetActor()->CustomTimeDilation = 0.01f;

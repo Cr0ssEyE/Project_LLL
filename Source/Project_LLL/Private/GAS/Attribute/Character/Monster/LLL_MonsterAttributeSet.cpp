@@ -6,6 +6,7 @@
 #include "GameplayEffectExtension.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/DPSTester/LLL_DPSTester.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/LLL_DebugGameInstance.h"
@@ -42,7 +43,13 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		bool Damaged = false;
 		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 
-		if (GetCurrentShield() > 0)
+		SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
+		if (Cast<ALLL_DPSTester>(Monster))
+		{
+			Monster->Damaged(Attacker, DOT, GetReceiveDamage());
+			Damaged = true;
+		}
+		else if (GetCurrentShield() > 0)
 		{
 			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
 		
@@ -69,7 +76,7 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		{
 			if (ProtoGameInstance->CheckMonsterHitCheckDebug() && Cast<ALLL_MonsterBase>(GetOwningActor()) && Damaged)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("몬스터 데미지 입음. : %f"), Data.EvaluatedData.Magnitude));
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%s가 데미지 입음: %f"), *Monster->GetName(), Data.EvaluatedData.Magnitude));
 			}
 		}
 #endif

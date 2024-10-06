@@ -20,7 +20,20 @@ float ULLL_CC_CriticalDamageCalculate::CalculateBaseMagnitude_Implementation(con
 
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-	Result = PlayerAttributeSet->GetOffencePower();
+
+	// 과충전 이누리아
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
+	{
+		const float OffsetOffencePower = PlayerAttributeSet->GetMaxChargeAttackDamage() - PlayerAttributeSet->GetMinChargeAttackDamage();
+		const float TempOffencePower = PlayerAttributeSet->GetMinChargeAttackDamage() + Player->GetChargeAttackChargeRate() * OffsetOffencePower;
+		UE_LOG(LogTemp, Log, TEXT("과충전 이누리아로 공격력 %f로 적용"), TempOffencePower)
+		Result = TempOffencePower;
+	}
+	else
+	{
+		Result = PlayerAttributeSet->GetOffencePower();
+	}
+	
 	Result *= PlayerAttributeSet->GetAllOffencePowerRate();
 	Result += PlayerAttributeSet->GetAllOffencePowerPlus();
 	

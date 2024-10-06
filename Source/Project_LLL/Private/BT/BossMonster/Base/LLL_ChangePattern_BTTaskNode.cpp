@@ -23,7 +23,9 @@ EBTNodeResult::Type ULLL_ChangePattern_BTTaskNode::ExecuteTask(UBehaviorTreeComp
 	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(BossMonster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 	const float MaxHealth = MonsterAttributeSet->GetMaxHealth();
 	const float CurrentHealth = MonsterAttributeSet->GetCurrentHealth();
-	const float HealthRate = CurrentHealth / MaxHealth * 100.0f;
+	const float MaxShield = MonsterAttributeSet->GetMaxShield();
+	const float CurrentShield = MonsterAttributeSet->GetCurrentShield();
+	const float HealthRate = (CurrentHealth + CurrentShield) / (MaxHealth + MaxShield) * 100.0f;
 
 	const ULLL_BossMonsterDataAsset* BossMonsterDataAsset = CastChecked<ULLL_BossMonsterDataAsset>(BossMonster->GetCharacterDataAsset());
 	TArray<EBossMonsterPattern> CurrentHavePatterns = BossMonster->GetCurrentHavePatterns();

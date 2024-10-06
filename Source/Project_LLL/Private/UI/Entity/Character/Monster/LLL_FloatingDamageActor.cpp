@@ -17,7 +17,7 @@ ALLL_FloatingDamageActor::ALLL_FloatingDamageActor()
 	SetRootComponent(SphereComponent);
 	SphereComponent->SetSimulatePhysics(true);
 	
-	DamageWidgetClass = FLLL_ConstructorHelper::FindAndGetClass<ULLL_DamageWidget>(PATH_UI_FLOATING_DAMAGE, EAssertionLevel::Check);
+	DamageWidgetClass = FLLL_ConstructorHelper::FindAndGetClass<ULLL_DamageWidget>(PATH_UI_FLOATING_DAMAGE_WIDGET, EAssertionLevel::Check);
 	DamageWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DamageWidgetComponent"));
 	
 	DamageWidgetComponent->SetupAttachment(RootComponent);

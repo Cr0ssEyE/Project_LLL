@@ -28,7 +28,6 @@ protected:
 	virtual void Deactivate() override;
 	
 	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower) override;
-	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override {}
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 	UPROPERTY(VisibleDefaultsOnly)

@@ -81,9 +81,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "기본 공격 입력 키")
 	TObjectPtr<UInputAction> AttackInputAction;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "보조 액션 입력 키")
-	TObjectPtr<UInputAction> ControlChaseInputAction;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "상호작용 입력 키")
 	TObjectPtr<UInputAction> InteractionInputAction;
 
@@ -130,7 +127,16 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "피의 역병 이누리아 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> BleedingTransmissionDamageEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "혈우병 이누리아 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> BleedingExplosionDamageEffect;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "과다출혈 이누리아 출혈 주기 변경 이펙트")
-	TSubclassOf<UGameplayEffect> ExcessiveBleedingChangePeriodEffect;
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "쾌속난타 이누리아 속도 리셋 이펙트")
+	TSubclassOf<UGameplayEffect> FasterAttackResetAttackSpeedEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "재빠른 몸놀림 이누리아 회피 이펙트")
+	TSubclassOf<UGameplayEffect> EvasionDashEvasionEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "먹이 농락 이누리아 데미지 리셋 이펙트")
+	TSubclassOf<UGameplayEffect> WaitAttackResetOffencePowerEffect;
 };

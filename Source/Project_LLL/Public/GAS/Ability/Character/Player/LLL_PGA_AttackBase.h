@@ -6,6 +6,7 @@
 #include "GAS/Ability/Character/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_AttackBase.generated.h"
 
+class ALLL_PlayerBase;
 class UAbilityTask_WaitGameplayEvent;
 class UAbilityTask_WaitGameplayTagAdded;
 
@@ -28,8 +29,15 @@ protected:
 protected:
 	UFUNCTION()
 	void CheckInputPressed(FGameplayEventData EventData);
-	
+
+	UFUNCTION()
+	void CheckFullCharge(FGameplayEventData EventData);
+
+	void BaseAttack();
 	void SetNextAttackAction();
+	void ChargeAttack();
+	void ChargeRotate(ALLL_PlayerBase* Player);
+	float GetFullChargeNotifyTriggerTime() const;
 
 protected:
 	UPROPERTY()
@@ -39,9 +47,11 @@ protected:
 	UPROPERTY(EditAnywhere, DisplayName = "공격 애님 몽타주")
 	TObjectPtr<UAnimMontage> AttackAnimMontage;
 
-	uint32 CurrentComboAction;
+	UPROPERTY(EditAnywhere, DisplayName = "충전 공격 애님 몽타주")
+	TObjectPtr<UAnimMontage> ChargeAttackAnimMontage;
 
+	uint32 CurrentComboAction;
 	uint32 MaxAttackAction;
-	
 	uint8 bIsCanPlayNextAction : 1;
+	uint8 bStopCharge : 1;
 };
