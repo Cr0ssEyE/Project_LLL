@@ -6,6 +6,7 @@
 #include "GAS/Ability/Character/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_AttackBase.generated.h"
 
+class ALLL_PlayerBase;
 class UAbilityTask_WaitGameplayEvent;
 class UAbilityTask_WaitGameplayTagAdded;
 
@@ -35,6 +36,7 @@ protected:
 	void BaseAttack();
 	void SetNextAttackAction();
 	void ChargeAttack();
+	void ChargeRotate(ALLL_PlayerBase* Player);
 	float GetFullChargeNotifyTriggerTime() const;
 
 protected:

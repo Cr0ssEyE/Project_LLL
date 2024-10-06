@@ -25,6 +25,7 @@
 #include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
 #include "Entity/Character/Monster/DPSTester/LLL_DPSTester.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -285,14 +286,15 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 		{
 			const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-		
-			if (!Cast<ALLL_BaseCharacter>(Other) && !Cast<ALLL_FallableWallGimmick>(Other))
+
+			if (!Cast<ALLL_BaseCharacter>(Other) && !Cast<ALLL_ThrownObject>(Other) && !Cast<ALLL_FallableWallGimmick>(Other))
 			{
 				float DotProduct = FVector::DotProduct(HitNormal, FVector::UpVector);
 				float AngleInRadians = FMath::Acos(DotProduct);
 				float AngleInDegrees = FMath::RadiansToDegrees(AngleInRadians);
 				if (AngleInDegrees > 45.0f)
 				{
+					UE_LOG(LogTemp, Log, TEXT("%s가 %s에 부딪혀 넉백 피해입음"), *GetName(), *Other->GetName())
 					DamageKnockBackCauser(Player);
 
 					// 리바운드 이누리아
@@ -311,6 +313,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 			ALLL_MonsterBase* OtherMonster = Cast<ALLL_MonsterBase>(Other);
 			if (IsValid(OtherMonster))
 			{
+				UE_LOG(LogTemp, Log, TEXT("%s와 %s가 부딪혀 서로 넉백 피해입음"), *GetName(), *Other->GetName())
 				DamageKnockBackTarget(Player, OtherMonster);
 				DamageKnockBackCauser(Player);
 
@@ -655,6 +658,8 @@ void ALLL_MonsterBase::DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL
 {
 	if (!bKnockBackTargetDamaged)
 	{
+		UE_LOG(LogTemp, Log, TEXT("%s에 부딪혀 넉백 피해입음"), *Monster->GetName())
+		
 		bKnockBackTargetDamaged = true;
 		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
 		

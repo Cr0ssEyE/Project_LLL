@@ -42,22 +42,7 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 	}
 	
 	const FVector SweepStartLocation = OriginLocation + SourceActor->GetTransform().GetRotation().RotateVector(TraceStartLocation);
-	FVector TempTraceEndLocation = TraceEndLocation;
-	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(SourceActor))
-	{
-		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-	
-		// 과충전 이누리아
-		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
-		{
-			float OffsetAttackRange = PlayerAttributeSet->GetMaxChargeAttackRange() - PlayerAttributeSet->GetMinChargeAttackRange();
-			float TempAttackRangePlus = PlayerAttributeSet->GetMinChargeAttackRange() + Player->GetChargeAttackChargeRate() * OffsetAttackRange;
-			UE_LOG(LogTemp, Log, TEXT("과충전 이누리아로 사거리 %f만큼 확장"), TempAttackRangePlus)
-			TempTraceEndLocation.X += TempAttackRangePlus;
-		}
-	}
-	const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetTransform().GetRotation().RotateVector(TempTraceEndLocation);
+	const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetTransform().GetRotation().RotateVector(TraceEndLocation);
 	
 	FQuat SweepQuat = SourceActor->GetActorQuat();
 
