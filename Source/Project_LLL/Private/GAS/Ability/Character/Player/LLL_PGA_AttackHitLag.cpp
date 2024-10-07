@@ -73,8 +73,12 @@ void ULLL_PGA_AttackHitLag::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	}
 	
 	ALLL_PlayerBase* PlayerCharacter = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-	PlayerCharacter->GetCharacterAnimInstance()->Montage_SetPlayRate(HitLagTargetMontage, PlayerCharacterAttributeSet->GetAttackSpeed());
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(GetAbilitySystemComponentFromActorInfo_Checked()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+
+	float AttackSpeed = PlayerAttributeSet->GetAttackSpeed();
+	AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
+	
+	PlayerCharacter->GetCharacterAnimInstance()->Montage_SetPlayRate(HitLagTargetMontage, AttackSpeed);
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

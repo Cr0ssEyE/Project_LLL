@@ -155,7 +155,9 @@ bool ALLL_MonsterSpawner::CheckNextWaveCanSpawnByOwnerMonsterHealth() const
 	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(OwnerMonster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 	const float MaxHealth = MonsterAttributeSet->GetMaxHealth();
 	const float CurrentHealth = MonsterAttributeSet->GetCurrentHealth();
-	const float HealthRate = CurrentHealth / MaxHealth * 100.0f;
+	const float MaxShield = MonsterAttributeSet->GetMaxShield();
+	const float CurrentShield = MonsterAttributeSet->GetCurrentShield();
+	const float HealthRate = (CurrentHealth + CurrentShield) / (MaxHealth + MaxShield) * 100.0f;
 
 	const float TriggerHealthRate = SpawnStartHealthRate - CurrentWave * HealthRateSpawnOffset;
 	return HealthRate <= TriggerHealthRate && CurrentWave < MaxWave;

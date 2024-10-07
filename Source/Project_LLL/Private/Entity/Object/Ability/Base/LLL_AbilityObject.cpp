@@ -47,6 +47,7 @@ void ALLL_AbilityObject::DamageTo(AActor* OtherActor)
 		{
 			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(this);
+			EffectContextHandle.AddInstigator(GetOwner(), this);
 			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AbilityObjectDataAsset->DamageEffect, AbilityLevel, EffectContextHandle);
 			if(EffectSpecHandle.IsValid())
 			{

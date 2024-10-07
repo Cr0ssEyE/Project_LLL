@@ -7,6 +7,7 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
+#include "Entity/Character/Monster/Boss/Base/LLL_BossMonster.h"
 #include "Entity/Character/Monster/Melee/SwordDash/LLL_SwordDash.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -104,8 +105,16 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 void ULLL_MGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
-	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
-	Monster->GetMesh()->SetCollisionProfileName(CP_MONSTER);
+	if (Cast<ALLL_BossMonster>(Monster))
+	{
+		Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_BOSS);
+		Monster->GetMesh()->SetCollisionProfileName(CP_BOSS);
+	}
+	else
+	{
+		Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
+		Monster->GetMesh()->SetCollisionProfileName(CP_MONSTER);
+	}
 
 	ILLL_DashMonsterInterface* DashMonster = CastChecked<ILLL_DashMonsterInterface>(Monster);
 	DashMonster->SetDashing(false);

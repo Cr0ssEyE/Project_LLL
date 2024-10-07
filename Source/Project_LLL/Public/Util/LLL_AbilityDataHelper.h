@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Constant/LLL_AbilityRealNumbers.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
@@ -20,12 +20,12 @@
 class PROJECT_LLL_API FLLL_AbilityDataHelper
 {
 public:
-	// 이펙트의 상태이상 설정 관련,
 	static void SetBleedingPeriodValue(const ALLL_PlayerBase* Player, ULLL_ExtendedGameplayEffect* Effect)
 	{
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 		const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(PlayerASC->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
-		
+
+		// 과다출혈 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EXCESSIVE_BLEEDING) && Player->GetWolfEnuriaCount() >= Player->GetExcessiveBleedingWolfEnuriaCheckCount())
 		{
 			Effect->SetPeriodValue(Player->GetExcessiveBleedingPeriod());
@@ -34,6 +34,54 @@ public:
 		{
 			Effect->SetPeriodValue(AbnormalStatusAttributeSet->GetBleedingStatusPeriod());
 		}
+	}
+
+	static bool CheckBleedingExplosion(ALLL_PlayerBase* Player, ALLL_MonsterBase* Monster, AActor* EffectCauser)
+	{
+		Monster->SetMaxBleedingStack(5);
+		
+		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+
+		// 혈우병 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_EXPLOSION))
+		{
+			Monster->SetMaxBleedingStack(3);
+			if (Monster->GetBleedingStack() >= Monster->GetMaxBleedingStack() - 1)
+			{
+				UAbilitySystemComponent* MonsterASC = Monster->GetAbilitySystemComponent();
+				MonsterASC->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING));
+							
+				Monster->SetBleedingStack(0);
+				if (Monster->GetBleedingTrigger())
+				{
+					Monster->ToggleBleedingTrigger();
+				}
+
+				Monster->UpdateBleedingVFX(false);
+				Monster->UpdateStackVFX(Monster->GetBleedingStack(), Monster->GetMaxBleedingStack());
+
+				const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+				const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+
+				float OffencePower = PlayerAttributeSet->GetBleedingExplosionOffencePower();
+				OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
+				OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+
+				FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
+				EffectContextHandle.AddSourceObject(Player);
+				EffectContextHandle.AddInstigator(Player, EffectCauser);
+				const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(PlayerDataAsset->BleedingExplosionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
+				if (EffectSpecHandle.IsValid())
+				{
+					EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+					UE_LOG(LogTemp, Log, TEXT("혈우병으로 %s에게 %f만큼 데미지"), *Monster->GetName(), OffencePower)
+					PlayerASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Monster->GetAbilitySystemComponent());
+				}
+				
+				return true;
+			}
+		}
+		return false;
 	}
 
 	static bool SpawnAbilityObject(const ULLL_CharacterGameplayAbilityBase* OwnerAbility, const TSubclassOf<ALLL_AbilityObject>& AbilityObjectClass, FGameplayEventData EventData = FGameplayEventData(), const EEffectApplyTarget AbilityObjectLocationTarget = EEffectApplyTarget::Self, const FVector& OffsetLocation = FVector::ZeroVector, const FRotator& OffsetRotator = FRotator::ZeroRotator)
@@ -89,7 +137,7 @@ public:
 			}
 		}
 
-		const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(World, 0));
+		ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(World, 0));
 		const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
 		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 
@@ -113,28 +161,34 @@ public:
 
 			FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(Player);
+			EffectContextHandle.AddInstigator(Player, Player);
 			const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(Effect->GetClass(), 1.0, EffectContextHandle);
 			if(!EffectSpecHandle.IsValid())
 			{
 				continue;
 			}
 
-			for (const auto GottenAbilityArrayEffectHandle : GottenAbilityArrayEffectHandles(World))
+			// 중첩 이누리아가 아닐 경우
+			if (CurrentAbilityData->TagID[0] != '1')
 			{
-				const ULLL_ExtendedGameplayEffect* GottenEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerASC->GetActiveGameplayEffect(GottenAbilityArrayEffectHandle)->Spec.Def);
-				if (CurrentAbilityData->TagID[1] == '1' && GottenEffect->GetAbilityData()->TagID[1] == '1')
+				for (const auto GottenAbilityArrayEffectHandle : GottenAbilityArrayEffectHandles(World))
 				{
-					PlayerASC->RemoveActiveGameplayEffect(GottenAbilityArrayEffectHandle);
-					if (CurrentAbilityData->AbilityName != GottenEffect->GetAbilityData()->AbilityName)
+					const ULLL_ExtendedGameplayEffect* GottenEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerASC->GetActiveGameplayEffect(GottenAbilityArrayEffectHandle)->Spec.Def);
+				
+					if (CurrentAbilityData->TagID[1] == '1' && GottenEffect->GetAbilityData()->TagID[1] == '1')
 					{
-						AbilityData.Emplace(GottenEffect->GetAbilityData());
+						PlayerASC->RemoveActiveGameplayEffect(GottenAbilityArrayEffectHandle);
+						if (CurrentAbilityData->AbilityName != GottenEffect->GetAbilityData()->AbilityName)
+						{
+							AbilityData.Emplace(GottenEffect->GetAbilityData());
+						}
+						UE_LOG(LogTemp, Log, TEXT("사용 타입 이펙트 삭제"));
 					}
-					UE_LOG(LogTemp, Log, TEXT("사용 타입 이펙트 삭제"));
-				}
-				else if (CurrentAbilityData->AbilityName == GottenEffect->GetAbilityData()->AbilityName)
-				{
-					PlayerASC->RemoveActiveGameplayEffect(GottenAbilityArrayEffectHandle);
-					UE_LOG(LogTemp, Log, TEXT("낮은 티어 이펙트 삭제"));
+					else if (CurrentAbilityData->AbilityName == GottenEffect->GetAbilityData()->AbilityName)
+					{
+						PlayerASC->RemoveActiveGameplayEffect(GottenAbilityArrayEffectHandle);
+						UE_LOG(LogTemp, Log, TEXT("낮은 티어 이펙트 삭제"));
+					}
 				}
 			}
 
@@ -151,13 +205,17 @@ public:
 			// 어빌리티 부여 계열
 			if (ULLL_GE_GiveAbilityComponent* AbilitiesGameplayEffectComponent = &Effect->FindOrAddComponent<ULLL_GE_GiveAbilityComponent>())
 			{
-				for (const auto& AbilitySpecConfig : AbilitiesGameplayEffectComponent->GetAbilitySpecConfigs())
+				for (auto& AbilitySpecConfig : AbilitiesGameplayEffectComponent->GetAbilitySpecConfigs())
 				{
-					if (FGameplayAbilitySpec* Spec = PlayerASC->FindAbilitySpecFromClass(AbilitySpecConfig.Ability))
+					for (auto& Spec : PlayerASC->GetActivatableAbilities())
 					{
-						// EGameplayAbilityInstancingPolicy::InstancedPerActor로 설정된 어빌리티 한정 정상작동
-						Cast<ULLL_PGA_RewardAbilityBase>(Spec->GetPrimaryInstance())->SetAbilityInfo(CurrentAbilityData);
-						UE_LOG(LogTemp, Log, TEXT("스펙에 접근해서 값 바꾸기 시도"));
+						if (Spec.Ability->GetClass() == AbilitySpecConfig.Ability)
+						{
+							// EGameplayAbilityInstancingPolicy::InstancedPerActor로 설정된 어빌리티 한정 정상작동
+							ULLL_PGA_RewardAbilityBase* RewardAbility = CastChecked<ULLL_PGA_RewardAbilityBase>(Spec.GetPrimaryInstance());
+							RewardAbility->SetAbilityInfo(CurrentAbilityData);
+							UE_LOG(LogTemp, Log, TEXT("%s 어빌리티에 데이터 전달"), *RewardAbility->GetName());
+						}
 					}
 				}
 			}

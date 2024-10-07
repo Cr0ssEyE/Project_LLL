@@ -33,6 +33,7 @@ public:
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
 	FORCEINLINE int32 GetId() const { return Id; }
 	FORCEINLINE bool IsKnockBacking() const { return bIsKnockBacking; }
+	FORCEINLINE float GetLastKnockBackPower() const { return LastKnockBackPower; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -56,10 +57,13 @@ public:
 	void DisconnectOwnerDeadDelegate();
 	void DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster);
 	void DamageKnockBackCauser(ALLL_PlayerBase* Player);
+	void Stun();
+	void ShowDamageValue(const float Damage) const;
 
 	// 이누리아 관련
 public:
 	FORCEINLINE void SetBleedingStack(const int32 InBleedingStack) { BleedingStack = InBleedingStack <= MaxBleedingStack ? InBleedingStack : MaxBleedingStack; }
+	FORCEINLINE void SetMaxBleedingStack(const int32 InMaxBleedingStack) { MaxBleedingStack = InMaxBleedingStack; }
 	FORCEINLINE void SetBleedingTransmissionOffencePower(const float InBleedingTransmissionOffencePower) { BleedingTransmissionOffencePower = InBleedingTransmissionOffencePower; }
 	
 	FORCEINLINE int32 GetBleedingStack() const { return BleedingStack; }

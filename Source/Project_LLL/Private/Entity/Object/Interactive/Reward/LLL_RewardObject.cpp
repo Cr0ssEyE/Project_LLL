@@ -112,7 +112,8 @@ void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 	ULLL_PlayerGoldComponent* PlayerGoldComponent = Player->GetGoldComponent();
 	
 	FGameplayEffectContextHandle EffectContextHandle = Player->GetAbilitySystemComponent()->MakeEffectContext();
-	EffectContextHandle.AddSourceObject(Player);
+	EffectContextHandle.AddSourceObject(this);
+	EffectContextHandle.AddInstigator(this, this);
 	const FGameplayEffectSpecHandle EffectSpecHandle = Player->GetAbilitySystemComponent()->MakeOutgoingSpec(RewardObjectDataAsset->MaxHPEffect, 1.0, EffectContextHandle);
 	
 	if (bIsProduct && PlayerGoldComponent->GetMoney() < Price)
@@ -151,7 +152,7 @@ void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 	case 3:
 		if(EffectSpecHandle.IsValid())
 		{
-			Player->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());
 			GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->PlayerPlayProgressData.AcquiredGoldAppleCount++;
 		}
 

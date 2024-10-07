@@ -32,14 +32,14 @@ public:
 		return CalculateResult;
 	}
 
-	static FVector GetPredictedLocation(const AActor* Owner, const AActor* Target, float TargetSpeed, float PredictionRate)
+	static FVector GetPredictedLocation(const AActor* ThrownActor, const AActor* Target, float TargetSpeed, float PredictionRate)
 	{
-		if (!IsValid(Owner) || !IsValid(Target))
+		if (!IsValid(ThrownActor) || !IsValid(Target))
 		{
 			return FVector::Zero();
 		}
 		
-		const float Distance = Owner->GetDistanceTo(Target);
+		const float Distance = ThrownActor->GetDistanceTo(Target);
 		const FVector PredictedMove = Target->GetVelocity() * (Distance / TargetSpeed);
 		const FVector PredictedLocation = Target->GetActorLocation() + PredictedMove * PredictionRate;
 		return PredictedLocation;

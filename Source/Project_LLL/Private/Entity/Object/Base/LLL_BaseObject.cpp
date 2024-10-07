@@ -83,6 +83,7 @@ void ALLL_BaseObject::BeginPlay()
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
+		EffectContextHandle.AddInstigator(this, this);
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(BaseObjectDataAsset->InitEffect, 1.0, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{

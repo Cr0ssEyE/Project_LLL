@@ -8,6 +8,7 @@
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/DPSTester/LLL_DPSTester.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 
@@ -41,7 +42,7 @@ EBTNodeResult::Type ULLL_DetectOtherMonster_BTTaskNode::ExecuteTask(UBehaviorTre
 	for (auto HitResult : HitResults)
 	{
 		ALLL_MonsterBase* OtherMonster = Cast<ALLL_MonsterBase>(HitResult.GetActor());
-		if (IsValid(OtherMonster) && !OtherMonster->CheckCharacterIsDead())
+		if (IsValid(OtherMonster) && !OtherMonster->CheckCharacterIsDead() && !Cast<ALLL_DPSTester>(OtherMonster))
 		{
 			OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_OTHER_MONSTER, OtherMonster);
 			DebugColor =  FColor::Green;

@@ -20,10 +20,12 @@ protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
 protected:
-	virtual void KnockBackTarget();
+	virtual void KnockBackTarget(const FGameplayEventData* TriggerEventData);
 	
 protected:
-	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그")
-	FGameplayTag TriggerRequiredTag;
-	
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그 1")
+	FGameplayTag TriggerRequiredTag1;
+
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그 2")
+	FGameplayTag TriggerRequiredTag2;
 };
