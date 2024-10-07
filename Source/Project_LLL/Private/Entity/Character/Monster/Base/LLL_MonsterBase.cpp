@@ -134,7 +134,14 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 
 	if (GetActorLocation().Z < -1000.0f)
 	{
-		Dead();
+		if (Cast<ALLL_DPSTester>(this))
+		{
+			Destroy();
+		}
+		else
+		{
+			Dead();
+		}
 	}
 
 	if (bIsKnockBacking)
@@ -326,8 +333,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 					if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION))
 					{
 						float OffencePower = Player->GetKnockBackTransmissionOffencePower();
-						OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
-						OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+						OffencePower = FLLL_AbilityDataHelper::CalculateOffencePower(OffencePower, Player);
 
 						FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 						EffectContextHandle.AddSourceObject(this);
@@ -343,8 +349,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 						FVector Direction = (OtherMonster->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
 					
 						float KnockBackPower = Player->GetKnockBackTransmissionKnockBackPower();
-						KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
-						KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+						KnockBackPower = FLLL_AbilityDataHelper::CalculateKnockBackPower(KnockBackPower, Player);
 			
 						UE_LOG(LogTemp, Log, TEXT("연쇄 작용으로 %s에게 %f만큼 넉백"), *Other->GetName(), KnockBackPower)
 						FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);

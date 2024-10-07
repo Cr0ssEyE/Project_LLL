@@ -132,7 +132,9 @@ public:
 
 	static float CalculateCriticalDamage(const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet, const float OffensePower)
 	{
-		const float CriticalChance = PlayerAttributeSet->GetCriticalChance();
+		float CriticalChance = PlayerAttributeSet->GetCriticalChance();
+		CriticalChance += PlayerAttributeSet->GetCriticalChancePlus();
+		
 		const float CriticalAmplify = PlayerAttributeSet->GetCriticalAmplify();
 	
 		bool bIsChance = false;

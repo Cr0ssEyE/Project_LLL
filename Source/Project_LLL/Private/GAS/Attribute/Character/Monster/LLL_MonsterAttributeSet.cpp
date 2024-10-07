@@ -9,7 +9,6 @@
 #include "Entity/Character/Monster/DPSTester/LLL_DPSTester.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
-#include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
@@ -58,7 +57,7 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		{
 			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
 
-			if (GetCurrentHealth() == 0)
+			if (GetCurrentHealth() == 0 && !Monster->CheckCharacterIsDead())
 			{
 				Monster->Dead();
 			}
@@ -100,11 +99,9 @@ void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallb
 			Monster->SetBleedingTransmissionOffencePower(Data.EvaluatedData.Magnitude);
 		}
 		
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 		float Damage = Data.EvaluatedData.Magnitude;
-		Damage *= PlayerAttributeSet->GetAllOffencePowerRate();
 		Damage *= Monster->GetBleedingStack();
-		Damage += PlayerAttributeSet->GetAllOffencePowerPlus();
+		Damage = FLLL_AbilityDataHelper::CalculateOffencePower(Damage, Player);
 
 		// 과다출혈 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EXCESSIVE_BLEEDING) && Monster->GetBleedingStack() == Monster->GetMaxBleedingStack())

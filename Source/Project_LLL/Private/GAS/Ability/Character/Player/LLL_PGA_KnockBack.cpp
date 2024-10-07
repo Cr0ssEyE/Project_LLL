@@ -8,6 +8,7 @@
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Task/LLL_AT_Trace.h"
 #include "Interface/LLL_KnockBackInterface.h"
+#include "Util/LLL_AbilityDataHelper.h"
 #include "Util/LLL_MathHelper.h"
 
 void ULLL_PGA_KnockBack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -70,8 +71,7 @@ void ULLL_PGA_KnockBack::KnockBackTarget(const FGameplayEventData* TriggerEventD
 			}
 		}
 		
-		KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
-		KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+		KnockBackPower = FLLL_AbilityDataHelper::CalculateKnockBackPower(KnockBackPower, Player);
 		KnockBackPower += PlayerAttributeSet->GetBaseAttackKnockBackPowerPlus();
 		
 		if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor))

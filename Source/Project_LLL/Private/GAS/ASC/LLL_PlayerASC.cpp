@@ -36,7 +36,7 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 	
 	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(GameplayEffect.Def);
 
-	if (IsValid(Effect) && (Effect->GetAssetTags().HasTag(TAG_GAS_ABILITY_NESTING_DENY) || Effect->GetAssetTags().HasTag(TAG_GAS_ABILITY_NESTING_DENY)))
+	if (IsValid(Effect) && (Effect->GetAssetTags().HasTag(TAG_GAS_ABILITY_NESTING_ALLOW) || Effect->GetAssetTags().HasTag(TAG_GAS_ABILITY_NESTING_DENY)))
 	{
 		const float CoolDown = Effect->GetAbilityData()->AbilityCooldown;
 		if (Effect->GetAbilityData()->TagID[1] == '1')
@@ -80,7 +80,7 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE))
 		{
-			Player->SetIncreaseKnockBackDamageByEnuriaCountDamageRate(Value1);
+			Player->SetIncreaseKnockBackDamageDamageRate(Value1);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_VAMPIRE))
 		{
@@ -120,6 +120,10 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
 			ULLL_ExtendedGameplayEffect* WaitAttackResetOffencePowerEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->WaitAttackResetOffencePowerEffect.GetDefaultObject());
 			WaitAttackResetOffencePowerEffect->SetAbilityInfo(Effect->GetAbilityData());
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_BOTH))
+		{
+			Player->SetIncreaseKnockBackBothKnockBackPowerRate(Value1);
 		}
 	}
 

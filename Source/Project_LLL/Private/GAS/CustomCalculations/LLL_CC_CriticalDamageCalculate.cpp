@@ -6,6 +6,7 @@
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "Util/LLL_AbilityDataHelper.h"
 #include "Util/LLL_MathHelper.h"
 
 float ULLL_CC_CriticalDamageCalculate::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
@@ -34,9 +35,7 @@ float ULLL_CC_CriticalDamageCalculate::CalculateBaseMagnitude_Implementation(con
 		Result = PlayerAttributeSet->GetOffencePower();
 	}
 	
-	Result *= PlayerAttributeSet->GetAllOffencePowerRate();
-	Result += PlayerAttributeSet->GetAllOffencePowerPlus();
-	
+	Result = FLLL_AbilityDataHelper::CalculateOffencePower(Result, Player);
 	Result = FLLL_MathHelper::CalculateCriticalDamage(PlayerAttributeSet, Result);
 	
 	return Result;

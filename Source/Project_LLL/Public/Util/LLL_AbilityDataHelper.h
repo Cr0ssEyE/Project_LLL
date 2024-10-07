@@ -20,6 +20,34 @@
 class PROJECT_LLL_API FLLL_AbilityDataHelper
 {
 public:
+	static float CalculateOffencePower(float OffencePower, const ALLL_PlayerBase* Player)
+	{
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+
+		OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
+		OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+
+		return OffencePower;
+	}
+	
+	static float CalculateKnockBackPower(float KnockBackPower, const ALLL_PlayerBase* Player)
+	{
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+
+		KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
+
+		// 급성장 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_BOTH))
+		{
+			KnockBackPower *= Player->GetIncreaseKnockBackBothKnockBackPowerRate();
+		}
+		KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+
+		return KnockBackPower;
+	}
+	
 	static void SetBleedingPeriodValue(const ALLL_PlayerBase* Player, ULLL_ExtendedGameplayEffect* Effect)
 	{
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
@@ -64,8 +92,7 @@ public:
 				const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 				float OffencePower = PlayerAttributeSet->GetBleedingExplosionOffencePower();
-				OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
-				OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+				OffencePower = CalculateOffencePower(OffencePower, Player);
 
 				FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
 				EffectContextHandle.AddSourceObject(Player);

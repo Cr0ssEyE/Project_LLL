@@ -81,15 +81,11 @@ void ALLL_ThrownBleeding::Throw(AActor* NewOwner, AActor* NewTarget, float InSpe
 
 	if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
 	{
-		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 		OffencePower = AbilityData->AbilityValue1 / static_cast<uint32>(AbilityData->Value1Type);
-		OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
-		OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+		OffencePower = FLLL_AbilityDataHelper::CalculateOffencePower(OffencePower, Player);
 
 		BleedingOffencePower = AbilityData->AbilityValue2 / static_cast<uint32>(AbilityData->Value2Type);
-		BleedingOffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
-		BleedingOffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+		BleedingOffencePower = FLLL_AbilityDataHelper::CalculateOffencePower(BleedingOffencePower, Player);
 	}
 }
 
