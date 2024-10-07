@@ -28,20 +28,19 @@ void ULLL_MGA_ThrowMonster::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(MonsterAIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
-		FVector FloorStartLocation = OtherMonster->GetActorLocation();
-		FloorStartLocation.Z = 0.0f;
 		const float PredictionRate = MonsterAttributeSet->GetManOfStrengthPredictionRate();
-		const FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(Monster, Player, PlayerAttributeSet->GetMoveSpeed(), PredictionRate);
-		FVector FloorEndLocation = PredictedLocation;
-		FloorEndLocation.Z = 0.0f;
-		const FVector FloorDirection = (FloorEndLocation - FloorStartLocation).GetSafeNormal();
-		const float FloorDistance = FVector::Distance(FloorStartLocation, FloorEndLocation);
-		FVector TargetLocation = FloorStartLocation + FloorDirection * FloorDistance * 2.0f;
-		TargetLocation.Z = PredictedLocation.Z;
-		const FVector Direction = (TargetLocation - OtherMonster->GetActorLocation()).GetSafeNormal();
+		const float OffsetZ = Player->GetActorLocation().Z + Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 		
-		float Speed = MonsterAttributeSet->GetManOfStrengthThrowSpeed();
+		FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(OtherMonster, Player, PlayerAttributeSet->GetMoveSpeed(), PredictionRate);
+		PredictedLocation.Z = OffsetZ;
+		FVector StartLocation = OtherMonster->GetActorLocation();
+		StartLocation.Z = OffsetZ;
+		
+		const FVector Direction = (PredictedLocation - StartLocation).GetSafeNormal();
+
+		const float Speed = MonsterAttributeSet->GetManOfStrengthThrowSpeed();
 		OtherMonster->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		OtherMonster->SetActorLocation(StartLocation);
 		CastChecked<ULLL_MonsterBaseAnimInstance>(OtherMonster->GetCharacterAnimInstance())->SetSnapped(false);
 		OtherMonster->GetMesh()->SetCollisionProfileName(CP_THREW_MONSTER);
 		OtherMonster->GetCapsuleComponent()->SetCollisionProfileName(CP_THREW_MONSTER);

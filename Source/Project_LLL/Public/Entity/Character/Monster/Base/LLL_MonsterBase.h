@@ -14,6 +14,7 @@ struct FAbilityDataTable;
 class ALLL_PlayerBase;
 class UProjectileMovementComponent;
 class ULLL_MonsterAttributeSet;
+class ALLL_FloatingDamageActor;
 /**
  * 
  */
@@ -32,6 +33,7 @@ public:
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
 	FORCEINLINE int32 GetId() const { return Id; }
 	FORCEINLINE bool IsKnockBacking() const { return bIsKnockBacking; }
+	FORCEINLINE float GetLastKnockBackPower() const { return LastKnockBackPower; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -42,7 +44,7 @@ protected:
 	
 public:
 	virtual void Charge();
-	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) override;
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false, float Damage = 0) override;
 	virtual void Dead() override;
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	
@@ -55,10 +57,13 @@ public:
 	void DisconnectOwnerDeadDelegate();
 	void DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster);
 	void DamageKnockBackCauser(ALLL_PlayerBase* Player);
+	void Stun();
+	void ShowDamageValue(const float Damage) const;
 
 	// 이누리아 관련
 public:
 	FORCEINLINE void SetBleedingStack(const int32 InBleedingStack) { BleedingStack = InBleedingStack <= MaxBleedingStack ? InBleedingStack : MaxBleedingStack; }
+	FORCEINLINE void SetMaxBleedingStack(const int32 InMaxBleedingStack) { MaxBleedingStack = InMaxBleedingStack; }
 	FORCEINLINE void SetBleedingTransmissionOffencePower(const float InBleedingTransmissionOffencePower) { BleedingTransmissionOffencePower = InBleedingTransmissionOffencePower; }
 	
 	FORCEINLINE int32 GetBleedingStack() const { return BleedingStack; }
@@ -79,6 +84,9 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> MaskMeshComponent;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TSubclassOf<ALLL_FloatingDamageActor> FloatingDamageActor;
 
 	int32 Id;
 	uint8 bIsCharging : 1;

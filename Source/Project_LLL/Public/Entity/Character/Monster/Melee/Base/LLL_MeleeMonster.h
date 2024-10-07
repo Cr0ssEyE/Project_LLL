@@ -15,6 +15,9 @@ UCLASS()
 class PROJECT_LLL_API ALLL_MeleeMonster : public ALLL_MonsterBase
 {
 	GENERATED_BODY()
+
+public:
+	ALLL_MeleeMonster();
 	
 protected:
 	virtual void BeginPlay() override;

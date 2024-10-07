@@ -7,11 +7,10 @@
 #include "GameplayEffectExtension.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
-#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
-#include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
+#include "Util/LLL_AbilityDataHelper.h"
 
 ULLL_CharacterAttributeSetBase::ULLL_CharacterAttributeSetBase() :
 	AttackSpeed(100.f)
@@ -23,7 +22,7 @@ void ULLL_CharacterAttributeSetBase::PostAttributeChange(const FGameplayAttribut
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
 	
-	if(Attribute == GetMoveSpeedAttribute())
+	if (Attribute == GetMoveSpeedAttribute())
 	{
 		const ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwningActor());
 		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GetMoveSpeed();
@@ -57,12 +56,8 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 		//05/11 조강건 코드리뷰 중 주석 추가
 		//어빌리티에게 피해를 입힌 대상을 전달하는 방법. TryActivate가 아닌 SendGameplayEvent라 Ability Triggers에 태그 할당 필요
 		FGameplayEventData PayloadData;
-		AActor* Instigator = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
-		if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Instigator))
-		{
-			Instigator = ThrownObject->GetOwner();
-		}
-		PayloadData.Instigator = Instigator;
+		ALLL_BaseCharacter* Attacker = CastChecked<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
+		PayloadData.Instigator = Attacker;
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
 		
 		SetReceiveDamage(0.f);

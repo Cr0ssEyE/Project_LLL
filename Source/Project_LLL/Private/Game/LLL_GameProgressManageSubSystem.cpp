@@ -352,8 +352,8 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionMapData()
 
 void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 {
-	ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()) || !IsValid(PlayerCharacter))
+	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (!IsValid(CurrentSaveGameData) || !IsValid(GetWorld()) || !IsValid(Player))
 	{
 		return;
 	}
@@ -362,12 +362,12 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 	{
 		// 로비 관련 처리
 		//PlayerCharacter->SetActorLocation(CurrentSaveGameData->LobbyLastStandingLocation);
-		PlayerCharacter->SetActorLocation(FVector::ZeroVector);
+		Player->SetActorLocation(FVector::ZeroVector);
 		return;
 	}
 
-	PlayerCharacter->InitAttributeSetBySave(&CurrentSaveGameData->PlayerCharacterStatusData);
-	PlayerCharacter->GetGoldComponent()->IncreaseMoney(CurrentSaveGameData->PlayerPlayProgressData.CurrentGoldAmount);
+	Player->InitAttributeSetBySave(&CurrentSaveGameData->PlayerCharacterStatusData);
+	Player->GetGoldComponent()->IncreaseMoney(CurrentSaveGameData->PlayerPlayProgressData.CurrentGoldAmount);
 	
 	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
 	TArray<int32> PlayerAcquiredEnuriasID = CurrentSaveGameData->PlayerPlayProgressData.AcquiredEnuriasID;
@@ -383,9 +383,10 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 	for (auto i = 0; i < CurrentSaveGameData->PlayerPlayProgressData.AcquiredGoldAppleCount; i++)
 	{
 		TSubclassOf<UGameplayEffect> IncreaseHpEffect = CastChecked<ULLL_GameInstance>(GetGameInstance())->GetGlobalParametersDataAsset()->GoldAppleIncreaseHpEffect;
-		FGameplayEffectContextHandle EffectContextHandle = PlayerCharacter->GetAbilitySystemComponent()->MakeEffectContext();
-		const FGameplayEffectSpecHandle EffectSpecHandle = PlayerCharacter->GetAbilitySystemComponent()->MakeOutgoingSpec(IncreaseHpEffect, 1.0, EffectContextHandle);
-		PlayerCharacter->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		FGameplayEffectContextHandle EffectContextHandle = Player->GetAbilitySystemComponent()->MakeEffectContext();
+		EffectContextHandle.AddInstigator(Player, Player);
+		const FGameplayEffectSpecHandle EffectSpecHandle = Player->GetAbilitySystemComponent()->MakeOutgoingSpec(IncreaseHpEffect, 1.0, EffectContextHandle);
+		Player->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}
 	OnLastSessionPlayerDataLoaded.Broadcast();
 }
@@ -395,5 +396,8 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEnuriaEffect(TArray<
 	// 이누리아 개편으로 몇몇 이누리아는 제대로 로드 안될 가능성 있어 체크 필요.
 	ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetGameInstance());
 	TArray<const FAbilityDataTable*> AbilityData = GameInstance->GetAbilityDataTable();
-	FLLL_AbilityDataHelper::ApplyEnuriaEffect(GetWorld(), LoadedEffects, EffectID, AbilityData, GameInstance->RewardGimmick->bIsTest);
+	if (IsValid(GameInstance->RewardGimmick))
+	{
+		FLLL_AbilityDataHelper::ApplyEnuriaEffect(GetWorld(), LoadedEffects, EffectID, AbilityData, GameInstance->RewardGimmick->bIsTest);
+	}
 }
