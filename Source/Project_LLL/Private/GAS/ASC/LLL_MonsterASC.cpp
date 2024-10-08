@@ -80,7 +80,7 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 		{
 			GetWorld()->GetTimerManager().ClearTimer(BleedingTimerHandle);
 		}
-
+		
 		Monster->SetBleedingStack(Monster->GetBleedingStack() + 1);
 		Monster->UpdateBleedingVFX(true);
 		Monster->UpdateStackVFX(Monster->GetBleedingStack(), Monster->GetMaxBleedingStack());
@@ -100,7 +100,7 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 			}
 
 			Monster->UpdateBleedingVFX(false);
-			Monster->UpdateStackVFX(Monster->GetBleedingStack(), 5);
+			Monster->UpdateStackVFX(Monster->GetBleedingStack(), Monster->GetMaxBleedingStack());
 		}), AbnormalStatusAttributeSet->GetBleedingStatusDuration(), false);
 	}
 }

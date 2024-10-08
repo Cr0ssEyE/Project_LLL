@@ -44,7 +44,6 @@ public:
 	void DashPunch();
 	void AttackInApnea();
 	void SnapOtherMonster() const;
-	void ThrowOtherMonster() const;
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)

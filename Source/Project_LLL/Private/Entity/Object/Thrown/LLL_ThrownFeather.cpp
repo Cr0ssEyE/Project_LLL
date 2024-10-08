@@ -94,7 +94,7 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner());
+	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner());
 	const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other);
 	if (IsValid(Player) && AbilitySystemInterface)
 	{
@@ -115,6 +115,7 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 				GetWorld()->GetTimerManager().SetTimer(QuadrupleHitTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, i, HitCount, Other, AbilitySystemInterface, PlayerAttributeSet, Player, Direction]{
 					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 					EffectContextHandle.AddSourceObject(this);
+					EffectContextHandle.AddInstigator(Player, this);
 					const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
 					if (EffectSpecHandle.IsValid())
 					{

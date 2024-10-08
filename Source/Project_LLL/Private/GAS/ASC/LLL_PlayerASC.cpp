@@ -78,7 +78,7 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		{
 			Player->SetFasterKnockBackSpeedRate(Value1);
 		}
-		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE_BY_ENURIA_COUNT))
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE))
 		{
 			Player->SetIncreaseKnockBackDamageByEnuriaCountDamageRate(Value1);
 		}
@@ -96,6 +96,48 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 			Player->SetExcessiveBleedingPeriod(Value2);
 			Player->SetExcessiveBleedingWolfEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
 		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_DOUBLE_DASH))
+		{
+			Player->SetDoubleDashDashRate(Value1);
+			Player->SetDoubleDashHorseEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_FASTER_ATTACK))
+		{
+			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+			ULLL_ExtendedGameplayEffect* FasterAttackResetAttackSpeedEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->FasterAttackResetAttackSpeedEffect.GetDefaultObject());
+			FasterAttackResetAttackSpeedEffect->SetAbilityInfo(Effect->GetAbilityData());
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_EVASION_DASH))
+		{
+			Player->SetEvasionDashHorseEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
+			
+			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+			ULLL_ExtendedGameplayEffect* EvasionDashEvasionEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->EvasionDashEvasionEffect.GetDefaultObject());
+			EvasionDashEvasionEffect->SetAbilityInfo(Effect->GetAbilityData());
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_WAIT_ATTACK))
+		{
+			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+			ULLL_ExtendedGameplayEffect* WaitAttackResetOffencePowerEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->WaitAttackResetOffencePowerEffect.GetDefaultObject());
+			WaitAttackResetOffencePowerEffect->SetAbilityInfo(Effect->GetAbilityData());
+		}
+	}
+
+	if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_MOVE_FASTER))
+	{
+		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_MOVE_FASTER));
+	}
+	else if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_MORE_ATTACK_KNOCK_BACK))
+	{
+		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_MORE_ATTACK_KNOCK_BACK));
+	}
+	else if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_FASTER_ATTACK))
+	{
+		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_FASTER_ATTACK));
+	}
+	else if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_WAIT_ATTACK))
+	{
+		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_WAIT_ATTACK));
 	}
 	
 	return Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);

@@ -49,7 +49,7 @@ void UPlayerDebugWidget::CharacterCollisionCheckBoxEvent(bool value)
 void UPlayerDebugWidget::PlayerFillHealthButtonEvent()
 {
 	// TODO: 플레이어 클래스 만들고 처리
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if(!IsValid(Player))
 	{
 		return;
@@ -63,6 +63,7 @@ void UPlayerDebugWidget::PlayerFillHealthButtonEvent()
 	
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
+	EffectContextHandle.AddInstigator(Player, Player);
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(FillHealthEffect, 1.0, EffectContextHandle);
 	if(EffectSpecHandle.IsValid())
 	{

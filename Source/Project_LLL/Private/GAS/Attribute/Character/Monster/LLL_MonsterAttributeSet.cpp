@@ -6,12 +6,15 @@
 #include "GameplayEffectExtension.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/DPSTester/LLL_DPSTester.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
+#include "Util/LLL_AbilityDataHelper.h"
 
 ULLL_MonsterAttributeSet::ULLL_MonsterAttributeSet()
 {
@@ -32,17 +35,19 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
-		AActor* Attacker = Data.EffectSpec.GetEffectContext().Get()->GetInstigator();
+		ALLL_BaseCharacter* Attacker = CastChecked<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
 		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
-		if (const ALLL_ThrownObject* ThrownObject = Cast<ALLL_ThrownObject>(Attacker))
-		{
-			Attacker = ThrownObject->GetOwner();
-		}
 
 		bool Damaged = false;
 		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 
-		if (GetCurrentShield() > 0)
+		SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
+		if (Cast<ALLL_DPSTester>(Monster))
+		{
+			Monster->Damaged(Attacker, DOT, GetReceiveDamage());
+			Damaged = true;
+		}
+		else if (GetCurrentShield() > 0)
 		{
 			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
 		
@@ -69,7 +74,7 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		{
 			if (ProtoGameInstance->CheckMonsterHitCheckDebug() && Cast<ALLL_MonsterBase>(GetOwningActor()) && Damaged)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("몬스터 데미지 입음. : %f"), Data.EvaluatedData.Magnitude));
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%s가 데미지 입음: %f"), *Monster->GetName(), Data.EvaluatedData.Magnitude));
 			}
 		}
 #endif
@@ -82,7 +87,7 @@ void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallb
 {
 	if (Data.EffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_BLEEDING))
 	{
-		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		if (!IsValid(Player))
 		{
 			return;

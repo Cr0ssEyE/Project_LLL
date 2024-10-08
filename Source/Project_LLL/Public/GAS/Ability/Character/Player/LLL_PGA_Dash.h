@@ -50,12 +50,6 @@ protected:
 	uint32 CurrentDashCount;
 
 	uint32 MaxDashCount;
-
-	float DashSpeed;
-
-	float DashDistance;
-
-	float DashCorrectionDistance;
 	
 	uint32 bIsInputPressed : 1;
 };

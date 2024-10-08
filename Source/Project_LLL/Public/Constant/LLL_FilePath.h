@@ -33,6 +33,8 @@
 #define PATH_STAFF_BASIC_DATA TEXT("/Script/Project_LLL.LLL_StaffBasicDataAsset'/Game/DataAsset/DA_StaffBasic.DA_StaffBasic'")
 #define PATH_CLAW_BASIC_DATA TEXT("/Script/Project_LLL.LLL_ClawBasicDataAsset'/Game/DataAsset/DA_ClawBasic.DA_ClawBasic'")
 #define PATH_MAN_OF_STRENGTH_DATA TEXT("/Script/Project_LLL.LLL_ManOfStrengthDataAsset'/Game/DataAsset/DA_ManOfStrength.DA_ManOfStrength'")
+#define PATH_DPS_TESTER_MESH TEXT("/Script/Engine.SkeletalMesh'/Game/Entity/Characters/Monster/DPSTester/Meshes/SM_DPSTester.SM_DPSTester'")
+#define PATH_MAN_OF_STRENGTH_BP TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Characters/BP_ManOfStrength.BP_ManOfStrength_C'")
 
 // 몬스터 투사체 관련
 #define PATH_THROWN_MAGIC_DATA TEXT("/Script/Project_LLL.LLL_ThrownMagicDataAsset'/Game/DataAsset/DA_ThrownMagic.DA_ThrownMagic'")
@@ -69,8 +71,9 @@
 #define PATH_REWARD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Reward/WBP_SelectRewordWidget.WBP_SelectRewordWidget_C'")
 #define PATH_PLAYER_GOLD_UI_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Player/WBP_PlayerGoldWidget.WBP_PlayerGoldWidget_C'")
 #define PATH_UI_PROGRESSBAR_MATERIAL TEXT("/Script/Engine.Material'/Game/Materials/MasterMaterials/M_UI_CircleProgressBer.M_UI_CircleProgressBer'")
-#define PATH_UI_FLOATING_DAMAGE TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Monster/WBP_DamageWidget.WBP_DamageWidget_C'")
+#define PATH_UI_FLOATING_DAMAGE_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Monster/WBP_DamageWidget.WBP_DamageWidget_C'")
 #define PATH_UI_FLOATING_DAMAGE_ACTOR TEXT("/Script/Engine.Blueprint'/Game/Blueprints/UI/Monster/BP_FloatingDamageActor.BP_FloatingDamageActor_C'")
+#define PATH_UI_DPS_TESTER_WIDGET TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/Monster/WBP_DPSTesterWidget.WBP_DPSTesterWidget_C'")
 
 // 머티리얼 파라미터 관련
 #define PATH_MONSTER_MPC TEXT("/Script/Engine.MaterialParameterCollection'/Game/Materials/MaterialParameters/MPC_Monster.MPC_Monster'")

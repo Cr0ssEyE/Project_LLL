@@ -33,12 +33,13 @@ void ALLL_BreakableObjectBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if(IsValid(ASC))
+	if (IsValid(ASC))
 	{
 		ASC->InitAbilityActorInfo(this, this);
 
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
+		EffectContextHandle.AddInstigator(this, this);
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(InitEffect, 1.0, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{

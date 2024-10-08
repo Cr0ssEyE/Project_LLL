@@ -42,7 +42,7 @@ void ALLL_Shockwave::Tick(float DeltaSeconds)
 	Scale += FVector(ShockwaveAttributeSet->GetSpeed() * DeltaSeconds);
 	SetActorScale3D(Scale);
 
-	NiagaraComponents[0]->SetFloatParameter(NS_WAVE_RADIUS, GetActorScale3D().X / 75.0f + 0.025f);
+	NiagaraComponents[0]->SetFloatParameter(NS_WAVE_RADIUS, GetActorScale3D().X / 75.0f + 0.03f);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
