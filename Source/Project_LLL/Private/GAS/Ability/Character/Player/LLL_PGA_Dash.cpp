@@ -223,6 +223,12 @@ void ULLL_PGA_Dash::LocationReachedEvent()
 			PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 	}
+
+	// 과격한 돌진 이누리아
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DASH_ATTACK))
+	{
+		Player->SetDashAttackCanAttack(true);
+	}
 }
 
 void ULLL_PGA_Dash::CheckInputPressed(FGameplayEventData EventData)

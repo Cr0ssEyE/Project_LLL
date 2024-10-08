@@ -108,6 +108,8 @@ public:
 	FORCEINLINE int32 GetEvasionDashHorseEnuriaCheckCount() const { return EvasionDashHorseEnuriaCheckCount; }
 	FORCEINLINE float GetChargeAttackChargeRate() const { return ChargeAttackChargeRate; }
 	FORCEINLINE float GetIncreaseKnockBackBothKnockBackPowerRate() const { return IncreaseKnockBackBothKnockBackPowerRate; }
+	FORCEINLINE float GetDashAttackOffencePowerPlus() const { return DashAttackOffencePowerPlus; }
+	FORCEINLINE bool CheckDashAttackCanAttack() const { return bDashAttackCanAttack; }
 	
 	FORCEINLINE void SetFeatherSpawnStartTime(const float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
 	FORCEINLINE void SetDeflectCount(const int32 InDeflectCount) { DeflectCount = InDeflectCount; }
@@ -127,6 +129,8 @@ public:
 	FORCEINLINE void SetEvasionDashHorseEnuriaCheckCount(const int32 InEvasionDashHorseEnuriaCheckCount) { EvasionDashHorseEnuriaCheckCount = InEvasionDashHorseEnuriaCheckCount; }
 	FORCEINLINE void SetChargeAttackChargeRate(const float InChargeAttackChargeRate) { ChargeAttackChargeRate = InChargeAttackChargeRate; }
 	FORCEINLINE void SetIncreaseKnockBackBothKnockBackPowerRate(const float InIncreaseKnockBackBothKnockBackPowerRate) { IncreaseKnockBackBothKnockBackPowerRate = InIncreaseKnockBackBothKnockBackPowerRate; }
+	FORCEINLINE void SetDashAttackOffencePowerPlus(const float InDashAttackOffencePowerPlus) { DashAttackOffencePowerPlus = InDashAttackOffencePowerPlus; }
+	FORCEINLINE void SetDashAttackCanAttack(const bool DashAttackCanAttack) { bDashAttackCanAttack = DashAttackCanAttack; }
 	
 	void StartChargeFeather(float Timer);
 	void AddRangeFeatherTargets(AActor* Target);
@@ -230,6 +234,8 @@ private:
 	int32 EvasionDashHorseEnuriaCheckCount;
 	float ChargeAttackChargeRate;
 	float IncreaseKnockBackBothKnockBackPowerRate;
+	float DashAttackOffencePowerPlus;
+	uint8 bDashAttackCanAttack : 1;
 
 	// 상태 관련 함수
 protected:

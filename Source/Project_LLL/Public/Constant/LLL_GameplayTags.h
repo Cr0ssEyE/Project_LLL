@@ -78,6 +78,7 @@
 #define TAG_GAS_HAVE_CHARGE_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.ChargeAttack"))
 #define TAG_GAS_HAVE_WAIT_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.WaitAttack"))
 #define TAG_GAS_HAVE_INCREASE_KNOCK_BACK_BOTH FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.IncreaseKnockBackBoth"))
+#define TAG_GAS_HAVE_DASH_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.DashAttack"))
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))

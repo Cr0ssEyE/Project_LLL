@@ -13,7 +13,7 @@ float ULLL_CC_CriticalDamageCalculate::CalculateBaseMagnitude_Implementation(con
 {
 	float Result = Super::CalculateBaseMagnitude_Implementation(Spec);
 	
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Spec.GetEffectContext().GetInstigator());
+	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Spec.GetEffectContext().GetInstigator());
 	if (!IsValid(Player))
 	{
 		return Result;
@@ -34,9 +34,17 @@ float ULLL_CC_CriticalDamageCalculate::CalculateBaseMagnitude_Implementation(con
 	{
 		Result = PlayerAttributeSet->GetOffencePower();
 	}
-	
-	Result = FLLL_AbilityDataHelper::CalculateOffencePower(Result, Player);
+
 	Result = FLLL_MathHelper::CalculateCriticalDamage(PlayerAttributeSet, Result);
+	Result = FLLL_AbilityDataHelper::CalculateOffencePower(Result, Player);
+	
+	// 과격한 돌진 이누리아
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DASH_ATTACK) && Player->CheckDashAttackCanAttack())
+	{
+		Result += Player->GetDashAttackOffencePowerPlus();
+		
+		Player->SetDashAttackCanAttack(false);
+	}
 	
 	return Result;
 }

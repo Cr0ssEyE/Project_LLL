@@ -125,6 +125,10 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		{
 			Player->SetIncreaseKnockBackBothKnockBackPowerRate(Value1);
 		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_DASH_ATTACK))
+		{
+			Player->SetDashAttackOffencePowerPlus(Value1);
+		}
 	}
 
 	if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_MOVE_FASTER))
