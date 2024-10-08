@@ -34,6 +34,7 @@
 #define PATH_CLAW_BASIC_DATA TEXT("/Script/Project_LLL.LLL_ClawBasicDataAsset'/Game/DataAsset/DA_ClawBasic.DA_ClawBasic'")
 #define PATH_MAN_OF_STRENGTH_DATA TEXT("/Script/Project_LLL.LLL_ManOfStrengthDataAsset'/Game/DataAsset/DA_ManOfStrength.DA_ManOfStrength'")
 #define PATH_DPS_TESTER_MESH TEXT("/Script/Engine.SkeletalMesh'/Game/Entity/Characters/Monster/DPSTester/Meshes/SM_DPSTester.SM_DPSTester'")
+#define PATH_MAN_OF_STRENGTH_BP TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Characters/BP_ManOfStrength.BP_ManOfStrength_C'")
 
 // 몬스터 투사체 관련
 #define PATH_THROWN_MAGIC_DATA TEXT("/Script/Project_LLL.LLL_ThrownMagicDataAsset'/Game/DataAsset/DA_ThrownMagic.DA_ThrownMagic'")
