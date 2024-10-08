@@ -45,6 +45,7 @@
 #define PATH_INTERACTIVE_OBJECT_DATA TEXT("/Script/Project_LLL.LLL_InteractiveObjectData'/Game/DataAsset/DA_InteractiveObject.DA_InteractiveObject'")
 #define PATH_BREAKABLE_OBJECT_TEST_MESH TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_Statue.SM_Statue'")
 #define PATH_BREAKABLE_OBJECT_TEST_EFFECT TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'")
+#define PATH_2D_RESOURCE_PLANE TEXT("/Script/Engine.StaticMesh'/Game/Meshes/ResourceMesh/SM_2DResource_Plane.SM_2DResource_Plane'")
 
 // 시스템 관련
 #define PATH_MONSTER_SPAWNER_DATA TEXT("/Script/Project_LLL.LLL_MonsterSpawnerDataAsset'/Game/DataAsset/DA_MonsterSpawner.DA_MonsterSpawner'")
