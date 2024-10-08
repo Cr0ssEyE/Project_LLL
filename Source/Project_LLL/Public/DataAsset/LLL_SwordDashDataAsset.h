@@ -26,13 +26,4 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "소드 트랜스폼")
 	FTransform SwordTransform;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 메시")
-	TObjectPtr<UStaticMesh> ShoulderGuardMesh;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 부착 소켓 이름")
-	FName ShoulderGuardAttachSocketName;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "어깨 갑옷 트랜스폼")
-	FTransform ShoulderGuardTransform;
 };

@@ -58,10 +58,6 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	DropGoldAttributeSet = CreateDefaultSubobject<ULLL_DropGoldAttributeSet>(TEXT("DropGoldAttribute"));
 	DropGoldEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(TEXT("/Script/Engine.Blueprint'/Game/GAS/Effects/DropGold/BPGE_DropGold.BPGE_DropGold_C'"), EAssertionLevel::Check);
 
-	MaskMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mask"));
-	MaskMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
-	MaskMeshComponent->SetupAttachment(RootComponent);
-
 	StackVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("StackStatusEffect"));
 	StackVFXComponent->SetupAttachment(RootComponent);
 	StackVFXComponent->SetAutoActivate(false);
@@ -97,10 +93,6 @@ void ALLL_MonsterBase::BeginPlay()
 	MonsterStatusWidgetComponent->SetDrawSize(MonsterBaseDataAsset->StatusGaugeSize);
 	MonsterStatusWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	MonsterStatusWidgetComponent->SetTickWhenOffscreen(true);
-
-	MaskMeshComponent->SetStaticMesh(MonsterBaseDataAsset->MaskMesh);
-	MaskMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, MonsterBaseDataAsset->MaskAttachSocketName);
-	MaskMeshComponent->SetRelativeTransform(MonsterBaseDataAsset->MaskTransform);
 
 	UNiagaraSystem* StackCountNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->StackCountNiagaraSystem;
 	if (IsValid(StackCountNiagaraSystem))
