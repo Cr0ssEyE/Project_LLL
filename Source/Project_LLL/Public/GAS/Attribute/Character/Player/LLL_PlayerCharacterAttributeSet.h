@@ -98,6 +98,8 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, KnockBackConstant);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FalloutablePower);
 
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MinChargeAttackDuration);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxChargeAttackDuration);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MinChargeAttackRange);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxChargeAttackRange);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MinChargeAttackDamage);
@@ -129,7 +131,6 @@ public:
 	void InitializeSavedStatusData(const FPlayerCharacterStatusData* CharacterStatusData);
 	
 protected:
-	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 	// 스테이터스 관련
@@ -191,6 +192,12 @@ protected:
 
 	// 차지 공격 관련
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MinChargeAttackDuration;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MaxChargeAttackDuration;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MinChargeAttackRange;
 

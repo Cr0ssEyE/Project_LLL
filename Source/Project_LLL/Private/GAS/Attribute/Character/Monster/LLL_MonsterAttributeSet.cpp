@@ -34,37 +34,46 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
+		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
+		if (Monster->CheckCharacterIsDead())
+		{
+			return;
+		}
+		
 		ALLL_BaseCharacter* Attacker = CastChecked<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
 		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
 
 		bool Damaged = false;
-		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 
+		SetReceiveDamage(GetReceiveDamage() * GetReceiveDamageRate());
 		SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
 		if (Cast<ALLL_DPSTester>(Monster))
 		{
 			Monster->Damaged(Attacker, DOT, GetReceiveDamage());
 			Damaged = true;
 		}
-		else if (GetCurrentShield() > 0)
-		{
-			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
-		
-			Monster->Damaged(Attacker, DOT, GetReceiveDamage());
-			Damaged = true;
-		}
 		else
 		{
-			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-
-			if (GetCurrentHealth() == 0 && !Monster->CheckCharacterIsDead())
+			if (GetCurrentShield() > 0)
 			{
-				Monster->Dead();
+				SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
+		
+				Monster->Damaged(Attacker, DOT, GetReceiveDamage());
+				Damaged = true;
 			}
 			else
 			{
-				Monster->Damaged(Attacker, DOT, GetReceiveDamage());
-				Damaged = true;
+				SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+
+				if (GetCurrentHealth() == 0)
+				{
+					Monster->Dead();
+				}
+				else
+				{
+					Monster->Damaged(Attacker, DOT, GetReceiveDamage());
+					Damaged = true;
+				}
 			}
 		}
 

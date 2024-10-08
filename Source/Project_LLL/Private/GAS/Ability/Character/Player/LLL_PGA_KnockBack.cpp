@@ -85,7 +85,7 @@ void ULLL_PGA_KnockBack::KnockBackTarget(const FGameplayEventData* TriggerEventD
 
 	if (KnockBackSuccess)
 	{
-		PlayerASC->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_MORE_ATTACK_KNOCK_BACK));
+		PlayerASC->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_INCREASE_KNOCK_BACK_POWER));
 	}
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

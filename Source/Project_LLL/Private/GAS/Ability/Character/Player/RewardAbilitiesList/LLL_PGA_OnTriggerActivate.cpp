@@ -103,6 +103,8 @@ void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandl
 
 void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 {
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	
 	ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(ApplyEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ApplyEffect, GetAbilityLevel());
 
@@ -110,28 +112,38 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
 	
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
+	if (AbilityTags.HasTag(TAG_GAS_RESET_ATTACK_SPEED))
+	{
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2 * -1.0f);
+	}
+	else if (AbilityTags.HasTag(TAG_GAS_EVASION) && Player->GetHorseEnuriaCount() >= Player->GetEvasionDashHorseEnuriaCheckCount())
+	{
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, 1.0f);
+	}
+	else
+	{
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
+	}
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_1, MagnitudeValue1 * 100.0f);
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_2, MagnitudeValue2 * 100.0f);
-
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	
 	if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
 	{
 		FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, Effect);
 	}
 
+	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	if (Effect->GetEffectApplyTarget() == EEffectApplyTarget::Self)
 	{
-		BP_ApplyGameplayEffectToOwner(ApplyEffect);
+		PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}
 	else
 	{
-		TArray<TWeakObjectPtr<AActor>> NewActors;
 		for (auto Target : CurrentEventData.TargetData.Data[0]->GetActors())
 		{
-			if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
+			if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Target.Get()))
 			{
-				if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Target.Get()))
+				if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
 				{
 					if (!Monster->GetBleedingTrigger())
 					{
@@ -145,20 +157,9 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 						continue;
 					}
 				}
+				PlayerASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Monster->GetAbilitySystemComponent());
 			}
-			NewActors.Add(Target);
 		}
-
-		FGameplayAbilityTargetDataHandle NewTargetDataHandle;
-		if (NewActors.Num() > 0)
-		{
-			FGameplayAbilityTargetData_ActorArray* NewTargetData = new FGameplayAbilityTargetData_ActorArray();
-			NewTargetData->TargetActorArray = NewActors;
-			NewTargetDataHandle.Add(NewTargetData);
-		}
-
-		CurrentEventData.TargetData = NewTargetDataHandle;
-		BP_ApplyGameplayEffectToTarget(CurrentEventData.TargetData, ApplyEffect);
 	}
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

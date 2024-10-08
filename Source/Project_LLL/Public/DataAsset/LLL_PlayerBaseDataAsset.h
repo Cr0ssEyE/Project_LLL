@@ -130,13 +130,4 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "혈우병 이누리아 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> BleedingExplosionDamageEffect;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "쾌속난타 이누리아 속도 리셋 이펙트")
-	TSubclassOf<UGameplayEffect> FasterAttackResetAttackSpeedEffect;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "재빠른 몸놀림 이누리아 회피 이펙트")
-	TSubclassOf<UGameplayEffect> EvasionDashEvasionEffect;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "먹이 농락 이누리아 데미지 리셋 이펙트")
-	TSubclassOf<UGameplayEffect> WaitAttackResetOffencePowerEffect;
 };

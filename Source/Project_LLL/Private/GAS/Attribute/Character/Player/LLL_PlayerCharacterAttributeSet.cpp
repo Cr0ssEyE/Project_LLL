@@ -71,24 +71,17 @@ void ULLL_PlayerCharacterAttributeSet::InitializeSavedStatusData(const FPlayerCh
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }
 
-void ULLL_PlayerCharacterAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
-{
-	Super::PostAttributeChange(Attribute, OldValue, NewValue);
-
-	if (Attribute == GetReceiveDamageAttribute() || Attribute == GetCurrentHealthAttribute())
-	{
-		return;
-	}
-
-	UE_LOG(LogTemp, Log, TEXT("%s가 변경 %f -> %f"), *Attribute.GetName(), OldValue, NewValue)
-}
-
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
-		ALLL_BaseCharacter* Attacker = CastChecked<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
 		ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
+		if (Player->CheckCharacterIsDead())
+		{
+			return;
+		}
+		
+		ALLL_BaseCharacter* Attacker = CastChecked<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
 		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
@@ -121,6 +114,7 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		
 		if (!bIsEvasion)
 		{
+			SetReceiveDamage(GetReceiveDamage() * GetReceiveDamageRate());
 			SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
 			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
 			if (GetCurrentHealth() == 0 && !Player->CheckCharacterIsDead())
@@ -145,14 +139,7 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		else
 		{
 			UE_LOG(LogTemp, Log, TEXT("%.2f 확률로 회피 발동"), GetEvasionRate() * 100.0f)
-		}
-	}
-
-	if (Data.EvaluatedData.Attribute == GetCurrentHealthAttribute())
-	{
-		if (GetCurrentHealth() > GetMaxHealth())
-		{
-			SetCurrentHealth(GetMaxHealth());
+			return;
 		}
 	}
 	

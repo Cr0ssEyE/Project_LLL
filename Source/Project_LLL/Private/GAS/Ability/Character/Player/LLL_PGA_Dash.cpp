@@ -29,9 +29,9 @@ void ULLL_PGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(DebugGameInstance->CheckPlayerDashDebug())
+		if (DebugGameInstance->CheckPlayerDashDebug())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("대쉬 어빌리티 발동")));
 		}
@@ -61,11 +61,11 @@ void ULLL_PGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 void ULLL_PGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-	if(const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if(DebugGameInstance->CheckPlayerDashDebug())
+		if (DebugGameInstance->CheckPlayerDashDebug())
 		{
-			if(bWasCancelled)
+			if (bWasCancelled)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("대쉬 어빌리티 중단됨")));
 			}
@@ -198,31 +198,7 @@ void ULLL_PGA_Dash::LocationReachedEvent()
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_PLAYER_DASH_END, PayloadData);
 
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
-	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-
-	// 재빠른 몸놀림 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EVASION_DASH))
-	{
-		FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
-		EffectContextHandle.AddInstigator(Player, Player);
-		const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(PlayerDataAsset->EvasionDashEvasionEffect, GetAbilityLevel(), EffectContextHandle);
-		if (EffectSpecHandle.IsValid())
-		{
-			const ULLL_ExtendedGameplayEffect* EvasionDashEvasionEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->EvasionDashEvasionEffect.GetDefaultObject());
-			const FAbilityDataTable* AbilityData = EvasionDashEvasionEffect->GetAbilityData();
-			const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
-			float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
-			if (Player->GetHorseEnuriaCount() >= Player->GetEvasionDashHorseEnuriaCheckCount())
-			{
-				MagnitudeValue2 = 1.0f;
-			}
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
-			PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-		}
-	}
+	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 
 	// 과격한 돌진 이누리아
 	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DASH_ATTACK))
