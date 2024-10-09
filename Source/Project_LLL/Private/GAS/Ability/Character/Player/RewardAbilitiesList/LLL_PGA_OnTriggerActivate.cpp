@@ -24,9 +24,7 @@ ULLL_PGA_OnTriggerActivate::ULLL_PGA_OnTriggerActivate() :
 	AbilityObjectLocationTarget(EEffectApplyTarget::Target),
 	bUseSpawnThrownObject(false),
 	ThrowSpeed(0.f),
-	SpawnOffsetTime(0.f),
-	bUseOnAttackHitGrantTag(false),
-	bAdditiveOrSubtract(true)
+	SpawnOffsetTime(0.f)
 {
 }
 
@@ -94,16 +92,12 @@ void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandl
 	{
 		SpawnThrownObject();
 	}
-
-	if (bUseOnAttackHitGrantTag && GrantTagContainer.IsValid())
-	{
-		GrantTagWhenHit();
-	}
 }
 
 void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(ApplyEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ApplyEffect, GetAbilityLevel());
@@ -112,11 +106,9 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
 	
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
-	if (AbilityTags.HasTag(TAG_GAS_RESET_ATTACK_SPEED))
-	{
-		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2 * -1.0f);
-	}
-	else if (AbilityTags.HasTag(TAG_GAS_EVASION) && Player->GetHorseEnuriaCount() >= Player->GetEvasionDashHorseEnuriaCheckCount())
+
+	// 재빠른 몸놀림 이누리아
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EVASION_DASH) && AbilityTags.HasTag(TAG_GAS_EVASION) && Player->GetEnuriaCount(EAnimalType::Horse) >= Player->GetEvasionDashHorseEnuriaCheckCount())
 	{
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, 1.0f);
 	}
@@ -126,13 +118,14 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	}
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_1, MagnitudeValue1 * 100.0f);
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_2, MagnitudeValue2 * 100.0f);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_MINUS_VALUE_1, MagnitudeValue1 * -1.0f);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_MINUS_VALUE_2, MagnitudeValue2 * -1.0f);
 	
 	if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
 	{
 		FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, Effect);
 	}
-
-	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+	
 	if (Effect->GetEffectApplyTarget() == EEffectApplyTarget::Self)
 	{
 		PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
@@ -312,40 +305,4 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 		TempSpawnOffsetTime += SpawnOffsetTime;
 		ThrowCircularAngle += 360.0f / SpawnCount;
 	}
-}
-
-void ULLL_PGA_OnTriggerActivate::GrantTagWhenHit()
-{
-	float GrantNum;
-	if (TagGrantNumTag == TAG_GAS_ABILITY_VALUE_1)
-	{
-		GrantNum = AbilityData->AbilityValue1 * GetAbilityLevel();
-	}
-	else if (TagGrantNumTag == TAG_GAS_ABILITY_VALUE_2)
-	{
-		GrantNum = AbilityData->AbilityValue2 * GetAbilityLevel();
-	}
-	
-	if (bAdditiveOrSubtract) // Add
-	{
-		for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
-		{
-			if (const IAbilitySystemInterface* ASC = Cast<IAbilitySystemInterface>(Actor))
-			{
-				ASC->GetAbilitySystemComponent()->AddLooseGameplayTags(GrantTagContainer, GrantNum);
-			}
-		}
-	}
-	else // Subtract
-	{
-		for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
-		{
-			if (const IAbilitySystemInterface* ASC = Cast<IAbilitySystemInterface>(Actor))
-			{
-				ASC->GetAbilitySystemComponent()->RemoveLooseGameplayTags(GrantTagContainer, GrantNum);
-			}
-		}
-	}
-	
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

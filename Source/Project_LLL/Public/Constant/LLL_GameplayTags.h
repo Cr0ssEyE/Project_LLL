@@ -86,6 +86,7 @@
 #define TAG_GAS_HAVE_INCREASE_KNOCK_BACK_BOTH FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.IncreaseKnockBackBoth"))
 #define TAG_GAS_HAVE_DASH_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.DashAttack"))
 #define TAG_GAS_HAVE_KNOCK_BACK_WEAKENING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.KnockBackWeakening"))
+#define TAG_GAS_HAVE_ATTACK_WEAKENING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.AttackWeakening"))
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))
@@ -95,6 +96,8 @@
 #define TAG_GAS_ABILITY_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.Value.2"))
 #define TAG_GAS_ABILITY_HUNDRED_VALUE_1 FGameplayTag::RequestGameplayTag(FName("Ability.HundredValue.1"))
 #define TAG_GAS_ABILITY_HUNDRED_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.HundredValue.2"))
+#define TAG_GAS_ABILITY_MINUS_VALUE_1 FGameplayTag::RequestGameplayTag(FName("Ability.MinusValue.1"))
+#define TAG_GAS_ABILITY_MINUS_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.MinusValue.2"))
 #define TAG_GAS_ABILITY_VALUE_OFFENCE_POWER FGameplayTag::RequestGameplayTag(FName("Ability.Value.OffencePower"))
 #define TAG_GAS_ABILITY_VALUE_PERIOD FGameplayTag::RequestGameplayTag(FName("Ability.Value.Period"))
 

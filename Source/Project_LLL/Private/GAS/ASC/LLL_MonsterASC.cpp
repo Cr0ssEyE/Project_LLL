@@ -8,6 +8,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
+#include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "Interface/LLL_KnockBackInterface.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -106,7 +107,13 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 	}
 	else if (GameplayEffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_WEAKENING))
 	{
-		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_WEAKENING));
+		for (const auto EffectHandle : GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_WEAKENING)))
+		{
+			if (CastChecked<ULLL_ExtendedGameplayEffect>(GetActiveGameplayEffect(EffectHandle)->Spec.Def) == GameplayEffectSpec.Def)
+			{
+				RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_WEAKENING));
+			}
+		}
 	}
 }
 

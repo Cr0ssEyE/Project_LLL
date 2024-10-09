@@ -30,7 +30,7 @@ float ULLL_CC_KnockBackDamageCalculate::CalculateBaseMagnitude_Implementation(co
 	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE))
 	{
 		UE_LOG(LogTemp, Log, TEXT("이누리아 갯수 : %d"), Player->GetEnuriaCount())
-		Result *= 1 + Player->GetIncreaseKnockBackDamageDamageRate() * Player->GetEnuriaCount();
+		Result *= 1 + Player->GetIncreaseKnockBackDamageDamageRateIncrease() * Player->GetEnuriaCount();
 	}
 	Result = FLLL_AbilityDataHelper::CalculateOffencePower(Result, Player);
 	Result += PlayerAttributeSet->GetKnockBackOffencePowerPlus();

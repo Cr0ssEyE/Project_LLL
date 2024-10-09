@@ -526,7 +526,7 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 		// 넘치는 힘 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
 		{
-			CustomTimeDilation = 1 + Player->GetFasterKnockBackSpeedRate();
+			CustomTimeDilation = 1 + Player->GetFasterKnockBackSpeedRateIncrease();
 		}
 		
 		FGameplayEventData PayloadData;

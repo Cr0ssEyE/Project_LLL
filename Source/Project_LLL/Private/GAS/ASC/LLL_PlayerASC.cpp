@@ -76,11 +76,11 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
 		{
-			Player->SetFasterKnockBackSpeedRate(Value1);
+			Player->SetFasterKnockBackSpeedRateIncrease(Value1);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE))
 		{
-			Player->SetIncreaseKnockBackDamageDamageRate(Value1);
+			Player->SetIncreaseKnockBackDamageDamageRateIncrease(Value1);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_VAMPIRE))
 		{
@@ -112,6 +112,11 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_DASH_ATTACK))
 		{
 			Player->SetDashAttackOffencePowerPlus(Value1);
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_ATTACK_WEAKENING))
+		{
+			Player->SetAttackWeakeningOffencePowerRateIncrease(Value2);
+			Player->SetAttackWeakeningWildBoarEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
 		}
 	}
 

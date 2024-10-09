@@ -539,30 +539,17 @@ void ALLL_PlayerBase::ReadyToUseSkill()
 	bCanSkill = true;
 }
 
-int32 ALLL_PlayerBase::GetEnuriaCount() const
+int32 ALLL_PlayerBase::GetEnuriaCount(EAnimalType AnimalType) const
 {
-	return FLLL_AbilityDataHelper::GottenAbilityArrayEffectHandles(GetWorld()).Num();
-}
-
-int32 ALLL_PlayerBase::GetWolfEnuriaCount() const
-{
-	int32 Count = 0;
-	for (const auto AbilityData : FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld()))
+	if (AnimalType == EAnimalType::None)
 	{
-		if (AbilityData->AnimalType == EAnimalType::Wolf)
-		{
-			Count++;
-		}
+		return FLLL_AbilityDataHelper::GottenAbilityArrayEffectHandles(GetWorld()).Num();
 	}
-	return Count;
-}
 
-int32 ALLL_PlayerBase::GetHorseEnuriaCount() const
-{
 	int32 Count = 0;
 	for (const auto AbilityData : FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld()))
 	{
-		if (AbilityData->AnimalType == EAnimalType::Horse)
+		if (AbilityData->AnimalType == AnimalType)
 		{
 			Count++;
 		}

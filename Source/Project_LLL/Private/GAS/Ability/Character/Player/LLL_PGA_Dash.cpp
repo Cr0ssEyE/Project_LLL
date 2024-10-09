@@ -138,7 +138,7 @@ void ULLL_PGA_Dash::DashActionEvent()
 
 		// 다중 번개 이누리아
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DOUBLE_DASH) && Player->GetHorseEnuriaCount() < Player->GetDoubleDashHorseEnuriaCheckCount())
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DOUBLE_DASH) && Player->GetEnuriaCount(EAnimalType::Horse) < Player->GetDoubleDashHorseEnuriaCheckCount())
 		{
 			DashDistance *= Player->GetDoubleDashDashRate();
 		}

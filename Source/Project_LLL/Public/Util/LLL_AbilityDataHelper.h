@@ -26,6 +26,12 @@ public:
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 		OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
+
+		// 일방적인 공격 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_ATTACK_WEAKENING) && Player->GetEnuriaCount(EAnimalType::WildBoar) >= Player->GetAttackWeakeningWildBoarEnuriaCheckCount())
+		{
+			OffencePower *= 1 + Player->GetAttackWeakeningOffencePowerRateIncrease();
+		}
 		OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
 
 		return OffencePower;
@@ -54,7 +60,7 @@ public:
 		const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(PlayerASC->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
 
 		// 과다출혈 이누리아
-		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EXCESSIVE_BLEEDING) && Player->GetWolfEnuriaCount() >= Player->GetExcessiveBleedingWolfEnuriaCheckCount())
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EXCESSIVE_BLEEDING) && Player->GetEnuriaCount(EAnimalType::Wolf) >= Player->GetExcessiveBleedingWolfEnuriaCheckCount())
 		{
 			Effect->SetPeriodValue(Player->GetExcessiveBleedingPeriod());
 		}
@@ -227,6 +233,8 @@ public:
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_1, MagnitudeValue1 * 100.0f);
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_2, MagnitudeValue2 * 100.0f);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_MINUS_VALUE_1, MagnitudeValue1 * -1.0f);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_MINUS_VALUE_2, MagnitudeValue2 * -1.0f);
 			PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		
 			// 어빌리티 부여 계열
