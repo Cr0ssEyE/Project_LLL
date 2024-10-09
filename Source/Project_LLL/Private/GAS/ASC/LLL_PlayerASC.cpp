@@ -118,6 +118,10 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 			Player->SetAttackWeakeningOffencePowerRateIncrease(Value2);
 			Player->SetAttackWeakeningWildBoarEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
 		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CRISIS_ATTACK))
+		{
+			Player->SetCrisisAttackMaxOffencePowerRateIncrease(Value1);
+		}
 	}
 
 	if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_INCREASE_MOVE_SPEED))

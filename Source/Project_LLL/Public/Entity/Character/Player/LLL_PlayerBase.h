@@ -111,6 +111,7 @@ public:
 	FORCEINLINE bool CheckDashAttackCanAttack() const { return bDashAttackCanAttack; }
 	FORCEINLINE float GetAttackWeakeningOffencePowerRateIncrease() const { return AttackWeakeningOffencePowerRateIncrease; }
 	FORCEINLINE int32 GetAttackWeakeningWildBoarEnuriaCheckCount() const { return AttackWeakeningWildBoarEnuriaCheckCount; }
+	FORCEINLINE float GetCrisisAttackMaxOffencePowerRateIncrease() const { return CrisisAttackMaxOffencePowerRateIncrease; }
 	
 	FORCEINLINE void SetFeatherSpawnStartTime(const float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
 	FORCEINLINE void SetDeflectCount(const int32 InDeflectCount) { DeflectCount = InDeflectCount; }
@@ -134,6 +135,7 @@ public:
 	FORCEINLINE void SetDashAttackCanAttack(const bool DashAttackCanAttack) { bDashAttackCanAttack = DashAttackCanAttack; }
 	FORCEINLINE void SetAttackWeakeningOffencePowerRateIncrease(const float InAttackWeakeningOffencePowerRateIncrease) { AttackWeakeningOffencePowerRateIncrease = InAttackWeakeningOffencePowerRateIncrease; }
 	FORCEINLINE void SetAttackWeakeningWildBoarEnuriaCheckCount(const int32 InAttackWeakeningWildBoarEnuriaCheckCount) { AttackWeakeningWildBoarEnuriaCheckCount = InAttackWeakeningWildBoarEnuriaCheckCount; }
+	FORCEINLINE void SetCrisisAttackMaxOffencePowerRateIncrease(const float InCrisisAttackMaxOffencePowerRateIncrease) { CrisisAttackMaxOffencePowerRateIncrease = InCrisisAttackMaxOffencePowerRateIncrease; }
 	
 	void StartChargeFeather(float Timer);
 	void AddRangeFeatherTargets(AActor* Target);
@@ -241,6 +243,7 @@ private:
 	uint8 bDashAttackCanAttack : 1;
 	float AttackWeakeningOffencePowerRateIncrease;
 	int32 AttackWeakeningWildBoarEnuriaCheckCount;
+	float CrisisAttackMaxOffencePowerRateIncrease;
 
 	// 상태 관련 함수
 protected:
