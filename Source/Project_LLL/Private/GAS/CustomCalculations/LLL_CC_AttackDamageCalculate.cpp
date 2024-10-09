@@ -35,7 +35,7 @@ float ULLL_CC_AttackDamageCalculate::CalculateBaseMagnitude_Implementation(const
 		Result = PlayerAttributeSet->GetOffencePower();
 	}
 
-	Result = FLLL_MathHelper::CalculateCriticalDamage(PlayerAttributeSet, Result);
+	Result = FLLL_MathHelper::CalculateCriticalDamage(Result, Player);
 	Result = FLLL_AbilityDataHelper::CalculateOffencePower(Result, Player);
 	
 	// 과격한 돌진 이누리아
