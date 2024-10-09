@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameplayModMagnitudeCalculation.h"
-#include "LLL_CC_CriticalDamageCalculate.generated.h"
+#include "LLL_CC_AttackDamageCalculate.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_LLL_API ULLL_CC_CriticalDamageCalculate : public UGameplayModMagnitudeCalculation
+class PROJECT_LLL_API ULLL_CC_AttackDamageCalculate : public UGameplayModMagnitudeCalculation
 {
 	GENERATED_BODY()
 

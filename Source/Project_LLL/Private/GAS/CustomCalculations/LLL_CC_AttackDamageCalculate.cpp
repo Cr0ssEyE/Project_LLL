@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GAS/CustomCalculations/LLL_CC_CriticalDamageCalculate.h"
+#include "GAS/CustomCalculations/LLL_CC_AttackDamageCalculate.h"
 
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
@@ -9,7 +9,7 @@
 #include "Util/LLL_AbilityDataHelper.h"
 #include "Util/LLL_MathHelper.h"
 
-float ULLL_CC_CriticalDamageCalculate::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
+float ULLL_CC_AttackDamageCalculate::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
 {
 	float Result = Super::CalculateBaseMagnitude_Implementation(Spec);
 	
