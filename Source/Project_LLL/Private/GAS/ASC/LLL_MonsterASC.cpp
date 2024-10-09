@@ -109,7 +109,8 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 	{
 		for (const auto EffectHandle : GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_WEAKENING)))
 		{
-			if (CastChecked<ULLL_ExtendedGameplayEffect>(GetActiveGameplayEffect(EffectHandle)->Spec.Def) == GameplayEffectSpec.Def)
+			const FActiveGameplayEffect* WeakeningEffect = GetActiveGameplayEffect(EffectHandle);
+			if (WeakeningEffect && Cast<ULLL_ExtendedGameplayEffect>(WeakeningEffect->Spec.Def) == GameplayEffectSpec.Def)
 			{
 				RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_WEAKENING));
 			}
