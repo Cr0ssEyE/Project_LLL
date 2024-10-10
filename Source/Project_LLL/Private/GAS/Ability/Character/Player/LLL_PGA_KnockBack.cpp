@@ -44,7 +44,7 @@ void ULLL_PGA_KnockBack::KnockBackTarget(const FGameplayEventData* TriggerEventD
 	for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
 	{
 		const FVector AvatarLocation = CurrentActorInfo->AvatarActor->GetActorLocation();
-		const FVector Direction = (Actor->GetActorLocation() - AvatarLocation).GetSafeNormal2D();
+		const FVector Direction = (Player->GetLastCheckedMouseLocation() - AvatarLocation).GetSafeNormal2D();
 		
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 

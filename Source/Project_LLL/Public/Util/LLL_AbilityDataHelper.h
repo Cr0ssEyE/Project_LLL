@@ -40,7 +40,7 @@ public:
 			const float CurrentHealth = PlayerAttributeSet->GetCurrentHealth();
 			float HealthRate = CurrentHealth / MaxHealth * 100.0f;
 			
-			constexpr float MinHealthRate = 20.0f;
+			const float MinHealthRate = PlayerAttributeSet->GetLowHealthPercentage() * 100.0f;
 			if (HealthRate <= MinHealthRate)
 			{
 				HealthRate = MinHealthRate;
