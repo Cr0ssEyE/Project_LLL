@@ -8,6 +8,7 @@
 #include "DataAsset/LLL_CameraDataAsset.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
+#include "Enumeration/LLL_AbilitySystemEnumHelper.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Interface/LLL_PlayerDependencyInterface.h"
 #include "LLL_PlayerBase.generated.h"
@@ -83,9 +84,7 @@ public:
 	void PauseCameraMoveToCursor() const;
 	void ReadyToUseSkill();
 	
-	int32 GetEnuriaCount() const;
-	int32 GetWolfEnuriaCount() const;
-	int32 GetHorseEnuriaCount() const;
+	int32 GetEnuriaCount(EAnimalType AnimalType = EAnimalType::None) const;
 	EAnimalType GetSkillEnuriaAnimalType() const;
 
 public:
@@ -96,8 +95,8 @@ public:
 	FORCEINLINE float GetKnockBackTransmissionOffencePower() const { return KnockBackTransmissionOffencePower; }
 	FORCEINLINE float GetKnockBackTransmissionKnockBackPower() const { return KnockBackTransmissionKnockBackPower; }
 	FORCEINLINE float GetQuadrupleHitKnockBackPower() const { return QuadrupleHitKnockBackPower; }
-	FORCEINLINE float GetFasterKnockBackSpeedRate() const { return FasterKnockBackSpeedRate; }
-	FORCEINLINE float GetIncreaseKnockBackDamageByEnuriaCountDamageRate() const { return IncreaseKnockBackDamageByEnuriaCountDamageRate; }
+	FORCEINLINE float GetFasterKnockBackSpeedRateIncrease() const { return FasterKnockBackSpeedRateIncrease; }
+	FORCEINLINE float GetIncreaseKnockBackDamageDamageRateIncrease() const { return IncreaseKnockBackDamageDamageRateIncrease; }
 	FORCEINLINE float GetRangeKnockBackKnockBackPower() const { return RangeKnockBackKnockBackPower; }
 	FORCEINLINE int32 GetBleedingTransmissionStack() const { return BleedingTransmissionStack; }
 	FORCEINLINE float GetExcessiveBleedingOffencePowerPlus() const { return ExcessiveBleedingOffencePowerPlus; }
@@ -107,14 +106,20 @@ public:
 	FORCEINLINE int32 GetDoubleDashHorseEnuriaCheckCount() const { return DoubleDashHorseEnuriaCheckCount; }
 	FORCEINLINE int32 GetEvasionDashHorseEnuriaCheckCount() const { return EvasionDashHorseEnuriaCheckCount; }
 	FORCEINLINE float GetChargeAttackChargeRate() const { return ChargeAttackChargeRate; }
+	FORCEINLINE float GetIncreaseKnockBackBothKnockBackPowerRate() const { return IncreaseKnockBackBothKnockBackPowerRate; }
+	FORCEINLINE float GetDashAttackOffencePowerPlus() const { return DashAttackOffencePowerPlus; }
+	FORCEINLINE bool CheckDashAttackCanAttack() const { return bDashAttackCanAttack; }
+	FORCEINLINE float GetAttackWeakeningOffencePowerRateIncrease() const { return AttackWeakeningOffencePowerRateIncrease; }
+	FORCEINLINE int32 GetAttackWeakeningWildBoarEnuriaCheckCount() const { return AttackWeakeningWildBoarEnuriaCheckCount; }
+	FORCEINLINE float GetCrisisAttackMaxOffencePowerRateIncrease() const { return CrisisAttackMaxOffencePowerRateIncrease; }
 	
 	FORCEINLINE void SetFeatherSpawnStartTime(const float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
 	FORCEINLINE void SetDeflectCount(const int32 InDeflectCount) { DeflectCount = InDeflectCount; }
 	FORCEINLINE void SetKnockBackTransmissionOffencePower(const float InKnockBackTransmissionOffencePower) { KnockBackTransmissionOffencePower = InKnockBackTransmissionOffencePower; }
 	FORCEINLINE void SetKnockBackTransmissionKnockBackPower(const float InKnockBackTransmissionKnockBackPower) { KnockBackTransmissionKnockBackPower = InKnockBackTransmissionKnockBackPower; }
 	FORCEINLINE void SetQuadrupleHitKnockBackPower(const float InQuadrupleHitKnockBackPower) { QuadrupleHitKnockBackPower = InQuadrupleHitKnockBackPower; }
-	FORCEINLINE void SetFasterKnockBackSpeedRate(const float InFasterKnockBackRate) { FasterKnockBackSpeedRate = InFasterKnockBackRate; }
-	FORCEINLINE void SetIncreaseKnockBackDamageByEnuriaCountDamageRate(const float InIncreaseKnockBackDamageByEnuriaCountDamageRate) { IncreaseKnockBackDamageByEnuriaCountDamageRate = InIncreaseKnockBackDamageByEnuriaCountDamageRate; }
+	FORCEINLINE void SetFasterKnockBackSpeedRateIncrease(const float InFasterKnockBackRateIncrease) { FasterKnockBackSpeedRateIncrease = InFasterKnockBackRateIncrease; }
+	FORCEINLINE void SetIncreaseKnockBackDamageDamageRateIncrease(const float InIncreaseKnockBackDamageDamageRateIncrease) { IncreaseKnockBackDamageDamageRateIncrease = InIncreaseKnockBackDamageDamageRateIncrease; }
 	FORCEINLINE void SetRangeKnockBackKnockBackPower(const float InRangeKnockBackKnockBackPower) { RangeKnockBackKnockBackPower = InRangeKnockBackKnockBackPower; }
 	FORCEINLINE void SetVampireRecoveryRate(const float InVampireRecoveryRate) { VampireRecoveryRate = InVampireRecoveryRate; }
 	FORCEINLINE void SetBleedingTransmissionStack(const int32 InBleedingTransmissionStack) { BleedingTransmissionStack = InBleedingTransmissionStack; }
@@ -125,6 +130,12 @@ public:
 	FORCEINLINE void SetDoubleDashHorseEnuriaCheckCount(const int32 InDoubleDashHorseEnuriaCheckCount) { DoubleDashHorseEnuriaCheckCount = InDoubleDashHorseEnuriaCheckCount; }
 	FORCEINLINE void SetEvasionDashHorseEnuriaCheckCount(const int32 InEvasionDashHorseEnuriaCheckCount) { EvasionDashHorseEnuriaCheckCount = InEvasionDashHorseEnuriaCheckCount; }
 	FORCEINLINE void SetChargeAttackChargeRate(const float InChargeAttackChargeRate) { ChargeAttackChargeRate = InChargeAttackChargeRate; }
+	FORCEINLINE void SetIncreaseKnockBackBothKnockBackPowerRate(const float InIncreaseKnockBackBothKnockBackPowerRate) { IncreaseKnockBackBothKnockBackPowerRate = InIncreaseKnockBackBothKnockBackPowerRate; }
+	FORCEINLINE void SetDashAttackOffencePowerPlus(const float InDashAttackOffencePowerPlus) { DashAttackOffencePowerPlus = InDashAttackOffencePowerPlus; }
+	FORCEINLINE void SetDashAttackCanAttack(const bool DashAttackCanAttack) { bDashAttackCanAttack = DashAttackCanAttack; }
+	FORCEINLINE void SetAttackWeakeningOffencePowerRateIncrease(const float InAttackWeakeningOffencePowerRateIncrease) { AttackWeakeningOffencePowerRateIncrease = InAttackWeakeningOffencePowerRateIncrease; }
+	FORCEINLINE void SetAttackWeakeningWildBoarEnuriaCheckCount(const int32 InAttackWeakeningWildBoarEnuriaCheckCount) { AttackWeakeningWildBoarEnuriaCheckCount = InAttackWeakeningWildBoarEnuriaCheckCount; }
+	FORCEINLINE void SetCrisisAttackMaxOffencePowerRateIncrease(const float InCrisisAttackMaxOffencePowerRateIncrease) { CrisisAttackMaxOffencePowerRateIncrease = InCrisisAttackMaxOffencePowerRateIncrease; }
 	
 	void StartChargeFeather(float Timer);
 	void AddRangeFeatherTargets(AActor* Target);
@@ -215,8 +226,8 @@ private:
 	float KnockBackTransmissionKnockBackPower;
 	float QuadrupleHitKnockBackPower;
 	float QuadrupleHitDamageRate;
-	float FasterKnockBackSpeedRate;
-	float IncreaseKnockBackDamageByEnuriaCountDamageRate;
+	float FasterKnockBackSpeedRateIncrease;
+	float IncreaseKnockBackDamageDamageRateIncrease;
 	float RangeKnockBackKnockBackPower;
 	float VampireRecoveryRate;
 	int32 BleedingTransmissionStack;
@@ -227,6 +238,12 @@ private:
 	int32 DoubleDashHorseEnuriaCheckCount;
 	int32 EvasionDashHorseEnuriaCheckCount;
 	float ChargeAttackChargeRate;
+	float IncreaseKnockBackBothKnockBackPowerRate;
+	float DashAttackOffencePowerPlus;
+	uint8 bDashAttackCanAttack : 1;
+	float AttackWeakeningOffencePowerRateIncrease;
+	int32 AttackWeakeningWildBoarEnuriaCheckCount;
+	float CrisisAttackMaxOffencePowerRateIncrease;
 
 	// 상태 관련 함수
 protected:

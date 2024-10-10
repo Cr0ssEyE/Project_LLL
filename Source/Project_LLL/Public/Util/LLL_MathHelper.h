@@ -103,11 +103,11 @@ public:
 			return false;
 		}
 		
-		if (const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(Character))
+		if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Character))
 		{
-			const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
-			FallableCheckPower = PlayerCharacterAttributeSet->GetFalloutablePower();
+			FallableCheckPower = PlayerAttributeSet->GetFalloutablePower();
 		}
 		else
 		{
@@ -130,8 +130,11 @@ public:
 		return CalculateResult;
 	}
 
-	static float CalculateCriticalDamage(const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet, const float OffensePower)
+	static float CalculateCriticalDamage(const float OffensePower, const ALLL_PlayerBase* Player)
 	{
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+
 		const float CriticalChance = PlayerAttributeSet->GetCriticalChance();
 		const float CriticalAmplify = PlayerAttributeSet->GetCriticalAmplify();
 	

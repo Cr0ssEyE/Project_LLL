@@ -539,30 +539,17 @@ void ALLL_PlayerBase::ReadyToUseSkill()
 	bCanSkill = true;
 }
 
-int32 ALLL_PlayerBase::GetEnuriaCount() const
+int32 ALLL_PlayerBase::GetEnuriaCount(EAnimalType AnimalType) const
 {
-	return FLLL_AbilityDataHelper::GottenAbilityArrayEffectHandles(GetWorld()).Num();
-}
-
-int32 ALLL_PlayerBase::GetWolfEnuriaCount() const
-{
-	int32 Count = 0;
-	for (const auto AbilityData : FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld()))
+	if (AnimalType == EAnimalType::None)
 	{
-		if (AbilityData->AnimalType == EAnimalType::Wolf)
-		{
-			Count++;
-		}
+		return FLLL_AbilityDataHelper::GottenAbilityArrayEffectHandles(GetWorld()).Num();
 	}
-	return Count;
-}
 
-int32 ALLL_PlayerBase::GetHorseEnuriaCount() const
-{
 	int32 Count = 0;
 	for (const auto AbilityData : FLLL_AbilityDataHelper::GottenAbilityArray(GetWorld()))
 	{
-		if (AbilityData->AnimalType == EAnimalType::Horse)
+		if (AbilityData->AnimalType == AnimalType)
 		{
 			Count++;
 		}
@@ -704,25 +691,6 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 	if (IsValid(Monster))
 	{
 		LastAttackerMonsterId = Monster->GetId();
-	}
-
-	// 쾌속난타 이누리아
-	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_FASTER_ATTACK))
-	{
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(this);
-		EffectContextHandle.AddInstigator(this, this);
-		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->FasterAttackResetAttackSpeedEffect, GetAbilityLevel(), EffectContextHandle);
-		if (EffectSpecHandle.IsValid())
-		{
-			const ULLL_ExtendedGameplayEffect* FasterAttackResetAttackSpeedEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->FasterAttackResetAttackSpeedEffect.GetDefaultObject());
-			const FAbilityDataTable* AbilityData = FasterAttackResetAttackSpeedEffect->GetAbilityData();
-			const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
-			const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type) * -1.0f;
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
-			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-		}
 	}
 }
 

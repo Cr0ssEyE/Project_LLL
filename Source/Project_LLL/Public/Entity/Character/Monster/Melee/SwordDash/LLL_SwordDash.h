@@ -47,12 +47,6 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> SwordMeshComponent;
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<UStaticMeshComponent> LeftShoulderGuardMeshComponent;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<UStaticMeshComponent> ShoulderGuardMeshComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDashing : 1;
