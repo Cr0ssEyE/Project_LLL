@@ -33,7 +33,7 @@ public:
 			OffencePower *= 1 + Player->GetAttackWeakeningOffencePowerRateIncrease();
 		}
 
-		// 승부 굳히기 이누리아
+		// 패기 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CRISIS_ATTACK))
 		{
 			const float MaxHealth = PlayerAttributeSet->GetMaxHealth();
@@ -47,7 +47,7 @@ public:
 			}
 
 			const float OffencePowerRate = (100.0f - HealthRate) / (100.0f - MinHealthRate);
-			UE_LOG(LogTemp, Log, TEXT("승부 굳히기 이누리아로 %f%% 추가 데미지"), OffencePowerRate * 100.0f)
+			UE_LOG(LogTemp, Log, TEXT("패기 이누리아로 %f%% 추가 데미지"), OffencePowerRate * 100.0f)
 			OffencePower *= 1 + Player->GetCrisisAttackMaxOffencePowerRateIncrease() * OffencePowerRate;
 		}
 		OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();

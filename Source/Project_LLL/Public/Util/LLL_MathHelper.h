@@ -135,8 +135,8 @@ public:
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
-		const float CriticalChance = PlayerAttributeSet->GetCriticalChance();
-		const float CriticalAmplify = PlayerAttributeSet->GetCriticalAmplify();
+		float CriticalChance = PlayerAttributeSet->GetCriticalChance();
+		CriticalChance += PlayerAttributeSet->GetCriticalChancePlus();
 	
 		bool bIsChance = false;
 		if (CriticalChance != 0.0f)
@@ -149,7 +149,7 @@ public:
 			UE_LOG(LogTemp, Log, TEXT("치명타 발동 (확률 : %.2f%%)"), CriticalChance * 100.0f)
 		}
 		
-		return bIsChance ? CriticalAmplify * OffensePower : OffensePower;
+		return bIsChance ? OffensePower * PlayerAttributeSet->GetCriticalAmplify() : OffensePower;
 	}
 	
 	static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)
