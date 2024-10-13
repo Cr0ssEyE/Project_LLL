@@ -11,7 +11,6 @@
 #include "DataTable/LLL_RewardDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"
-#include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "System/MapGimmick/Components/LLL_GateSpawnPointComponent.h"
 #include "System/MapGimmick/Components/LLL_ShoppingMapComponent.h"
 #include "System/MapGimmick/Components/LLL_PlayerSpawnPointComponent.h"
@@ -22,7 +21,7 @@
 #include "LevelSequencePlayer.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Entity/Character/Player/LLL_PlayerController.h"
+#include "Entity/Object/Interactive/LLL_AbilityRewardObject.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Game/LLL_GameInstance.h"
 #include "Game/LLL_GameProgressManageSubSystem.h"
@@ -37,7 +36,6 @@ ALLL_MapGimmick::ALLL_MapGimmick()
 	SetRootComponent(RootBox);
 
 	MapDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_MapDataAsset>(PATH_MAP_DATA, EAssertionLevel::Check);
-	RewardGimmick = CreateDefaultSubobject<ALLL_RewardGimmick>(TEXT("RewardGimmick"));
 	CurrentState = EStageState::READY;
 
 	FadeInSequence = MapDataAsset->FadeIn;
@@ -98,7 +96,7 @@ void ALLL_MapGimmick::BeginPlay()
 	StateChangeActions.Add(EStageState::FIGHT, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetFight)));
 	StateChangeActions.Add(EStageState::REWARD, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetChooseReward)));
 	StateChangeActions.Add(EStageState::NEXT, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetChooseNext)));
-
+	RewardGimmick = GetWorld()->SpawnActor<ALLL_RewardGimmick>(ALLL_RewardGimmick::StaticClass(), GetTransform());
 	RewardGimmick->SetDataTable();
 	RewardGimmick->InformMapGimmickIsExist();
 	
@@ -117,13 +115,35 @@ void ALLL_MapGimmick::BeginPlay()
 	SequenceActorPtr = FadeOutSequenceActor;
 	FadeOutSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), FadeOutSequence, Settings, SequenceActorPtr);
 	FadeOutSequencePlayer->OnFinished.AddDynamic(this, &ALLL_MapGimmick::SetupGateData);
-
+	
+	SetupLevel();
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayAMB();
 	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->RegisterMapGimmick(this);
 	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->OnLastSessionLoaded.AddDynamic(this, &ALLL_MapGimmick::LoadLastSessionMap);
 	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->LoadLastSessionMapData();
 	// 델리게이트를 통해 마지막 세션 정보를 받아온 뒤, 세션 정보를 기반으로 진행도 초기화
+}
+
+void ALLL_MapGimmick::SetupLevel()
+{
+	for (auto Actor : GetWorld()->GetCurrentLevel()->Actors)
+	{
+		if (ALLL_GateObject* Gate = Cast<ALLL_GateObject>(Actor))
+		{
+			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
+			RewardGimmick->SetRewardToGate(Gate);
+			Gates.Add(Gate);
+		}
+
+		if (ALLL_MonsterSpawner* Spawner = Cast<ALLL_MonsterSpawner>(Actor))
+		{
+			MonsterSpawner = Spawner;
+			MonsterSpawner->StartSpawnDelegate.AddDynamic(this, &ALLL_MapGimmick::OnOpponentSpawn);
+			MonsterSpawner->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::OnOpponentDestroyed);
+		}
+		SetState(EStageState::READY);
+	}
 }
 
 void ALLL_MapGimmick::LoadLastSessionMap(FStageInfoData StageInfoData)
@@ -136,9 +156,10 @@ void ALLL_MapGimmick::LoadLastSessionMap(FStageInfoData StageInfoData)
 	Seed = StageInfoData.Seed;
 	CurrentRoomNumber = StageInfoData.RoomNumber;
 	bIsLoadedFromSave = StageInfoData.bIsLoadedFromSave;
+
 	// StageInfoData->GatesRewardID;
 
-	// = 마지막 세션이 플레이 도중이 아님
+	/*// = 마지막 세션이 플레이 도중이 아님
 	if (Seed == UINT32_MAX || CurrentRoomNumber == UINT32_MAX)
 	{
 		RandomMap();
@@ -158,10 +179,10 @@ void ALLL_MapGimmick::LoadLastSessionMap(FStageInfoData StageInfoData)
 		{
 			RoomClass = MapDataAsset->Rooms[Seed];
 		}
-	}
+	}*/
 
-	ALLL_PlayerController* PlayerController = Cast<ALLL_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	PlayerController->PlayerInitializedDelegate.AddDynamic(this, &ALLL_MapGimmick::CreateMap);
+	//ALLL_PlayerController* PlayerController = Cast<ALLL_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	//PlayerController->PlayerInitializedDelegate.AddDynamic(this, &ALLL_MapGimmick::CreateMap);
 }
 
 void ALLL_MapGimmick::CreateMap()
@@ -314,6 +335,11 @@ void ALLL_MapGimmick::ChangeMap(AActor* DestroyedActor)
 	CreateMap();
 }
 
+void ALLL_MapGimmick::ChangeLevel()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), LevelName);
+}
+
 void ALLL_MapGimmick::AllGatesDestroy()
 {
 	if (Gates.Num() == 0)
@@ -350,7 +376,7 @@ void ALLL_MapGimmick::SetupGateData()
 		return;
 	}
 
-	RoomChildActors.Empty();
+	/*RoomChildActors.Empty();
 	if(IsValid(ShoppingMapComponent))
 	{
 		ShoppingMapComponent->DeleteProducts();
@@ -359,9 +385,10 @@ void ALLL_MapGimmick::SetupGateData()
 	PlayerSpawnPointComponent = nullptr;
 	RoomSequencerPlayComponent = nullptr;
 	
-	RoomActor->Destroy();
+	RoomActor->Destroy();*/
 	
 	bIsNextGateInteracted = false;
+	ChangeLevel();
 }
 
 void ALLL_MapGimmick::SetState(EStageState InNewState)
@@ -385,20 +412,16 @@ void ALLL_MapGimmick::SetState(EStageState InNewState)
 
 void ALLL_MapGimmick::SetReady()
 {
-	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
+	
 }
 
 void ALLL_MapGimmick::SetFight()
 {
-	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
-	
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetBattleParameter(1.0f);
 }
 
 void ALLL_MapGimmick::SetChooseReward()
 {
-	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
-	
 	RewardSpawn();
 
 	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetBattleParameter(0.0f);
@@ -406,8 +429,6 @@ void ALLL_MapGimmick::SetChooseReward()
 
 void ALLL_MapGimmick::SetChooseNext()
 {
-	UE_LOG(LogTemp, Log, TEXT("맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(CurrentState)));
-
 	EnableAllGates();
 }
 
@@ -435,26 +456,14 @@ void ALLL_MapGimmick::RewardSpawn()
 	RewardGimmick->SetRewardButtons();
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	FTransform RewardTransform = Player->GetTransform();
-	ALLL_RewardObject* RewardObject = GetWorld()->SpawnActorDeferred<ALLL_RewardObject>(RewardObjectClass, RewardTransform);
+	ALLL_AbilityRewardObject* RewardObject = GetWorld()->SpawnActor<ALLL_AbilityRewardObject>(ALLL_AbilityRewardObject::StaticClass(), RewardTransform);
 	FVector Vector = RewardObject->GetActorLocation();
-	Vector.Z += 150;
+	Vector.Z += 100;
 	RewardObject->SetActorLocation(Vector);
 	if (IsValid(RewardObject))
 	{
 		RewardObject->SetInformation(RewardData);
 		RewardObject->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::RewardDestroyed);
-	}
-	switch (RewardData->ID)
-	{
-	case 1:
-		break;
-	case 2:
-		break;
-	case 3:
-		break;
-	case 4:
-		break;
-	default: ;
 	}
 	
 	FHitResult Result;

@@ -42,7 +42,7 @@ void ALLL_LobbyManagementActor::BeginPlay()
 	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->InitializeLastSessionMapData(true);
 	
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	Player->SetActorEnableCollision(false);
+	Player->SetActorEnableCollision(true);
 	Player->SetActorHiddenInGame(true);
 	Player->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
@@ -204,7 +204,7 @@ void ALLL_LobbyManagementActor::PlayerEnteringDungeon()
 
 void ALLL_LobbyManagementActor::OnDungeonEnterCompleted()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), LEVEL_TEST);
+	UGameplayStatics::OpenLevel(GetWorld(), LEVEL_STAGE1_02);
 }
 
 void ALLL_LobbyManagementActor::WorldTreeInteractionEvent()
