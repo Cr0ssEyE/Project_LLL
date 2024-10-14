@@ -24,10 +24,6 @@ ALLL_SwordDash::ALLL_SwordDash()
 	DashDamageRangeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	DashDamageRangeBox->SetCollisionProfileName(CP_INTERACTION);
 	DashDamageRangeBox->SetupAttachment(RootComponent);
-
-	SwordMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sword"));
-	SwordMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
-	SwordMeshComponent->SetupAttachment(RootComponent);
 }
 
 void ALLL_SwordDash::BeginPlay()
@@ -35,10 +31,6 @@ void ALLL_SwordDash::BeginPlay()
 	Super::BeginPlay();
 
 	SwordDashDataAsset = Cast<ULLL_SwordDashDataAsset>(MeleeMonsterDataAsset);
-	
-	SwordMeshComponent->SetStaticMesh(SwordDashDataAsset->SwordMesh);
-	SwordMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->SwordAttachSocketName);
-	SwordMeshComponent->SetRelativeTransform(SwordDashDataAsset->SwordTransform);
 }
 
 void ALLL_SwordDash::Tick(float DeltaSeconds)
