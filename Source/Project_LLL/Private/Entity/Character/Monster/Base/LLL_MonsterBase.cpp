@@ -130,7 +130,7 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 		{
 			Destroy();
 		}
-		else
+		else if (!CheckCharacterIsDead())
 		{
 			Dead();
 		}
