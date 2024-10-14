@@ -7,13 +7,12 @@
 #include "GameplayEffectExtension.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Base/LLL_BaseCharacter.h"
-#include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
 ULLL_CharacterAttributeSetBase::ULLL_CharacterAttributeSetBase() :
-	AttackSpeed(100.f)
+	AttackSpeed(100.f),
+	ReceiveDamageRate(1.0f)
 {
 	
 }
@@ -30,6 +29,11 @@ void ULLL_CharacterAttributeSetBase::PostAttributeChange(const FGameplayAttribut
 	
 	const ALLL_BaseCharacter* OwnerCharacter = CastChecked<ALLL_BaseCharacter>(GetOwningActor());
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
+
+	if (Attribute != GetReceiveDamageAttribute() && Attribute != GetCurrentHealthAttribute())
+	{
+		UE_LOG(LogTemp, Log, TEXT("%s의 %s가 변경 %f -> %f"), *GetOwningActor()->GetName(), *Attribute.GetName(), OldValue, NewValue)
+	}
 }
 
 bool ULLL_CharacterAttributeSetBase::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)

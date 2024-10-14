@@ -14,6 +14,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/Object/Thrown/LLL_ThrownFeatherAttributeSet.h"
+#include "Util/LLL_AbilityDataHelper.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_ThrownFeather::ALLL_ThrownFeather()
@@ -83,9 +84,8 @@ void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpee
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 		OffencePower = AbilityData->AbilityValue2 / static_cast<uint32>(AbilityData->Value2Type);
-		OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
 		OffencePower *= PlayerAttributeSet->GetFeatherOffencePowerRate();
-		OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+		OffencePower = FLLL_AbilityDataHelper::CalculateOffencePower(OffencePower, Player);
 		OffencePower += PlayerAttributeSet->GetFeatherOffencePowerPlus();
 	}
 }
@@ -125,8 +125,7 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 						if (i == HitCount - 2)
 						{
 							KnockBackPower = Player->GetQuadrupleHitKnockBackPower();
-							KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
-							KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+							KnockBackPower = FLLL_AbilityDataHelper::CalculateKnockBackPower(KnockBackPower, Player);
 							
 							KnockBackTo(Direction, Other);
 						}

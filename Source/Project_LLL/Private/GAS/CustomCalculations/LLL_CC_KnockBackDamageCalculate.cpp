@@ -7,6 +7,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
+#include "Util/LLL_AbilityDataHelper.h"
 
 float ULLL_CC_KnockBackDamageCalculate::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
 {
@@ -23,16 +24,15 @@ float ULLL_CC_KnockBackDamageCalculate::CalculateBaseMagnitude_Implementation(co
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 	Result = FMath::Sqrt(KnockBackPower) + FMath::Sqrt(KnockBackPower + KnockBackPower * PlayerAttributeSet->GetKnockBackConstant());
-	Result *= PlayerAttributeSet->GetAllOffencePowerRate();
 	Result *= PlayerAttributeSet->GetKnockBackOffencePowerRate();
 	
 	// 질량 축적 이누리아
 	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE))
 	{
 		UE_LOG(LogTemp, Log, TEXT("이누리아 갯수 : %d"), Player->GetEnuriaCount())
-		Result *= 1 + Player->GetIncreaseKnockBackDamageByEnuriaCountDamageRate() * Player->GetEnuriaCount();
+		Result *= 1 + Player->GetIncreaseKnockBackDamageDamageRateIncrease() * Player->GetEnuriaCount();
 	}
-	Result += PlayerAttributeSet->GetAllOffencePowerPlus();
+	Result = FLLL_AbilityDataHelper::CalculateOffencePower(Result, Player);
 	Result += PlayerAttributeSet->GetKnockBackOffencePowerPlus();
 
 	UE_LOG(LogTemp, Log, TEXT("넉백 피해 : %f"), Result)

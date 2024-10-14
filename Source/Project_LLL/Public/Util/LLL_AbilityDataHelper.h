@@ -20,13 +20,65 @@
 class PROJECT_LLL_API FLLL_AbilityDataHelper
 {
 public:
+	static float CalculateOffencePower(float OffencePower, const ALLL_PlayerBase* Player)
+	{
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+
+		OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
+
+		// 일방적인 공격 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_ATTACK_WEAKENING) && Player->GetEnuriaCount(EAnimalType::WildBoar) >= Player->GetAttackWeakeningWildBoarEnuriaCheckCount())
+		{
+			OffencePower *= 1 + Player->GetAttackWeakeningOffencePowerRateIncrease();
+		}
+
+		// 패기 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CRISIS_ATTACK))
+		{
+			const float MaxHealth = PlayerAttributeSet->GetMaxHealth();
+			const float CurrentHealth = PlayerAttributeSet->GetCurrentHealth();
+			float HealthRate = CurrentHealth / MaxHealth * 100.0f;
+			
+			const float MinHealthRate = PlayerAttributeSet->GetLowHealthPercentage() * 100.0f;
+			if (HealthRate <= MinHealthRate)
+			{
+				HealthRate = MinHealthRate;
+			}
+
+			const float OffencePowerRate = (100.0f - HealthRate) / (100.0f - MinHealthRate);
+			UE_LOG(LogTemp, Log, TEXT("패기 이누리아로 %f%% 추가 데미지"), OffencePowerRate * 100.0f)
+			OffencePower *= 1 + Player->GetCrisisAttackMaxOffencePowerRateIncrease() * OffencePowerRate;
+		}
+		OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+
+		return OffencePower;
+	}
+	
+	static float CalculateKnockBackPower(float KnockBackPower, const ALLL_PlayerBase* Player)
+	{
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+
+		KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
+
+		// 급성장 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_BOTH))
+		{
+			KnockBackPower *= Player->GetIncreaseKnockBackBothKnockBackPowerRate();
+		}
+		KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+
+		return KnockBackPower;
+	}
+	
 	static void SetBleedingPeriodValue(const ALLL_PlayerBase* Player, ULLL_ExtendedGameplayEffect* Effect)
 	{
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 		const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(PlayerASC->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
 
 		// 과다출혈 이누리아
-		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EXCESSIVE_BLEEDING) && Player->GetWolfEnuriaCount() >= Player->GetExcessiveBleedingWolfEnuriaCheckCount())
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EXCESSIVE_BLEEDING) && Player->GetEnuriaCount(EAnimalType::Wolf) >= Player->GetExcessiveBleedingWolfEnuriaCheckCount())
 		{
 			Effect->SetPeriodValue(Player->GetExcessiveBleedingPeriod());
 		}
@@ -64,8 +116,7 @@ public:
 				const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 				float OffencePower = PlayerAttributeSet->GetBleedingExplosionOffencePower();
-				OffencePower *= PlayerAttributeSet->GetAllOffencePowerRate();
-				OffencePower += PlayerAttributeSet->GetAllOffencePowerPlus();
+				OffencePower = CalculateOffencePower(OffencePower, Player);
 
 				FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
 				EffectContextHandle.AddSourceObject(Player);
@@ -200,6 +251,8 @@ public:
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_1, MagnitudeValue1 * 100.0f);
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_2, MagnitudeValue2 * 100.0f);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_MINUS_VALUE_1, MagnitudeValue1 * -1.0f);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_MINUS_VALUE_2, MagnitudeValue2 * -1.0f);
 			PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		
 			// 어빌리티 부여 계열

@@ -28,10 +28,6 @@ ALLL_SwordDash::ALLL_SwordDash()
 	SwordMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sword"));
 	SwordMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
 	SwordMeshComponent->SetupAttachment(RootComponent);
-
-	ShoulderGuardMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShoulderGuard"));
-	ShoulderGuardMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
-	ShoulderGuardMeshComponent->SetupAttachment(RootComponent);
 }
 
 void ALLL_SwordDash::BeginPlay()
@@ -43,10 +39,6 @@ void ALLL_SwordDash::BeginPlay()
 	SwordMeshComponent->SetStaticMesh(SwordDashDataAsset->SwordMesh);
 	SwordMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->SwordAttachSocketName);
 	SwordMeshComponent->SetRelativeTransform(SwordDashDataAsset->SwordTransform);
-
-	ShoulderGuardMeshComponent->SetStaticMesh(SwordDashDataAsset->ShoulderGuardMesh);
-	ShoulderGuardMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->ShoulderGuardAttachSocketName);
-	ShoulderGuardMeshComponent->SetRelativeTransform(SwordDashDataAsset->ShoulderGuardTransform);
 }
 
 void ALLL_SwordDash::Tick(float DeltaSeconds)

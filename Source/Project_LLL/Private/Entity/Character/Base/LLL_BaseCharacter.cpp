@@ -162,7 +162,6 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	{
 		FGameplayEventData PayloadData;
 		PayloadData.Instigator = Other;
-		
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
 	}
 }
