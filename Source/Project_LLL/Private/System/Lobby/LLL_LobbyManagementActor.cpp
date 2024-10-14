@@ -188,22 +188,26 @@ void ALLL_LobbyManagementActor::PlayerEnteringDungeon()
 		LobbySequenceActor->PlaybackSettings = Settings;
 		LobbySequenceActor->FinishSpawning(FTransform::Identity);
 	}
-
-	LobbySequenceActor->SetSequence(LobbyDataAsset->DungeonEnterSequence);
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->InitializeLastSessionPlayData();
+	OnDungeonEnterCompleted();
+	//크리티컬하게 터지는데 왜 터지는지 도저히 모르겠음
+	/*LobbySequenceActor->SetSequence(LobbyDataAsset->DungeonEnterSequence);
 	LobbySequenceActor->GetSequencePlayer()->OnFinished.AddDynamic(this, &ALLL_LobbyManagementActor::OnDungeonEnterCompleted);
-	LobbySequenceActor->GetSequencePlayer()->Play();
-
+	
 	if (IsValid(PlayerTeleportNiagara))
 	{
 		PlayerTeleportNiagara->SetWorldLocation(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation());
 		PlayerTeleportNiagara->ActivateSystem();
 	}
 
-	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->InitializeLastSessionPlayData();
+	LobbySequenceActor->GetSequencePlayer()->Play();
+
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->InitializeLastSessionPlayData();*/
 }
 
 void ALLL_LobbyManagementActor::OnDungeonEnterCompleted()
 {
+	UE_LOG(LogTemp, Log, TEXT("OnDungeonEnterCompleted()"));
 	UGameplayStatics::OpenLevel(GetWorld(), LEVEL_STAGE1_02);
 }
 
