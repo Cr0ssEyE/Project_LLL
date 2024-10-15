@@ -20,7 +20,7 @@
 #include "Util/LLL_AbilityDataHelper.h"
 
 // Sets default values
-ALLL_RewardGimmick::ALLL_RewardGimmick() :
+ULLL_RewardGimmick::ULLL_RewardGimmick() :
 	TotalRewardWeight(0),
 	bIsButtonEventSetup(false),
 	bMapGimmickIsExist(false),
@@ -31,7 +31,7 @@ ALLL_RewardGimmick::ALLL_RewardGimmick() :
 }
 
 // Called when the game starts or when spawned
-void ALLL_RewardGimmick::BeginPlay()
+void ULLL_RewardGimmick::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -53,25 +53,25 @@ void ALLL_RewardGimmick::BeginPlay()
 	}
 
 	Cast<ULLL_GameInstance>(GetGameInstance())->RewardGimmick = this;
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_RewardGimmick::WaitPlayerInitialize);
+	GetWorldTimerManager().SetTimerForNextTick(this, &ULLL_RewardGimmick::WaitPlayerInitialize);
 	SetDataTable();
 }
 
 // Called every frame
-void ALLL_RewardGimmick::Tick(float DeltaTime)
+void ULLL_RewardGimmick::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-void ALLL_RewardGimmick::SetRewardToGate(ALLL_GateObject* Gate)
+void ULLL_RewardGimmick::SetRewardToGate(ALLL_GateObject* Gate)
 {
 	const uint8 Index = FMath::RandRange(0, RewardData.Num() - 1);
 	
 	Gate->SetGateInformation(RewardData[Index]);
 }
 
-void ALLL_RewardGimmick::SetRewardButtons()
+void ULLL_RewardGimmick::SetRewardButtons()
 {
 	if (RewardData.IsEmpty() || AbilityData.IsEmpty())
 	{
@@ -90,19 +90,19 @@ void ALLL_RewardGimmick::SetRewardButtons()
     const ULLL_PlayerUIManager* PlayerUIManager = Player->GetPlayerUIManager();
     ULLL_SelectRewardWidget* RewardWidget = PlayerUIManager->GetSelectRewardWidget();
 
-	if (!RewardWidget->GetFirstButton()->OnClicked.IsAlreadyBound(this, &ALLL_RewardGimmick::ClickFirstButton))
+	if (!RewardWidget->GetFirstButton()->OnClicked.IsAlreadyBound(this, &ULLL_RewardGimmick::ClickFirstButton))
 	{
-		RewardWidget->GetFirstButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickFirstButton);
+		RewardWidget->GetFirstButton()->OnClicked.AddDynamic(this, &ULLL_RewardGimmick::ClickFirstButton);
 	}
 	
-	if (!RewardWidget->GetSecondButton()->OnClicked.IsAlreadyBound(this, &ALLL_RewardGimmick::ClickSecondButton))
+	if (!RewardWidget->GetSecondButton()->OnClicked.IsAlreadyBound(this, &ULLL_RewardGimmick::ClickSecondButton))
 	{
-		RewardWidget->GetSecondButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickSecondButton);
+		RewardWidget->GetSecondButton()->OnClicked.AddDynamic(this, &ULLL_RewardGimmick::ClickSecondButton);
 	}
 
-	if (!RewardWidget->GetThirdButton()->OnClicked.IsAlreadyBound(this, &ALLL_RewardGimmick::ClickThirdButton))
+	if (!RewardWidget->GetThirdButton()->OnClicked.IsAlreadyBound(this, &ULLL_RewardGimmick::ClickThirdButton))
 	{
-		RewardWidget->GetThirdButton()->OnClicked.AddDynamic(this, &ALLL_RewardGimmick::ClickThirdButton);
+		RewardWidget->GetThirdButton()->OnClicked.AddDynamic(this, &ULLL_RewardGimmick::ClickThirdButton);
 	}
 	
     bIsButtonEventSetup = true;
@@ -189,7 +189,7 @@ void ALLL_RewardGimmick::SetRewardButtons()
 	ButtonAbilityDataArray.Empty();
 }
 
-void ALLL_RewardGimmick::SetDataTable()
+void ULLL_RewardGimmick::SetDataTable()
 {
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
 	
@@ -197,7 +197,7 @@ void ALLL_RewardGimmick::SetDataTable()
 	AbilityData = GameInstance->GetAbilityDataTable();
 }
 
-void ALLL_RewardGimmick::SetRewardWeight()
+void ULLL_RewardGimmick::SetRewardWeight()
 {
 	NormalizedWeightRewardArray.Empty();
 	for (const auto Data : AbilityData)
@@ -211,7 +211,7 @@ void ALLL_RewardGimmick::SetRewardWeight()
 	}
 }
 
-void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, float>> AbilityDataTable)
+void ULLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, float>> AbilityDataTable)
 {
 	for (int i = 0; i < 3 - ButtonAbilityDataArray.Num(); ++i)
 	{
@@ -304,7 +304,7 @@ void ALLL_RewardGimmick::RollReward(TArray<TTuple<const FAbilityDataTable*, floa
 	}
 }
 
-void ALLL_RewardGimmick::WaitPlayerInitialize()
+void ULLL_RewardGimmick::WaitPlayerInitialize()
 {
 	ALLL_PlayerController* PlayerController = Cast<ALLL_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if (IsValid(PlayerController) && PlayerController->CheckPlayerInitialized() && !bMapGimmickIsExist)
@@ -312,32 +312,32 @@ void ALLL_RewardGimmick::WaitPlayerInitialize()
 		SetRewardButtons();
 		return;
 	}
-	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_RewardGimmick::WaitPlayerInitialize);
+	GetWorldTimerManager().SetTimerForNextTick(this, &ULLL_RewardGimmick::WaitPlayerInitialize);
 }
 
-void ALLL_RewardGimmick::ClickFirstButton()
+void ULLL_RewardGimmick::ClickFirstButton()
 {
 	ClickButtonEvent(ButtonAbilityData1);
 }
 
-void ALLL_RewardGimmick::ClickSecondButton()
+void ULLL_RewardGimmick::ClickSecondButton()
 {
 	ClickButtonEvent(ButtonAbilityData2);
 }
 
-void ALLL_RewardGimmick::ClickThirdButton()
+void ULLL_RewardGimmick::ClickThirdButton()
 {
 	ClickButtonEvent(ButtonAbilityData3);
 }
 
-void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbilityData)
+void ULLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbilityData)
 {
 	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetWorld()->GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
 	if (IsValid(AbilityManageSubSystem))
 	{
 		//플레이어에게 AbilityData에 따라서 Tag 또는 GA 부여
 		FAsyncLoadEffectByIDDelegate AsyncLoadEffectDelegate;
-		AsyncLoadEffectDelegate.AddDynamic(this, &ALLL_RewardGimmick::ReceivePlayerEffectsHandle);
+		AsyncLoadEffectDelegate.AddDynamic(this, &ULLL_RewardGimmick::ReceivePlayerEffectsHandle);
 		AbilityManageSubSystem->ASyncLoadEffectsByID(AsyncLoadEffectDelegate, EEffectOwnerType::Player, ButtonAbilityData->ID, EEffectAccessRange::None);
 	}
 	
@@ -358,7 +358,7 @@ void ALLL_RewardGimmick::ClickButtonEvent(const FAbilityDataTable* ButtonAbility
 #endif
 }
 
-void ALLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID)
+void ULLL_RewardGimmick::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID)
 {
 	FLLL_AbilityDataHelper::ApplyEnuriaEffect(GetWorld(), LoadedEffects, EffectID, AbilityData, bIsTest);
 	SetRewardWeight();

@@ -32,13 +32,13 @@ struct FTestAbilityDataID
 };
 
 UCLASS()
-class PROJECT_LLL_API ALLL_RewardGimmick : public ALLL_SystemBase
+class PROJECT_LLL_API ULLL_RewardGimmick : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ALLL_RewardGimmick();
+	ULLL_RewardGimmick();
 
 	FORCEINLINE const FRewardDataTable* GetRewardData(uint8 index) { return RewardData[index]; }
 	FORCEINLINE void InformMapGimmickIsExist() { bMapGimmickIsExist = true; }
