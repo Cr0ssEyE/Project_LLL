@@ -15,7 +15,7 @@ class ULLL_SequencerComponent;
 enum class EStageState : uint8;
 class UBoxComponent;
 class ALLL_GateObject;
-class ALLL_RewardObject;
+class ALLL_AbilityRewardObject;
 class ALLL_MonsterSpawner;
 class ULevelSequencePlayer;
 class ULevelSequence;
@@ -96,6 +96,7 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
+	void SetupLevel();
 
 public:
 	FORCEINLINE ALLL_MonsterSpawner* GetMonsterSpawner() const { return MonsterSpawner; }
@@ -156,6 +157,12 @@ private:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Gate", Meta = (AllowPrivateAccess = "true"))
 	TArray<TWeakObjectPtr<ALLL_GateObject>> Gates;
+	
+	UPROPERTY(EditAnywhere, Category = "Gate", Meta = (AllowPrivateAccess = "true"))
+	FName LevelName;
+
+	UFUNCTION()
+	void ChangeLevel();
 
 	uint8 bIsNextGateInteracted : 1;
 	
@@ -209,7 +216,7 @@ protected:
 // Reward Section
 protected:
 	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<ALLL_RewardObject> RewardObjectClass;
+	TSubclassOf<ALLL_AbilityRewardObject> RewardObjectClass;
 
 	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
 	FVector RewardObjectPosition;

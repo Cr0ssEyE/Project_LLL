@@ -54,6 +54,7 @@ void ALLL_RewardGimmick::BeginPlay()
 
 	Cast<ULLL_GameInstance>(GetGameInstance())->RewardGimmick = this;
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_RewardGimmick::WaitPlayerInitialize);
+	SetDataTable();
 }
 
 // Called every frame

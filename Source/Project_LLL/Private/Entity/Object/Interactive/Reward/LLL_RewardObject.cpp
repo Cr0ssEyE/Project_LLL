@@ -140,9 +140,9 @@ void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 		// 능력
 	case 1:
 		InteractionDelegate.Broadcast(this);
-		SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
+		/*SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 		SelectRewardWidget->SetIsEnabled(true);
-		SelectRewardWidget->FocusToUI();
+		SelectRewardWidget->FocusToUI();*/
 		break;
 		// 재화
 	case 2:
