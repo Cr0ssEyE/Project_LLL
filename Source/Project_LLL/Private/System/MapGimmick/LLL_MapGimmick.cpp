@@ -15,7 +15,7 @@
 #include "System/MapGimmick/Components/LLL_ShoppingMapComponent.h"
 #include "System/MapGimmick/Components/LLL_PlayerSpawnPointComponent.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawner.h"
-#include "System/Reward/LLL_RewardGimmickSubsystem.h"
+#include "Game/LLL_RewardGimmickSubsystem.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"

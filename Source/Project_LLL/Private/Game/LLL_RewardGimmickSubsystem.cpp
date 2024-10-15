@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "System/Reward/LLL_RewardGimmickSubsystem.h"
+#include "Game/LLL_RewardGimmickSubsystem.h"
 
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Entity/Object/Interactive/Gate/LLL_GateObject.h"

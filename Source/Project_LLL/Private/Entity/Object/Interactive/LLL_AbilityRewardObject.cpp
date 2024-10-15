@@ -6,7 +6,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Game/LLL_GameInstance.h"
-#include "System/Reward/LLL_RewardGimmickSubsystem.h"
+#include "Game/LLL_RewardGimmickSubsystem.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 
 void ALLL_AbilityRewardObject::SetInformation(const FRewardDataTable* Data, const uint32 Index)

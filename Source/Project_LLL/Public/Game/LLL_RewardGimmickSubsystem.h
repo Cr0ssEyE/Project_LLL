@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DataTable/LLL_AbilityDataTable.h"
-#include "System/Base/LLL_SystemBase.h"
 #include "LLL_RewardGimmickSubsystem.generated.h"
 
 class UAbilitySystemComponent;

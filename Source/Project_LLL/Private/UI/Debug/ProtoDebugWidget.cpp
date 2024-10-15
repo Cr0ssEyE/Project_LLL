@@ -7,7 +7,7 @@
 #include "Enumeration/LLL_UserInterfaceEnumHelper.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
 #include "Game/LLL_DebugGameInstance.h"
-#include "System/Reward/LLL_RewardGimmickSubsystem.h"
+#include "Game/LLL_RewardGimmickSubsystem.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
 void UProtoDebugWidget::NativeConstruct()
