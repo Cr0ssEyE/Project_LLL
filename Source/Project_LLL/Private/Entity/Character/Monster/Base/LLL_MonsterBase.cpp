@@ -285,8 +285,6 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 		if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 		{
 			const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-
 			if (!Cast<ALLL_BaseCharacter>(Other) && !Cast<ALLL_ThrownObject>(Other) && !Cast<ALLL_AbilityObject>(Other) && !Cast<ALLL_FallableWallGimmick>(Other))
 			{
 				float DotProduct = FVector::DotProduct(HitNormal, FVector::UpVector);
