@@ -101,18 +101,18 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 		FVector Direction = (Other->GetActorLocation() - Player->GetActorLocation()).GetSafeNormal2D();
 		
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 		// 맹렬한 공세 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
 		{
-			float HitCount = 4;
 			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
-			float HitOffsetTime = PlayerDataAsset->QuadrupleHitHitOffsetTime;
-			for (int i = 0; i < HitCount - 1; i++)
+			
+			float HitCount = 4;
+			float HitOffsetTime = 0.01f;
+			for (int i = 0; i < HitCount; i++)
 			{
 				FTimerHandle QuadrupleHitTimerHandle;
-				GetWorld()->GetTimerManager().SetTimer(QuadrupleHitTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, i, HitCount, Other, AbilitySystemInterface, PlayerAttributeSet, Player, Direction]{
+				GetWorld()->GetTimerManager().SetTimer(QuadrupleHitTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, i, HitCount, Other, AbilitySystemInterface, Player, Direction]{
 					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 					EffectContextHandle.AddSourceObject(this);
 					EffectContextHandle.AddInstigator(Player, this);
@@ -121,8 +121,17 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 					{
 						UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지 : %d"), *Other->GetName(), OffencePower, i + 2)
 						EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
-						ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
-						if (i == HitCount - 2)
+						
+						if (i == 0)
+						{
+							ASC->ExecuteGameplayCue(TAG_GAS_CUE_QUADRUPLE_HIT, EffectContextHandle);
+						}
+						else
+						{
+							ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
+						}
+						
+						if (i == HitCount - 1)
 						{
 							KnockBackPower = Player->GetQuadrupleHitKnockBackPower();
 							KnockBackPower = FLLL_AbilityDataHelper::CalculateKnockBackPower(KnockBackPower, Player);
@@ -132,7 +141,7 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 					}
 				}), HitOffsetTime, false);
 
-				HitOffsetTime += 0.1f;
+				HitOffsetTime += PlayerDataAsset->QuadrupleHitHitOffsetTime;
 			}
 		}
 	}

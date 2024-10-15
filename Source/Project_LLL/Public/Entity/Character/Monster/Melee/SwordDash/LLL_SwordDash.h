@@ -29,11 +29,6 @@ protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 public:
-	FORCEINLINE virtual void SetDashing(bool IsDashing) override { bIsDashing = IsDashing; }
-	FORCEINLINE virtual bool IsDashing() const override { return bIsDashing; }
-	
-	virtual void Dash() override;
-	
 	virtual float GetMaxDashDistance() const override;
 	virtual float GetMinDashDistance() const override;
 	virtual float GetDashSpeed() const override;
@@ -44,9 +39,6 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UBoxComponent> DashDamageRangeBox;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<UStaticMeshComponent> SwordMeshComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDashing : 1;

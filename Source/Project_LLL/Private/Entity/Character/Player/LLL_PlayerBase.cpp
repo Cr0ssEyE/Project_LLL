@@ -297,7 +297,6 @@ void ALLL_PlayerBase::CharacterUnDissolveBegin()
 		CharacterDissolveActor->SetActorTransform(GetTransform());
 	}
 	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() + GetMesh()->GetRelativeLocation().Z);
-
 	UMaterialParameterCollection* PlayerMPC = GetGameInstance<ULLL_GameInstance>()->GetPlayerMPC();
 	GetWorld()->GetParameterCollectionInstance(PlayerMPC)->SetScalarParameterValue(PLAYER_CHARACTER_DISSOLVE, 1.f);
 	

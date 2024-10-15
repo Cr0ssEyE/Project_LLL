@@ -130,7 +130,7 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 		{
 			Destroy();
 		}
-		else
+		else if (!CheckCharacterIsDead())
 		{
 			Dead();
 		}
@@ -649,7 +649,7 @@ void ALLL_MonsterBase::ShowHitEffect()
 		}
 	}
 
-	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 1.f);
+	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 0.1f);
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
 }
 
@@ -850,7 +850,7 @@ void ALLL_MonsterBase::UpdateMonsterHitVFX()
 		return;
 	}
 	
-	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, CurrentOpacity - 0.05f);
+	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, CurrentOpacity - 0.005f);
 	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
 }
