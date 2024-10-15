@@ -9,6 +9,7 @@
 #include "DataAsset/Global/LLL_GlobalNiagaraDataAsset.h"
 #include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
 #include "Materials/MaterialParameterCollection.h"
+#include "System/Reward/LLL_RewardGimmickSubsystem.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ULLL_GameInstance::ULLL_GameInstance()
@@ -43,6 +44,8 @@ void ULLL_GameInstance::Init()
 	{
 		GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
 	}));
+
+	GetSubsystem<ULLL_RewardGimmickSubsystem>()->PlayerInitialize();
 }
 
 void ULLL_GameInstance::InitDataTables()

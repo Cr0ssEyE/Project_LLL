@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "System/Base/LLL_SystemBase.h"
-#include "LLL_RewardGimmick.generated.h"
+#include "LLL_RewardGimmickSubsystem.generated.h"
 
 class UAbilitySystemComponent;
 class ULLL_ExtendedGameplayEffect;
@@ -32,25 +32,19 @@ struct FTestAbilityDataID
 };
 
 UCLASS()
-class PROJECT_LLL_API ULLL_RewardGimmick : public UGameInstanceSubsystem
+class PROJECT_LLL_API ULLL_RewardGimmickSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ULLL_RewardGimmick();
+	ULLL_RewardGimmickSubsystem();
 
 	FORCEINLINE const FRewardDataTable* GetRewardData(uint8 index) { return RewardData[index]; }
 	FORCEINLINE void InformMapGimmickIsExist() { bMapGimmickIsExist = true; }
 	FORCEINLINE TArray<const FAbilityDataTable*> GetRolledAbilityData() const { return ButtonAbilityDataArray; }
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	UFUNCTION()
 	void SetRewardToGate(ALLL_GateObject* Gate);
 	
@@ -62,6 +56,10 @@ public:
 	void SetRewardWeight();
 
 	void RollReward(TArray<TTuple<const FAbilityDataTable*, float>> AbilityDataTables);
+	
+	bool IsTest() const;
+
+	void PlayerInitialize();
 	
 protected:
 	void WaitPlayerInitialize();
@@ -102,8 +100,5 @@ protected:
 	// 테스트용
 public:
 	UPROPERTY(EditAnywhere)
-	uint8 bIsTest : 1;
-	
-	UPROPERTY(EditAnywhere, meta=(EditCondition = "bIsTest == true", EditConditionHides))
 	TArray<FTestAbilityDataID> TestAbilityDataID;
 };

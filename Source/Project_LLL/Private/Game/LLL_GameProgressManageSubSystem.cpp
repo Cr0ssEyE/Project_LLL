@@ -13,7 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "System/MapGimmick/Components/LLL_ShoppingMapComponent.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawner.h"
-#include "System/Reward/LLL_RewardGimmick.h"
+#include "System/Reward/LLL_RewardGimmickSubsystem.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
 ULLL_GameProgressManageSubSystem::ULLL_GameProgressManageSubSystem() :
@@ -218,7 +218,7 @@ void ULLL_GameProgressManageSubSystem::SaveLastSessionMapData()
 				if (CurrentStageState == EStageState::REWARD)
 				{
 					CurrentStageInfoData.RewardPosition = MapGimmick->GetRewardPosition();
-					for (auto RolledAbilityData : MapGimmick->GetRewardGimmick()->GetRolledAbilityData())
+					for (auto RolledAbilityData : GetGameInstance()->GetSubsystem<ULLL_RewardGimmickSubsystem>()->GetRolledAbilityData())
 					{
 						CurrentStageInfoData.SpawnedAbilityDataIDArray.Emplace(RolledAbilityData->ID);
 					}
@@ -396,8 +396,8 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerEnuriaEffect(TArray<
 	// 이누리아 개편으로 몇몇 이누리아는 제대로 로드 안될 가능성 있어 체크 필요.
 	ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetGameInstance());
 	TArray<const FAbilityDataTable*> AbilityData = GameInstance->GetAbilityDataTable();
-	if (IsValid(GameInstance->RewardGimmick))
+	if (IsValid(GameInstance->GetSubsystem<ULLL_RewardGimmickSubsystem>()))
 	{
-		FLLL_AbilityDataHelper::ApplyEnuriaEffect(GetWorld(), LoadedEffects, EffectID, AbilityData, GameInstance->RewardGimmick->bIsTest);
+		FLLL_AbilityDataHelper::ApplyEnuriaEffect(GetWorld(), LoadedEffects, EffectID, AbilityData, GameInstance->GetSubsystem<ULLL_RewardGimmickSubsystem>()->IsTest());
 	}
 }

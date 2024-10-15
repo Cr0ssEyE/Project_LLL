@@ -7,7 +7,7 @@
 #include "Enumeration/LLL_UserInterfaceEnumHelper.h"
 #include "Game/LLL_AbilityManageSubSystem.h"
 #include "Game/LLL_DebugGameInstance.h"
-#include "System/Reward/LLL_RewardGimmick.h"
+#include "System/Reward/LLL_RewardGimmickSubsystem.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
 void UProtoDebugWidget::NativeConstruct()
@@ -82,11 +82,11 @@ void UProtoDebugWidget::AllEnuriaDebug()
 void UProtoDebugWidget::ReceivePlayerEffectsHandle(TArray<TSoftClassPtr<ULLL_ExtendedGameplayEffect>>& LoadedEffects, int32 EffectID)
 {
 	TArray<const FAbilityDataTable*> TempAbilityData = CastChecked<ULLL_GameInstance>(GetGameInstance())->GetAbilityDataTable();
-	const ALLL_RewardGimmick* RewardGimmick = CastChecked<ULLL_GameInstance>(GetGameInstance())->RewardGimmick;
+	const ULLL_RewardGimmickSubsystem* RewardGimmickSubsystem = CastChecked<ULLL_GameInstance>(GetGameInstance())->GetSubsystem<ULLL_RewardGimmickSubsystem>();
 
-	if (IsValid(RewardGimmick))
+	if (IsValid(RewardGimmickSubsystem))
 	{
-		FLLL_AbilityDataHelper::ApplyEnuriaEffect(GetWorld(), LoadedEffects, EffectID, TempAbilityData, RewardGimmick->bIsTest);
+		FLLL_AbilityDataHelper::ApplyEnuriaEffect(GetWorld(), LoadedEffects, EffectID, TempAbilityData, RewardGimmickSubsystem->IsTest());
 	}
 	else
 	{

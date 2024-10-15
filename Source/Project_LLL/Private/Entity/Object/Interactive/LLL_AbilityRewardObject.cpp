@@ -6,7 +6,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Game/LLL_GameInstance.h"
-#include "System/Reward/LLL_RewardGimmick.h"
+#include "System/Reward/LLL_RewardGimmickSubsystem.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 
 void ALLL_AbilityRewardObject::SetInformation(const FRewardDataTable* Data, const uint32 Index)
@@ -25,11 +25,11 @@ void ALLL_AbilityRewardObject::InteractiveEvent(AActor* InteractedActor)
 	
 	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
 
-	ALLL_RewardGimmick* RewardGimmick = Cast<ULLL_GameInstance>(GetGameInstance())->RewardGimmick;
-	if (RewardGimmick->bIsTest)
+	ULLL_RewardGimmickSubsystem* RewardGimmickSubsystem = Cast<ULLL_GameInstance>(GetGameInstance())->GetSubsystem<ULLL_RewardGimmickSubsystem>();
+	if (RewardGimmickSubsystem->IsTest())
 	{
 		SelectRewardWidget->Num = Num;
-		RewardGimmick->SetRewardButtons();
+		RewardGimmickSubsystem->SetRewardButtons();
 	}
 	
 	SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);

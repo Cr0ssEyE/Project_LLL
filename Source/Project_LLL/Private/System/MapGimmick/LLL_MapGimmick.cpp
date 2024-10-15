@@ -15,7 +15,7 @@
 #include "System/MapGimmick/Components/LLL_ShoppingMapComponent.h"
 #include "System/MapGimmick/Components/LLL_PlayerSpawnPointComponent.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawner.h"
-#include "System/Reward/LLL_RewardGimmick.h"
+#include "System/Reward/LLL_RewardGimmickSubsystem.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
@@ -96,11 +96,11 @@ void ALLL_MapGimmick::BeginPlay()
 	StateChangeActions.Add(EStageState::FIGHT, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetFight)));
 	StateChangeActions.Add(EStageState::REWARD, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetChooseReward)));
 	StateChangeActions.Add(EStageState::NEXT, FStageChangedDelegateWrapper(FOnStageChangedDelegate::CreateUObject(this, &ALLL_MapGimmick::SetChooseNext)));
-	RewardGimmick = GetWorld()->SpawnActor<ALLL_RewardGimmick>(ALLL_RewardGimmick::StaticClass(), GetTransform());
-	RewardGimmick->SetDataTable();
-	RewardGimmick->InformMapGimmickIsExist();
+	RewardGimmickSubsystem = GetGameInstance()->GetSubsystem<ULLL_RewardGimmickSubsystem>();
+	RewardGimmickSubsystem->SetDataTable();
+	RewardGimmickSubsystem->InformMapGimmickIsExist();
 	
-	RewardData = RewardGimmick->GetRewardData(0);
+	RewardData = RewardGimmickSubsystem->GetRewardData(0);
 
 	PlayerTeleportNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,MapDataAsset->TeleportParticle, FVector::ZeroVector, FRotator::ZeroRotator, MapDataAsset->ParticleScale, false, false);
 	//Sequence Section
@@ -132,7 +132,7 @@ void ALLL_MapGimmick::SetupLevel()
 		if (ALLL_GateObject* Gate = Cast<ALLL_GateObject>(Actor))
 		{
 			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
-			RewardGimmick->SetRewardToGate(Gate);
+			RewardGimmickSubsystem->SetRewardToGate(Gate);
 			Gates.Add(Gate);
 		}
 
@@ -224,7 +224,7 @@ void ALLL_MapGimmick::CreateMap()
 		{
 			ALLL_GateObject* Gate = GetWorld()->SpawnActor<ALLL_GateObject>(MapDataAsset->Gate, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 			Gate->GateInteractionDelegate.AddUObject(this, &ALLL_MapGimmick::OnInteractionGate);
-			RewardGimmick->SetRewardToGate(Gate);
+			RewardGimmickSubsystem->SetRewardToGate(Gate);
 			Gates.Add(Gate);
 		}
 	}
@@ -453,7 +453,7 @@ void ALLL_MapGimmick::RewardSpawn()
 	{
 		return;
 	}
-	RewardGimmick->SetRewardButtons();
+	RewardGimmickSubsystem->SetRewardButtons();
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	FTransform RewardTransform = Player->GetTransform();
 	ALLL_AbilityRewardObject* RewardObject = GetWorld()->SpawnActor<ALLL_AbilityRewardObject>(ALLL_AbilityRewardObject::StaticClass(), RewardTransform);
@@ -492,7 +492,7 @@ void ALLL_MapGimmick::RewardSpawn()
 
 void ALLL_MapGimmick::SetRewardWidget()
 {
-	RewardGimmick->SetRewardButtons();
+	RewardGimmickSubsystem->SetRewardButtons();
 }
 
 void ALLL_MapGimmick::FadeIn()
