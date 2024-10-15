@@ -135,7 +135,7 @@ void ALLL_MapGimmick::SetupLevel()
 			RewardGimmickSubsystem->SetRewardToGate(Gate);
 			Gates.Add(Gate);
 		}
-
+		
 		if (ALLL_MonsterSpawner* Spawner = Cast<ALLL_MonsterSpawner>(Actor))
 		{
 			MonsterSpawner = Spawner;
