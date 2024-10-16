@@ -256,7 +256,7 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, Player, Targets, i, SpawnCount, ThrowCircularAngle, ThrowCircular, Straight, KnockBackPower]{
 			for (const auto Target : Targets)
 			{
-				if (!Straight && !IsValid(Target))
+				if (!Straight && !Cast<ALLL_MonsterBase>(Target))
 				{
 					EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 					return;
