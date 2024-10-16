@@ -20,3 +20,8 @@ void ALLL_BombSkull::BeginPlay()
 
 	BombSkullDataAsset = Cast<ULLL_BombSkullDataAsset>(MeleeMonsterDataAsset);
 }
+
+void ALLL_BombSkull::Attack()
+{
+	Dead();
+}

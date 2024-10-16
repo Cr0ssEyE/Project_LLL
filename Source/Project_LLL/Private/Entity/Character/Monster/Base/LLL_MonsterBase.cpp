@@ -24,6 +24,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
 #include "Entity/Character/Monster/DPSTester/LLL_DPSTester.h"
+#include "Entity/Character/Monster/Melee/BombSkull/LLL_BombSkull.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/LLL_DebugGameInstance.h"
@@ -166,8 +167,8 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 				if (!CheckCharacterIsDead())
 				{
 					MonsterAIController->StartLogic();
+					MonsterAIController->ResumeMove(FAIRequestID::AnyRequest);
 				}
-				MonsterAIController->ResumeMove(FAIRequestID::AnyRequest);
 			}
 		}
 		else
@@ -427,21 +428,18 @@ void ALLL_MonsterBase::Dead()
 	Super::Dead();
 	
 	CharacterAnimInstance->StopAllMontages(1.0f);
-
-	GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
-	GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
 	//GetMesh()->SetCustomDepthStencilValue(0);
 	
 	DropGold(TAG_GAS_SYSTEM_DROP_GOLD, 0);
-
-	ULLL_BaseCharacterAnimInstance* AnimInstance = CastChecked<ULLL_BaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-	AnimInstance->StopAllMontages(1.0f);
 	
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
 	MonsterBaseAIController->StopLogic("Monster Is Dead");
 
 	if (!IsValid(MonsterBaseDataAsset->DeadAnimMontage))
 	{
+		GetCapsuleComponent()->SetCollisionProfileName(CP_RAGDOLL);
+		GetMesh()->SetCollisionProfileName(CP_RAGDOLL);
+		
 		GetMesh()->SetSimulatePhysics(true);
 		GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
 
@@ -516,6 +514,11 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 		}
 		return;
 	}
+
+	if (CheckCharacterIsDead() && !Cast<ALLL_BombSkull>(this))
+	{
+		return;
+	}
 	
 	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
@@ -566,7 +569,7 @@ float ALLL_MonsterBase::GetChargeTimer() const
 	return MonsterAttributeSet->GetChargeTimer();
 }
 
-void ALLL_MonsterBase::Attack() const
+void ALLL_MonsterBase::Attack()
 {
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_ATTACK)))
 	{
