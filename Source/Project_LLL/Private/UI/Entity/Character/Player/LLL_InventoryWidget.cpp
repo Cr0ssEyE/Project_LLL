@@ -108,7 +108,7 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 		if (EffectHandles.IsEmpty())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("SetEruriaImage(): 어빌리티 및 이펙트에서 보상 찾기 실패")));
-			//ensure(false);
+			ensure(false);
 			return false;
 		}
 

@@ -305,6 +305,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 						UE_LOG(LogTemp, Log, TEXT("벽에 %d번 튕김"), DeflectCount)
 						AddKnockBackVelocity(LastKnockBackVelocity, LastKnockBackPower);
 						bStartKnockBackVelocity = false;
+						bKnockBackCauserDamaged = false;
 					}
 				}
 			}
