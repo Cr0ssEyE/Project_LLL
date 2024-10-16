@@ -16,6 +16,7 @@
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
+#include "Util/LLL_AbilityDataHelper.h"
 
 void ULLL_InventoryWidget::NativeConstruct()
 {
@@ -30,9 +31,12 @@ void ULLL_InventoryWidget::NativeConstruct()
 
 void ULLL_InventoryWidget::SetEnuriaInfo(const FAbilityDataTable* AbilityData)
 {
-	if (SetEruriaImage(CommonEruriaImages[CurrentEmptyEruriaSlotIndex], CommonEruriaLevelTexts[CurrentEmptyEruriaSlotIndex], AbilityData))
+	if (CurrentEmptyEruriaSlotIndex < CommonEruriaImages.Num())
 	{
-		CurrentEmptyEruriaSlotIndex++;
+		if (SetEruriaImage(CommonEruriaImages[CurrentEmptyEruriaSlotIndex], CommonEruriaLevelTexts[CurrentEmptyEruriaSlotIndex], AbilityData))
+		{
+			CurrentEmptyEruriaSlotIndex++;
+		}
 	}
 }
 
@@ -100,8 +104,7 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 	}
 	else
 	{
-		TArray<FActiveGameplayEffectHandle> EffectHandles = PlayerASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_ALLOW));
-
+		TArray<FActiveGameplayEffectHandle> EffectHandles = FLLL_AbilityDataHelper::GottenAbilityArrayEffectHandles(GetWorld());
 		if (EffectHandles.IsEmpty())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("SetEruriaImage(): 어빌리티 및 이펙트에서 보상 찾기 실패")));
