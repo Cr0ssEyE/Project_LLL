@@ -33,6 +33,9 @@ public:
 protected:
 	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 	virtual void BeginPlay() override;
+
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 	
 protected:
 	void OpenGate();
