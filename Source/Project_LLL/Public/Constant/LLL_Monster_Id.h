@@ -5,4 +5,6 @@
 #define ID_CLAW_BASIC 101
 #define ID_SWORD_DASH 201
 #define ID_STAFF_BASIC 301
+#define ID_BOMB_SKULL 401
+
 #define ID_MAN_OF_STRENGTH 1001

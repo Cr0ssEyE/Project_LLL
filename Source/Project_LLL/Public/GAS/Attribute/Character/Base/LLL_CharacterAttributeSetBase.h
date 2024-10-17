@@ -38,6 +38,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, AttackSpeed);
 	
 	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, ReceiveDamage);
+	ATTRIBUTE_ACCESSORS(ULLL_CharacterAttributeSetBase, ReceiveDamageRate);
 	
 	// 캐릭터 기본 어트리뷰트 데이터
 protected:
@@ -69,4 +70,7 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ReceiveDamage;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ReceiveDamageRate;
 };

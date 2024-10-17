@@ -36,7 +36,7 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 	
 	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(GameplayEffect.Def);
 
-	if (IsValid(Effect) && (Effect->GetAssetTags().HasTag(TAG_GAS_ABILITY_NESTING_DENY) || Effect->GetAssetTags().HasTag(TAG_GAS_ABILITY_NESTING_DENY)))
+	if (IsValid(Effect) && (Effect->GetAssetTags().HasTag(TAG_GAS_ABILITY_NESTING_ALLOW) || Effect->GetAssetTags().HasTag(TAG_GAS_ABILITY_NESTING_DENY)))
 	{
 		const float CoolDown = Effect->GetAbilityData()->AbilityCooldown;
 		if (Effect->GetAbilityData()->TagID[1] == '1')
@@ -76,11 +76,11 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
 		{
-			Player->SetFasterKnockBackSpeedRate(Value1);
+			Player->SetFasterKnockBackSpeedRateIncrease(Value1);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE))
 		{
-			Player->SetIncreaseKnockBackDamageByEnuriaCountDamageRate(Value1);
+			Player->SetIncreaseKnockBackDamageDamageRateIncrease(Value1);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_VAMPIRE))
 		{
@@ -101,43 +101,48 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 			Player->SetDoubleDashDashRate(Value1);
 			Player->SetDoubleDashHorseEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
 		}
-		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_FASTER_ATTACK))
-		{
-			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
-			ULLL_ExtendedGameplayEffect* FasterAttackResetAttackSpeedEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->FasterAttackResetAttackSpeedEffect.GetDefaultObject());
-			FasterAttackResetAttackSpeedEffect->SetAbilityInfo(Effect->GetAbilityData());
-		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_EVASION_DASH))
 		{
 			Player->SetEvasionDashHorseEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
-			
-			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
-			ULLL_ExtendedGameplayEffect* EvasionDashEvasionEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->EvasionDashEvasionEffect.GetDefaultObject());
-			EvasionDashEvasionEffect->SetAbilityInfo(Effect->GetAbilityData());
 		}
-		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_WAIT_ATTACK))
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_BOTH))
 		{
-			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
-			ULLL_ExtendedGameplayEffect* WaitAttackResetOffencePowerEffect = CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->WaitAttackResetOffencePowerEffect.GetDefaultObject());
-			WaitAttackResetOffencePowerEffect->SetAbilityInfo(Effect->GetAbilityData());
+			Player->SetIncreaseKnockBackBothKnockBackPowerRate(Value1);
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_DASH_ATTACK))
+		{
+			Player->SetDashAttackOffencePowerPlus(Value1);
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_ATTACK_WEAKENING))
+		{
+			Player->SetAttackWeakeningOffencePowerRateIncrease(Value2);
+			Player->SetAttackWeakeningWildBoarEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CRISIS_ATTACK))
+		{
+			Player->SetCrisisAttackMaxOffencePowerRateIncrease(Value1);
 		}
 	}
 
-	if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_MOVE_FASTER))
+	if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_INCREASE_MOVE_SPEED))
 	{
-		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_MOVE_FASTER));
+		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_INCREASE_MOVE_SPEED));
 	}
-	else if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_MORE_ATTACK_KNOCK_BACK))
+	else if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_INCREASE_KNOCK_BACK_POWER))
 	{
-		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_MORE_ATTACK_KNOCK_BACK));
+		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_INCREASE_KNOCK_BACK_POWER));
 	}
-	else if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_FASTER_ATTACK))
+	else if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_RESET_ATTACK_SPEED))
 	{
-		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_FASTER_ATTACK));
+		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_RESET_ATTACK_SPEED));
 	}
-	else if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_WAIT_ATTACK))
+	else if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_EVASION))
 	{
-		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_WAIT_ATTACK));
+		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_EVASION));
+	}
+	else if (GameplayEffect.Def->GetAssetTags().HasTag(TAG_GAS_RESET_OFFENCE_POWER))
+	{
+		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_RESET_OFFENCE_POWER));
 	}
 	
 	return Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);

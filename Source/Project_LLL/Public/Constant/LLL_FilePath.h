@@ -32,6 +32,7 @@
 #define PATH_SWORD_DASH_DATA TEXT("/Script/Project_LLL.LLL_SwordDashDataAsset'/Game/DataAsset/DA_SwordDash.DA_SwordDash'")
 #define PATH_STAFF_BASIC_DATA TEXT("/Script/Project_LLL.LLL_StaffBasicDataAsset'/Game/DataAsset/DA_StaffBasic.DA_StaffBasic'")
 #define PATH_CLAW_BASIC_DATA TEXT("/Script/Project_LLL.LLL_ClawBasicDataAsset'/Game/DataAsset/DA_ClawBasic.DA_ClawBasic'")
+#define PATH_BOMB_SKULL_DATA TEXT("/Script/Project_LLL.LLL_BombSkullDataAsset'/Game/DataAsset/DA_BombSkull.DA_BombSkull'")
 #define PATH_MAN_OF_STRENGTH_DATA TEXT("/Script/Project_LLL.LLL_ManOfStrengthDataAsset'/Game/DataAsset/DA_ManOfStrength.DA_ManOfStrength'")
 #define PATH_DPS_TESTER_MESH TEXT("/Script/Engine.SkeletalMesh'/Game/Entity/Characters/Monster/DPSTester/Meshes/SM_DPSTester.SM_DPSTester'")
 #define PATH_MAN_OF_STRENGTH_BP TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Characters/BP_ManOfStrength.BP_ManOfStrength_C'")

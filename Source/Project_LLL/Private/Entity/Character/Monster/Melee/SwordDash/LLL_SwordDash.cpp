@@ -24,14 +24,6 @@ ALLL_SwordDash::ALLL_SwordDash()
 	DashDamageRangeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	DashDamageRangeBox->SetCollisionProfileName(CP_INTERACTION);
 	DashDamageRangeBox->SetupAttachment(RootComponent);
-
-	SwordMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sword"));
-	SwordMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
-	SwordMeshComponent->SetupAttachment(RootComponent);
-
-	ShoulderGuardMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShoulderGuard"));
-	ShoulderGuardMeshComponent->SetCollisionProfileName(CP_NO_COLLISION);
-	ShoulderGuardMeshComponent->SetupAttachment(RootComponent);
 }
 
 void ALLL_SwordDash::BeginPlay()
@@ -39,14 +31,6 @@ void ALLL_SwordDash::BeginPlay()
 	Super::BeginPlay();
 
 	SwordDashDataAsset = Cast<ULLL_SwordDashDataAsset>(MeleeMonsterDataAsset);
-	
-	SwordMeshComponent->SetStaticMesh(SwordDashDataAsset->SwordMesh);
-	SwordMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->SwordAttachSocketName);
-	SwordMeshComponent->SetRelativeTransform(SwordDashDataAsset->SwordTransform);
-
-	ShoulderGuardMeshComponent->SetStaticMesh(SwordDashDataAsset->ShoulderGuardMesh);
-	ShoulderGuardMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SwordDashDataAsset->ShoulderGuardAttachSocketName);
-	ShoulderGuardMeshComponent->SetRelativeTransform(SwordDashDataAsset->ShoulderGuardTransform);
 }
 
 void ALLL_SwordDash::Tick(float DeltaSeconds)
@@ -105,22 +89,6 @@ void ALLL_SwordDash::NotifyActorBeginOverlap(AActor* OtherActor)
 			}
 #endif
 		}
-	}
-}
-
-void ALLL_SwordDash::Dash()
-{
-	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(TAG_GAS_MONSTER_DASH)))
-	{
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (DebugGameInstance->CheckMonsterAttackDebug())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s : 대시"), *GetName()));
-			}
-		}
-#endif
 	}
 }
 

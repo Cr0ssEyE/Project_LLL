@@ -125,10 +125,10 @@ void ULLL_TitleScreenWidget::OpenIntroLevel()
 {
 	if (bIsLoadTestLevel)
 	{
-		UGameplayStatics::OpenLevel(this, LEVEL_TUTORIAL);
+		UGameplayStatics::OpenLevel(this, LEVEL_LOBBY);
 		return;
 	}
-	UGameplayStatics::OpenLevel(this, LEVEL_TUTORIAL);
+	UGameplayStatics::OpenLevel(this, LEVEL_LOBBY);
 }
 
 void ULLL_TitleScreenWidget::OpenSavedLevel()

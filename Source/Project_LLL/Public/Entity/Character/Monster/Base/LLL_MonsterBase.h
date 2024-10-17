@@ -83,9 +83,6 @@ protected:
 	TObjectPtr<UWidgetComponent> MonsterStatusWidgetComponent;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<UStaticMeshComponent> MaskMeshComponent;
-
-	UPROPERTY(VisibleDefaultsOnly)
 	TSubclassOf<ALLL_FloatingDamageActor> FloatingDamageActor;
 
 	int32 Id;

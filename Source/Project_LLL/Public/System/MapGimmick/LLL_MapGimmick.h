@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "DataTable/LLL_RewardDataTable.h"
 #include "DataAsset/LLL_MapDataAsset.h"
-#include "DataTable/LLL_AbilityDataTable.h"
 #include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "GameFramework/Actor.h"
 #include "System/Base/LLL_SystemBase.h"
@@ -15,14 +14,14 @@ class ULLL_SequencerComponent;
 enum class EStageState : uint8;
 class UBoxComponent;
 class ALLL_GateObject;
-class ALLL_RewardObject;
+class ALLL_AbilityRewardObject;
 class ALLL_MonsterSpawner;
 class ULevelSequencePlayer;
 class ULevelSequence;
 class ALevelSequenceActor;
 class ULLL_ShoppingMapComponent;
 class ULLL_RewardDataTable;
-class ALLL_RewardGimmick;
+class ULLL_RewardGimmickSubsystem;
 class ULLL_PlayerSpawnPointComponent;
 class UNiagaraComponent;
 
@@ -96,13 +95,13 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
+	void SetupLevel();
 
 public:
 	FORCEINLINE ALLL_MonsterSpawner* GetMonsterSpawner() const { return MonsterSpawner; }
 	FORCEINLINE bool CheckShoppingRoom() const { return ShoppingMapComponent != nullptr; }
 	FORCEINLINE ULLL_ShoppingMapComponent* GetShoppingMapComponent() const { return ShoppingMapComponent; }
 	FORCEINLINE EStageState GetStageState() const { return CurrentState; }
-	FORCEINLINE ALLL_RewardGimmick* GetRewardGimmick() const { return RewardGimmick; }
 	FORCEINLINE FVector GetRewardPosition() const { return RewardObjectPosition; }
 	
 protected:
@@ -156,6 +155,12 @@ private:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Gate", Meta = (AllowPrivateAccess = "true"))
 	TArray<TWeakObjectPtr<ALLL_GateObject>> Gates;
+	
+	UPROPERTY(EditAnywhere, Category = "Gate", Meta = (AllowPrivateAccess = "true"))
+	FName LevelName;
+
+	UFUNCTION()
+	void ChangeLevel();
 
 	uint8 bIsNextGateInteracted : 1;
 	
@@ -209,13 +214,13 @@ protected:
 // Reward Section
 protected:
 	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<ALLL_RewardObject> RewardObjectClass;
+	TSubclassOf<ALLL_AbilityRewardObject> RewardObjectClass;
 
 	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
 	FVector RewardObjectPosition;
 	
 	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<ALLL_RewardGimmick> RewardGimmick;
+	TObjectPtr<ULLL_RewardGimmickSubsystem> RewardGimmickSubsystem;
 	
 	const FRewardDataTable* RewardData;
 

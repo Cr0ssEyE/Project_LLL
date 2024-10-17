@@ -9,10 +9,12 @@
 
 // 캐릭터 상태 관련 게임플레이 태그
 #define TAG_GAS_STATUS_BLEEDING FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Bleeding"))
-#define TAG_GAS_STATUS_MOVE_FASTER FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.MoveFaster"))
-#define TAG_GAS_STATUS_MORE_ATTACK_KNOCK_BACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.MoreAttackKnockBack"))
-#define TAG_GAS_STATUS_FASTER_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.FasterAttack"))
-#define TAG_GAS_STATUS_WAIT_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.WaitAttack"))
+#define TAG_GAS_STATUS_INCREASE_MOVE_SPEED FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.IncreaseMoveSpeed"))
+#define TAG_GAS_STATUS_INCREASE_KNOCK_BACK_POWER FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.IncreaseKnockBackPower"))
+#define TAG_GAS_STATUS_RESET_ATTACK_SPEED FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.ResetAttackSpeed"))
+#define TAG_GAS_STATUS_EVASION FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Evasion"))
+#define TAG_GAS_STATUS_RESET_OFFENCE_POWER FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.ResetOffencePower"))
+#define TAG_GAS_STATUS_WEAKENING FGameplayTag::RequestGameplayTag(FName("Character.State.AbnormalStatus.Weakening"))
 
 #define TAG_GAS_STATE_COLLIDE_OTHER FGameplayTag::RequestGameplayTag(FName("Character.State.CollideOther"))
 
@@ -24,6 +26,7 @@
 #define TAG_GAS_ATTACK_HIT_CHECK_COMPLETE FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.CheckComplete"))
 #define TAG_GAS_ATTACK_HIT_CHECK_SUCCESS FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.AttackHitCheck.Success"))
 #define TAG_GAS_FULL_CHARGE_CHECK FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Event.FullChargeCheck"))
+#define TAG_GAS_ANY_ATTACK_SUCCESS FGameplayTag::RequestGameplayTag(FName("Character.Player.Event.AnyAttackSuccess"))
 
 // 플레이어 행동 관련 게임플레이 태그
 #define TAG_GAS_PLAYER_DASH_START FGameplayTag::RequestGameplayTag(FName("Character.Player.Action.Dash.Start"))
@@ -35,10 +38,12 @@
 
 // 플레이어 공격 효과 관련 게임플레이 태그
 #define TAG_GAS_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Bleeding"))
-#define TAG_GAS_MOVE_FASTER FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.MoveFaster"))
-#define TAG_GAS_MORE_ATTACK_KNOCK_BACK FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.MoreAttackKnockBack"))
-#define TAG_GAS_FASTER_ATTACK FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.FasterAttack"))
-#define TAG_GAS_WAIT_ATTACK FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.WaitAttack"))
+#define TAG_GAS_INCREASE_MOVE_SPEED FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.IncreaseMoveSpeed"))
+#define TAG_GAS_INCREASE_KNOCK_BACK_POWER FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.IncreaseKnockBackPower"))
+#define TAG_GAS_RESET_ATTACK_SPEED FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.ResetAttackSpeed"))
+#define TAG_GAS_EVASION FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Evasion"))
+#define TAG_GAS_RESET_OFFENCE_POWER FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.ResetOffencePower"))
+#define TAG_GAS_WEAKENING FGameplayTag::RequestGameplayTag(FName("System.AbnormalStatus.Weakening"))
 
 // 플레이어 부가 효과 구분용 게임플레이 태그
 #define TAG_GAS_PERKS_ATTACK FGameplayTag::RequestGameplayTag(FName("System.Perks.Player.Attack")
@@ -50,6 +55,7 @@
 #define TAG_GAS_MONSTER_CHARGE FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Charge"))
 #define TAG_GAS_MONSTER_FALLABLE FGameplayTag::RequestGameplayTag(FName("Character.Monster.State.Fallable"))
 #define TAG_GAS_MONSTER_DASH FGameplayTag::RequestGameplayTag(FName("Character.Monster.Action.Dash"))
+#define TAG_GAS_MONSTER_KNOCK_BACKED FGameplayTag::RequestGameplayTag(FName("Character.Monster.Event.KnockBacked"))
 
 // 힘 있는 자 게임플레이 태그
 #define TAG_GAS_MAN_OF_STRENGTH_SHOCKWAVE FGameplayTag::RequestGameplayTag(FName("Character.Monster.Boss.ManOfStrength.Action.Shockwave"))
@@ -77,6 +83,11 @@
 #define TAG_GAS_HAVE_EVASION_DASH FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.EvasionDash"))
 #define TAG_GAS_HAVE_CHARGE_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.ChargeAttack"))
 #define TAG_GAS_HAVE_WAIT_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.WaitAttack"))
+#define TAG_GAS_HAVE_INCREASE_KNOCK_BACK_BOTH FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.IncreaseKnockBackBoth"))
+#define TAG_GAS_HAVE_DASH_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.DashAttack"))
+#define TAG_GAS_HAVE_KNOCK_BACK_WEAKENING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.KnockBackWeakening"))
+#define TAG_GAS_HAVE_ATTACK_WEAKENING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.WildBoar.AttackWeakening"))
+#define TAG_GAS_HAVE_CRISIS_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Eagle.CrisisAttack"))
 
 // 어빌리티 규칙 관련 태그
 #define TAG_GAS_ABILITY_NOT_CANCELABLE FGameplayTag::RequestGameplayTag(FName("Ability.Policy.NotCancelable"))
@@ -86,6 +97,8 @@
 #define TAG_GAS_ABILITY_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.Value.2"))
 #define TAG_GAS_ABILITY_HUNDRED_VALUE_1 FGameplayTag::RequestGameplayTag(FName("Ability.HundredValue.1"))
 #define TAG_GAS_ABILITY_HUNDRED_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.HundredValue.2"))
+#define TAG_GAS_ABILITY_MINUS_VALUE_1 FGameplayTag::RequestGameplayTag(FName("Ability.MinusValue.1"))
+#define TAG_GAS_ABILITY_MINUS_VALUE_2 FGameplayTag::RequestGameplayTag(FName("Ability.MinusValue.2"))
 #define TAG_GAS_ABILITY_VALUE_OFFENCE_POWER FGameplayTag::RequestGameplayTag(FName("Ability.Value.OffencePower"))
 #define TAG_GAS_ABILITY_VALUE_PERIOD FGameplayTag::RequestGameplayTag(FName("Ability.Value.Period"))
 
@@ -96,3 +109,6 @@
 // 카메라 관련 태그
 #define TAG_SYSTEM_CAMERA_STATE_FOLLOW_CURSOR FGameplayTag::RequestGameplayTag(FName("System.User.Camera.State.FollowCursor"))
 #define TAG_SYSTEM_CAMERA_STATE_HOLD_TARGET FGameplayTag::RequestGameplayTag(FName("System.User.Camera.State.HoldToTarget"))
+
+// 큐 관련 태그
+#define TAG_GAS_CUE_QUADRUPLE_HIT FGameplayTag::RequestGameplayTag(FName("GameplayCue.Object.ThrownObject.ThrownFeather.QuadrupleHit"))

@@ -9,7 +9,7 @@
 #include "DataTable/LLL_StringDataTable.h"
 #include "LLL_GameInstance.generated.h"
 
-class ALLL_RewardGimmick;
+class ULLL_RewardGimmickSubsystem;
 enum class ELevelSequenceType : uint8;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStageEncounteredDelegate, ELevelSequenceType, SequenceType);
 
@@ -96,8 +96,4 @@ protected:
 	TObjectPtr<const UDataTable> StringDataTable;
 
 	TArray<const FStringDataTable*> StringData;
-
-	// 테스트용
-public:
-	TObjectPtr<ALLL_RewardGimmick> RewardGimmick;
 };
