@@ -9,7 +9,6 @@
 #include "Entity/Character/Monster/DPSTester/LLL_DPSTester.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
-#include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
@@ -35,37 +34,46 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
 	{
+		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
+		if (Monster->CheckCharacterIsDead())
+		{
+			return;
+		}
+		
 		ALLL_BaseCharacter* Attacker = CastChecked<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
 		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
 
 		bool Damaged = false;
-		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 
+		SetReceiveDamage(GetReceiveDamage() * GetReceiveDamageRate());
 		SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
 		if (Cast<ALLL_DPSTester>(Monster))
 		{
 			Monster->Damaged(Attacker, DOT, GetReceiveDamage());
 			Damaged = true;
 		}
-		else if (GetCurrentShield() > 0)
-		{
-			SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
-		
-			Monster->Damaged(Attacker, DOT, GetReceiveDamage());
-			Damaged = true;
-		}
 		else
 		{
-			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-
-			if (GetCurrentHealth() == 0)
+			if (GetCurrentShield() > 0)
 			{
-				Monster->Dead();
+				SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
+		
+				Monster->Damaged(Attacker, DOT, GetReceiveDamage());
+				Damaged = true;
 			}
 			else
 			{
-				Monster->Damaged(Attacker, DOT, GetReceiveDamage());
-				Damaged = true;
+				SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+
+				if (GetCurrentHealth() == 0)
+				{
+					Monster->Dead();
+				}
+				else
+				{
+					Monster->Damaged(Attacker, DOT, GetReceiveDamage());
+					Damaged = true;
+				}
 			}
 		}
 
@@ -100,11 +108,9 @@ void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallb
 			Monster->SetBleedingTransmissionOffencePower(Data.EvaluatedData.Magnitude);
 		}
 		
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 		float Damage = Data.EvaluatedData.Magnitude;
-		Damage *= PlayerAttributeSet->GetAllOffencePowerRate();
 		Damage *= Monster->GetBleedingStack();
-		Damage += PlayerAttributeSet->GetAllOffencePowerPlus();
+		Damage = FLLL_AbilityDataHelper::CalculateOffencePower(Damage, Player);
 
 		// 과다출혈 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EXCESSIVE_BLEEDING) && Monster->GetBleedingStack() == Monster->GetMaxBleedingStack())

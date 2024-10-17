@@ -123,12 +123,9 @@ void ALLL_ThrownObject::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed
 	
 	if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
 	{
-		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 		if (InKnockBackPower > 0)
 		{
-			KnockBackPower *= PlayerAttributeSet->GetKnockBackPowerRate();
-			KnockBackPower += PlayerAttributeSet->GetKnockBackPowerPlus();
+			KnockBackPower = FLLL_AbilityDataHelper::CalculateKnockBackPower(KnockBackPower, Player);
 		}
 	}
 

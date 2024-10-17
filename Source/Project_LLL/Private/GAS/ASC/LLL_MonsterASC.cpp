@@ -8,6 +8,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
+#include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "Interface/LLL_KnockBackInterface.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -68,13 +69,14 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 	{
 		return;
 	}
-
-	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-	const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(PlayerASC->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
-	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActor());
+	
 	if (GameplayEffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_BLEEDING))
 	{
 		RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING));
+
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(PlayerASC->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
+		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActor());
 		
 		if (GetWorld()->GetTimerManager().IsTimerActive(BleedingTimerHandle))
 		{
@@ -103,6 +105,17 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 			Monster->UpdateStackVFX(Monster->GetBleedingStack(), Monster->GetMaxBleedingStack());
 		}), AbnormalStatusAttributeSet->GetBleedingStatusDuration(), false);
 	}
+	else if (GameplayEffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_WEAKENING))
+	{
+		for (const auto EffectHandle : GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_WEAKENING)))
+		{
+			const FActiveGameplayEffect* WeakeningEffect = GetActiveGameplayEffect(EffectHandle);
+			if (WeakeningEffect && Cast<ULLL_ExtendedGameplayEffect>(WeakeningEffect->Spec.Def) == GameplayEffectSpec.Def)
+			{
+				RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_WEAKENING));
+			}
+		}
+	}
 }
 
 void ULLL_MonsterASC::DeadHandle(ALLL_BaseCharacter* Character)
@@ -110,4 +123,5 @@ void ULLL_MonsterASC::DeadHandle(ALLL_BaseCharacter* Character)
 	BleedingTimerHandle.Invalidate();
 
 	RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING));
+	RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_WEAKENING));
 }

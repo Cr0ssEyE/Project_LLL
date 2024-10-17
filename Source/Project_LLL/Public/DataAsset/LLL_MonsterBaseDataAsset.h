@@ -37,16 +37,6 @@ public:
 	FVector2D StatusGaugeSize;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "가면 메시")
-	TObjectPtr<UStaticMesh> MaskMesh;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "가면 부착 소켓 이름")
-	FName MaskAttachSocketName;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Accessory", DisplayName = "가면 트랜스폼")
-	FTransform MaskTransform;
-
-public:
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
 	TMap<TEnumAsByte<EPhysicalSurface>, EMonsterWalkMaterialParameter> StepEventParameterProperties;
 };

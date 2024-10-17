@@ -11,6 +11,7 @@ struct FAbilityIconWrapper;
 class UImage;
 class URichTextBlock;
 struct FAbilityDataTable;
+class ULLL_RewardUIDataAsset;
 /**
  * 
  */
@@ -67,10 +68,6 @@ protected:
 	FORCEINLINE void PlayRewardThreeSelectAnimation() { PlayAnimationForward(RewardThreeSelect, 1.f, true); }
 
 protected:
-	// 임시 데이터이므로 추후 테이블 연결 필요
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 아이콘(임시)")
-	TArray<UTexture2D*> EruriaIConTextures;
-
 	// 3x5 AbilityType - AbilityPart
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 아이콘")
 	TArray<FAbilityIconWrapper> EnhancedEruriaIConTextures;
@@ -80,6 +77,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 레어도 색상")
 	TArray<FLinearColor> EruriaRarityColor;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<const ULLL_RewardUIDataAsset> RewardUIDataAsset;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta=(BindWidgetAnim))
