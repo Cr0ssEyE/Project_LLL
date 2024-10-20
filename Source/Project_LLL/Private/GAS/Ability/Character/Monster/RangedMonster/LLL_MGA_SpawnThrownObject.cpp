@@ -27,9 +27,16 @@ void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 
 	if (IsValid(Player))
 	{
-		const FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(ThrownObject, Player, PlayerAttributeSet->GetMoveSpeed(), MonsterAttributeSet->GetClawBasicPredictionRate());
+		FVector Velocity = Player->GetVelocity();
+		if (Player->GetCapsuleComponent()->GetCollisionProfileName() == CP_PLAYER_EVADE)
+		{
+			Velocity = Player->GetLastVelocityBeforeDash();
+		}
+		
+		const FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(ThrownObject, Player, Velocity, PlayerAttributeSet->GetMoveSpeed(), MonsterAttributeSet->GetClawBasicPredictionRate());
 		const FVector StartLocation = RangedMonster->GetActorLocation();
-		const FVector PredictedDirection = (PredictedLocation - StartLocation).GetSafeNormal();
+		FVector PredictedDirection = (PredictedLocation - StartLocation).GetSafeNormal();
+		PredictedDirection = FLLL_MathHelper::CalculatePredictedDirection(RangedMonster, PredictedDirection);
 		const FRotator PredictedRotation = FRotationMatrix::MakeFromX(PredictedDirection).Rotator();
 	
 		ThrownObject->SetActorLocationAndRotation(StartLocation, PredictedRotation);

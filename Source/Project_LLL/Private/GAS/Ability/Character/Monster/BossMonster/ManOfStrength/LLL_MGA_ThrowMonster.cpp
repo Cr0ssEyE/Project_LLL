@@ -19,7 +19,7 @@ void ULLL_MGA_ThrowMonster::ActivateAbility(const FGameplayAbilitySpecHandle Han
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
+	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
 	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 	ALLL_MonsterBaseAIController* MonsterAIController = CastChecked<ALLL_MonsterBaseAIController>(Monster->GetController());
 	ALLL_MonsterBase* OtherMonster = Cast<ALLL_MonsterBase>(MonsterAIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_OTHER_MONSTER));
@@ -30,13 +30,20 @@ void ULLL_MGA_ThrowMonster::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 		const float PredictionRate = MonsterAttributeSet->GetManOfStrengthPredictionRate();
 		const float OffsetZ = Player->GetActorLocation().Z + Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+		FVector Velocity = Player->GetVelocity();
+		if (Player->GetCapsuleComponent()->GetCollisionProfileName() == CP_PLAYER_EVADE)
+		{
+			Velocity = Player->GetLastVelocityBeforeDash();
+		}
 		
-		FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(OtherMonster, Player, PlayerAttributeSet->GetMoveSpeed(), PredictionRate);
+		FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(OtherMonster, Player, Velocity, PlayerAttributeSet->GetMoveSpeed(), PredictionRate);
 		PredictedLocation.Z = OffsetZ;
 		FVector StartLocation = OtherMonster->GetActorLocation();
 		StartLocation.Z = OffsetZ;
 		
-		const FVector Direction = (PredictedLocation - StartLocation).GetSafeNormal();
+		FVector Direction = (PredictedLocation - StartLocation).GetSafeNormal();
+		Direction = FLLL_MathHelper::CalculatePredictedDirection(Monster, Direction);
 
 		const float Speed = MonsterAttributeSet->GetManOfStrengthThrowSpeed();
 		OtherMonster->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);

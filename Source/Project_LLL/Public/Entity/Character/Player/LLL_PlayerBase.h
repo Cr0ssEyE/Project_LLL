@@ -71,6 +71,7 @@ public:
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
 	FORCEINLINE FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
+	FORCEINLINE FVector GetLastVelocityBeforeDash() const { return LastVelocityBeforeDash; };
 	FORCEINLINE bool IsSkillRotateToMouseCursor() const { return bSkillRotateToMouseCursor; }
 
 	FORCEINLINE void SetCurrentCombo(const int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
@@ -206,6 +207,7 @@ private:
 
 private:
 	FVector LastCheckedMouseLocation;
+	FVector LastVelocityBeforeDash;
 	FRotator MouseDirectionRotator;
 	float ToCursorRotationMultiplyValue;
 	int32 LastAttackerMonsterId;
