@@ -6,8 +6,10 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "DataAsset/LLL_BombSkullDataAsset.h"
+#include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
 #include "Entity/Character/Monster/Melee/BombSkull/LLL_BombSkull.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
+#include "Util/LLL_MathHelper.h"
 
 void ULLL_MGA_Explode::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -69,6 +71,11 @@ void ULLL_MGA_Explode::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		if(EffectSpecHandle.IsValid())
 		{
 			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherASC);
+		}
+
+		if (ILLL_KnockBackInterface* KnockBackInterface = Cast<ILLL_KnockBackInterface>(Character))
+		{
+			// Todo : 낙사 넉백 처리 필요
 		}
 			
 		DebugColor =  FColor::Green;

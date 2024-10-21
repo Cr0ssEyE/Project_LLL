@@ -40,5 +40,4 @@ protected:
 	TObjectPtr<ULLL_ThrownBleedingAttributeSet> ThrownBleedingAttributeSet;
 
 	TArray<TObjectPtr<ALLL_MonsterBase>> DamagedMonsters;
-	float BleedingOffencePower;
 };

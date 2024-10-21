@@ -98,6 +98,32 @@ void ALLL_GateObject::BeginPlay()
 	InteractOnlyCollisionBox->SetBoxExtent(FVector(InteractiveObjectDataAsset->InteractOnlyCollisionBoxExtent));
 }
 
+void ALLL_GateObject::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::Super::NotifyActorBeginOverlap(OtherActor);
+
+	if (ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor))
+	{
+		if (bIsGateEnabled)
+		{
+			PlayerCharacter->AddInteractiveObject(this);
+		}
+	}
+}
+
+void ALLL_GateObject::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	Super::Super::NotifyActorEndOverlap(OtherActor);
+	
+	if (ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor))
+	{
+		if (bIsGateEnabled)
+		{
+			PlayerCharacter->RemoveInteractiveObject(this);
+		}
+	}
+}
+
 void ALLL_GateObject::OpenGate()
 {
 	FFModInfo FModInfo;

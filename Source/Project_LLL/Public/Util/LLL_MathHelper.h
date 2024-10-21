@@ -32,7 +32,7 @@ public:
 		return CalculateResult;
 	}
 
-	static FVector GetPredictedLocation(const AActor* ThrownActor, const AActor* Target, float TargetSpeed, float PredictionRate)
+	static FVector GetPredictedLocation(const AActor* ThrownActor, const AActor* Target, const FVector& Velocity, float TargetSpeed, float PredictionRate)
 	{
 		if (!IsValid(ThrownActor) || !IsValid(Target))
 		{
@@ -40,9 +40,29 @@ public:
 		}
 		
 		const float Distance = ThrownActor->GetDistanceTo(Target);
-		const FVector PredictedMove = Target->GetVelocity() * (Distance / TargetSpeed);
+		const FVector PredictedMove = Velocity * (Distance / TargetSpeed);
 		const FVector PredictedLocation = Target->GetActorLocation() + PredictedMove * PredictionRate;
 		return PredictedLocation;
+	}
+
+	static FVector CalculatePredictedDirection(const AActor* Thrower, FVector PredictedDirection)
+	{
+		const FVector ThrowerForward = Thrower->GetActorForwardVector();
+		const float Cos = FMath::Cos(FMath::DegreesToRadians(45.0f));
+		if (FVector::DotProduct(ThrowerForward, PredictedDirection) < Cos)
+		{
+			const FVector RightVector = FVector::CrossProduct(ThrowerForward, FVector::UpVector);
+			if (FVector::DotProduct(RightVector, PredictedDirection) > 0.0f)
+			{
+				PredictedDirection = FRotationMatrix::MakeFromX(ThrowerForward).TransformVector(FVector(Cos, FMath::Sqrt(1 - FMath::Square(Cos)) * -1.0f, 0));
+			}
+			else
+			{
+				PredictedDirection = FRotationMatrix::MakeFromX(ThrowerForward).TransformVector(FVector(Cos, FMath::Sqrt(1 - FMath::Square(Cos)), 0));
+			}
+		}
+
+		return PredictedDirection;
 	}
 
 	static bool IsInFieldOfView(const AActor* Owner, const AActor* Target, float Distance, float FieldOfView, const FRotator& Rotation = FRotator::ZeroRotator)
