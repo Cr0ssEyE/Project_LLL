@@ -395,6 +395,8 @@ void ALLL_PlayerBase::MoveAction(const FInputActionValue& Value)
 
 void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputName InputName)
 {
+	LastVelocityBeforeDash = GetVelocity();
+	
 	const int32 InputID = static_cast<int32>(InputName);
 	if (FGameplayAbilitySpec* DashSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{

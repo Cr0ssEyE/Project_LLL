@@ -83,9 +83,6 @@ void ALLL_ThrownBleeding::Throw(AActor* NewOwner, AActor* NewTarget, float InSpe
 	{
 		OffencePower = AbilityData->AbilityValue1 / static_cast<uint32>(AbilityData->Value1Type);
 		OffencePower = FLLL_AbilityDataHelper::CalculateOffencePower(OffencePower, Player);
-
-		BleedingOffencePower = AbilityData->AbilityValue2 / static_cast<uint32>(AbilityData->Value2Type);
-		BleedingOffencePower = FLLL_AbilityDataHelper::CalculateOffencePower(BleedingOffencePower, Player);
 	}
 }
 
@@ -103,15 +100,20 @@ void ALLL_ThrownBleeding::NotifyActorBeginOverlap(AActor* OtherActor)
 		DamagedMonsters.Emplace(Monster);
 		Monster->SetBleedingStack(Monster->GetBleedingStack() + 4);
 
+		DamageTo(OtherActor);
+		
 		if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
 		{
+			OffencePower = AbilityData->AbilityValue2 / static_cast<uint32>(AbilityData->Value2Type);
+			OffencePower = FLLL_AbilityDataHelper::CalculateOffencePower(OffencePower, Player);
+			
 			FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 			EffectContextHandle.AddSourceObject(this);
 			EffectContextHandle.AddInstigator(Player, this);
 			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownBleedingDataAsset->BleedingDamageEffect, AbilityLevel, EffectContextHandle);
 			if(EffectSpecHandle.IsValid())
 			{
-				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, BleedingOffencePower);
+				EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
 				FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, CastChecked<ULLL_ExtendedGameplayEffect>(ThrownBleedingDataAsset->BleedingDamageEffect.GetDefaultObject()));
 				if (!FLLL_AbilityDataHelper::CheckBleedingExplosion(Player, Monster, this))
 				{
@@ -119,7 +121,5 @@ void ALLL_ThrownBleeding::NotifyActorBeginOverlap(AActor* OtherActor)
 				}
 			}
 		}
-		
-		DamageTo(OtherActor);
 	}
 }

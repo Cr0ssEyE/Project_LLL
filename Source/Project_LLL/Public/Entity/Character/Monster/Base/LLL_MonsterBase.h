@@ -49,8 +49,8 @@ public:
 	virtual void AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower) override;
 	
 	virtual float GetChargeTimer() const;
-
-	void Attack() const;
+	virtual void Attack();
+	
 	void RecognizePlayerToAroundMonster() const;
 	void ShowHitEffect();
 	void ConnectOwnerDeadDelegate();

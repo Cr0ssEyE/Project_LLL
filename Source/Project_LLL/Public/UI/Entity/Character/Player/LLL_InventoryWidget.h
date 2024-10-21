@@ -68,6 +68,6 @@ protected:
 	UPROPERTY()
 	TArray<FAbilityDataTable> CommonEruriaDataTables;
 	
-	uint32 CurrentEmptyEruriaSlotIndex;
+	int32 CurrentEmptyEruriaSlotIndex;
 };
 

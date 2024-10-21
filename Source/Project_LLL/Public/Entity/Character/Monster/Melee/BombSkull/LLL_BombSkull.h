@@ -20,6 +20,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Attack() override;
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BombSkullDataAsset> BombSkullDataAsset;
