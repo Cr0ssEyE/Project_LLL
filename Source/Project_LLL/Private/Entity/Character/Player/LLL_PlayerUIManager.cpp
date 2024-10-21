@@ -36,7 +36,7 @@ void ULLL_PlayerUIManager::BeginPlay()
 	InventoryWidgetClass = PlayerBaseDataAsset->InventoryWidgetClass;
 	InteractionWidgetClass = PlayerBaseDataAsset->InteractionWidgetClass;
 	SelectRewardWidgetClass = PlayerBaseDataAsset->SelectRewardWidgetClass;
-	MainEnuriaInfoWidgetClass = PlayerBaseDataAsset->MainEruriaInfoWidgetClass;
+	//MainEnuriaInfoWidgetClass = PlayerBaseDataAsset->MainEruriaInfoWidgetClass;
 
 	if(IsValid(SelectRewardWidgetClass))
 	{
@@ -52,11 +52,11 @@ void ULLL_PlayerUIManager::BeginPlay()
 		CharacterStatusWidget->AddToViewport(UI_LAYER_THIRD);
 	}
 
-	if (IsValid(MainEnuriaInfoWidgetClass))
+	/*if (IsValid(MainEnuriaInfoWidgetClass))
 	{
 		MainEnuriaInfoWidget = CastChecked<ULLL_MainEruriaInfoWidget>(CreateWidget(GetWorld(), MainEnuriaInfoWidgetClass));
 		MainEnuriaInfoWidget->AddToViewport(UI_LAYER_THIRD);
-	}
+	}*/
 	
 	if(IsValid(InventoryWidgetClass))
 	{
@@ -162,7 +162,7 @@ void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
 		InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
 		CharacterStatusWidget->SetVisibility(ESlateVisibility::Hidden);
 		InteractionWidget->SetVisibility(ESlateVisibility::Hidden);
-		MainEnuriaInfoWidget->SetVisibility(ESlateVisibility::Hidden);
+		//MainEnuriaInfoWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
@@ -170,7 +170,7 @@ void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
 		InventoryWidget->SetVisibility(ESlateVisibility::Visible);
 		CharacterStatusWidget->SetVisibility(ESlateVisibility::Visible);
 		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
-		MainEnuriaInfoWidget->SetVisibility(ESlateVisibility::Visible);
+		//MainEnuriaInfoWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
