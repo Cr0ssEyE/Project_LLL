@@ -73,6 +73,7 @@ public:
 	FORCEINLINE FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	FORCEINLINE FVector GetLastVelocityBeforeDash() const { return LastVelocityBeforeDash; };
 	FORCEINLINE bool IsSkillRotateToMouseCursor() const { return bSkillRotateToMouseCursor; }
+	FORCEINLINE bool CheckAttackIsRange() const { return bAttackIsRange; }
 
 	FORCEINLINE void SetCurrentCombo(const int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const bool Press) { bIsMoveInputPressed = Press; }
@@ -179,7 +180,7 @@ protected:
 private:
 	void MoveAction(const FInputActionValue& Value);
 	void DashAction(const FInputActionValue& Value, EAbilityInputName InputName);
-	void AttackAction(const FInputActionValue& Value, EAbilityInputName InputName);
+	void AttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range);
 	void AttackActionCompleted(const FInputActionValue& Value, EAbilityInputName InputName);
 	void SkillAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void InteractAction(const FInputActionValue& Value);
@@ -216,6 +217,7 @@ private:
 	uint8 bCanSkill : 1;
 	uint8 bSkillRotateToMouseCursor : 1;
 	FTimerHandle SkillCoolTimeTimerHandle;
+	uint8 bAttackIsRange : 1;
 
 	// 이누리아 관련 변수
 private:
