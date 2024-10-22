@@ -26,6 +26,7 @@
 #include "Entity/Character/Monster/DPSTester/LLL_DPSTester.h"
 #include "Entity/Character/Monster/Melee/BombSkull/LLL_BombSkull.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Breakable/LLL_BreakableObjectBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -294,7 +295,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 				if (AngleInDegrees > 45.0f)
 				{
 					UE_LOG(LogTemp, Log, TEXT("%s가 %s에 부딪혀 넉백 피해입음"), *GetName(), *Other->GetName())
-					DamageKnockBackCauser(Player);
+					DamageKnockBackCauser(Player, Other);
 
 					// 리바운드 이누리아
 					if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DEFLECT_BY_WALL) && DeflectCount < Player->GetDeflectCount())
@@ -315,7 +316,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 			{
 				UE_LOG(LogTemp, Log, TEXT("%s와 %s가 부딪혀 서로 넉백 피해입음"), *GetName(), *Other->GetName())
 				DamageKnockBackTarget(Player, OtherMonster);
-				DamageKnockBackCauser(Player);
+				DamageKnockBackCauser(Player, Other);
 
 				if ((!IsValid(KnockBackSender) || OtherMonster != KnockBackSender) && !OtherMonster->IsKnockBacking())
 				{
@@ -678,11 +679,11 @@ void ALLL_MonsterBase::DisconnectOwnerDeadDelegate()
 	}
 }
 
-void ALLL_MonsterBase::DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster)
+void ALLL_MonsterBase::DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* OtherMonster)
 {
 	if (!bKnockBackTargetDamaged)
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s에 부딪혀 넉백 피해입음"), *Monster->GetName())
+		UE_LOG(LogTemp, Log, TEXT("%s에 부딪혀 넉백 피해입음"), *OtherMonster->GetName())
 		
 		bKnockBackTargetDamaged = true;
 		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
@@ -693,12 +694,12 @@ void ALLL_MonsterBase::DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->KnockBackTargetDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
 		if (EffectSpecHandle.IsValid())
 		{
-			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Monster->GetAbilitySystemComponent());
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
 		}
 	}
 }
 
-void ALLL_MonsterBase::DamageKnockBackCauser(ALLL_PlayerBase* Player)
+void ALLL_MonsterBase::DamageKnockBackCauser(ALLL_PlayerBase* Player, AActor* Other)
 {
 	if (!bKnockBackCauserDamaged)
 	{
@@ -712,6 +713,11 @@ void ALLL_MonsterBase::DamageKnockBackCauser(ALLL_PlayerBase* Player)
 		if (EffectSpecHandle.IsValid())
 		{
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+
+		if (ALLL_BreakableObjectBase* BreakableObject = Cast<ALLL_BreakableObjectBase>(Other))
+		{
+			BreakableObject->ReceivePlayerAttackOrKnockBackedMonster();
 		}
 	}
 }
