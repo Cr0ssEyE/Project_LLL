@@ -165,7 +165,7 @@ void ALLL_FallableWallGimmick::FallOutStart(AActor* Actor, FVector HitNormal)
 		Monster->AddKnockBackVelocity(LaunchVelocity, -1.f);
 	}));
 
-	FTimerHandle DilationTimerHandle;
+	/*FTimerHandle DilationTimerHandle;
 	float FallVFXDelay = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->FallExplosionDelayTime;
 	GetWorldTimerManager().SetTimer(DilationTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]
 	{
@@ -175,7 +175,7 @@ void ALLL_FallableWallGimmick::FallOutStart(AActor* Actor, FVector HitNormal)
 		}
 
 		SpawnFallExplosionVFX(Monster);
-	}), FallVFXDelay, false);
+	}), FallVFXDelay, false);*/
 }
 
 void ALLL_FallableWallGimmick::SpawnFallExplosionVFX(ALLL_MonsterBase* Monster)

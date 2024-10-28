@@ -7,12 +7,14 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Constant/LLL_Monster_Id.h"
 #include "DataAsset/LLL_ManOfStrengthDataAsset.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrengthAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Enumeration/LLL_BossMonsterPatternEnumHelper.h"
@@ -38,6 +40,7 @@ void ALLL_ManOfStrength::BeginPlay()
 	Super::BeginPlay();
 
 	ManOfStrengthDataAsset = Cast<ULLL_ManOfStrengthDataAsset>(BossMonsterDataAsset);
+	MonsterStatusWidgetComponent->SetVisibility(false);
 }
 
 void ALLL_ManOfStrength::Tick(float DeltaSeconds)

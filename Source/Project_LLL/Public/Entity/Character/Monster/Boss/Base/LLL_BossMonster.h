@@ -28,6 +28,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void Dead() override;
+
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BossMonsterDataAsset> BossMonsterDataAsset;
 
