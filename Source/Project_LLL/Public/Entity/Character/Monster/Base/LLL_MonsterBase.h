@@ -124,7 +124,10 @@ protected:
 	TObjectPtr<UNiagaraComponent> StackVFXComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UNiagaraComponent> BleedingVFXComponent;
+	TObjectPtr<UNiagaraComponent> BleedingVFXComponent1;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraComponent> BleedingVFXComponent2;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UMaterialInstanceDynamic> HitEffectOverlayMaterialInstance;

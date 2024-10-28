@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "몬스터 표식 이펙트")
 	TObjectPtr<UNiagaraSystem> StackCountNiagaraSystem;
 
-	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "몬스터 출혈 이펙트")
-	TObjectPtr<UNiagaraSystem> BleedingNiagaraSystem;
+	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "몬스터 출혈 이펙트 1")
+	TObjectPtr<UNiagaraSystem> BleedingNiagaraSystem1;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "몬스터 출혈 이펙트 2")
+	TObjectPtr<UNiagaraSystem> BleedingNiagaraSystem2;
 };

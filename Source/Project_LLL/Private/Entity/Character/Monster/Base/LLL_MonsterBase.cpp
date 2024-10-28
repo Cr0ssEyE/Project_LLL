@@ -64,9 +64,13 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	StackVFXComponent->SetupAttachment(RootComponent);
 	StackVFXComponent->SetAutoActivate(false);
 
-	BleedingVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BleedingStatusEffect"));
-	BleedingVFXComponent->SetupAttachment(RootComponent);
-	BleedingVFXComponent->SetAutoActivate(false);
+	BleedingVFXComponent1 = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BleedingStatusEffect1"));
+	BleedingVFXComponent1->SetupAttachment(RootComponent);
+	BleedingVFXComponent1->SetAutoActivate(false);
+	
+	BleedingVFXComponent2 = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BleedingStatusEffect2"));
+	BleedingVFXComponent2->SetupAttachment(RootComponent);
+	BleedingVFXComponent2->SetAutoActivate(false);
 
 	AttributeInitId = ATTRIBUTE_INIT_MONSTER;
 	MaxBleedingStack = 5;
@@ -103,11 +107,18 @@ void ALLL_MonsterBase::BeginPlay()
 		StackVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_OVERHEAD);
 	}
 
-	UNiagaraSystem* BleedingNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->BleedingNiagaraSystem;
-	if (IsValid(BleedingNiagaraSystem))
+	UNiagaraSystem* BleedingNiagaraSystem1 = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->BleedingNiagaraSystem1;
+	if (IsValid(BleedingNiagaraSystem1))
 	{
-		BleedingVFXComponent->SetAsset(BleedingNiagaraSystem);
-		BleedingVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
+		BleedingVFXComponent1->SetAsset(BleedingNiagaraSystem1);
+		BleedingVFXComponent1->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
+	}
+	
+	UNiagaraSystem* BleedingNiagaraSystem2 = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->BleedingNiagaraSystem2;
+	if (IsValid(BleedingNiagaraSystem2))
+	{
+		BleedingVFXComponent2->SetAsset(BleedingNiagaraSystem2);
+		BleedingVFXComponent2->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
 	}
 	
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
@@ -475,7 +486,8 @@ void ALLL_MonsterBase::Dead()
 		TempNiagaraComponent->Deactivate();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
-	BleedingVFXComponent->SetHiddenInGame(true);
+	BleedingVFXComponent1->SetHiddenInGame(true);
+	BleedingVFXComponent2->SetHiddenInGame(true);
 	StackVFXComponent->SetHiddenInGame(true);
 	
 	RecognizePlayerToAroundMonster();
@@ -837,7 +849,15 @@ void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)
 {
 	if (ActiveState)
 	{
-		BleedingVFXComponent->ActivateSystem();
+		if (BleedingStack < MaxBleedingStack)
+		{
+			BleedingVFXComponent1->ActivateSystem();
+		}
+		else
+		{
+			BleedingVFXComponent2->ActivateSystem();
+		}
+			
 	}
 	else
 	{
@@ -845,7 +865,8 @@ void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)
 		{
 			return;
 		}
-		BleedingVFXComponent->Deactivate();
+		BleedingVFXComponent1->Deactivate();
+		BleedingVFXComponent2->Deactivate();
 	}
 }
 
