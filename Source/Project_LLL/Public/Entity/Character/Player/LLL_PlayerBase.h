@@ -73,11 +73,14 @@ public:
 	FORCEINLINE FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	FORCEINLINE FVector GetLastVelocityBeforeDash() const { return LastVelocityBeforeDash; };
 	FORCEINLINE bool IsSkillRotateToMouseCursor() const { return bSkillRotateToMouseCursor; }
+	FORCEINLINE bool CheckAttackIsRange() const { return bAttackIsRange; }
+	FORCEINLINE bool CheckChargeTriggered() const { return bChargeTriggered; }
 
 	FORCEINLINE void SetCurrentCombo(const int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const bool Press) { bIsMoveInputPressed = Press; }
 	FORCEINLINE void SetSkillCoolTime(const float InSkillCoolTime) { SkillCoolTime = InSkillCoolTime; }
 	FORCEINLINE void SetSkillRotateToMouseCursor(const bool SkillRotateToMouseCursor) { bSkillRotateToMouseCursor = SkillRotateToMouseCursor; }
+	FORCEINLINE void SetChargeTriggered(bool ChargeTriggered) { bChargeTriggered = ChargeTriggered; }
 	
 	FVector CheckMouseLocation();
 	void RotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
@@ -179,8 +182,9 @@ protected:
 private:
 	void MoveAction(const FInputActionValue& Value);
 	void DashAction(const FInputActionValue& Value, EAbilityInputName InputName);
-	void AttackAction(const FInputActionValue& Value, EAbilityInputName InputName);
-	void AttackActionCompleted(const FInputActionValue& Value, EAbilityInputName InputName);
+	void AttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range);
+	void ChargeAttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range);
+	void ChargeAttackActionCompleted(const FInputActionValue& Value, EAbilityInputName InputName, bool Range);
 	void SkillAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void InteractAction(const FInputActionValue& Value);
 	void InventoryAction(const FInputActionValue& Value);
@@ -216,6 +220,8 @@ private:
 	uint8 bCanSkill : 1;
 	uint8 bSkillRotateToMouseCursor : 1;
 	FTimerHandle SkillCoolTimeTimerHandle;
+	uint8 bAttackIsRange : 1;
+	uint8 bChargeTriggered : 1;
 
 	// 이누리아 관련 변수
 private:

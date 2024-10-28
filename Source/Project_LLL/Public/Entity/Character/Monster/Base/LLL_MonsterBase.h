@@ -55,8 +55,8 @@ public:
 	void ShowHitEffect();
 	void ConnectOwnerDeadDelegate();
 	void DisconnectOwnerDeadDelegate();
-	void DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster);
-	void DamageKnockBackCauser(ALLL_PlayerBase* Player);
+	void DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* OtherMonster);
+	void DamageKnockBackCauser(ALLL_PlayerBase* Player, AActor* Other);
 	void Stun();
 	void ShowDamageValue(const float Damage) const;
 
@@ -124,7 +124,10 @@ protected:
 	TObjectPtr<UNiagaraComponent> StackVFXComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UNiagaraComponent> BleedingVFXComponent;
+	TObjectPtr<UNiagaraComponent> BleedingVFXComponent1;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraComponent> BleedingVFXComponent2;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UMaterialInstanceDynamic> HitEffectOverlayMaterialInstance;

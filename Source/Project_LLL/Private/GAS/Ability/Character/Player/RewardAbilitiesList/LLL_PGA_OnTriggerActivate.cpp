@@ -258,8 +258,7 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 			{
 				if (!Straight && !Cast<ALLL_MonsterBase>(Target))
 				{
-					EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-					return;
+					continue;
 				}
 				
 				FVector Location = Player->GetActorLocation();

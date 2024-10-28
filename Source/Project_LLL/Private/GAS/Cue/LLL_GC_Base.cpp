@@ -30,6 +30,8 @@ bool ULLL_GC_Base::OnExecute_Implementation(AActor* MyTarget, const FGameplayCue
 		}
 #endif
 	}
+
+	UE_LOG(LogTemp, Log, TEXT("%s 큐 발동"), *GetName())
 	
 	return Super::OnExecute_Implementation(MyTarget, Parameters);
 }

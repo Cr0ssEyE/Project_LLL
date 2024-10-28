@@ -78,8 +78,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "돌진 입력 키")
 	TObjectPtr<UInputAction> DashInputAction;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "기본 공격 입력 키")
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "공격 입력 키")
 	TObjectPtr<UInputAction> AttackInputAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "범위 공격 입력 키")
+	TObjectPtr<UInputAction> RangeAttackInputAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "상호작용 입력 키")
 	TObjectPtr<UInputAction> InteractionInputAction;

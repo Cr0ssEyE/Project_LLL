@@ -26,6 +26,7 @@
 #include "Entity/Character/Monster/DPSTester/LLL_DPSTester.h"
 #include "Entity/Character/Monster/Melee/BombSkull/LLL_BombSkull.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Breakable/LLL_BreakableObjectBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -63,9 +64,13 @@ ALLL_MonsterBase::ALLL_MonsterBase()
 	StackVFXComponent->SetupAttachment(RootComponent);
 	StackVFXComponent->SetAutoActivate(false);
 
-	BleedingVFXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BleedingStatusEffect"));
-	BleedingVFXComponent->SetupAttachment(RootComponent);
-	BleedingVFXComponent->SetAutoActivate(false);
+	BleedingVFXComponent1 = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BleedingStatusEffect1"));
+	BleedingVFXComponent1->SetupAttachment(RootComponent);
+	BleedingVFXComponent1->SetAutoActivate(false);
+	
+	BleedingVFXComponent2 = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BleedingStatusEffect2"));
+	BleedingVFXComponent2->SetupAttachment(RootComponent);
+	BleedingVFXComponent2->SetAutoActivate(false);
 
 	AttributeInitId = ATTRIBUTE_INIT_MONSTER;
 	MaxBleedingStack = 5;
@@ -102,11 +107,18 @@ void ALLL_MonsterBase::BeginPlay()
 		StackVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_OVERHEAD);
 	}
 
-	UNiagaraSystem* BleedingNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->BleedingNiagaraSystem;
-	if (IsValid(BleedingNiagaraSystem))
+	UNiagaraSystem* BleedingNiagaraSystem1 = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->BleedingNiagaraSystem1;
+	if (IsValid(BleedingNiagaraSystem1))
 	{
-		BleedingVFXComponent->SetAsset(BleedingNiagaraSystem);
-		BleedingVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
+		BleedingVFXComponent1->SetAsset(BleedingNiagaraSystem1);
+		BleedingVFXComponent1->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
+	}
+	
+	UNiagaraSystem* BleedingNiagaraSystem2 = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->BleedingNiagaraSystem2;
+	if (IsValid(BleedingNiagaraSystem2))
+	{
+		BleedingVFXComponent2->SetAsset(BleedingNiagaraSystem2);
+		BleedingVFXComponent2->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
 	}
 	
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
@@ -294,7 +306,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 				if (AngleInDegrees > 45.0f)
 				{
 					UE_LOG(LogTemp, Log, TEXT("%s가 %s에 부딪혀 넉백 피해입음"), *GetName(), *Other->GetName())
-					DamageKnockBackCauser(Player);
+					DamageKnockBackCauser(Player, Other);
 
 					// 리바운드 이누리아
 					if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DEFLECT_BY_WALL) && DeflectCount < Player->GetDeflectCount())
@@ -315,7 +327,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 			{
 				UE_LOG(LogTemp, Log, TEXT("%s와 %s가 부딪혀 서로 넉백 피해입음"), *GetName(), *Other->GetName())
 				DamageKnockBackTarget(Player, OtherMonster);
-				DamageKnockBackCauser(Player);
+				DamageKnockBackCauser(Player, Other);
 
 				if ((!IsValid(KnockBackSender) || OtherMonster != KnockBackSender) && !OtherMonster->IsKnockBacking())
 				{
@@ -474,7 +486,8 @@ void ALLL_MonsterBase::Dead()
 		TempNiagaraComponent->Deactivate();
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
-	BleedingVFXComponent->SetHiddenInGame(true);
+	BleedingVFXComponent1->SetHiddenInGame(true);
+	BleedingVFXComponent2->SetHiddenInGame(true);
 	StackVFXComponent->SetHiddenInGame(true);
 	
 	RecognizePlayerToAroundMonster();
@@ -678,11 +691,11 @@ void ALLL_MonsterBase::DisconnectOwnerDeadDelegate()
 	}
 }
 
-void ALLL_MonsterBase::DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster)
+void ALLL_MonsterBase::DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* OtherMonster)
 {
 	if (!bKnockBackTargetDamaged)
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s에 부딪혀 넉백 피해입음"), *Monster->GetName())
+		UE_LOG(LogTemp, Log, TEXT("%s에 부딪혀 넉백 피해입음"), *OtherMonster->GetName())
 		
 		bKnockBackTargetDamaged = true;
 		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
@@ -693,12 +706,12 @@ void ALLL_MonsterBase::DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->KnockBackTargetDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
 		if (EffectSpecHandle.IsValid())
 		{
-			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Monster->GetAbilitySystemComponent());
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, OtherMonster->GetAbilitySystemComponent());
 		}
 	}
 }
 
-void ALLL_MonsterBase::DamageKnockBackCauser(ALLL_PlayerBase* Player)
+void ALLL_MonsterBase::DamageKnockBackCauser(ALLL_PlayerBase* Player, AActor* Other)
 {
 	if (!bKnockBackCauserDamaged)
 	{
@@ -712,6 +725,11 @@ void ALLL_MonsterBase::DamageKnockBackCauser(ALLL_PlayerBase* Player)
 		if (EffectSpecHandle.IsValid())
 		{
 			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+
+		if (ALLL_BreakableObjectBase* BreakableObject = Cast<ALLL_BreakableObjectBase>(Other))
+		{
+			BreakableObject->ReceivePlayerAttackOrKnockBackedMonster();
 		}
 	}
 }
@@ -831,7 +849,15 @@ void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)
 {
 	if (ActiveState)
 	{
-		BleedingVFXComponent->ActivateSystem();
+		if (BleedingStack < MaxBleedingStack)
+		{
+			BleedingVFXComponent1->ActivateSystem();
+		}
+		else
+		{
+			BleedingVFXComponent2->ActivateSystem();
+		}
+			
 	}
 	else
 	{
@@ -839,7 +865,8 @@ void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)
 		{
 			return;
 		}
-		BleedingVFXComponent->Deactivate();
+		BleedingVFXComponent1->Deactivate();
+		BleedingVFXComponent2->Deactivate();
 	}
 }
 

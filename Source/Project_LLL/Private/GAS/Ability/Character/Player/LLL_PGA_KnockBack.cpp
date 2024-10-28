@@ -51,7 +51,7 @@ void ULLL_PGA_KnockBack::KnockBackTarget(const FGameplayEventData* TriggerEventD
 		float KnockBackPower = 0;
 		
 		// 과충전 이누리아
-		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered())
 		{
 			const float OffsetKnockBackPower = PlayerAttributeSet->GetMaxChargeAttackKnockBackPower() - PlayerAttributeSet->GetMinChargeAttackKnockBackPower();
 			const float TempKnockBackPower = PlayerAttributeSet->GetMinChargeAttackKnockBackPower() + Player->GetChargeAttackChargeRate() * OffsetKnockBackPower;

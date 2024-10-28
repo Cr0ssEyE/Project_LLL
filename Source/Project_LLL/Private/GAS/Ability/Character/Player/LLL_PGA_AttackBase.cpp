@@ -44,7 +44,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	// 과충전 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered())
 	{
 		ChargeAttack();
 	}
@@ -108,6 +108,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 	}
 
 	bStopCharge = false;
+	Player->SetChargeTriggered(false);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -126,13 +127,13 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	// 과충전 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) && !bStopCharge)
+	if ((PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered()) && !bStopCharge)
 	{
 		bStopCharge = true;
 
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance());
 		const float MontagePosition = PlayerAnimInstance->Montage_GetPosition(ChargeAttackAnimMontage);
-		const float ChargeRate = MontagePosition / GetFullChargeNotifyTriggerTime();
+		const float ChargeRate = MontagePosition / GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange());
 		UE_LOG(LogTemp, Log, TEXT("차지 비율 : %f"), ChargeRate);
 		Player->SetChargeAttackChargeRate(ChargeRate);
 		
@@ -140,21 +141,25 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		float AttackSpeed = PlayerAttributeSet->GetAttackSpeed();
 		AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 
-		UAbilityTask_PlayMontageAndWait* ChargeMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ChargeAttackMontage"), ChargeAttackAnimMontage, AttackSpeed, NAME_None, true, 1, GetFullChargeNotifyTriggerTime());
+		const float StartTimeSeconds = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
+		UAbilityTask_PlayMontageAndWait* ChargeMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ChargeAttackMontage"), ChargeAttackAnimMontage, AttackSpeed, NAME_None, true, 1, GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) + StartTimeSeconds);
 		ChargeMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
 		ChargeMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
 		ChargeMontageTask->ReadyForActivation();
-		
-		FVector Location = Player->GetActorLocation();
-		const float OffsetAttackRange = PlayerAttributeSet->GetMaxChargeAttackRange() - PlayerAttributeSet->GetMinChargeAttackRange();
-		const float TempAttackRange = PlayerAttributeSet->GetMinChargeAttackRange() + Player->GetChargeAttackChargeRate() * OffsetAttackRange;
-		Location += Player->GetActorForwardVector() * TempAttackRange;
 
-		const float OffsetDuration = PlayerAttributeSet->GetMaxChargeAttackDuration() - PlayerAttributeSet->GetMinChargeAttackDuration();
-		const float Duration = PlayerAttributeSet->GetMinChargeAttackDuration() + Player->GetChargeAttackChargeRate() * OffsetDuration;
+		if (!Player->CheckAttackIsRange())
+		{
+			FVector Location = Player->GetActorLocation();
+			const float OffsetAttackRange = PlayerAttributeSet->GetMaxChargeAttackRange() - PlayerAttributeSet->GetMinChargeAttackRange();
+			const float TempAttackRange = PlayerAttributeSet->GetMinChargeAttackRange() + Player->GetChargeAttackChargeRate() * OffsetAttackRange;
+			Location += Player->GetActorForwardVector() * TempAttackRange;
+
+			const float OffsetDuration = PlayerAttributeSet->GetMaxChargeAttackDuration() - PlayerAttributeSet->GetMinChargeAttackDuration();
+			const float Duration = PlayerAttributeSet->GetMinChargeAttackDuration() + Player->GetChargeAttackChargeRate() * OffsetDuration;
 		
-		UAbilityTask_MoveToLocation* MoveTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Move"), Location, Duration, nullptr, nullptr);
-		MoveTask->ReadyForActivation();
+			UAbilityTask_MoveToLocation* MoveTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Move"), Location, Duration, nullptr, nullptr);
+			MoveTask->ReadyForActivation();
+		}
 	}
 }
 
@@ -184,7 +189,8 @@ void ULLL_PGA_AttackBase::CheckFullCharge(FGameplayEventData EventData)
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance());
 	PlayerAnimInstance->Montage_Pause(ChargeAttackAnimMontage);
-	PlayerAnimInstance->Montage_SetPosition(ChargeAttackAnimMontage, GetFullChargeNotifyTriggerTime());
+	const float SectionLength = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
+	PlayerAnimInstance->Montage_SetPosition(ChargeAttackAnimMontage, GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) + SectionLength);
 }
 
 void ULLL_PGA_AttackBase::BaseAttack()
@@ -207,7 +213,7 @@ void ULLL_PGA_AttackBase::BaseAttack()
 	float AttackSpeed = PlayerAttributeSet->GetAttackSpeed();
 	AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 	
-	const FName Section = *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction);
+	const FName Section = *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction + (Player->CheckAttackIsRange() ? 2 : 0));
 	
 	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("AttackMontage"), AttackAnimMontage, AttackSpeed, Section);
 	MontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
@@ -239,7 +245,7 @@ void ULLL_PGA_AttackBase::SetNextAttackAction()
 		Player->RotateToMouseCursor(1.f, true);
 
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActorFromActorInfo(), TAG_GAS_ATTACK_HIT_CHECK_COMPLETE, FGameplayEventData());
-		MontageJumpToSection(*FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction));
+		MontageJumpToSection(*FString::Printf(TEXT("%s%d"), SECTION_ATTACK, ++CurrentComboAction + (Player->CheckAttackIsRange() ? 2 : 0)));
 		bIsCanPlayNextAction = false;
 
 		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]()
@@ -275,11 +281,12 @@ void ULLL_PGA_AttackBase::ChargeAttack()
 
 	ChargeRotate(Player);
 
-	float AttackSpeed = GetFullChargeNotifyTriggerTime() / PlayerAttributeSet->GetMaxChargeAttackChargingTime();
+	float AttackSpeed = GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) / PlayerAttributeSet->GetMaxChargeAttackChargingTime();
 	AttackSpeed *= PlayerAttributeSet->GetAttackSpeed();
 	AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 
-	Player->PlayAnimMontage(ChargeAttackAnimMontage, AttackSpeed);
+	const FName Section = *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, Player->CheckAttackIsRange() ? 2 : 0);
+	Player->PlayAnimMontage(ChargeAttackAnimMontage, AttackSpeed, Section);
 	Player->GetCharacterMovement()->SetMovementMode(MOVE_None);
 
 	UAbilityTask_WaitGameplayEvent* WaitChargeTagTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_FULL_CHARGE_CHECK, nullptr, true);
@@ -299,14 +306,31 @@ void ULLL_PGA_AttackBase::ChargeRotate(ALLL_PlayerBase* Player)
 	}));
 }
 
-float ULLL_PGA_AttackBase::GetFullChargeNotifyTriggerTime() const
+float ULLL_PGA_AttackBase::GetFullChargeNotifyTriggerTime(bool Range) const
 {
-	for (const FAnimNotifyEvent& NotifyEvent : ChargeAttackAnimMontage->Notifies)
+	if (!Range)
 	{
-		const ULLL_AnimNotify_GameplayTag* AnimNotify_GameplayTag = Cast<ULLL_AnimNotify_GameplayTag>(NotifyEvent.Notify);
-		if (IsValid(AnimNotify_GameplayTag) && AnimNotify_GameplayTag->GetTriggerGameplayTag() == FGameplayTagContainer(TAG_GAS_FULL_CHARGE_CHECK))
+		for (const FAnimNotifyEvent& NotifyEvent : ChargeAttackAnimMontage->Notifies)
 		{
-			return NotifyEvent.GetTriggerTime();
+			const ULLL_AnimNotify_GameplayTag* AnimNotify_GameplayTag = Cast<ULLL_AnimNotify_GameplayTag>(NotifyEvent.Notify);
+			if (IsValid(AnimNotify_GameplayTag) && AnimNotify_GameplayTag->GetTriggerGameplayTag() == FGameplayTagContainer(TAG_GAS_FULL_CHARGE_CHECK))
+			{
+				return NotifyEvent.GetTriggerTime();
+			}
+		}
+	}
+	else
+	{
+		for (int i = ChargeAttackAnimMontage->Notifies.Num() - 1; i >= 0; i--)
+		{
+			const FAnimNotifyEvent& NotifyEvent = ChargeAttackAnimMontage->Notifies[i];
+		
+			const ULLL_AnimNotify_GameplayTag* AnimNotify_GameplayTag = Cast<ULLL_AnimNotify_GameplayTag>(NotifyEvent.Notify);
+			if (IsValid(AnimNotify_GameplayTag) && AnimNotify_GameplayTag->GetTriggerGameplayTag() == FGameplayTagContainer(TAG_GAS_FULL_CHARGE_CHECK))
+			{
+				const float SectionLength = ChargeAttackAnimMontage->GetSectionLength(0);
+				return NotifyEvent.GetTriggerTime() - SectionLength;
+			}
 		}
 	}
 

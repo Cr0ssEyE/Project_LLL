@@ -37,7 +37,7 @@ protected:
 	void SetNextAttackAction();
 	void ChargeAttack();
 	void ChargeRotate(ALLL_PlayerBase* Player);
-	float GetFullChargeNotifyTriggerTime() const;
+	float GetFullChargeNotifyTriggerTime(bool Range) const;
 
 protected:
 	UPROPERTY()
