@@ -44,7 +44,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	// 과충전 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered())
 	{
 		ChargeAttack();
 	}
@@ -108,6 +108,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 	}
 
 	bStopCharge = false;
+	Player->SetChargeTriggered(false);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -126,7 +127,7 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	// 과충전 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) && !bStopCharge)
+	if ((PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered()) && !bStopCharge)
 	{
 		bStopCharge = true;
 
@@ -314,14 +315,14 @@ float ULLL_PGA_AttackBase::GetFullChargeNotifyTriggerTime(bool Range) const
 	}
 	else
 	{
-		for (int i = ChargeAttackAnimMontage->Notifies.Num(); i >= 0; i--)
+		for (int i = ChargeAttackAnimMontage->Notifies.Num() - 1; i >= 0; i--)
 		{
 			const FAnimNotifyEvent& NotifyEvent = ChargeAttackAnimMontage->Notifies[i];
 		
 			const ULLL_AnimNotify_GameplayTag* AnimNotify_GameplayTag = Cast<ULLL_AnimNotify_GameplayTag>(NotifyEvent.Notify);
 			if (IsValid(AnimNotify_GameplayTag) && AnimNotify_GameplayTag->GetTriggerGameplayTag() == FGameplayTagContainer(TAG_GAS_FULL_CHARGE_CHECK))
 			{
-				return NotifyEvent.GetTriggerTime();
+				return NotifyEvent.GetTriggerTime() - ChargeAttackAnimMontage->GetSectionLength(0);
 			}
 		}
 	}

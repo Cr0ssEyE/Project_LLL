@@ -16,7 +16,6 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_AnimRelationNames.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
-#include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -83,6 +82,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	LastCheckedMouseLocation = FVector::Zero();
 	bIsLowHP = false;
 	FeatherSpawnStartTime = 0.01f;
+	bChargeTriggered = false;
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -185,10 +185,12 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::SetMoveInputPressed, false);
 	
-	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack, false);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::AttackActionCompleted, EAbilityInputName::Attack);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->RangeAttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack, true);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->RangeAttackInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::AttackActionCompleted, EAbilityInputName::Attack);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Canceled, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack, false);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->RangeAttackInputAction, ETriggerEvent::Canceled, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack, true);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::ChargeAttackAction, EAbilityInputName::Attack, false);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::ChargeAttackActionCompleted, EAbilityInputName::Attack, false);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->RangeAttackInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::ChargeAttackAction, EAbilityInputName::Attack, true);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->RangeAttackInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::ChargeAttackActionCompleted, EAbilityInputName::Attack, true);
 	
 	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
@@ -418,6 +420,11 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputNa
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range)
 {
+	if (bChargeTriggered)
+	{
+		return;
+	}
+	
 	bAttackIsRange = Range;
 	
 	const int32 InputID = static_cast<int32>(InputName);
@@ -433,12 +440,46 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 			ASC->TryActivateAbility(AttackSpec->Handle);
 		}
 	}
+
+	UE_LOG(LogTemp, Log, TEXT("%s 공격"), Range ? TEXT("범위") : TEXT("일반"))
 }
 
-void ALLL_PlayerBase::AttackActionCompleted(const FInputActionValue& Value, EAbilityInputName InputName)
+void ALLL_PlayerBase::ChargeAttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range)
 {
+	if (bChargeTriggered)
+	{
+		return;
+	}
+
+	bChargeTriggered = true;
+	bAttackIsRange = Range;
+
+	const int32 InputID = static_cast<int32>(InputName);
+	if(FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID))
+	{
+		AttackSpec->InputPressed = true;
+		if (AttackSpec->IsActive())
+		{
+			ASC->AbilitySpecInputPressed(*AttackSpec);
+		}
+		else
+		{
+			ASC->TryActivateAbility(AttackSpec->Handle);
+		}
+	}
+	
+	UE_LOG(LogTemp, Log, TEXT("차지 %s 공격 충전"), Range ? TEXT("범위") : TEXT("일반"))
+}
+
+void ALLL_PlayerBase::ChargeAttackActionCompleted(const FInputActionValue& Value, EAbilityInputName InputName, bool Range)
+{
+	if (bAttackIsRange != Range)
+	{
+		return;
+	}
+	
 	// 과충전 이누리아
-	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
+	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || CheckChargeTriggered())
 	{
 		const int32 InputID = static_cast<int32>(InputName);
 		if(FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID))
@@ -450,6 +491,8 @@ void ALLL_PlayerBase::AttackActionCompleted(const FInputActionValue& Value, EAbi
 			}
 		}
 	}
+	
+	UE_LOG(LogTemp, Log, TEXT("차지 %s 공격 해제"), Range ? TEXT("범위") : TEXT("일반"))
 }
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)

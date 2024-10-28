@@ -78,6 +78,7 @@
 #define TAG_GAS_HAVE_EXCESSIVE_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.ExcessiveBleeding"))
 #define TAG_GAS_HAVE_THROW_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.ThrowBleeding"))
 #define TAG_GAS_HAVE_BLEEDING_EXPLOSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.BleedingExplosion"))
+#define TAG_GAS_HAVE_MOVE_FASTER FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.MoveFaster"))
 #define TAG_GAS_HAVE_DOUBLE_DASH FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.DoubleDash"))
 #define TAG_GAS_HAVE_FASTER_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.FasterAttack"))
 #define TAG_GAS_HAVE_EVASION_DASH FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.EvasionDash"))
@@ -112,3 +113,4 @@
 
 // 큐 관련 태그
 #define TAG_GAS_CUE_QUADRUPLE_HIT FGameplayTag::RequestGameplayTag(FName("GameplayCue.Object.ThrownObject.ThrownFeather.QuadrupleHit"))
+#define TAG_GAS_CUE_MOVE_FASTER FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.Player.MoveFaster"))

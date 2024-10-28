@@ -23,7 +23,7 @@ float ULLL_CC_AttackDamageCalculate::CalculateBaseMagnitude_Implementation(const
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 	// 과충전 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered())
 	{
 		const float OffsetOffencePower = PlayerAttributeSet->GetMaxChargeAttackDamage() - PlayerAttributeSet->GetMinChargeAttackDamage();
 		const float TempOffencePower = PlayerAttributeSet->GetMinChargeAttackDamage() + Player->GetChargeAttackChargeRate() * OffsetOffencePower;

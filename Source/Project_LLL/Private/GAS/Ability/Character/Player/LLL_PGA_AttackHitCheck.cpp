@@ -103,6 +103,13 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	PayloadData.TargetData = TargetDataHandle;
 	PayloadData.EventMagnitude = CurrentEventData.EventMagnitude;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
+	/*if (UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent())
+	{
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_MOVE_FASTER))
+		{
+			PlayerASC->ExecuteGameplayCue(TAG_GAS_CUE_MOVE_FASTER);
+		}
+	}*/
 	
 	for (auto TargetActor : TargetDataHandle.Data[0]->GetActors())
 	{
