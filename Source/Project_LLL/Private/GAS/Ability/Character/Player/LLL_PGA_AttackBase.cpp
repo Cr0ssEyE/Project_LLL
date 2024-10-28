@@ -141,21 +141,25 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		float AttackSpeed = PlayerAttributeSet->GetAttackSpeed();
 		AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 
-		UAbilityTask_PlayMontageAndWait* ChargeMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ChargeAttackMontage"), ChargeAttackAnimMontage, AttackSpeed, NAME_None, true, 1, GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()));
+		const float StartTimeSeconds = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
+		UAbilityTask_PlayMontageAndWait* ChargeMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ChargeAttackMontage"), ChargeAttackAnimMontage, AttackSpeed, NAME_None, true, 1, GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) + StartTimeSeconds);
 		ChargeMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
 		ChargeMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
 		ChargeMontageTask->ReadyForActivation();
-		
-		FVector Location = Player->GetActorLocation();
-		const float OffsetAttackRange = PlayerAttributeSet->GetMaxChargeAttackRange() - PlayerAttributeSet->GetMinChargeAttackRange();
-		const float TempAttackRange = PlayerAttributeSet->GetMinChargeAttackRange() + Player->GetChargeAttackChargeRate() * OffsetAttackRange;
-		Location += Player->GetActorForwardVector() * TempAttackRange;
 
-		const float OffsetDuration = PlayerAttributeSet->GetMaxChargeAttackDuration() - PlayerAttributeSet->GetMinChargeAttackDuration();
-		const float Duration = PlayerAttributeSet->GetMinChargeAttackDuration() + Player->GetChargeAttackChargeRate() * OffsetDuration;
+		if (!Player->CheckAttackIsRange())
+		{
+			FVector Location = Player->GetActorLocation();
+			const float OffsetAttackRange = PlayerAttributeSet->GetMaxChargeAttackRange() - PlayerAttributeSet->GetMinChargeAttackRange();
+			const float TempAttackRange = PlayerAttributeSet->GetMinChargeAttackRange() + Player->GetChargeAttackChargeRate() * OffsetAttackRange;
+			Location += Player->GetActorForwardVector() * TempAttackRange;
+
+			const float OffsetDuration = PlayerAttributeSet->GetMaxChargeAttackDuration() - PlayerAttributeSet->GetMinChargeAttackDuration();
+			const float Duration = PlayerAttributeSet->GetMinChargeAttackDuration() + Player->GetChargeAttackChargeRate() * OffsetDuration;
 		
-		UAbilityTask_MoveToLocation* MoveTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Move"), Location, Duration, nullptr, nullptr);
-		MoveTask->ReadyForActivation();
+			UAbilityTask_MoveToLocation* MoveTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Move"), Location, Duration, nullptr, nullptr);
+			MoveTask->ReadyForActivation();
+		}
 	}
 }
 
@@ -185,7 +189,8 @@ void ULLL_PGA_AttackBase::CheckFullCharge(FGameplayEventData EventData)
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance());
 	PlayerAnimInstance->Montage_Pause(ChargeAttackAnimMontage);
-	PlayerAnimInstance->Montage_SetPosition(ChargeAttackAnimMontage, GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()));
+	const float SectionLength = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
+	PlayerAnimInstance->Montage_SetPosition(ChargeAttackAnimMontage, GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) + SectionLength);
 }
 
 void ULLL_PGA_AttackBase::BaseAttack()
@@ -280,7 +285,8 @@ void ULLL_PGA_AttackBase::ChargeAttack()
 	AttackSpeed *= PlayerAttributeSet->GetAttackSpeed();
 	AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 
-	Player->PlayAnimMontage(ChargeAttackAnimMontage, AttackSpeed);
+	const FName Section = *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, Player->CheckAttackIsRange() ? 2 : 0);
+	Player->PlayAnimMontage(ChargeAttackAnimMontage, AttackSpeed, Section);
 	Player->GetCharacterMovement()->SetMovementMode(MOVE_None);
 
 	UAbilityTask_WaitGameplayEvent* WaitChargeTagTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_FULL_CHARGE_CHECK, nullptr, true);
@@ -322,7 +328,8 @@ float ULLL_PGA_AttackBase::GetFullChargeNotifyTriggerTime(bool Range) const
 			const ULLL_AnimNotify_GameplayTag* AnimNotify_GameplayTag = Cast<ULLL_AnimNotify_GameplayTag>(NotifyEvent.Notify);
 			if (IsValid(AnimNotify_GameplayTag) && AnimNotify_GameplayTag->GetTriggerGameplayTag() == FGameplayTagContainer(TAG_GAS_FULL_CHARGE_CHECK))
 			{
-				return NotifyEvent.GetTriggerTime() - ChargeAttackAnimMontage->GetSectionLength(0);
+				const float SectionLength = ChargeAttackAnimMontage->GetSectionLength(0);
+				return NotifyEvent.GetTriggerTime() - SectionLength;
 			}
 		}
 	}
