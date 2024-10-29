@@ -426,6 +426,7 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 	}
 	
 	bAttackIsRange = Range;
+	KnockBackDirection = (CheckMouseLocation() - GetActorLocation()).GetSafeNormal2D();
 	
 	const int32 InputID = static_cast<int32>(InputName);
 	if(FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID))
@@ -481,6 +482,8 @@ void ALLL_PlayerBase::ChargeAttackActionCompleted(const FInputActionValue& Value
 	// 과충전 이누리아
 	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || CheckChargeTriggered())
 	{
+		KnockBackDirection = (CheckMouseLocation() - GetActorLocation()).GetSafeNormal2D();
+		
 		const int32 InputID = static_cast<int32>(InputName);
 		if(FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID))
 		{

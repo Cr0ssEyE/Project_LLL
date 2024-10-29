@@ -43,9 +43,6 @@ void ULLL_PGA_KnockBack::KnockBackTarget(const FGameplayEventData* TriggerEventD
 	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
 	{
-		const FVector AvatarLocation = CurrentActorInfo->AvatarActor->GetActorLocation();
-		const FVector Direction = (Player->GetLastCheckedMouseLocation() - AvatarLocation).GetSafeNormal2D();
-		
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 		float KnockBackPower = 0;
@@ -76,7 +73,7 @@ void ULLL_PGA_KnockBack::KnockBackTarget(const FGameplayEventData* TriggerEventD
 		
 		if (ILLL_KnockBackInterface* KnockBackActor = Cast<ILLL_KnockBackInterface>(Actor))
 		{
-			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Direction, KnockBackPower);
+			FVector LaunchVelocity = FLLL_MathHelper::CalculateLaunchVelocity(Player->GetKnockBackDirection(), KnockBackPower);
 			KnockBackActor->AddKnockBackVelocity(LaunchVelocity, KnockBackPower);
 
 			KnockBackSuccess = true;

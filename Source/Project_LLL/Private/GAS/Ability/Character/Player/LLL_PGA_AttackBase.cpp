@@ -9,7 +9,9 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "AnimNotify/LLL_AnimNotify_GameplayTag.h"
+#include "Components/CapsuleComponent.h"
 #include "Constant/LLL_AnimRelationNames.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Player/LLL_PlayerAnimInstance.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
@@ -133,7 +135,8 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance());
 		const float MontagePosition = PlayerAnimInstance->Montage_GetPosition(ChargeAttackAnimMontage);
-		const float ChargeRate = MontagePosition / GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange());
+		const float StartTimeSeconds = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
+		const float ChargeRate = (MontagePosition - StartTimeSeconds) / (GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()));
 		UE_LOG(LogTemp, Log, TEXT("차지 비율 : %f"), ChargeRate);
 		Player->SetChargeAttackChargeRate(ChargeRate);
 		
@@ -141,7 +144,6 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		float AttackSpeed = PlayerAttributeSet->GetAttackSpeed();
 		AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 
-		const float StartTimeSeconds = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
 		UAbilityTask_PlayMontageAndWait* ChargeMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ChargeAttackMontage"), ChargeAttackAnimMontage, AttackSpeed, NAME_None, true, 1, GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) + StartTimeSeconds);
 		ChargeMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
 		ChargeMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
@@ -151,11 +153,81 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		{
 			FVector Location = Player->GetActorLocation();
 			const float OffsetAttackRange = PlayerAttributeSet->GetMaxChargeAttackRange() - PlayerAttributeSet->GetMinChargeAttackRange();
-			const float TempAttackRange = PlayerAttributeSet->GetMinChargeAttackRange() + Player->GetChargeAttackChargeRate() * OffsetAttackRange;
-			Location += Player->GetActorForwardVector() * TempAttackRange;
+			float Distance = PlayerAttributeSet->GetMinChargeAttackRange() + Player->GetChargeAttackChargeRate() * OffsetAttackRange;
+			Location += Player->GetActorForwardVector() * Distance;
+
+			FHitResult StaticResult;
+			FHitResult MonsterResult;
+			const FVector SweepStartLocation = Player->GetActorLocation();
+			const FVector SweepEndLocation = Location;
+			const FQuat SweepQuat = Player->GetActorQuat();
+			constexpr ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
+			constexpr ECollisionChannel MonsterTraceChannel = ECC_ENEMY_HIT;
+
+			const UCapsuleComponent* Capsule = Player->GetCapsuleComponent();
+			const FCollisionShape TraceShape = FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius(), Capsule->GetScaledCapsuleHalfHeight() / 2.0f);
+		
+			GetWorld()->SweepSingleByChannel(
+				StaticResult,
+				SweepStartLocation,
+				SweepEndLocation,
+				SweepQuat,
+				StaticTraceChannel,
+				TraceShape);
+	
+			GetWorld()->SweepSingleByChannel(
+				MonsterResult,
+				SweepStartLocation,
+				SweepEndLocation,
+				SweepQuat,
+				MonsterTraceChannel,
+				TraceShape);
+
+			if (StaticResult.GetActor())
+			{
+				const float StaticDistance = Player->GetDistanceTo(StaticResult.GetActor());
+				if (MonsterResult.GetActor())
+				{
+					const float MonsterDistance = Player->GetDistanceTo(MonsterResult.GetActor());
+					if (StaticDistance <= MonsterDistance)
+					{
+						Location = StaticResult.Location;
+						Distance = StaticDistance / Distance;
+					}
+					else if (MonsterDistance < PlayerAttributeSet->GetMinChargeAttackRange())
+					{
+						Location = SweepStartLocation + Player->GetActorForwardVector() * PlayerAttributeSet->GetMinChargeAttackRange();
+						Distance = PlayerAttributeSet->GetMinChargeAttackRange() / Distance;
+					}
+					else
+					{
+						Location = MonsterResult.Location;
+						Distance = MonsterDistance / Distance;
+					}
+				}
+				else
+				{
+					Location = StaticResult.Location;
+					Distance = StaticDistance / Distance;
+				}
+			}
+			else if (MonsterResult.GetActor())
+			{
+				const float MonsterDistance = Player->GetDistanceTo(MonsterResult.GetActor());
+				if (MonsterDistance < PlayerAttributeSet->GetMinChargeAttackRange())
+				{
+					Location = SweepStartLocation + Player->GetActorForwardVector() * PlayerAttributeSet->GetMinChargeAttackRange();
+					Distance = PlayerAttributeSet->GetMinChargeAttackRange() / Distance;
+				}
+				else
+				{
+					Location = MonsterResult.Location;
+					Distance = MonsterDistance / Distance;
+				}
+			}
 
 			const float OffsetDuration = PlayerAttributeSet->GetMaxChargeAttackDuration() - PlayerAttributeSet->GetMinChargeAttackDuration();
-			const float Duration = PlayerAttributeSet->GetMinChargeAttackDuration() + Player->GetChargeAttackChargeRate() * OffsetDuration;
+			const float Duration = PlayerAttributeSet->GetMinChargeAttackDuration() + Player->GetChargeAttackChargeRate() * OffsetDuration * Distance;
 		
 			UAbilityTask_MoveToLocation* MoveTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Move"), Location, Duration, nullptr, nullptr);
 			MoveTask->ReadyForActivation();

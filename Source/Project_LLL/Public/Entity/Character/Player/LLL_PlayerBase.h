@@ -70,11 +70,11 @@ public:
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
-	FORCEINLINE FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	FORCEINLINE FVector GetLastVelocityBeforeDash() const { return LastVelocityBeforeDash; };
 	FORCEINLINE bool IsSkillRotateToMouseCursor() const { return bSkillRotateToMouseCursor; }
 	FORCEINLINE bool CheckAttackIsRange() const { return bAttackIsRange; }
 	FORCEINLINE bool CheckChargeTriggered() const { return bChargeTriggered; }
+	FORCEINLINE FVector GetKnockBackDirection() const { return KnockBackDirection; }
 
 	FORCEINLINE void SetCurrentCombo(const int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const bool Press) { bIsMoveInputPressed = Press; }
@@ -222,6 +222,7 @@ private:
 	FTimerHandle SkillCoolTimeTimerHandle;
 	uint8 bAttackIsRange : 1;
 	uint8 bChargeTriggered : 1;
+	FVector KnockBackDirection;
 
 	// 이누리아 관련 변수
 private:
