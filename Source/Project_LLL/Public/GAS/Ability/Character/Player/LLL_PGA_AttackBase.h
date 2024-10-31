@@ -49,9 +49,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, DisplayName = "충전 공격 애님 몽타주")
 	TObjectPtr<UAnimMontage> ChargeAttackAnimMontage;
+	
+	UPROPERTY(EditAnywhere, DisplayName = "풀차지일때만 발동")
+	uint8 bOnlyFullCharge : 1;
 
 	uint32 CurrentComboAction;
 	uint32 MaxAttackAction;
 	uint8 bIsCanPlayNextAction : 1;
 	uint8 bStopCharge : 1;
+	uint8 bFullCharged : 1;
 };

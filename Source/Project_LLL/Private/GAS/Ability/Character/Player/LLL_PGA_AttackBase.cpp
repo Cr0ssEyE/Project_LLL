@@ -110,6 +110,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 	}
 
 	bStopCharge = false;
+	bFullCharged = false;
 	Player->SetChargeTriggered(false);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
@@ -134,9 +135,17 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		bStopCharge = true;
 
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance());
+		
+		if (!bFullCharged && bOnlyFullCharge)
+		{
+			PlayerAnimInstance->StopAllMontages(0.3f);
+			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+			return;
+		}
+
 		const float MontagePosition = PlayerAnimInstance->Montage_GetPosition(ChargeAttackAnimMontage);
 		const float StartTimeSeconds = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
-		const float ChargeRate = (MontagePosition - StartTimeSeconds) / (GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()));
+		const float ChargeRate = (MontagePosition - StartTimeSeconds) / GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange());
 		UE_LOG(LogTemp, Log, TEXT("차지 비율 : %f"), ChargeRate);
 		Player->SetChargeAttackChargeRate(ChargeRate);
 		
@@ -263,6 +272,7 @@ void ULLL_PGA_AttackBase::CheckFullCharge(FGameplayEventData EventData)
 	PlayerAnimInstance->Montage_Pause(ChargeAttackAnimMontage);
 	const float SectionLength = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
 	PlayerAnimInstance->Montage_SetPosition(ChargeAttackAnimMontage, GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) + SectionLength);
+	bFullCharged = true;
 }
 
 void ULLL_PGA_AttackBase::BaseAttack()

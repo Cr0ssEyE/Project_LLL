@@ -422,13 +422,13 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 	
 	ShowHitEffect();
 	RecognizePlayerToAroundMonster();
-	
-	if (Cast<ALLL_BossMonster>(this))
+
+	if (bIsAttacking || IsDOT)
 	{
 		return;
 	}
 
-	if (bIsAttacking || IsDOT)
+	if (Cast<ALLL_BossMonster>(this))
 	{
 		return;
 	}
