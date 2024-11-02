@@ -207,8 +207,12 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 void ALLL_MonsterBase::InitAttributeSet()
 {
 	Super::InitAttributeSet();
-
-	const int32 Data = Id * 100 + AbilityLevel;
+	
+	int32 Data = Id * 100 + AbilityLevel;
+	if (bIsElite)
+	{
+		Data += 100;
+	}
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, AttributeInitId, Data, true);
 
 	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
@@ -428,7 +432,7 @@ void ALLL_MonsterBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 		return;
 	}
 
-	if (Cast<ALLL_BossMonster>(this))
+	if (Cast<ALLL_BossMonster>(this) || bIsElite)
 	{
 		return;
 	}

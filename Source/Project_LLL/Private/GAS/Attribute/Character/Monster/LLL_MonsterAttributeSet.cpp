@@ -77,6 +77,11 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 			}
 		}
 
+		if (Data.EffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_STUN_HARD) && Damaged)
+		{
+			Monster->Stun();
+		}
+
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 		{

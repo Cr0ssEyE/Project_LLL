@@ -28,6 +28,7 @@ public:
 	
 	FORCEINLINE void SetCharging(const bool IsCharging) { bIsCharging = IsCharging; }
 	FORCEINLINE void SetKnockBackSender(ALLL_MonsterBase* InKnockBackSender) { KnockBackSender = InKnockBackSender; }
+	FORCEINLINE void SetIsElite(const bool IsElite) { bIsElite = IsElite; }
 	
 	FORCEINLINE virtual float GetKnockBackedPower() const override { return bIsKnockBacking ? LastKnockBackPower : 0.0f; }
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
@@ -96,6 +97,7 @@ protected:
 	TObjectPtr<ALLL_MonsterBase> KnockBackSender;
 	uint8 bKnockBackTargetDamaged : 1;
 	uint8 bKnockBackCauserDamaged : 1;
+	uint8 bIsElite : 1;
 
 	// 이누리아 관련
 protected:

@@ -117,14 +117,16 @@ void ALLL_MonsterSpawner::SpawnMonster()
 			FTimerHandle MonsterSpawnTimerHandle;
 			GetWorldTimerManager().SetTimer(MonsterSpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, MonsterSpawnData, SpawnPoint, SpawnPointNum]
 			{
-				ALLL_MonsterBase* MonsterBase = GetWorld()->SpawnActor<ALLL_MonsterBase>(MonsterSpawnData.MonsterClass, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
-				if (!IsValid(MonsterBase))
+				ALLL_MonsterBase* Monster = GetWorld()->SpawnActorDeferred<ALLL_MonsterBase>(MonsterSpawnData.MonsterClass, SpawnPoint->GetComponentTransform());
+				if (!IsValid(Monster))
 				{
 					return;
 				}
+				Monster->SetIsElite(MonsterSpawnData.bIsElite);
+				Monster->FinishSpawning(SpawnPoint->GetComponentTransform());
 
-				MonsterBase->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::MonsterDeadHandle);
-				Monsters.Emplace(MonsterBase);
+				Monster->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::MonsterDeadHandle);
+				Monsters.Emplace(Monster);
 						
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 				if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
