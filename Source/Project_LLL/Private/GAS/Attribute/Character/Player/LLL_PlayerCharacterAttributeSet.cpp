@@ -29,6 +29,10 @@ BaseAttackKnockBackPowerPlus(0.0f),
 DashDistancePlus(0.0f),
 FasterAttackAttackSpeedRate(1.0f),
 BleedingExplosionOffencePower(0.0f)
+
+//임시
+,MaxMana(100),
+CurrentMana(0)
 {
 	
 }
@@ -141,6 +145,11 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 			UE_LOG(LogTemp, Log, TEXT("%.2f 확률로 회피 발동"), GetEvasionRate() * 100.0f)
 			return;
 		}
+	}
+	
+	if (Data.EvaluatedData.Attribute == GetCurrentManaAttribute())
+	{
+		SetCurrentMana(FMath::Clamp(GetCurrentMana(), 0.f, GetMaxMana()));
 	}
 	
 	Super::PostGameplayEffectExecute(Data);

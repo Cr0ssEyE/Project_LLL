@@ -117,6 +117,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "넉백된 대상과 충돌한 대상이 받는 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> KnockBackTargetDamageEffect;
 
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "마나 사용 이펙트")
+	TSubclassOf<UGameplayEffect> UseManaEffect;
+
 	// 이누리아 관련
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "연쇄 작용 이누리아 데미지 이펙트")

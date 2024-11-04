@@ -127,7 +127,7 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		bIsCanPlayNextAction = true;
 	}
 
-	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	// 과충전 이누리아
 	if ((PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered()) && !bStopCharge)
@@ -141,6 +141,17 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 			PlayerAnimInstance->StopAllMontages(0.3f);
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 			return;
+		}
+
+		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+
+		FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(Player);
+		EffectContextHandle.AddInstigator(Player, Player);
+		const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(PlayerDataAsset->UseManaEffect, Player->GetAbilityLevel(), EffectContextHandle);
+		if (EffectSpecHandle.IsValid())
+		{
+			PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 
 		const float MontagePosition = PlayerAnimInstance->Montage_GetPosition(ChargeAttackAnimMontage);

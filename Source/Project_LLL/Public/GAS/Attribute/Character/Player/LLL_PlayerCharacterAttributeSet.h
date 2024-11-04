@@ -107,6 +107,9 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MinChargeAttackKnockBackPower);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxChargeAttackKnockBackPower);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxChargeAttackChargingTime);
+
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxMana);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CurrentMana);
 	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherMoveSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, TargetingCorrectionRadius);
@@ -218,6 +221,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MaxChargeAttackChargingTime;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MaxMana;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData CurrentMana;
 	
 	// 기타 효과 관련
 protected:

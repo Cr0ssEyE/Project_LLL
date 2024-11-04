@@ -447,7 +447,7 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 
 void ALLL_PlayerBase::ChargeAttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range)
 {
-	if (bChargeTriggered)
+	if (bChargeTriggered || PlayerCharacterAttributeSet->GetCurrentMana() != PlayerCharacterAttributeSet->GetMaxMana())
 	{
 		return;
 	}
