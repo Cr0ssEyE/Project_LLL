@@ -109,7 +109,6 @@ public:
 	FORCEINLINE float GetDoubleDashDashRate() const { return DoubleDashDashRate; }
 	FORCEINLINE int32 GetDoubleDashHorseEnuriaCheckCount() const { return DoubleDashHorseEnuriaCheckCount; }
 	FORCEINLINE int32 GetEvasionDashHorseEnuriaCheckCount() const { return EvasionDashHorseEnuriaCheckCount; }
-	FORCEINLINE float GetChargeAttackChargeRate() const { return ChargeAttackChargeRate; }
 	FORCEINLINE float GetIncreaseKnockBackBothKnockBackPowerRate() const { return IncreaseKnockBackBothKnockBackPowerRate; }
 	FORCEINLINE float GetDashAttackOffencePowerPlus() const { return DashAttackOffencePowerPlus; }
 	FORCEINLINE bool CheckDashAttackCanAttack() const { return bDashAttackCanAttack; }
@@ -133,7 +132,6 @@ public:
 	FORCEINLINE void SetDoubleDashDashRate(const float InDoubleDashDashRate) { DoubleDashDashRate = InDoubleDashDashRate; }
 	FORCEINLINE void SetDoubleDashHorseEnuriaCheckCount(const int32 InDoubleDashHorseEnuriaCheckCount) { DoubleDashHorseEnuriaCheckCount = InDoubleDashHorseEnuriaCheckCount; }
 	FORCEINLINE void SetEvasionDashHorseEnuriaCheckCount(const int32 InEvasionDashHorseEnuriaCheckCount) { EvasionDashHorseEnuriaCheckCount = InEvasionDashHorseEnuriaCheckCount; }
-	FORCEINLINE void SetChargeAttackChargeRate(const float InChargeAttackChargeRate) { ChargeAttackChargeRate = InChargeAttackChargeRate; }
 	FORCEINLINE void SetIncreaseKnockBackBothKnockBackPowerRate(const float InIncreaseKnockBackBothKnockBackPowerRate) { IncreaseKnockBackBothKnockBackPowerRate = InIncreaseKnockBackBothKnockBackPowerRate; }
 	FORCEINLINE void SetDashAttackOffencePowerPlus(const float InDashAttackOffencePowerPlus) { DashAttackOffencePowerPlus = InDashAttackOffencePowerPlus; }
 	FORCEINLINE void SetDashAttackCanAttack(const bool DashAttackCanAttack) { bDashAttackCanAttack = DashAttackCanAttack; }
@@ -246,7 +244,6 @@ private:
 	float DoubleDashDashRate;
 	int32 DoubleDashHorseEnuriaCheckCount;
 	int32 EvasionDashHorseEnuriaCheckCount;
-	float ChargeAttackChargeRate;
 	float IncreaseKnockBackBothKnockBackPowerRate;
 	float DashAttackOffencePowerPlus;
 	uint8 bDashAttackCanAttack : 1;

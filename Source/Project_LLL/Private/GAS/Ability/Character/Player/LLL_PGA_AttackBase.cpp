@@ -168,11 +168,7 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 			PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 
-		const float MontagePosition = PlayerAnimInstance->Montage_GetPosition(ChargeAttackAnimMontage);
 		const float StartTimeSeconds = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
-		const float ChargeRate = (MontagePosition - StartTimeSeconds) / GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange());
-		UE_LOG(LogTemp, Log, TEXT("차지 비율 : %f"), ChargeRate);
-		Player->SetChargeAttackChargeRate(ChargeRate);
 		
 		float AttackSpeed = PlayerAttributeSet->GetAttackSpeed();
 		AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
