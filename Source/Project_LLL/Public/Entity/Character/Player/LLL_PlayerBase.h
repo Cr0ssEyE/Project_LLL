@@ -73,16 +73,14 @@ public:
 	FORCEINLINE FVector GetLastVelocityBeforeDash() const { return LastVelocityBeforeDash; };
 	FORCEINLINE bool IsSkillRotateToMouseCursor() const { return bSkillRotateToMouseCursor; }
 	FORCEINLINE bool CheckAttackIsRange() const { return bAttackIsRange; }
-	FORCEINLINE bool CheckChargeTriggered1() const { return bChargeTriggered1; }
-	FORCEINLINE bool CheckChargeTriggered2() const { return bChargeTriggered2; }
+	FORCEINLINE bool CheckChargeTriggered() const { return bChargeTriggered; }
 	FORCEINLINE FVector GetKnockBackDirection() const { return KnockBackDirection; }
 
 	FORCEINLINE void SetCurrentCombo(const int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const bool Press) { bIsMoveInputPressed = Press; }
 	FORCEINLINE void SetSkillCoolTime(const float InSkillCoolTime) { SkillCoolTime = InSkillCoolTime; }
 	FORCEINLINE void SetSkillRotateToMouseCursor(const bool SkillRotateToMouseCursor) { bSkillRotateToMouseCursor = SkillRotateToMouseCursor; }
-	FORCEINLINE void SetChargeTriggered1(bool ChargeTriggered1) { bChargeTriggered1 = ChargeTriggered1; }
-	FORCEINLINE void SetChargeTriggered2(bool ChargeTriggered2) { bChargeTriggered2 = ChargeTriggered2; }
+	FORCEINLINE void SetChargeTriggered(bool ChargeTriggered) { bChargeTriggered = ChargeTriggered; }
 	
 	FVector CheckMouseLocation();
 	void RotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
@@ -223,8 +221,7 @@ private:
 	uint8 bSkillRotateToMouseCursor : 1;
 	FTimerHandle SkillCoolTimeTimerHandle;
 	uint8 bAttackIsRange : 1;
-	uint8 bChargeTriggered1 : 1;
-	uint8 bChargeTriggered2 : 1;
+	uint8 bChargeTriggered : 1;
 	FVector KnockBackDirection;
 
 	// 이누리아 관련 변수

@@ -46,7 +46,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	// 과충전 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered1() || Player->CheckChargeTriggered2())
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered())
 	{
 		ChargeAttack();
 	}
@@ -111,8 +111,7 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 
 	bStopCharge = false;
 	bFullCharged = false;
-	Player->SetChargeTriggered1(false);
-	Player->SetChargeTriggered2(false);
+	Player->SetChargeTriggered(false);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -131,13 +130,13 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	// 과충전 이누리아
-	if ((PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered1() || Player->CheckChargeTriggered2()) && !bStopCharge)
+	if ((PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered()) && !bStopCharge)
 	{
 		bStopCharge = true;
 
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance());
 		
-		if (!bFullCharged && bOnlyFullCharge)
+		if (!bFullCharged)
 		{
 			PlayerAnimInstance->StopAllMontages(0.3f);
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
@@ -148,7 +147,7 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
 		TSubclassOf<UGameplayEffect> UseManaEffect;
 		float ManaValue;
-		if (Player->CheckChargeTriggered1())
+		if (!Player->CheckAttackIsRange())
 		{
 			UseManaEffect = PlayerDataAsset->UseManaEffect1;
 			ManaValue = PlayerAttributeSet->GetChargeAttack1ManaCost();
@@ -186,8 +185,7 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		if (!Player->CheckAttackIsRange())
 		{
 			FVector Location = Player->GetActorLocation();
-			const float OffsetAttackRange = PlayerAttributeSet->GetMaxChargeAttackRange() - PlayerAttributeSet->GetMinChargeAttackRange();
-			float Distance = PlayerAttributeSet->GetMinChargeAttackRange() + Player->GetChargeAttackChargeRate() * OffsetAttackRange;
+			float Distance = PlayerAttributeSet->GetMaxChargeAttackRange();
 			Location += Player->GetActorForwardVector() * Distance;
 
 			FHitResult StaticResult;
@@ -228,11 +226,6 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 						Location = StaticResult.Location;
 						Distance = StaticDistance / Distance;
 					}
-					else if (MonsterDistance < PlayerAttributeSet->GetMinChargeAttackRange())
-					{
-						Location = SweepStartLocation + Player->GetActorForwardVector() * PlayerAttributeSet->GetMinChargeAttackRange();
-						Distance = PlayerAttributeSet->GetMinChargeAttackRange() / Distance;
-					}
 					else
 					{
 						Location = MonsterResult.Location;
@@ -248,20 +241,11 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 			else if (MonsterResult.GetActor())
 			{
 				const float MonsterDistance = Player->GetDistanceTo(MonsterResult.GetActor());
-				if (MonsterDistance < PlayerAttributeSet->GetMinChargeAttackRange())
-				{
-					Location = SweepStartLocation + Player->GetActorForwardVector() * PlayerAttributeSet->GetMinChargeAttackRange();
-					Distance = PlayerAttributeSet->GetMinChargeAttackRange() / Distance;
-				}
-				else
-				{
-					Location = MonsterResult.Location;
-					Distance = MonsterDistance / Distance;
-				}
+				Location = MonsterResult.Location;
+				Distance = MonsterDistance / Distance;
 			}
 
-			const float OffsetDuration = PlayerAttributeSet->GetMaxChargeAttackDuration() - PlayerAttributeSet->GetMinChargeAttackDuration();
-			const float Duration = PlayerAttributeSet->GetMinChargeAttackDuration() + Player->GetChargeAttackChargeRate() * OffsetDuration * Distance;
+			const float Duration = PlayerAttributeSet->GetMaxChargeAttackDuration() * Distance;
 		
 			UAbilityTask_MoveToLocation* MoveTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Move"), Location, Duration, nullptr, nullptr);
 			MoveTask->ReadyForActivation();

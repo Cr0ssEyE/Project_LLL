@@ -34,7 +34,12 @@ BleedingExplosionOffencePower(0.0f)
 ,MaxMana(100),
 CurrentMana(0),
 ChargeAttack1ManaCost(30),
-ChargeAttack2ManaCost(70)
+ChargeAttack2ManaCost(70),
+OffencePowerRate1(2),
+OffencePowerRate2(2),
+OffencePowerRate3(2),
+OffencePowerRate4(2)
+
 {
 	
 }

@@ -22,17 +22,30 @@ float ULLL_CC_AttackDamageCalculate::CalculateBaseMagnitude_Implementation(const
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
+	Result = PlayerAttributeSet->GetOffencePower();
+
 	// 과충전 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered1() || Player->CheckChargeTriggered2())
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered())
 	{
-		const float OffsetOffencePower = PlayerAttributeSet->GetMaxChargeAttackDamage() - PlayerAttributeSet->GetMinChargeAttackDamage();
-		const float TempOffencePower = PlayerAttributeSet->GetMinChargeAttackDamage() + Player->GetChargeAttackChargeRate() * OffsetOffencePower;
-		UE_LOG(LogTemp, Log, TEXT("과충전 이누리아로 공격력 %f로 적용"), TempOffencePower)
-		Result = TempOffencePower;
+		if (!Player->CheckAttackIsRange())
+		{
+			Result *= PlayerAttributeSet->GetOffencePowerRate3();
+		}
+		else
+		{
+			Result *= PlayerAttributeSet->GetOffencePowerRate4();
+		}
 	}
 	else
 	{
-		Result = PlayerAttributeSet->GetOffencePower();
+		if (!Player->CheckAttackIsRange())
+		{
+			Result *= PlayerAttributeSet->GetOffencePowerRate1();
+		}
+		else
+		{
+			Result *= PlayerAttributeSet->GetOffencePowerRate2();
+		}
 	}
 
 	Result = FLLL_MathHelper::CalculateCriticalDamage(Result, Player);

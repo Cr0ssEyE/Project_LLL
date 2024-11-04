@@ -29,6 +29,10 @@ void ULLL_PGA_KnockBack::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 	{
 		KnockBackTarget(TriggerEventData);
 	}
+	else if (TriggerRequiredTag1Charge.IsValid() && TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag1Charge))
+	{
+		KnockBackTarget(TriggerEventData);
+	}
 	else
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
@@ -48,12 +52,9 @@ void ULLL_PGA_KnockBack::KnockBackTarget(const FGameplayEventData* TriggerEventD
 		float KnockBackPower = 0;
 		
 		// 과충전 이누리아
-		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered1() || Player->CheckChargeTriggered2())
+		if (TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag1Charge))
 		{
-			const float OffsetKnockBackPower = PlayerAttributeSet->GetMaxChargeAttackKnockBackPower() - PlayerAttributeSet->GetMinChargeAttackKnockBackPower();
-			const float TempKnockBackPower = PlayerAttributeSet->GetMinChargeAttackKnockBackPower() + Player->GetChargeAttackChargeRate() * OffsetKnockBackPower;
-			UE_LOG(LogTemp, Log, TEXT("과충전 이누리아로 넉백 수치 %f로 적용"), TempKnockBackPower)
-			KnockBackPower = TempKnockBackPower;
+			KnockBackPower = PlayerAttributeSet->GetMaxChargeAttackKnockBackPower();
 		}
 		else
 		{

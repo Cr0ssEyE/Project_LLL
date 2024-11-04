@@ -28,4 +28,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그 2")
 	FGameplayTag TriggerRequiredTag2;
+
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그 1 차지")
+	FGameplayTag TriggerRequiredTag1Charge;
 };

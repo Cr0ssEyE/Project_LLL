@@ -82,8 +82,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	LastCheckedMouseLocation = FVector::Zero();
 	bIsLowHP = false;
 	FeatherSpawnStartTime = 0.01f;
-	bChargeTriggered1 = false;
-	bChargeTriggered2 = false;
+	bChargeTriggered = false;
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -421,7 +420,7 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputNa
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range)
 {
-	if (bChargeTriggered1 || bChargeTriggered2)
+	if (bChargeTriggered)
 	{
 		return;
 	}
@@ -448,7 +447,7 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 
 void ALLL_PlayerBase::ChargeAttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range)
 {
-	if (bChargeTriggered1 || bChargeTriggered2)
+	if (bChargeTriggered)
 	{
 		return;
 	}
@@ -463,14 +462,7 @@ void ALLL_PlayerBase::ChargeAttackAction(const FInputActionValue& Value, EAbilit
 		return;
 	}
 
-	if (!Range)
-	{
-		bChargeTriggered1 = true;
-	}
-	else
-	{
-		bChargeTriggered2 = true;
-	}
+	bChargeTriggered = true;
 	bAttackIsRange = Range;
 
 	const int32 InputID = static_cast<int32>(InputName);
@@ -498,7 +490,7 @@ void ALLL_PlayerBase::ChargeAttackActionCompleted(const FInputActionValue& Value
 	}
 	
 	// 과충전 이누리아
-	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || CheckChargeTriggered1() || CheckChargeTriggered2())
+	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || CheckChargeTriggered())
 	{
 		KnockBackDirection = (CheckMouseLocation() - GetActorLocation()).GetSafeNormal2D();
 		
