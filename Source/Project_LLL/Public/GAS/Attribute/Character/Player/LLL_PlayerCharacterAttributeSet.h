@@ -110,6 +110,8 @@ public:
 
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, MaxMana);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CurrentMana);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChargeAttack1ManaCost);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChargeAttack2ManaCost);
 	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherMoveSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, TargetingCorrectionRadius);
@@ -227,6 +229,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData CurrentMana;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ChargeAttack1ManaCost;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData ChargeAttack2ManaCost;
 	
 	// 기타 효과 관련
 protected:

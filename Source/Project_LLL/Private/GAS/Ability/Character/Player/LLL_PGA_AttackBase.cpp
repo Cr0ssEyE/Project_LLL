@@ -46,7 +46,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	// 과충전 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered())
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered1() || Player->CheckChargeTriggered2())
 	{
 		ChargeAttack();
 	}
@@ -111,7 +111,8 @@ void ULLL_PGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 
 	bStopCharge = false;
 	bFullCharged = false;
-	Player->SetChargeTriggered(false);
+	Player->SetChargeTriggered1(false);
+	Player->SetChargeTriggered2(false);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -130,7 +131,7 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	// 과충전 이누리아
-	if ((PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered()) && !bStopCharge)
+	if ((PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered1() || Player->CheckChargeTriggered2()) && !bStopCharge)
 	{
 		bStopCharge = true;
 
@@ -143,14 +144,28 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 			return;
 		}
 
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+		TSubclassOf<UGameplayEffect> UseManaEffect;
+		float ManaValue;
+		if (Player->CheckChargeTriggered1())
+		{
+			UseManaEffect = PlayerDataAsset->UseManaEffect1;
+			ManaValue = PlayerAttributeSet->GetChargeAttack1ManaCost();
+		}
+		else
+		{
+			UseManaEffect = PlayerDataAsset->UseManaEffect2;
+			ManaValue = PlayerAttributeSet->GetChargeAttack2ManaCost();
+		}
 
 		FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(Player);
 		EffectContextHandle.AddInstigator(Player, Player);
-		const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(PlayerDataAsset->UseManaEffect, Player->GetAbilityLevel(), EffectContextHandle);
+		const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(UseManaEffect, Player->GetAbilityLevel(), EffectContextHandle);
 		if (EffectSpecHandle.IsValid())
 		{
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_TEMP_CALLER, ManaValue * -1.0f);
 			PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 		}
 
@@ -160,7 +175,6 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		UE_LOG(LogTemp, Log, TEXT("차지 비율 : %f"), ChargeRate);
 		Player->SetChargeAttackChargeRate(ChargeRate);
 		
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 		float AttackSpeed = PlayerAttributeSet->GetAttackSpeed();
 		AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 
@@ -378,7 +392,7 @@ void ULLL_PGA_AttackBase::ChargeAttack()
 	AttackSpeed *= PlayerAttributeSet->GetAttackSpeed();
 	AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 
-	const FName Section = *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, Player->CheckAttackIsRange() ? 2 : 0);
+	const FName Section = *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, Player->CheckAttackIsRange() ? 2 : 1);
 	Player->PlayAnimMontage(ChargeAttackAnimMontage, AttackSpeed, Section);
 	Player->GetCharacterMovement()->SetMovementMode(MOVE_None);
 

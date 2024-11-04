@@ -115,5 +115,6 @@
 #define TAG_GAS_CUE_QUADRUPLE_HIT FGameplayTag::RequestGameplayTag(FName("GameplayCue.Object.ThrownObject.ThrownFeather.QuadrupleHit"))
 #define TAG_GAS_CUE_MOVE_FASTER FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.Player.MoveFaster"))
 
-// 경직 관련 태그
+// 기타 태그
 #define TAG_GAS_STUN_HARD FGameplayTag::RequestGameplayTag(FName("System.StunHard"))
+#define TAG_GAS_TEMP_CALLER FGameplayTag::RequestGameplayTag(FName("System.TempCaller"))

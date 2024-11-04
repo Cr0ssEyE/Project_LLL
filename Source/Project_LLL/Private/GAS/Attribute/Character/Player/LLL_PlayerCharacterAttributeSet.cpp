@@ -32,7 +32,9 @@ BleedingExplosionOffencePower(0.0f)
 
 //임시
 ,MaxMana(100),
-CurrentMana(0)
+CurrentMana(0),
+ChargeAttack1ManaCost(30),
+ChargeAttack2ManaCost(70)
 {
 	
 }

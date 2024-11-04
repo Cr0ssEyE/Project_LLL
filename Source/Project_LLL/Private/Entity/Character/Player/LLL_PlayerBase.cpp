@@ -82,7 +82,8 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	LastCheckedMouseLocation = FVector::Zero();
 	bIsLowHP = false;
 	FeatherSpawnStartTime = 0.01f;
-	bChargeTriggered = false;
+	bChargeTriggered1 = false;
+	bChargeTriggered2 = false;
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -420,7 +421,7 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputNa
 
 void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range)
 {
-	if (bChargeTriggered)
+	if (bChargeTriggered1 || bChargeTriggered2)
 	{
 		return;
 	}
@@ -447,12 +448,29 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 
 void ALLL_PlayerBase::ChargeAttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range)
 {
-	if (bChargeTriggered || PlayerCharacterAttributeSet->GetCurrentMana() != PlayerCharacterAttributeSet->GetMaxMana())
+	if (bChargeTriggered1 || bChargeTriggered2)
+	{
+		return;
+	}
+	
+	if (!Range && PlayerCharacterAttributeSet->GetCurrentMana() < PlayerCharacterAttributeSet->GetChargeAttack1ManaCost())
 	{
 		return;
 	}
 
-	bChargeTriggered = true;
+	if (Range && PlayerCharacterAttributeSet->GetCurrentMana() < PlayerCharacterAttributeSet->GetChargeAttack2ManaCost())
+	{
+		return;
+	}
+
+	if (!Range)
+	{
+		bChargeTriggered1 = true;
+	}
+	else
+	{
+		bChargeTriggered2 = true;
+	}
 	bAttackIsRange = Range;
 
 	const int32 InputID = static_cast<int32>(InputName);
@@ -480,7 +498,7 @@ void ALLL_PlayerBase::ChargeAttackActionCompleted(const FInputActionValue& Value
 	}
 	
 	// 과충전 이누리아
-	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || CheckChargeTriggered())
+	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || CheckChargeTriggered1() || CheckChargeTriggered2())
 	{
 		KnockBackDirection = (CheckMouseLocation() - GetActorLocation()).GetSafeNormal2D();
 		

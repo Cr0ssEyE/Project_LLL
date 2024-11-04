@@ -118,7 +118,10 @@ public:
 	TSubclassOf<UGameplayEffect> KnockBackTargetDamageEffect;
 
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "마나 사용 이펙트")
-	TSubclassOf<UGameplayEffect> UseManaEffect;
+	TSubclassOf<UGameplayEffect> UseManaEffect1;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "마나 사용 이펙트")
+	TSubclassOf<UGameplayEffect> UseManaEffect2;
 
 	// 이누리아 관련
 public:
