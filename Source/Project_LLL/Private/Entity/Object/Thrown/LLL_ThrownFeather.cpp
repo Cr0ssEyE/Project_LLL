@@ -123,7 +123,7 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 					{
 						UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지 : %d"), *Other->GetName(), OffencePower, i + 2)
 						EffectSpecHandle1.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
-						EffectSpecHandle2.Data->SetSetByCallerMagnitude(TAG_GAS_TEMP_CALLER, PlayerAttributeSet->GetFeatherManaRecoveryValue());
+						EffectSpecHandle2.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, PlayerAttributeSet->GetFeatherManaRecoveryValue());
 						
 						if (i == 0)
 						{
@@ -169,7 +169,7 @@ void ALLL_ThrownFeather::DamageTo(AActor* OtherActor)
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->RecoveryManaByFeatherRecoveryManaEffect, AbilityLevel, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_TEMP_CALLER, PlayerAttributeSet->GetFeatherManaRecoveryValue());
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, PlayerAttributeSet->GetFeatherManaRecoveryValue());
 			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, PlayerASC);
 		}
 	}

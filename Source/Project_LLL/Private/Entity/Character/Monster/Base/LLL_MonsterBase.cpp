@@ -365,7 +365,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 					}
 
 					// 피의 역병 이누리아
-					if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION) && ASC->HasMatchingGameplayTag(TAG_GAS_STATUS_BLEEDING) && !bBleedingTransmissionTargetDamaged)
+					if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION) && !bBleedingTransmissionTargetDamaged)
 					{
 						bBleedingTransmissionTargetDamaged = true;
 						OtherMonster->SetBleedingStack(OtherMonster->GetBleedingStack() + Player->GetBleedingTransmissionStack() - 1);
