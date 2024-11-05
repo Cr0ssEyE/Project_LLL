@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Entity/Object/Base/LLL_BaseObject.h"
 #include "LLL_AbilityObject.generated.h"
 
+class USphereComponent;
 class ULLL_AbilityObjectAttributeSet;
 class ULLL_AbilityObjectDataAsset;
 class UBoxComponent;
@@ -23,13 +25,18 @@ public:
 	ALLL_AbilityObject();
 
 	FORCEINLINE void SetAbilityInfo(const FAbilityDataTable* InAbilityData, float InAbilityLevel) { AbilityData = InAbilityData; AbilityLevel = InAbilityLevel; }
-
-	virtual void BeginPlay() override;
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	FORCEINLINE void SetOffencePower(const float InOffencePower) { OffencePower = InOffencePower; }
+	FORCEINLINE void SetKnockBackDirection(const FVector& InKnockBackDirection) { KnockBackDirection = InKnockBackDirection; }
+	FORCEINLINE void SetKnockBackPower(const float InKnockBackPower) { KnockBackPower = InKnockBackPower; }
 
 protected:
+	virtual void BeginPlay() override;
+
+	void DamageTo(AActor* OtherActor);
+	void KnockBackTo(AActor* OtherActor);
+	
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<UBoxComponent> OverlapCollisionBox;
+	TObjectPtr<USphereComponent> OverlapCollisionSphere;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_AbilityObjectDataAsset> AbilityObjectDataAsset;
@@ -39,4 +46,8 @@ protected:
 
 	const FAbilityDataTable* AbilityData;
 	float AbilityLevel;
+	
+	float OffencePower;
+	FVector KnockBackDirection;
+	float KnockBackPower;
 };

@@ -6,10 +6,12 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "FMODAudioComponent.h"
-#include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_GeneralConstants.h"
+#include "Constant/LLL_GraphicParameterNames.h"
+#include "Game/LLL_GameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
@@ -26,7 +28,7 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	FModAudioComponent->SetupAttachment(RootComponent);
 
-	Level = 1;
+	AbilityLevel = 1;
 }
 
 void ALLL_BaseCharacter::PostLoad()
@@ -54,7 +56,7 @@ void ALLL_BaseCharacter::PostInitializeComponents()
 void ALLL_BaseCharacter::SetDefaultInformation()
 {
 	GetMesh()->SetRenderCustomDepth(true);
-	GetMesh()->SetCustomDepthStencilValue(1);
+	GetMesh()->SetCustomDepthStencilValue(STENCIL_VALUE_TOON_BASE);
 	
 	if (IsValid(CharacterDataAsset))
 	{
@@ -64,7 +66,8 @@ void ALLL_BaseCharacter::SetDefaultInformation()
 		GetMesh()->SetRelativeScale3D(CharacterDataAsset->MeshSize);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -CharacterDataAsset->CollisionSize.X));
-
+		GetMesh()->SetBoundsScale(ACTOR_DEFAULT_BOUNDS);
+		
 		UClass* AnimBlueprint = CharacterDataAsset->AnimInstance.LoadSynchronous();
 		if (IsValid(AnimBlueprint))
 		{
@@ -132,7 +135,7 @@ void ALLL_BaseCharacter::InitAttributeSet()
 	}
 }
 
-void ALLL_BaseCharacter::SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
+void ALLL_BaseCharacter::AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
 {
 	NiagaraComponents.Remove(nullptr);
 	NiagaraComponents.Emplace(InNiagaraComponent);
@@ -142,18 +145,24 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	if (HitLocation.Z >= GetActorLocation().Z)
+	if (HitLocation.Z < GetActorLocation().Z)
 	{
-		OtherActorCollidedDelegate.Broadcast(this, Other);
+		return;
+	}
 
-		const ECollisionResponse WallResponse = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
-		const ECollisionResponse FieldResponse = Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD);
+	LastCollideLocation = HitLocation;
+	LastCollideLocation.Z = GetActorLocation().Z;
 	
-		if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
-		{
-			const FGameplayEventData PayloadData;
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
-		}
+	OtherActorCollidedDelegate.Broadcast(this, Other);
+
+	const ECollisionResponse WallResponse = Other->GetComponentsCollisionResponseToChannel(ECC_WALL_ONLY);
+	const ECollisionResponse FieldResponse = Other->GetComponentsCollisionResponseToChannel(ECC_TRACE_FIELD);
+	
+	if (WallResponse == ECR_Block && FieldResponse == ECR_Ignore)
+	{
+		FGameplayEventData PayloadData;
+		PayloadData.Instigator = Other;
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
 	}
 }
 
@@ -169,5 +178,18 @@ void ALLL_BaseCharacter::Dead()
 	CharacterDeadDelegate.Broadcast(this);
 
 	ASC->CancelAbilities();
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("캐릭터 사망")));
+}
+
+void ALLL_BaseCharacter::SetOnceParameterByTupleValue(EFModParameter FModParameter, float value) const
+{
+	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
+	for (const auto FModParameterData : GameInstance->GetFModParameterDataArray())
+	{
+		if (FModParameterData.Parameter != FModParameter)
+		{
+			continue;
+		}
+
+		FModAudioComponent->SetParameter(FModParameterData.Name, value);
+	}
 }

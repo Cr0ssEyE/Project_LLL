@@ -3,18 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "System/Base/LLL_SystemBase.h"
 #include "DataTable/LLL_RewardDataTable.h"
+#include "System/Base/LLL_SystemBase.h"
 #include "LLL_TutorialGimmick.generated.h"
 
+class UGameplayEffect;
 class ALLL_GateObject;
 class UStaticMeshComponent;
-class ALLL_AbilityRewardObject;
+class ALLL_RewardObject;
 class ULLL_GateSpawnPointComponent;
 class ULLL_PlayerSpawnPointComponent;
 class AActor;
-class ULLL_MapDataAsset;
 class UNiagaraComponent;
+class ULLL_TutorialMapDataAsset;
+class ULLL_TutorialWidget;
 /**
  * 
  */
@@ -31,16 +33,16 @@ protected:
 	
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AActor> StageBP;
-
+	TArray<TObjectPtr<AActor>> StageActors;
+	
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<AActor> StageActor;
+	TArray<TObjectPtr<AActor>> Monsters;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ALLL_GateObject> Gate;
 	
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ALLL_AbilityRewardObject> AbilityReward;
+	TObjectPtr<ALLL_RewardObject> AbilityReward;
 	
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_PlayerSpawnPointComponent> PlayerSpawnPointComponent;
@@ -52,9 +54,19 @@ protected:
 	TObjectPtr<UNiagaraComponent> PlayerTeleportNiagara;
 
 	UPROPERTY(VisibleAnywhere, Category = "stage")
-	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
+	TObjectPtr<const ULLL_TutorialMapDataAsset> TutorialDataAsset;
 
-	void OnInteractionGate(const FRewardDataTable* Data);
+	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "튜토리얼 UI")
+	TSubclassOf<ULLL_TutorialWidget> TutorialWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULLL_TutorialWidget> TutorialWidget;
+
+	uint8 bIsActiveSkill : 1;
+
+	uint8 bIsActiveDash : 1;
+	
+	void OnInteractionGate(const FRewardDataTable* RewardData);
 
 	UFUNCTION()
 	void RewardDestroyed(AActor* DestroyedActor);
@@ -63,6 +75,14 @@ protected:
 	void MonsterDestroyed(AActor* DestroyedActor);
 
 	UFUNCTION()
+	void BeginOverlapAttackTutorial(AActor* OverlappedActor, AActor* OtherActor);
+
+	UFUNCTION()
+	void FinalMapSpawn(AActor* DestroyedActor);
+
+	UFUNCTION()
+	void FinalMonsterSpawn(AActor* DestroyedActor);
+
+	UFUNCTION()
 	void LoadLevel(UNiagaraComponent* InNiagaraComponent);
 };
-

@@ -22,3 +22,20 @@ bool ULLL_Cooldown_BTDecorator::CalculateRawConditionValue(UBehaviorTreeComponen
 	
 	return RecalculateTime >= DecoratorMemory->LastUseTimestamp;
 }
+
+void ULLL_Cooldown_BTDecorator::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+{
+	const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetCharacter());
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(Monster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+	
+	FBTCooldownDecoratorMemory* DecoratorMemory = CastInstanceNodeMemory<FBTCooldownDecoratorMemory>(NodeMemory);
+	if (!DecoratorMemory->bRequestedRestart)
+	{
+		const double RecalculateTime = OwnerComp.GetWorld()->GetTimeSeconds() - MonsterAttributeSet->GetAttackCoolDown();
+		if (RecalculateTime >= DecoratorMemory->LastUseTimestamp)
+		{
+			DecoratorMemory->bRequestedRestart = true;
+			OwnerComp.RequestExecution(this);
+		}
+	}
+}

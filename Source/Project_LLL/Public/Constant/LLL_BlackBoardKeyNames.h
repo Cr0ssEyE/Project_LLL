@@ -8,3 +8,13 @@
 #define BBKEY_PLAYER TEXT("PlayerBase")
 #define BBKEY_IS_IN_RANGE TEXT("IsInAttackRange")
 #define BBKEY_IS_IN_FIELD_OF_VIEW TEXT("IsInFieldOfView")
+
+// 원거리 몬스터 전용
+#define BBKEY_RETREAT_POS TEXT("RetreatPos")
+#define BBKEY_RETREAT_POS_IS_VALID TEXT("RetreatPosIsValid")
+
+// 보스 몬스터 전용
+#define BBKEY_PATTERN TEXT("Pattern")
+
+// 힘 있는 자 전용
+#define BBKEY_OTHER_MONSTER TEXT("OtherMonster")

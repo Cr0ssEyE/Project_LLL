@@ -40,12 +40,13 @@ public:
 	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
+	FORCEINLINE virtual TArray<UNiagaraComponent*> GetNiagaraComponents() const override { return NiagaraComponents; }
 	
 	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
 	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
-	FORCEINLINE float GetCharacterLevel() const { return Level; }
-
-	// 플레이어
+	FORCEINLINE float GetAbilityLevel() const { return AbilityLevel; }
+	FORCEINLINE FVector GetLastCollideLocation() const { return LastCollideLocation; }
+	
 protected:
 	virtual void PostLoad() override;
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -56,15 +57,17 @@ protected:
 
 protected:
 	virtual void SetFModParameter(EFModParameter FModParameter) override {}
-	virtual void SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
+	virtual void AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent) override;
 	
 protected:
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Damaged(AActor* Attacker, bool IsDOT = false) {}
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false, float Damage = 0) {}
 	virtual void Dead();
+
+	void SetOnceParameterByTupleValue(EFModParameter FModParameter, float value) const;
 
 	// 상태 체크용 변수
 public:
@@ -94,13 +97,16 @@ protected:
 	uint8 bIsAttacking : 1;
 
 	UPROPERTY(EditAnywhere)
-	int32 Level;
+	int32 AbilityLevel;
 
 	// 이동 관련 변수
 protected:
 	UPROPERTY(VisibleAnywhere)
 	FVector MoveDirection;
 
+	UPROPERTY(VisibleAnywhere)
+	FVector LastCollideLocation;
+	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BaseCharacterDataAsset> CharacterDataAsset;

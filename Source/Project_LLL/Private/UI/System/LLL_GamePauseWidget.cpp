@@ -3,20 +3,20 @@
 
 #include "UI/System/LLL_GamePauseWidget.h"
 
-#include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
-#include "Components/Overlay.h"
+#include "Components/TextBlock.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
-#include "Game/LLL_GameInstance.h"
 #include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/System/Setting/LLL_SettingWidget.h"
+#include "Game/LLL_MapSoundSubsystem.h"
 
 void ULLL_GamePauseWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	
 	ResumeButton->OnClicked.AddDynamic(this, &ULLL_GamePauseWidget::ResumeButtonEvent);
 	ResumeButton->OnHovered.AddDynamic(this, &ULLL_GamePauseWidget::PlayResumeButtonHoverAnimation);
 	ResumeButton->OnUnhovered.AddDynamic(this, &ULLL_GamePauseWidget::PlayResumeButtonUnHoverAnimation);
@@ -63,28 +63,32 @@ void ULLL_GamePauseWidget::SetupPauseState()
 	GetOwningPlayer()->DisableInput(GetOwningPlayer());
 	Cast<ALLL_PlayerController>(GetOwningPlayer())->SetUIInputMode(GetCachedWidget());
 	
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	GameInstance->SetMapSoundManagerPauseParameter(1.0f);
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetPauseParameter(1.0f);
 }
 
-void ULLL_GamePauseWidget::RestorePauseState()
+void ULLL_GamePauseWidget::RestorePauseState(bool EnableInput)
 {
 	PlayAnimationForward(ResetAnim);
 	SetVisibility(ESlateVisibility::Hidden);
 	SetIsEnabled(false);
-	GetOwningPlayer()->EnableInput(GetOwningPlayer());
-	Cast<ALLL_PlayerController>(GetOwningPlayer())->SetGameInputMode();
-
+	if (EnableInput)
+	{
+		GetOwningPlayer()->EnableInput(GetOwningPlayer());
+		Cast<ALLL_PlayerController>(GetOwningPlayer())->SetGameInputMode();
+	}
+	
 	if (SettingWidget->GetIsEnabled())
 	{
 		SettingWidget->HideMainWidget();
 	}
-	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
-	GameInstance->SetMapSoundManagerPauseParameter(0.0f);
+	
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->SetPauseParameter(0.0f);
 }
 
 void ULLL_GamePauseWidget::SetupDeadStateLayout() const
 {
+	PauseTypeText->SetText(FText::FromString(TEXT("죽었습니다!")));
+	PauseTypeText->SetColorAndOpacity(FSlateColor(FColor::Red));
 	ResumeButton->SetIsEnabled(false);
 	SettingButton->SetIsEnabled(false);
 }
@@ -117,6 +121,20 @@ void ULLL_GamePauseWidget::ExitButtonEvent()
 	PlayAnimationForward(FadeAnim);
 }
 
+void ULLL_GamePauseWidget::OpenTitle()
+{
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	GameProgressSubSystem->SetExitCurrentSession(false);
+	UGameplayStatics::OpenLevel(this, LEVEL_TITLE);
+}
+
+void ULLL_GamePauseWidget::OutGame()
+{
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	GameProgressSubSystem->SetExitCurrentSession(false);
+	UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
+}
+
 void ULLL_GamePauseWidget::OnAnimationFinished_Implementation(const UWidgetAnimation* Animation)
 {
 	Super::OnAnimationFinished_Implementation(Animation);
@@ -126,21 +144,34 @@ void ULLL_GamePauseWidget::OnAnimationFinished_Implementation(const UWidgetAnima
 		return;
 	}
 
+	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
+	
 	if (LastClickButton == TitleButton && Animation == FadeAnim)
 	{
-		UGameplayStatics::OpenLevel(this, LEVEL_TITLE);
-		return;
-	}
-
-	if (LastClickButton == ExitButton && Animation == FadeAnim)
-	{
-		ULLL_GameProgressManageSubSystem* SubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
-		ULLL_SaveGameData* CurrentSaveGameData = SubSystem->GetCurrentSaveGameData();
-		if (IsValid(CurrentSaveGameData))
+		if (GetWorld()->GetName() == LEVEL_LOBBY)
 		{
-			CurrentSaveGameData->LastPlayLevelName = *GetWorld()->GetCurrentLevel()->GetName();
+			GameProgressSubSystem->OnSaveCompleted.AddDynamic(this, &ULLL_GamePauseWidget::OpenTitle);
+			GameProgressSubSystem->SetExitCurrentSession(true);
+			GameProgressSubSystem->BeginSaveGame();
 		}
-	
-		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+		else
+		{
+			GameProgressSubSystem->SetExitCurrentSession(true);
+			OpenTitle();
+		}
+	}
+	else if (LastClickButton == ExitButton && Animation == FadeAnim)
+	{
+		if (GetWorld()->GetName() == LEVEL_LOBBY)
+		{
+			GameProgressSubSystem->OnSaveCompleted.AddDynamic(this, &ULLL_GamePauseWidget::OutGame);
+			GameProgressSubSystem->SetExitCurrentSession(true);
+			GameProgressSubSystem->BeginSaveGame();
+		}
+		else
+		{
+			GameProgressSubSystem->SetExitCurrentSession(true);
+			OutGame();
+		}
 	}
 }

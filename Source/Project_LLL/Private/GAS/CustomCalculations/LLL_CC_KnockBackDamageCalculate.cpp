@@ -3,30 +3,38 @@
 
 #include "GAS/CustomCalculations/LLL_CC_KnockBackDamageCalculate.h"
 
+#include "Constant/LLL_GameplayTags.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
-#include "Util/LLL_MathHelper.h"
-
-ULLL_CC_KnockBackDamageCalculate::ULLL_CC_KnockBackDamageCalculate()
-{
-	bUsePowKnockBackRate = false;
-}
+#include "Util/LLL_AbilityDataHelper.h"
 
 float ULLL_CC_KnockBackDamageCalculate::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
 {
 	float Result = Super::CalculateBaseMagnitude_Implementation(Spec);
 	
-	const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(Spec.GetEffectContext().GetInstigator());
-	if (!IsValid(PlayerCharacter))
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Spec.GetEffectContext().GetInstigator());
+	const ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Spec.GetEffectContext().GetSourceObject());
+	if (!IsValid(Player) || !IsValid(Monster))
 	{
 		return Result;
 	}
-	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-	
-	const float KnockBackPower = FLLL_MathHelper::CalculateKnockBackPower(PlayerAttributeSet, KnockBackAmplifyValueRowHandle.Eval(Spec.GetLevel(), TEXT("Error!!!")));
-	const float MainKnockBackRate = PlayerAttributeSet->GetKnockBackRate();
-	const float SubKnockBackRate = bUsePowKnockBackRate? PlayerAttributeSet->GetKnockBackRate() : 1.f;
 
-	Result = KnockBackPower * MainKnockBackRate * SubKnockBackRate;
+	const float KnockBackPower = Monster->GetLastKnockBackPower();
+	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+	Result = FMath::Sqrt(KnockBackPower) + FMath::Sqrt(KnockBackPower + KnockBackPower * PlayerAttributeSet->GetKnockBackConstant());
+	Result *= PlayerAttributeSet->GetKnockBackOffencePowerRate();
+	
+	// 질량 축적 이누리아
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE))
+	{
+		UE_LOG(LogTemp, Log, TEXT("이누리아 갯수 : %d"), Player->GetEnuriaCount())
+		Result *= 1 + Player->GetIncreaseKnockBackDamageDamageRateIncrease() * Player->GetEnuriaCount();
+	}
+	Result = FLLL_AbilityDataHelper::CalculateOffencePower(Result, Player);
+	Result += PlayerAttributeSet->GetKnockBackOffencePowerPlus();
+
+	UE_LOG(LogTemp, Log, TEXT("넉백 피해 : %f"), Result)
 	return Result;
 }

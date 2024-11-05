@@ -6,6 +6,8 @@
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_FallableWallGimmick.generated.h"
 
+class ALLL_MonsterBase;
+
 UCLASS()
 class PROJECT_LLL_API ALLL_FallableWallGimmick : public ALLL_SystemBase
 {
@@ -25,10 +27,15 @@ protected:
 	
 	void FallOutBegin(AActor* Actor, FVector HitNormal, FVector HitLocation);
 	void FallOutStart(AActor* Actor, FVector HitNormal);
+	void SpawnFallExplosionVFX(ALLL_MonsterBase* Monster);
 	
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMeshComponent> Wall;
 
-	float WorldTimeDilationDuration;
+	float FallTimeDilation;
+	
+	float FallEventDuration;
+
+	float FallRequiredVelocityLength;
 };

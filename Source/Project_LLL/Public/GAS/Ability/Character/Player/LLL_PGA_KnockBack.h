@@ -20,16 +20,15 @@ protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
 protected:
-	virtual void KnockBackTarget();
+	virtual void KnockBackTarget(const FGameplayEventData* TriggerEventData);
 	
 protected:
-	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그")
-	FGameplayTag TriggerRequiredTag;
-	
-	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "넉백 발생시 적용 GE")
-	TSubclassOf<UGameplayEffect> KnockBackEffect;
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그 1")
+	FGameplayTag TriggerRequiredTag1;
 
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName ="커브 테이블 내 액션 넉백 배율 변화값 행")
-	FCurveTableRowHandle KnockBackAmplifyChangeSection;
-	
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그 2")
+	FGameplayTag TriggerRequiredTag2;
+
+	UPROPERTY(EditAnywhere, Category = "GAS", DisplayName = "트리거 발생시 요구 태그 1 차지")
+	FGameplayTag TriggerRequiredTag1Charge;
 };

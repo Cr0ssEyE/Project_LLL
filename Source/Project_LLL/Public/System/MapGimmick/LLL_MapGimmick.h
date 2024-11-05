@@ -5,25 +5,70 @@
 #include "CoreMinimal.h"
 #include "DataTable/LLL_RewardDataTable.h"
 #include "DataAsset/LLL_MapDataAsset.h"
+#include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "GameFramework/Actor.h"
 #include "System/Base/LLL_SystemBase.h"
 #include "LLL_MapGimmick.generated.h"
 
+class ULLL_SequencerComponent;
 enum class EStageState : uint8;
 class UBoxComponent;
 class ALLL_GateObject;
-class ALLL_RewardObject;
+class ALLL_AbilityRewardObject;
 class ALLL_MonsterSpawner;
 class ULevelSequencePlayer;
 class ULevelSequence;
 class ALevelSequenceActor;
 class ULLL_ShoppingMapComponent;
 class ULLL_RewardDataTable;
-class ALLL_RewardGimmick;
+class ULLL_RewardGimmickSubsystem;
 class ULLL_PlayerSpawnPointComponent;
 class UNiagaraComponent;
 
 DECLARE_DELEGATE(FOnStageChangedDelegate);
+
+USTRUCT(BlueprintType)
+struct FStageInfoData
+{
+	GENERATED_BODY()
+	
+public:
+	FStageInfoData():
+	Seed(UINT32_MAX),
+	RoomNumber(UINT32_MAX),
+	PlayerLocation(FVector::Zero()),
+	RewardPosition(FVector::Zero()),
+	LastStageState(EStageState::READY),
+	bIsLoadedFromSave(false)
+	{
+		
+	}
+
+public:
+	UPROPERTY()
+	uint32 Seed;
+	
+	UPROPERTY()
+	uint32 RoomNumber;
+
+	UPROPERTY()
+	TArray<uint8> GatesRewardID;
+
+	UPROPERTY()
+	FVector PlayerLocation;
+
+	UPROPERTY()
+	FVector RewardPosition;
+
+	UPROPERTY()
+	EStageState LastStageState;
+	
+	UPROPERTY()
+	TArray<int32> SpawnedAbilityDataIDArray;
+
+	UPROPERTY()
+	uint32 bIsLoadedFromSave : 1;
+};
 
 USTRUCT(BlueprintType)
 struct FStageChangedDelegateWrapper
@@ -43,18 +88,28 @@ public:
 	// Sets default values for this actor's properties
 	ALLL_MapGimmick();
 
+public:
+	FStageInfoData MakeStageInfoData();
+	
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
+	void SetupLevel();
+
+public:
+	FORCEINLINE ALLL_MonsterSpawner* GetMonsterSpawner() const { return MonsterSpawner; }
+	FORCEINLINE bool CheckShoppingRoom() const { return ShoppingMapComponent != nullptr; }
+	FORCEINLINE ULLL_ShoppingMapComponent* GetShoppingMapComponent() const { return ShoppingMapComponent; }
+	FORCEINLINE EStageState GetStageState() const { return CurrentState; }
+	FORCEINLINE FVector GetRewardPosition() const { return RewardObjectPosition; }
 	
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<UBoxComponent> RootBox;
-	
-	// Stage Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage")
 	TObjectPtr<const ULLL_MapDataAsset> MapDataAsset;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UBoxComponent> RootBox;
 	
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> RoomClass;
@@ -74,8 +129,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULLL_PlayerSpawnPointComponent> PlayerSpawnPointComponent;
 
-	uint8 Seed;
+	UPROPERTY(VisibleAnywhere, Category = "stage", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ULLL_SequencerComponent> RoomSequencerPlayComponent;
+	
+	uint32 Seed;
 
+protected:
+	UFUNCTION()
+	void LoadLastSessionMap(FStageInfoData StageInfoData);
+	
 	UFUNCTION()
 	void CreateMap();
 
@@ -86,39 +148,47 @@ protected:
 	void ChangeMap(AActor* DestroyedActor);
 
 private:
-	UPROPERTY()
-	uint8 GateIndex;
-
 	UPROPERTY(VisibleAnywhere)
-	uint8 RoomNumber;
-
-	UPROPERTY(VisibleAnywhere)
-	uint8 CurrentRoomNumber;
+	uint32 CurrentRoomNumber;
 
 // Gate Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Gate", Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<ALLL_GateObject> GateClass;
-
-	UPROPERTY(VisibleAnywhere, Category = "Gate", Meta = (AllowPrivateAccess = "true"))
 	TArray<TWeakObjectPtr<ALLL_GateObject>> Gates;
 	
+	UPROPERTY(EditAnywhere, Category = "Gate", Meta = (AllowPrivateAccess = "true"))
+	FName LevelName;
+
+	UFUNCTION()
+	void ChangeLevel();
+
+	uint8 bIsNextGateInteracted : 1;
+	
+protected:
 	UFUNCTION()
 	void AllGatesDestroy();
 	
 	void OnInteractionGate(const FRewardDataTable* Data);
 	void EnableAllGates();
 
+	UFUNCTION()
+	void SetupGateData();
+	
 // State Section
 protected:
 	UPROPERTY(EditAnywhere, Category = "Stage", Meta = (AllowPrivateAccess = "true"))
 	EStageState CurrentState;
 
-	void SetState(EStageState InNewState);
-
 	UPROPERTY()
 	TMap<EStageState, FStageChangedDelegateWrapper> StateChangeActions;
 
+	uint8 bIsFirstLoad : 1;
+
+	uint8 bIsLoadedFromSave : 1;
+	
+protected:
+	void SetState(EStageState InNewState);
+	
 	void SetReady();
 	void SetFight();
 	void SetChooseReward();
@@ -144,10 +214,13 @@ protected:
 // Reward Section
 protected:
 	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<ALLL_RewardObject> RewardObjectClass;
+	TSubclassOf<ALLL_AbilityRewardObject> RewardObjectClass;
 
 	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<ALLL_RewardGimmick> RewardGimmick;
+	FVector RewardObjectPosition;
+	
+	UPROPERTY(EditAnywhere, Category = "Reward", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ULLL_RewardGimmickSubsystem> RewardGimmickSubsystem;
 	
 	const FRewardDataTable* RewardData;
 
@@ -181,7 +254,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sequence")
 	TObjectPtr<UNiagaraComponent> PlayerTeleportNiagara;
-	
+
+protected:
 	UFUNCTION()
 	void FadeIn();
 
@@ -192,5 +266,8 @@ protected:
 	void PlayerTeleport();
 	
 	UFUNCTION()
-	void PlayerSetHidden(UNiagaraComponent* InNiagaraComponent);
+	void PlayerSetHidden();
+
+	UFUNCTION()
+	void PlayEncounterSequence();
 };

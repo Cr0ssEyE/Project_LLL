@@ -4,14 +4,17 @@
 #include "Entity/Object/Thrown/LLL_ThrownFeather.h"
 
 #include "Components/BoxComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "DataAsset/LLL_ThrownFeatherDataAsset.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "GAS/Attribute/Object/Thrown/LLL_ThrownFeatherAttributeSet.h"
+#include "Util/LLL_AbilityDataHelper.h"
 #include "Util/LLL_ConstructorHelper.h"
 
 ALLL_ThrownFeather::ALLL_ThrownFeather()
@@ -33,29 +36,14 @@ void ALLL_ThrownFeather::BeginPlay()
 	ThrownObjectAttributeSet = ThrownFeatherAttributeSet;
 
 	HitCollisionBox->SetBoxExtent(ThrownFeatherDataAsset->HitCollisionSize);
-	
-	CurveSize = ThrownFeatherAttributeSet->GetCurveSize();
-	CurveSpeed = 1.0f / CurveSize;
+
+	ChaseFeatherThrowAngleOffset = ThrownFeatherDataAsset->ChaseFeatherThrowAngleOffset;
+	ChaseFeatherThrowAngleRandomMultiply = ThrownFeatherDataAsset->ChaseFeatherThrowAngleRandomMultiply;
 }
 
 void ALLL_ThrownFeather::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	if (IsActivated())
-	{
-		if (bTargetIsDead && FVector::Distance(GetActorLocation(), TargetDeadLocation) <= TargetCapsuleRadius)
-		{
-			Deactivate();
-		}
-
-		const FVector TargetLocation = bTargetIsDead ? TargetDeadLocation : Target->GetActorLocation();
-		const FVector Direction = TargetLocation - GetActorLocation();
-		const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-		SetActorRotation(FMath::RInterpTo(GetActorRotation(), Rotation, DeltaSeconds, CurveSpeed));
-		CurveSpeed += 1.0f / CurveSize;
-		ProjectileMovementComponent->Velocity = GetActorForwardVector() * ProjectileMovementComponent->MaxSpeed;
-	}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
@@ -77,6 +65,7 @@ void ALLL_ThrownFeather::Activate()
 	Super::Activate();
 
 	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ProjectileMovementComponent->UpdatedComponent = HitCollisionBox;
 }
 
 void ALLL_ThrownFeather::Deactivate()
@@ -84,39 +73,76 @@ void ALLL_ThrownFeather::Deactivate()
 	Super::Deactivate();
 	
 	HitCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CurveSpeed = 1.0f / CurveSize;
-
-	ALLL_BaseCharacter* TargetCharacter = Cast<ALLL_BaseCharacter>(Target);
-	if (IsValid(TargetCharacter) && TargetCharacter->CharacterDeadDelegate.IsAlreadyBound(this, &ALLL_ThrownFeather::TargetDeadHandle))
-	{
-		TargetCharacter->CharacterDeadDelegate.RemoveDynamic(this, &ALLL_ThrownFeather::TargetDeadHandle);
-	}
-	bTargetIsDead = false;
 }
 
-void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed)
+void ALLL_ThrownFeather::Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower)
 {
-	Super::Throw(NewOwner, NewTarget, InSpeed);
+	Super::Throw(NewOwner, NewTarget, InSpeed, Straight, InKnockBackPower);
 
-	ALLL_BaseCharacter* TargetCharacter = Cast<ALLL_BaseCharacter>(Target);
-	if (IsValid(TargetCharacter))
+	if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner()))
 	{
-		TargetCapsuleRadius = TargetCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius();
-
-		if (!TargetCharacter->CheckCharacterIsDead())
-		{
-			TargetCharacter->CharacterDeadDelegate.AddDynamic(this, &ALLL_ThrownFeather::TargetDeadHandle);
-		}
-		else
-		{
-			TargetDeadLocation = Target->GetActorLocation();
-			bTargetIsDead = true;
-		}
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		OffencePower = AbilityData->AbilityValue2 / static_cast<uint32>(AbilityData->Value2Type);
+		OffencePower *= PlayerAttributeSet->GetFeatherOffencePowerRate();
+		OffencePower = FLLL_AbilityDataHelper::CalculateOffencePower(OffencePower, Player);
+		OffencePower += PlayerAttributeSet->GetFeatherOffencePowerPlus();
 	}
 }
 
-void ALLL_ThrownFeather::TargetDeadHandle(ALLL_BaseCharacter* Character)
+void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-	TargetDeadLocation = Character->GetActorLocation();
-	bTargetIsDead = true;
+	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner());
+	const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Other);
+	if (IsValid(Player) && AbilitySystemInterface)
+	{
+		FVector Direction = (Other->GetActorLocation() - Player->GetActorLocation()).GetSafeNormal2D();
+		
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+
+		// 맹렬한 공세 이누리아
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
+		{
+			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+			
+			float HitCount = 4;
+			float HitOffsetTime = 0.01f;
+			for (int i = 0; i < HitCount; i++)
+			{
+				FTimerHandle QuadrupleHitTimerHandle;
+				GetWorld()->GetTimerManager().SetTimer(QuadrupleHitTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, i, HitCount, Other, AbilitySystemInterface, Player, Direction]{
+					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+					EffectContextHandle.AddSourceObject(this);
+					EffectContextHandle.AddInstigator(Player, this);
+					const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
+					if (EffectSpecHandle.IsValid())
+					{
+						UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지 : %d"), *Other->GetName(), OffencePower, i + 2)
+						EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+						
+						if (i == 0)
+						{
+							ASC->ExecuteGameplayCue(TAG_GAS_CUE_QUADRUPLE_HIT, EffectContextHandle);
+						}
+						else
+						{
+							ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
+						}
+						
+						if (i == HitCount - 1)
+						{
+							KnockBackPower = Player->GetQuadrupleHitKnockBackPower();
+							KnockBackPower = FLLL_AbilityDataHelper::CalculateKnockBackPower(KnockBackPower, Player);
+							
+							KnockBackTo(Direction, Other);
+						}
+					}
+				}), HitOffsetTime, false);
+
+				HitOffsetTime += PlayerDataAsset->QuadrupleHitHitOffsetTime;
+			}
+		}
+	}
 }

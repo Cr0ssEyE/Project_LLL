@@ -25,7 +25,7 @@ public:
 	float CameraFOV;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 암 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Perspective", EditConditionHides))
-	float SpringArmDistance;
+	float PerspectiveSpringArmDistance;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "고정 종횡비 사용", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
 	uint8 bUseConstraintAspectRatio : 1;
@@ -53,5 +53,13 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera|Plane", DisplayName = "원평면 클리핑 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
 	float OrthographicFarClipDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 암 거리", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	float OrthographicSpringArmDistance;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Plane", DisplayName = "카메라가 마우스를 따라가는 속도")
+	float CameraCursorTrackingSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Plane", DisplayName = "카메라가 마우스를 따라가는 최대 거리(0인 경우 속도 = 최대 거리)")
+	float CameraCursorTrackingLength;
 };

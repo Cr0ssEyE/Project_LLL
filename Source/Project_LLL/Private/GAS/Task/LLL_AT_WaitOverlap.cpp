@@ -16,7 +16,7 @@ void ULLL_AT_WaitOverlap::OnOverlapCallBack(UPrimitiveComponent* OverlappedCompo
 	{
 		FGameplayAbilityTargetData_SingleTargetHit * TargetData = new FGameplayAbilityTargetData_SingleTargetHit(SweepResult);
 
-		FGameplayAbilityTargetDataHandle	Handle;
+		FGameplayAbilityTargetDataHandle Handle;
 		Handle.Data.Add(TSharedPtr<FGameplayAbilityTargetData>(TargetData));
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{

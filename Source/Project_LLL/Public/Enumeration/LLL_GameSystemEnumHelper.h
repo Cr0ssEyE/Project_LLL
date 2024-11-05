@@ -32,12 +32,25 @@ enum class ERewardCategory : uint8
 	MaxHP
 };
 
+// 로비 관련
+UENUM(BlueprintType)
+enum class ELobbyCustomPointType : uint8
+{
+	InteractionObject,
+	InteractionCharacter,
+	Housing,
+	EnumEnd UMETA(Hidden)
+};
+
+
+
 // FMOD 관련
 UENUM(BlueprintType)
 enum class EFModParameter : uint8
 {
 	None,
 	PlayerWalkMaterialParameter,
+	MonsterWalkMaterialParameter,
 	PlayerAttackCountParameter,
 	PlayerAttackHitCountParameter,
 	PlayerDamagedTypeParameter,
@@ -49,6 +62,15 @@ enum class EFModParameter : uint8
 
 UENUM(BlueprintType)
 enum class EPlayerWalkMaterialParameter : uint8
+{
+	Dirt,
+	Grass,
+	Wood,
+	Steel
+};
+
+UENUM(BlueprintType)
+enum class EMonsterWalkMaterialParameter : uint8
 {
 	Dirt,
 	Grass,

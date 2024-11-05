@@ -9,13 +9,17 @@
 #include "DataTable/LLL_StringDataTable.h"
 #include "LLL_GameInstance.generated.h"
 
+class ULLL_RewardGimmickSubsystem;
+enum class ELevelSequenceType : uint8;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStageEncounteredDelegate, ELevelSequenceType, SequenceType);
+
+class ULLL_GlobalNiagaraDataAsset;
+class ULLL_GlobalParameterDataAsset;
+class ULLL_MapSoundSubsystem;
+
 /**
  * 
  */
-
-class ALLL_MapSoundManager;
-class ULLL_ShareableNiagaraDataAsset;
-
 UCLASS()
 class PROJECT_LLL_API ULLL_GameInstance : public UGameInstance
 {
@@ -25,17 +29,17 @@ public:
 	ULLL_GameInstance();
 
 	virtual void Init() override;
-
-public:
-	FORCEINLINE void SetMapSoundManager(ALLL_MapSoundManager* InMapSoundManager) { MapSoundManager = InMapSoundManager; }
+	virtual void InitDataTables();
 	
+	FStageEncounteredDelegate EncounteredDelegate;
+	
+public:
 	// 데이터 테이블 Getter
 	FORCEINLINE TArray<const FAbilityDataTable*> GetAbilityDataTable() const { return AbilityData; }
 	FORCEINLINE TArray<FFModParameterDataTable> GetFModParameterDataArray() const { return FModParameterData; }
 	FORCEINLINE TArray<const FRewardDataTable*> GetRewardDataTable() const { return RewardData; }
 	FORCEINLINE const UDataTable* GetStringDataTable() const { return StringDataTable; }
 	FORCEINLINE TArray<const FStringDataTable*> GetStringDataTablesData() const { return StringData; }
-	FORCEINLINE bool CheckCustomTimeDilationIsChanging() const { return bCustomTimeDilationIsChanging; }
 
 	// MPC Getter
 	FORCEINLINE UMaterialParameterCollection* GetPlayerMPC() const { return PlayerMPC; }
@@ -45,15 +49,8 @@ public:
 
 	// 데이터 에셋
 public:
-	FORCEINLINE TObjectPtr<const ULLL_ShareableNiagaraDataAsset> GetShareableNiagaraDataAsset() const { return ShareableNiagaraDataAsset; }
-	
-public:
-	void SetActorsCustomTimeDilation(const TArray<AActor*>& Actors, float InCustomTimeDilation);
-	void SetMapSoundManagerBattleParameter(float Value) const;
-	void SetMapSoundManagerPauseParameter(float Value) const;
-
-protected:
-	void SetActorsCustomTimeDilationRecursive(TArray<AActor*> Actors, float InCustomTimeDilation);
+	FORCEINLINE TObjectPtr<const ULLL_GlobalNiagaraDataAsset> GetGlobalNiagaraDataAsset() const { return GlobalNiagaraDataAsset; }
+	FORCEINLINE TObjectPtr<const ULLL_GlobalParameterDataAsset> GetGlobalParametersDataAsset() const { return GlobalParametersDataAsset; }
 	
 	// 머티리얼 파라미터 컬렉션 
 protected:
@@ -72,7 +69,10 @@ protected:
 	// 범용 데이터 에셋
 protected:
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<const ULLL_ShareableNiagaraDataAsset> ShareableNiagaraDataAsset;
+	TObjectPtr<const ULLL_GlobalNiagaraDataAsset> GlobalNiagaraDataAsset;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<const ULLL_GlobalParameterDataAsset> GlobalParametersDataAsset;
 	
 	// 데이터 테이블 변수
 protected:
@@ -96,17 +96,4 @@ protected:
 	TObjectPtr<const UDataTable> StringDataTable;
 
 	TArray<const FStringDataTable*> StringData;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ALLL_MapSoundManager> MapSoundManager;
-	
-protected:
-	UPROPERTY(VisibleAnywhere)
-	float CustomTimeDilation;
-
-	UPROPERTY(EditAnywhere)
-	float CustomTimeDilationInterpSpeed;
-
-	UPROPERTY(VisibleAnywhere)
-	uint8 bCustomTimeDilationIsChanging : 1;
 };

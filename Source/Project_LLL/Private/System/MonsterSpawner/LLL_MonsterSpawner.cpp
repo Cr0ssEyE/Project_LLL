@@ -12,6 +12,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "NiagaraFunctionLibrary.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawnPointComponent.h"
 #include "Util/LLL_ConstructorHelper.h"
 
@@ -19,7 +20,7 @@ ALLL_MonsterSpawner::ALLL_MonsterSpawner()
 {
 	MonsterSpawnerDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_MonsterSpawnerDataAsset>(PATH_MONSTER_SPAWNER_DATA, EAssertionLevel::Check);
 	MonsterSpawnDataTable = FLLL_ConstructorHelper::FindAndGetObject<UDataTable>(PATH_MONSTER_SPAWN_DATA, EAssertionLevel::Check);
-	
+
 	DetectBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Detect"));
 	DetectBox->SetCollisionProfileName(CP_INTERACTION);
 	
@@ -33,7 +34,7 @@ void ALLL_MonsterSpawner::BeginPlay()
 	TArray<FMonsterSpawnDataTable*> LoadSpawnDataArray;
 	MonsterSpawnDataTable->GetAllRows<FMonsterSpawnDataTable>(TEXT("Failed To Load Monster Spawn Data Tables"), LoadSpawnDataArray);
 
-	int rowNum = 0;
+	int RowNum = 0;
 	for (const FMonsterSpawnDataTable* LoadSpawnData : LoadSpawnDataArray)
 	{
 		FMonsterSpawnDataTable TempSpawnData;
@@ -42,17 +43,17 @@ void ALLL_MonsterSpawner::BeginPlay()
 		TempSpawnData.MonsterClass = LoadSpawnData->MonsterClass;
 		MonsterSpawnDataArray.Emplace(TempSpawnData);
 
-		rowNum++;
-		if (rowNum == LoadSpawnDataArray.Num())
+		RowNum++;
+		if (RowNum == LoadSpawnDataArray.Num())
 		{
 			LastGroup = LoadSpawnData->Group;
 		}
 	}
 
 	const USceneComponent* SpawnPointGroupComponent = GetRootComponent();
-	if (GetAttachParentActor())
+	if (const AActor* ParentActor = GetAttachParentActor())
 	{
-		SpawnPointGroupComponent = GetAttachParentActor()->GetRootComponent();
+		SpawnPointGroupComponent = ParentActor->GetRootComponent();
 	}
 	
 	for (USceneComponent* ChildComponent : SpawnPointGroupComponent->GetAttachChildren())
@@ -63,13 +64,20 @@ void ALLL_MonsterSpawner::BeginPlay()
 			SpawnPoints.Add(SpawnPoint);
 		}
 	}
+
+	if (bSpawnByOwnerMonsterHealth)
+	{
+		SetOwner(OwnerMonster);
+		OwnerMonster->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::OwnerMonsterDeadHandle);
+		OwnerMonster->TakeDamageDelegate.AddDynamic(this, &ALLL_MonsterSpawner::OwnerMonsterDamagedHandle);
+	}
 }
 
 void ALLL_MonsterSpawner::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	if (CurrentWave == 0)
+	if (!bSpawnByOwnerMonsterHealth && CurrentWave == 0)
 	{
 		const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OtherActor);
 		if (IsValid(Player))
@@ -92,46 +100,69 @@ void ALLL_MonsterSpawner::SpawnMonster()
 
 	for (const ULLL_MonsterSpawnPointComponent* SpawnPoint : SpawnPoints)
 	{
-		if (IsValid(SpawnPoint))
+		if (!IsValid(SpawnPoint))
 		{
-			int32 SpawnPointNum = SpawnPoint->GetNum();
+			continue;
+		}
 
-			for (const FMonsterSpawnDataTable MonsterSpawnData : MonsterSpawnDataArray)
+		int32 SpawnPointNum = SpawnPoint->GetNum();
+
+		for (const FMonsterSpawnDataTable MonsterSpawnData : MonsterSpawnDataArray)
+		{
+			if (MonsterSpawnData.Group != CurrentGroup || MonsterSpawnData.SpawnPoint != SpawnPointNum || !IsValid(MonsterSpawnData.MonsterClass))
 			{
-				if (MonsterSpawnData.Group == CurrentGroup && MonsterSpawnData.SpawnPoint == SpawnPointNum && IsValid(MonsterSpawnData.MonsterClass))
+				continue;
+			}
+
+			FTimerHandle MonsterSpawnTimerHandle;
+			GetWorldTimerManager().SetTimer(MonsterSpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, MonsterSpawnData, SpawnPoint, SpawnPointNum]
+			{
+				ALLL_MonsterBase* Monster = GetWorld()->SpawnActorDeferred<ALLL_MonsterBase>(MonsterSpawnData.MonsterClass, SpawnPoint->GetComponentTransform());
+				if (!IsValid(Monster))
 				{
-					FTimerHandle MonsterSpawnTimerHandle;
-					GetWorldTimerManager().SetTimer(MonsterSpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, MonsterSpawnData, SpawnPoint, SpawnPointNum]{
-						ALLL_MonsterBase* MonsterBase = GetWorld()->SpawnActor<ALLL_MonsterBase>(MonsterSpawnData.MonsterClass, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
-						if (IsValid(MonsterBase))
-						{
-							MonsterBase->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::MonsterDeadHandle);
-							Monsters.Emplace(MonsterBase);
+					return;
+				}
+				Monster->SetIsElite(MonsterSpawnData.bIsElite);
+				Monster->FinishSpawning(SpawnPoint->GetComponentTransform());
+
+				Monster->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::MonsterDeadHandle);
+				Monsters.Emplace(Monster);
 						
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-							if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
-							{
-								if (DebugGameInstance->CheckMonsterSpawnDataDebug())
-								{
-									GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 스폰 (웨이브 : %d, 그룹 : %d, 스폰 포인트 : %d)"), *GetName(), CurrentWave, CurrentGroup, SpawnPointNum));
-								}
-							}
-						}
-#endif
-					}), MonsterSpawnerDataAsset->SpawnTimer, false);
-
-					FTimerHandle SpawnParticleTimerHandle;
-					GetWorldTimerManager().SetTimer(SpawnParticleTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, SpawnPoint]{
-						SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MonsterSpawnerDataAsset->SpawnParticle, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation()));
-					}), MonsterSpawnerDataAsset->SpawnParticleTimer, false);
+				if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+				{
+					if (DebugGameInstance->CheckMonsterSpawnDataDebug())
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 스폰 (웨이브 : %d, 그룹 : %d, 스폰 포인트 : %d)"), *GetName(), CurrentWave, CurrentGroup, SpawnPointNum));
+					}
 				}
-			}
+#endif
+			}), MonsterSpawnerDataAsset->SpawnTimer, false);
+
+			FTimerHandle SpawnParticleTimerHandle;
+			GetWorldTimerManager().SetTimer(SpawnParticleTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, SpawnPoint]
+			{
+				AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MonsterSpawnerDataAsset->SpawnParticle, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation()));
+			}), MonsterSpawnerDataAsset->SpawnParticleTimer, false);
 		}
 	}
 
 	FModAudioComponent->Release();
 	FModAudioComponent->SetEvent(MonsterSpawnerDataAsset->SpawnSoundEvent);
 	FModAudioComponent->Play();
+}
+
+bool ALLL_MonsterSpawner::CheckNextWaveCanSpawnByOwnerMonsterHealth() const
+{
+	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(OwnerMonster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+	const float MaxHealth = MonsterAttributeSet->GetMaxHealth();
+	const float CurrentHealth = MonsterAttributeSet->GetCurrentHealth();
+	const float MaxShield = MonsterAttributeSet->GetMaxShield();
+	const float CurrentShield = MonsterAttributeSet->GetCurrentShield();
+	const float HealthRate = (CurrentHealth + CurrentShield) / (MaxHealth + MaxShield) * 100.0f;
+
+	const float TriggerHealthRate = SpawnStartHealthRate - CurrentWave * HealthRateSpawnOffset;
+	return HealthRate <= TriggerHealthRate && CurrentWave < MaxWave;
 }
 
 void ALLL_MonsterSpawner::MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter)
@@ -146,11 +177,40 @@ void ALLL_MonsterSpawner::MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter)
 	{
 		if (CurrentWave < MaxWave)
 		{
-			SpawnMonster();
+			if (!bSpawnByOwnerMonsterHealth)
+			{
+				SpawnMonster();
+			}
 		}
 		else
 		{
 			Destroy();
+		}
+	}
+}
+
+void ALLL_MonsterSpawner::OwnerMonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter)
+{
+	while (CheckNextWaveCanSpawnByOwnerMonsterHealth())
+	{
+		SpawnMonster();
+		
+		if (CurrentWave == 1)
+		{
+			StartSpawnDelegate.Broadcast();
+		}
+	}
+}
+
+void ALLL_MonsterSpawner::OwnerMonsterDamagedHandle(bool IsDOT)
+{
+	while (CheckNextWaveCanSpawnByOwnerMonsterHealth())
+	{
+		SpawnMonster();
+		
+		if (CurrentWave == 1)
+		{
+			StartSpawnDelegate.Broadcast();
 		}
 	}
 }

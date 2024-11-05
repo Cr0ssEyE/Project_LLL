@@ -11,6 +11,7 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 
 void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 {
@@ -33,20 +34,35 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	}));
 }
 
+void ALLL_MonsterBaseAIController::SetPlayer(ALLL_PlayerBase* Player) const
+{
+	BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
+}
+
+void ALLL_MonsterBaseAIController::StopLogic(const FString& Reason) const
+{
+	BrainComponent->StopLogic(Reason);
+	
+	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+	Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
+}
+
+void ALLL_MonsterBaseAIController::StartLogic() const
+{
+	BrainComponent->StartLogic();
+}
+
 void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 {
 	if (Montage == MonsterDataAsset->DamagedAnimMontage)
 	{
-		BrainComponent->StopLogic("Monster Is Damaged");
-
-		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
-		Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
+		StopLogic(TEXT("Monster Is Damaged"));
 	}
 }
 
 void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (Montage == MonsterDataAsset->DamagedAnimMontage)
+	if (Montage == MonsterDataAsset->DamagedAnimMontage && !Monster->IsKnockBacking())
 	{
 		if (Monster->CheckCharacterIsDead())
 		{
@@ -55,13 +71,7 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 
 		BrainComponent->StartLogic();
 
-		if (!IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
-		{
-			ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-			if (IsValid(Player))
-			{
-				BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
-			}
-		}
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		SetPlayer(Player);
 	}
 }

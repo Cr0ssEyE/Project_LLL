@@ -42,6 +42,21 @@ struct FResolutionValueHelper
 	FString EnumPath;
 };
 
+
+// 프레임
+UENUM(BlueprintType)
+enum class EMaximumFrameRate : uint8
+{
+	EnumStart = 0 UMETA(Hidden),
+	THIRTY = 30 UMETA(DisplayName = "30FPS"),
+	SIXTY = 60 UMETA(DisplayName = "60FPS"),
+	SEVEN_FIVE = 75 UMETA(DisplayName = "75FPS"),
+	OH_TWO = 120 UMETA(DisplayName = "120FPS"), // One-Hundred Twenty
+	OH_FF = 144 UMETA(DisplayName = "144FPS"), // One-Hundred Forty-Four
+	EnumEnd UMETA(Hidden)
+};
+ENUM_RANGE_BY_VALUES(EMaximumFrameRate, EMaximumFrameRate::THIRTY, EMaximumFrameRate::SIXTY, EMaximumFrameRate::SEVEN_FIVE, EMaximumFrameRate::OH_TWO, EMaximumFrameRate::OH_FF);
+
 UENUM(BlueprintType)
 enum class EGraphicQuality : uint8
 {

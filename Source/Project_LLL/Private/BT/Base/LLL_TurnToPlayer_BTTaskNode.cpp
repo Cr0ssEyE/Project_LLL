@@ -19,18 +19,20 @@ EBTNodeResult::Type ULLL_TurnToPlayer_BTTaskNode::ExecuteTask(UBehaviorTreeCompo
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	ALLL_MonsterBase* MonsterBase = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
+	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(OwnerComp.GetAIOwner()->GetPawn());
 	
-	const ALLL_PlayerBase* PlayerBase = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
-	if (!IsValid(PlayerBase))
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
+	if (!IsValid(Player))
 	{
 		return EBTNodeResult::Failed;
 	}
 
-	const FVector Direction = PlayerBase->GetActorLocation() - MonsterBase->GetActorLocation();
+	const FVector Direction = Player->GetActorLocation() - Monster->GetActorLocation();
 	const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-	const float TurnSpeed = MonsterBase->GetCharacterMovement()->RotationRate.Yaw / 36.0f;
-	MonsterBase->SetActorRotation(FMath::RInterpTo(MonsterBase->GetActorRotation(), Rotation, GetWorld()->GetDeltaSeconds(), TurnSpeed));
+	const float TurnSpeed = Monster->GetCharacterMovement()->RotationRate.Yaw / ROTATION_RATE_YAW_DEVIDE_NUM;
+	FRotator CalculatedRotation = FMath::RInterpTo(Monster->GetActorRotation(), Rotation, GetWorld()->GetDeltaSeconds(), TurnSpeed);
+	CalculatedRotation.Pitch = 0.0f;
+	Monster->SetActorRotation(CalculatedRotation);
 
 	return EBTNodeResult::Succeeded;
 }

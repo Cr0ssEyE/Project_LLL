@@ -41,6 +41,9 @@ void ULLL_BaseCharacterUIManager::UpdateWidget()
 	const ULLL_CharacterAttributeSetBase* CharacterAttributeSet = CastChecked<ULLL_CharacterAttributeSetBase>(Character->GetAbilitySystemComponent()->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
 
 	// TODO: 체력 시스템 구현하고 만들기
-	CharacterStatusWidget->UpdateWidgetView(CharacterAttributeSet);
+	if (IsValid(CharacterStatusWidget))
+	{
+		CharacterStatusWidget->UpdateWidgetView(CharacterAttributeSet);
+	}
 }
 

@@ -7,6 +7,7 @@
 #include "FMODAudioComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Constant/LLL_GeneralConstants.h"
 
 ALLL_BaseObject::ALLL_BaseObject()
 {
@@ -51,6 +52,7 @@ void ALLL_BaseObject::SetDefaultInformation()
 	{
 		BaseMesh->SetStaticMesh(BaseObjectDataAsset->StaticMesh);
 		BaseMesh->SetRelativeScale3D(BaseObjectDataAsset->MeshScale);
+		BaseMesh->SetBoundsScale(ACTOR_DEFAULT_BOUNDS);
 	}
 }
 
@@ -81,6 +83,7 @@ void ALLL_BaseObject::BeginPlay()
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
+		EffectContextHandle.AddInstigator(this, this);
 		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(BaseObjectDataAsset->InitEffect, 1.0, EffectContextHandle);
 		if(EffectSpecHandle.IsValid())
 		{
@@ -90,11 +93,11 @@ void ALLL_BaseObject::BeginPlay()
 
 	if (IsValid(BaseObjectDataAsset->Particle))
 	{
-		SetNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), FVector::Zero(), FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
+		AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAttached(BaseObjectDataAsset->Particle, RootComponent, FName(TEXT("None(Socket)")), BaseObjectDataAsset->ParticleLocation, FRotator::ZeroRotator, BaseObjectDataAsset->ParticleScale, EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None));
 	}
 }
 
-void ALLL_BaseObject::SetNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
+void ALLL_BaseObject::AddNiagaraComponent(UNiagaraComponent* InNiagaraComponent)
 {	
 	NiagaraComponents.Remove(nullptr);
 	NiagaraComponents.Emplace(InNiagaraComponent);

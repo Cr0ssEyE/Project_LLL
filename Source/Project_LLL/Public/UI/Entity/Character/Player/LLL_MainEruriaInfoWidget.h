@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LLL_MainEruriaInfoWidget.generated.h"
 
+struct FAbilityIconWrapper;
 enum class EAbilityPart : uint8;
 struct FGameplayTag;
 struct FAbilityDataTable;
@@ -47,17 +48,18 @@ class PROJECT_LLL_API ULLL_MainEruriaInfoWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	void SetEruriaInfo(const FAbilityDataTable* AbilityData);
+	void SetEnuriaInfo(const FAbilityDataTable* AbilityData);
 	void RemoveEruriaInfo(const EAbilityPart AbilityPart);
-	
-protected:
-	void SetEruriaImage(UImage* Image, UTextBlock* TextBlock, FGameplayTag AbilityPartTag, const FAbilityDataTable* AbilityData);
 	
 protected:
 	// 임시 데이터이므로 추후 테이블 연결 필요
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 아이콘(임시)")
 	TArray<UTexture*> EruriaIConTextures;
 
+	// 3x4 AbilityType - AbilityPart
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 아이콘")
+	TArray<FAbilityIconWrapper> EnhancedEruriaIConTextures;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, DisplayName = "이누리아 레어도 색상")
 	TArray<FLinearColor> EruriaRarityColor;
 	

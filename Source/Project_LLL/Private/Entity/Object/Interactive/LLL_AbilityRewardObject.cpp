@@ -5,23 +5,32 @@
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "Game/LLL_GameInstance.h"
+#include "Game/LLL_RewardGimmickSubsystem.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 
-void ALLL_AbilityRewardObject::SetInformation(const FRewardDataTable* Data)
+void ALLL_AbilityRewardObject::SetInformation(const FRewardDataTable* Data, const uint32 Index)
 {
 	Super::SetInformation(Data);
 	//매쉬 및 필수 정보 세팅
 }
 
-void ALLL_AbilityRewardObject::InteractiveEvent()
+void ALLL_AbilityRewardObject::InteractiveEvent(AActor* InteractedActor)
 {
-	Super::InteractiveEvent();
+	Super::InteractiveEvent(InteractedActor);
 	
 	//AbilityRewardInteractionDelegate->Broadcast(AbilityCategory);
 	
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(InteractedActor);
 	
 	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
+
+	ULLL_RewardGimmickSubsystem* RewardGimmickSubsystem = Cast<ULLL_GameInstance>(GetGameInstance())->GetSubsystem<ULLL_RewardGimmickSubsystem>();
+	if (RewardGimmickSubsystem->IsTest())
+	{
+		SelectRewardWidget->Num = Num;
+		RewardGimmickSubsystem->SetRewardButtons();
+	}
 	
 	SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 	SelectRewardWidget->SetIsEnabled(true);

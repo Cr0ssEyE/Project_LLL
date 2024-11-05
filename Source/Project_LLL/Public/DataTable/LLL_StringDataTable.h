@@ -20,7 +20,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	FString Korean;
-	
 };
 
 /**

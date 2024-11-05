@@ -4,14 +4,14 @@
 #include "Entity/Object/Interactive/LLL_EnhanceRewardObject.h"
 #include "Game/LLL_DebugGameInstance.h"
 
-void ALLL_EnhanceRewardObject::SetInformation(const FRewardDataTable* Data)
+void ALLL_EnhanceRewardObject::SetInformation(const FRewardDataTable* Data, const uint32 Index)
 {
 	Super::SetInformation(Data);
 }
 
-void ALLL_EnhanceRewardObject::InteractiveEvent()
+void ALLL_EnhanceRewardObject::InteractiveEvent(AActor* InteractedActor)
 {
-	Super::InteractiveEvent();
+	Super::InteractiveEvent(InteractedActor);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))

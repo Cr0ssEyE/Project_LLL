@@ -3,41 +3,30 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemInterface.h"
 #include "Entity/Object/Base/LLL_BaseObject.h"
-#include "Interface/LLL_DropGoldInterface.h"
-#include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "GameFramework/Actor.h"
 #include "LLL_BreakableObjectBase.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnDropGoldDelegate)
+class UCapsuleComponent;
 
 UCLASS()
-class PROJECT_LLL_API ALLL_BreakableObjectBase : public ALLL_BaseObject, public ILLL_DropGoldInterface
+class PROJECT_LLL_API ALLL_BreakableObjectBase : public ALLL_BaseObject
 {
 	GENERATED_BODY()
 	
 public:
 	ALLL_BreakableObjectBase();
 
-	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
-	
 protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void DropGold(const FGameplayTag tag, int32 data) override;
-	FOnDropGoldDelegate GoldDelegate;
-
-protected:
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<class UCapsuleComponent> HitCollision;
-
-//GAS Part
-protected:
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
-	TSubclassOf<UGameplayEffect> InitEffect;
+	void ReceivePlayerAttackOrKnockBackedMonster();
 	
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_DropGoldAttributeSet> DropGoldAttributeSet;
+protected:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UCapsuleComponent> CapsuleComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	int32 Crack;
 };

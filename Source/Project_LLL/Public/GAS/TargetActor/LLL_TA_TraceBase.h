@@ -31,6 +31,9 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Trace")
 	ESelectTraceTarget TraceTarget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+	FName OriginSocketOrBoneName;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Trace")
 	FVector TraceStartLocation = FVector::ZeroVector;

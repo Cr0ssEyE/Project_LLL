@@ -2,13 +2,10 @@
 
 
 #include "System/MapGimmick/Components/LLL_ShoppingMapComponent.h"
-
-#include "Entity/Object/Interactive/LLL_AbilityRewardObject.h"
-#include "Entity/Object/Interactive/LLL_EnhanceRewardObject.h"
-#include "Entity/Object/Interactive/LLL_MaxHPRewardObject.h"
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
-#include "Enumeration/LLL_GameSystemEnumHelper.h"
 #include "Game/LLL_GameInstance.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
+#include "Kismet/GameplayStatics.h"
 #include "System/MapGimmick/Components/LLL_ProductSpawnPointComponent.h"
 
 // Sets default values for this component's properties
@@ -55,13 +52,18 @@ void ULLL_ShoppingMapComponent::SetProducts()
 {
 	const ULLL_GameInstance* GameInstance = CastChecked<ULLL_GameInstance>(GetWorld()->GetGameInstance());
 	TArray<const FRewardDataTable*> RewardData = GameInstance->GetRewardDataTable();
+	TMap<int32, int32> SavedShoppingProductList;
+	if (IsValid(GameInstance->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()))
+	{
+		SavedShoppingProductList = GameInstance->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->PlayerPlayProgressData.ShoppingProductList;
+	}
+
+	int32 ProductIndex = 0;
 	for (USceneComponent* ChildComponent : GetOwner()->GetRootComponent()->GetAttachChildren())
 	{
 		ULLL_ProductSpawnPointComponent* SpawnPoint = Cast<ULLL_ProductSpawnPointComponent>(ChildComponent);
 		if (IsValid(SpawnPoint))
 		{
-			ALLL_RewardObject* Product = GetWorld()->SpawnActor<ALLL_RewardObject>(ALLL_RewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
-			
 			/*switch (static_cast<ERewardCategory>(FMath::RandRange(2, 4)))
 			{
 			case ERewardCategory::Ability:
@@ -75,9 +77,39 @@ void ULLL_ShoppingMapComponent::SetProducts()
 				break;
 			default: ;
 			}*/
-			const FRewardDataTable* data = RewardData[FMath::RandRange(0, RewardData.Num() - 1)];
-			Product->InteractionDelegate.AddUObject(this, & ULLL_ShoppingMapComponent::SetDelegate);
-			Product->SetInformation(data);
+			const uint32 Index = FMath::RandRange(0, RewardData.Num() - 1);
+			const FRewardDataTable* ProductData = nullptr;
+			// ID != INT8_MAX. ID 값이 구조체 디폴트 값이 아닌 경우 -> 구매하지 않은 품목이 있는 경우
+			if (!SavedShoppingProductList.IsEmpty() && SavedShoppingProductList[ProductIndex] != INT8_MAX)
+			{
+				for (const auto SavedProductData : RewardData)
+				{
+					if (SavedShoppingProductList[ProductIndex] == SavedProductData->ID)
+					{
+						ProductData = SavedProductData;
+						break;
+					}
+				}
+			}
+			else if (SavedShoppingProductList.IsEmpty())
+			{
+				ProductData = RewardData[Index];
+			}
+			ProductIndex++;
+
+			if (!ProductData)
+			{
+				continue;
+			}
+
+			ALLL_RewardObject* Product = GetWorld()->SpawnActor<ALLL_RewardObject>(ALLL_RewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+			FVector Vector = Product->GetActorLocation();
+			Vector.Z += 150;
+			Product->SetActorLocation(Vector);
+
+			
+			Product->InteractionDelegate.AddUObject(this, &ULLL_ShoppingMapComponent::SetDelegate);
+			Product->SetInformation(ProductData, Index);
 			Product->ApplyProductEvent();
 			ProductList.Add(Product);
 		}
@@ -90,8 +122,16 @@ void ULLL_ShoppingMapComponent::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-void ULLL_ShoppingMapComponent::SetDelegate()
+void ULLL_ShoppingMapComponent::SetDelegate(ALLL_RewardObject* ProductObject)
 {
-	ShopingDelegate.Broadcast();
+	if (ProductList.Find(ProductObject))
+	{
+		ProductList.Remove(ProductObject);
+	}
+
+	// 상품 구매시 세이브는 생각좀 필요
+	// Cast<ULLL_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
+	
+	ShoppingDelegate.Broadcast();
 }
 

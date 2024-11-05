@@ -5,16 +5,16 @@
 
 #include "Game/LLL_DebugGameInstance.h"
 
-void ALLL_MaxHPRewardObject::SetInformation(const FRewardDataTable* Data)
+void ALLL_MaxHPRewardObject::SetInformation(const FRewardDataTable* Data, const uint32 Index)
 {
 	Super::SetInformation(Data);
 
 	//매쉬 및 필수 정보 세팅
 }
 
-void ALLL_MaxHPRewardObject::InteractiveEvent()
+void ALLL_MaxHPRewardObject::InteractiveEvent(AActor* InteractedActor)
 {
-	Super::InteractiveEvent();
+	Super::InteractiveEvent(InteractedActor);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))

@@ -6,7 +6,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
-#include "GAS/Attribute/Character/Player/LLL_PlayerSkillAttributeSet.h"
+#include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 
 void ULLL_PlayerStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet)
 {
@@ -22,17 +22,9 @@ void ULLL_PlayerStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetB
 	{
 		HealthTextBlock->SetText(FText::FromString(TEXT("!!! MAX HEALTH ERROR !!!")));
 	}
-}
 
-void ULLL_PlayerStatusWidget::UpdateWidgetView(const UAbilitySystemComponent* CharacterASC) const
-{
-	const ULLL_PlayerSkillAttributeSet* SkillAttributeSet = Cast<ULLL_PlayerSkillAttributeSet>(CharacterASC->GetAttributeSet(ULLL_PlayerSkillAttributeSet::StaticClass()));
-	const float MaxSkillGauge = SkillAttributeSet->GetMaxSkillGauge();
-	const float CurrentSkillGauge = SkillAttributeSet->GetCurrentSkillGauge();
-
-	if(MaxSkillGauge > 0.f)
-	{
-		SkillGaugeBar->SetPercent(CurrentSkillGauge / MaxSkillGauge);
-		//SkillTextBlock->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), SkillGaugeBar->GetPercent() * 100.f).Append(TEXT("%"))));
-	}
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(CharacterAttributeSet);
+	const float MaxMana = PlayerAttributeSet->GetMaxMana();
+	const float CurrentMana = PlayerAttributeSet->GetCurrentMana();
+	ChargeGaugeBar->SetPercent(CurrentMana / MaxMana);
 }

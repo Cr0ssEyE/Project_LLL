@@ -4,6 +4,7 @@
 #include "GAS/TargetActor/LLL_TA_SweepMultiTrace.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
@@ -24,8 +25,25 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 	}
 	
 	TArray<FHitResult> Results;
-	const FVector SweepStartLocation =  SourceActor->GetActorLocation() + SourceActor->GetActorForwardVector() * TraceStartLocation;
-	const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetActorForwardVector() * TraceEndLocation;
+	FVector OriginLocation = SourceActor->GetActorLocation();
+	
+	if (ACharacter* SourceCharacter = Cast<ACharacter>(SourceActor))
+	{
+		if (SourceCharacter->GetMesh()->GetComponentLocation() != SourceCharacter->GetMesh()->GetSocketLocation(OriginSocketOrBoneName))
+		{
+			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("소켓 위치 감지")));
+			OriginLocation = SourceCharacter->GetMesh()->GetSocketLocation(OriginSocketOrBoneName);
+		}
+		else if (FVector::Zero() != SourceCharacter->GetMesh()->GetBoneLocation(OriginSocketOrBoneName))
+		{
+			// GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("본 위치 감지")));
+			OriginLocation = SourceCharacter->GetMesh()->GetBoneLocation(OriginSocketOrBoneName);
+		}
+	}
+	
+	const FVector SweepStartLocation = OriginLocation + SourceActor->GetTransform().GetRotation().RotateVector(TraceStartLocation);
+	const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetTransform().GetRotation().RotateVector(TraceEndLocation);
+	
 	FQuat SweepQuat = SourceActor->GetActorQuat();
 
 	if (TraceShape.ShapeType == ECollisionShape::Capsule)
@@ -80,9 +98,6 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 
 		if (Debug)
 		{
-			const FVector DistanceVector = SweepEndLocation - SweepStartLocation;
-			const FVector SweepCenter = SweepStartLocation + DistanceVector / 2.0f;
-			
 			FColor DebugColor = FColor::Blue;
 			for (auto HitActor : HitActors)
 			{
@@ -97,7 +112,8 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 					break;
 				}
 			}
-			FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, DebugColor, 2.f, BoxExtents, CapsuleExtents, SphereRadius, ConeDistance, ConeFieldOfView, ConeRotation, SweepQuat);
+			FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepStartLocation, DebugColor, 2.f, BoxExtents, CapsuleExtents, SphereRadius, ConeDistance, ConeFieldOfView, ConeRotation, SweepQuat);
+			FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepEndLocation, DebugColor, 2.f, BoxExtents, CapsuleExtents, SphereRadius, ConeDistance, ConeFieldOfView, ConeRotation, SweepQuat);
 		}
 	}
 #endif

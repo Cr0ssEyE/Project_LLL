@@ -4,7 +4,9 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Constant/LLL_GeneralConstants.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Boss/Base/LLL_BossMonster.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
 
 // Sets default values for this component's properties
@@ -21,9 +23,12 @@ void ULLL_MonsterBaseUIManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	const ULLL_BaseCharacterDataAsset* CharacterDataAsset = CastChecked<ALLL_MonsterBase>(GetOwner())->GetCharacterDataAsset();
-	CharacterStatusWidgetClass = CharacterDataAsset->StatusWidgetClass;
-	CharacterStatusWidget = CastChecked<ULLL_CharacterStatusWidget>(CreateWidget(GetWorld(), CharacterStatusWidgetClass));
+	const ULLL_BaseCharacterDataAsset* CharacterDataAsset = Cast<ALLL_MonsterBase>(GetOwner())->GetCharacterDataAsset();
+	if (IsValid(CharacterDataAsset))
+	{
+		CharacterStatusWidgetClass = CharacterDataAsset->StatusWidgetClass;
+		CharacterStatusWidget = CastChecked<ULLL_CharacterStatusWidget>(CreateWidget(GetWorld(), CharacterStatusWidgetClass));
+	}
 }
 
 
