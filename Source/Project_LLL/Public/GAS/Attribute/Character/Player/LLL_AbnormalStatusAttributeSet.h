@@ -23,7 +23,8 @@ class PROJECT_LLL_API ULLL_AbnormalStatusAttributeSet : public UAttributeSet
 
 public:
 	ULLL_AbnormalStatusAttributeSet();
-	
+
+	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, BleedingStatusDamage);
 	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, BleedingStatusPeriod);
 	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, BleedingStatusDuration);
 	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, MaxBleedingStatusCount);
@@ -32,6 +33,9 @@ public:
 	
 	// 출혈
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData BleedingStatusDamage;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData BleedingStatusPeriod;
 	

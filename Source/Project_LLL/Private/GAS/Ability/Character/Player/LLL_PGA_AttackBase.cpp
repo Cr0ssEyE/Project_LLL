@@ -46,7 +46,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	// 과충전 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered())
+	if (Player->CheckChargeTriggered())
 	{
 		ChargeAttack();
 	}
@@ -130,7 +130,7 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	// 과충전 이누리아
-	if ((PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered()) && !bStopCharge)
+	if (Player->CheckChargeTriggered() && !bStopCharge)
 	{
 		bStopCharge = true;
 

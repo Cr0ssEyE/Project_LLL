@@ -25,7 +25,7 @@ float ULLL_CC_AttackDamageCalculate::CalculateBaseMagnitude_Implementation(const
 	Result = PlayerAttributeSet->GetOffencePower();
 
 	// 과충전 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered())
+	if (Player->CheckChargeTriggered())
 	{
 		if (!Player->CheckAttackIsRange())
 		{
