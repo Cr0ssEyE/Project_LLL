@@ -51,7 +51,6 @@ void ULLL_PGA_KnockBack::KnockBackTarget(const FGameplayEventData* TriggerEventD
 
 		float KnockBackPower = 0;
 		
-		// 과충전 이누리아
 		if (TriggerEventData->InstigatorTags.HasTag(TriggerRequiredTag1Charge))
 		{
 			KnockBackPower = PlayerAttributeSet->GetMaxChargeAttackKnockBackPower();

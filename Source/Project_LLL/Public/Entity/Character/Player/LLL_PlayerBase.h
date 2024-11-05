@@ -93,13 +93,13 @@ public:
 
 public:
 	// 이누리아 관련 함수
+	FORCEINLINE float GetRecoveryManaByFeatherRecoveryValue() const { return RecoveryManaByFeatherRecoveryValue; }
 	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
 	FORCEINLINE float GetFeatherSpawnStartTime() const { return FeatherSpawnStartTime; }
 	FORCEINLINE int32 GetDeflectCount() const { return DeflectCount; }
 	FORCEINLINE float GetKnockBackTransmissionOffencePower() const { return KnockBackTransmissionOffencePower; }
 	FORCEINLINE float GetKnockBackTransmissionKnockBackPower() const { return KnockBackTransmissionKnockBackPower; }
 	FORCEINLINE float GetQuadrupleHitKnockBackPower() const { return QuadrupleHitKnockBackPower; }
-	FORCEINLINE float GetFasterKnockBackSpeedRateIncrease() const { return FasterKnockBackSpeedRateIncrease; }
 	FORCEINLINE float GetIncreaseKnockBackDamageDamageRateIncrease() const { return IncreaseKnockBackDamageDamageRateIncrease; }
 	FORCEINLINE float GetRangeKnockBackKnockBackPower() const { return RangeKnockBackKnockBackPower; }
 	FORCEINLINE int32 GetBleedingTransmissionStack() const { return BleedingTransmissionStack; }
@@ -109,19 +109,21 @@ public:
 	FORCEINLINE float GetDoubleDashDashRate() const { return DoubleDashDashRate; }
 	FORCEINLINE int32 GetDoubleDashHorseEnuriaCheckCount() const { return DoubleDashHorseEnuriaCheckCount; }
 	FORCEINLINE int32 GetEvasionDashHorseEnuriaCheckCount() const { return EvasionDashHorseEnuriaCheckCount; }
+	FORCEINLINE float GetChargeAttackReceiveDamageRateDecrease() const { return ChargeAttackReceiveDamageRateDecrease; }
+	FORCEINLINE float GetChargeAttackChargeTimeMinus() const { return ChargeAttackChargeTimeMinus; }
 	FORCEINLINE float GetIncreaseKnockBackBothKnockBackPowerRate() const { return IncreaseKnockBackBothKnockBackPowerRate; }
 	FORCEINLINE float GetDashAttackOffencePowerPlus() const { return DashAttackOffencePowerPlus; }
 	FORCEINLINE bool CheckDashAttackCanAttack() const { return bDashAttackCanAttack; }
 	FORCEINLINE float GetAttackWeakeningOffencePowerRateIncrease() const { return AttackWeakeningOffencePowerRateIncrease; }
 	FORCEINLINE int32 GetAttackWeakeningWildBoarEnuriaCheckCount() const { return AttackWeakeningWildBoarEnuriaCheckCount; }
 	FORCEINLINE float GetCrisisAttackMaxOffencePowerRateIncrease() const { return CrisisAttackMaxOffencePowerRateIncrease; }
-	
+
+	FORCEINLINE void SetRecoveryManaByFeatherRecoveryValue(const float InRecoveryManaByFeatherRecoveryValue) { RecoveryManaByFeatherRecoveryValue = InRecoveryManaByFeatherRecoveryValue; }
 	FORCEINLINE void SetFeatherSpawnStartTime(const float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
 	FORCEINLINE void SetDeflectCount(const int32 InDeflectCount) { DeflectCount = InDeflectCount; }
 	FORCEINLINE void SetKnockBackTransmissionOffencePower(const float InKnockBackTransmissionOffencePower) { KnockBackTransmissionOffencePower = InKnockBackTransmissionOffencePower; }
 	FORCEINLINE void SetKnockBackTransmissionKnockBackPower(const float InKnockBackTransmissionKnockBackPower) { KnockBackTransmissionKnockBackPower = InKnockBackTransmissionKnockBackPower; }
 	FORCEINLINE void SetQuadrupleHitKnockBackPower(const float InQuadrupleHitKnockBackPower) { QuadrupleHitKnockBackPower = InQuadrupleHitKnockBackPower; }
-	FORCEINLINE void SetFasterKnockBackSpeedRateIncrease(const float InFasterKnockBackRateIncrease) { FasterKnockBackSpeedRateIncrease = InFasterKnockBackRateIncrease; }
 	FORCEINLINE void SetIncreaseKnockBackDamageDamageRateIncrease(const float InIncreaseKnockBackDamageDamageRateIncrease) { IncreaseKnockBackDamageDamageRateIncrease = InIncreaseKnockBackDamageDamageRateIncrease; }
 	FORCEINLINE void SetRangeKnockBackKnockBackPower(const float InRangeKnockBackKnockBackPower) { RangeKnockBackKnockBackPower = InRangeKnockBackKnockBackPower; }
 	FORCEINLINE void SetVampireRecoveryRate(const float InVampireRecoveryRate) { VampireRecoveryRate = InVampireRecoveryRate; }
@@ -132,6 +134,8 @@ public:
 	FORCEINLINE void SetDoubleDashDashRate(const float InDoubleDashDashRate) { DoubleDashDashRate = InDoubleDashDashRate; }
 	FORCEINLINE void SetDoubleDashHorseEnuriaCheckCount(const int32 InDoubleDashHorseEnuriaCheckCount) { DoubleDashHorseEnuriaCheckCount = InDoubleDashHorseEnuriaCheckCount; }
 	FORCEINLINE void SetEvasionDashHorseEnuriaCheckCount(const int32 InEvasionDashHorseEnuriaCheckCount) { EvasionDashHorseEnuriaCheckCount = InEvasionDashHorseEnuriaCheckCount; }
+	FORCEINLINE void SetChargeAttackReceiveDamageRateDecrease(const float InChargeAttackReceiveDamageRateDecrease) { ChargeAttackReceiveDamageRateDecrease = InChargeAttackReceiveDamageRateDecrease; }
+	FORCEINLINE void SetChargeAttackChargeTimeMinus(const float InChargeAttackChargeSpeedMinus) { ChargeAttackChargeTimeMinus = InChargeAttackChargeSpeedMinus; }
 	FORCEINLINE void SetIncreaseKnockBackBothKnockBackPowerRate(const float InIncreaseKnockBackBothKnockBackPowerRate) { IncreaseKnockBackBothKnockBackPowerRate = InIncreaseKnockBackBothKnockBackPowerRate; }
 	FORCEINLINE void SetDashAttackOffencePowerPlus(const float InDashAttackOffencePowerPlus) { DashAttackOffencePowerPlus = InDashAttackOffencePowerPlus; }
 	FORCEINLINE void SetDashAttackCanAttack(const bool DashAttackCanAttack) { bDashAttackCanAttack = DashAttackCanAttack; }
@@ -224,6 +228,7 @@ private:
 
 	// 이누리아 관련 변수
 private:
+	float RecoveryManaByFeatherRecoveryValue;
 	int32 ChargedFeatherCount;
 	FTimerHandle ChargeFeatherTimerHandle;
 	TArray<TObjectPtr<AActor>> RangeFeatherTargets;
@@ -244,6 +249,8 @@ private:
 	float DoubleDashDashRate;
 	int32 DoubleDashHorseEnuriaCheckCount;
 	int32 EvasionDashHorseEnuriaCheckCount;
+	float ChargeAttackReceiveDamageRateDecrease;
+	float ChargeAttackChargeTimeMinus;
 	float IncreaseKnockBackBothKnockBackPowerRate;
 	float DashAttackOffencePowerPlus;
 	uint8 bDashAttackCanAttack : 1;

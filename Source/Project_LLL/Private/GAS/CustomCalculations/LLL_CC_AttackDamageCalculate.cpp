@@ -24,7 +24,6 @@ float ULLL_CC_AttackDamageCalculate::CalculateBaseMagnitude_Implementation(const
 
 	Result = PlayerAttributeSet->GetOffencePower();
 
-	// 과충전 이누리아
 	if (Player->CheckChargeTriggered())
 	{
 		if (!Player->CheckAttackIsRange())

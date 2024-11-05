@@ -43,9 +43,6 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 #endif
 
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-	
-	// 과충전 이누리아
 	if (Player->CheckChargeTriggered())
 	{
 		ChargeAttack();
@@ -129,7 +126,6 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 
 	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
-	// 과충전 이누리아
 	if (Player->CheckChargeTriggered() && !bStopCharge)
 	{
 		bStopCharge = true;
@@ -368,7 +364,7 @@ void ULLL_PGA_AttackBase::ChargeAttack()
 
 	ChargeRotate(Player);
 
-	float AttackSpeed = GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) / PlayerAttributeSet->GetMaxChargeAttackChargingTime();
+	float AttackSpeed = (GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) + Player->GetChargeAttackChargeTimeMinus()) / PlayerAttributeSet->GetMaxChargeAttackChargingTime();
 	AttackSpeed *= PlayerAttributeSet->GetAttackSpeed();
 	AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 

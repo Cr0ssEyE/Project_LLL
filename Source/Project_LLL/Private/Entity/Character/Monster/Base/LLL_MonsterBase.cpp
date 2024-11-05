@@ -540,14 +540,6 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 	
 	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-		
-		// 넘치는 힘 이누리아
-		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
-		{
-			CustomTimeDilation = 1 + Player->GetFasterKnockBackSpeedRateIncrease();
-		}
-		
 		FGameplayEventData PayloadData;
 		TArray<TWeakObjectPtr<AActor>> NewActors;
 		NewActors.Emplace(this);

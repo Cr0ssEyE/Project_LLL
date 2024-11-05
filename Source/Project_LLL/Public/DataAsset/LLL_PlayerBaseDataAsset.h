@@ -125,6 +125,9 @@ public:
 
 	// 이누리아 관련
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "지원 강화 이누리아 마나 회복 이펙트")
+	TSubclassOf<UGameplayEffect> RecoveryManaByFeatherRecoveryManaEffect;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "연쇄 작용 이누리아 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> KnockBackTransmissionDamageEffect;
 

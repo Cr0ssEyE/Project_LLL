@@ -112,6 +112,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CurrentMana);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChargeAttack1ManaCost);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, ChargeAttack2ManaCost);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, AttackManaRecoveryValue);
 	
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherMoveSpeed);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, TargetingCorrectionRadius);
@@ -130,6 +131,7 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FasterAttackAttackSpeedRate);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, BleedingExplosionOffencePower);
 	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, CriticalChancePlus);
+	ATTRIBUTE_ACCESSORS(ULLL_PlayerCharacterAttributeSet, FeatherManaRecoveryValue);
 
 public:
 	FPlayerCharacterStatusData MakeCharacterStatusData() const;
@@ -236,6 +238,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ChargeAttack2ManaCost;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData AttackManaRecoveryValue;
 	
 	// 기타 효과 관련
 protected:
@@ -289,4 +294,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData CriticalChancePlus;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData FeatherManaRecoveryValue;
 };
