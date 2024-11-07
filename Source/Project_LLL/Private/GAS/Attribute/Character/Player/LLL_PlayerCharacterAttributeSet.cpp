@@ -28,7 +28,20 @@ MoveSpeedPlus(0.0f),
 BaseAttackKnockBackPowerPlus(0.0f),
 DashDistancePlus(0.0f),
 FasterAttackAttackSpeedRate(1.0f),
-BleedingExplosionOffencePower(0.0f)
+BleedingExplosionOffencePower(0.0f),
+CriticalChancePlus(0.0f),
+FeatherManaRecoveryValue(0.0f)
+
+//임시
+,MaxMana(100),
+CurrentMana(0),
+ChargeAttack1ManaCost(30),
+ChargeAttack2ManaCost(70),
+OffencePowerRate1(2),
+OffencePowerRate2(2),
+OffencePowerRate3(2),
+OffencePowerRate4(2),
+AttackManaRecoveryValue(5.0f)
 {
 	
 }
@@ -115,6 +128,14 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		if (!bIsEvasion)
 		{
 			SetReceiveDamage(GetReceiveDamage() * GetReceiveDamageRate());
+
+			// 과충전 이누리아
+			const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+			if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) && Player->CheckChargeTriggered())
+			{
+				SetReceiveDamage(GetReceiveDamage() * (1 - Player->GetChargeAttackReceiveDamageRateDecrease()));
+			}
+			
 			SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
 			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
 			if (GetCurrentHealth() == 0 && !Player->CheckCharacterIsDead())
@@ -141,6 +162,11 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 			UE_LOG(LogTemp, Log, TEXT("%.2f 확률로 회피 발동"), GetEvasionRate() * 100.0f)
 			return;
 		}
+	}
+	
+	if (Data.EvaluatedData.Attribute == GetCurrentManaAttribute())
+	{
+		SetCurrentMana(FMath::Clamp(GetCurrentMana(), 0.f, GetMaxMana()));
 	}
 	
 	Super::PostGameplayEffectExecute(Data);

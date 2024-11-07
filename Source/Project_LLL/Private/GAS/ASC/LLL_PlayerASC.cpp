@@ -74,10 +74,6 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		{
 			Player->SetQuadrupleHitKnockBackPower(Effect->GetAbilityData()->KnockBackPower);
 		}
-		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
-		{
-			Player->SetFasterKnockBackSpeedRateIncrease(Value1);
-		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE))
 		{
 			Player->SetIncreaseKnockBackDamageDamageRateIncrease(Value1);
@@ -104,6 +100,11 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_EVASION_DASH))
 		{
 			Player->SetEvasionDashHorseEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
+		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGE_ATTACK))
+		{
+			Player->SetChargeAttackReceiveDamageRateDecrease(Value1);
+			Player->SetChargeAttackChargeTimeMinus(Value2);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_INCREASE_KNOCK_BACK_BOTH))
 		{

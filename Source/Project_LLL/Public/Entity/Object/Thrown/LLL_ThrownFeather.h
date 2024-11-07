@@ -31,6 +31,7 @@ protected:
 	
 	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower) override;
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+	virtual void DamageTo(AActor* OtherActor) override;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UBoxComponent> HitCollisionBox;

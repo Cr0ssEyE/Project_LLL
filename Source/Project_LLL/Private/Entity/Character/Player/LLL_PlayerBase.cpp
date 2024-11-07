@@ -451,6 +451,16 @@ void ALLL_PlayerBase::ChargeAttackAction(const FInputActionValue& Value, EAbilit
 	{
 		return;
 	}
+	
+	if (!Range && PlayerCharacterAttributeSet->GetCurrentMana() < PlayerCharacterAttributeSet->GetChargeAttack1ManaCost())
+	{
+		return;
+	}
+
+	if (Range && PlayerCharacterAttributeSet->GetCurrentMana() < PlayerCharacterAttributeSet->GetChargeAttack2ManaCost())
+	{
+		return;
+	}
 
 	bChargeTriggered = true;
 	bAttackIsRange = Range;
@@ -480,7 +490,7 @@ void ALLL_PlayerBase::ChargeAttackActionCompleted(const FInputActionValue& Value
 	}
 	
 	// 과충전 이누리아
-	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || CheckChargeTriggered())
+	if (bChargeTriggered)
 	{
 		KnockBackDirection = (CheckMouseLocation() - GetActorLocation()).GetSafeNormal2D();
 		
@@ -493,9 +503,13 @@ void ALLL_PlayerBase::ChargeAttackActionCompleted(const FInputActionValue& Value
 				ASC->AbilitySpecInputPressed(*AttackSpec);
 			}
 		}
+		
+		UE_LOG(LogTemp, Log, TEXT("차지 %s 공격 해제"), Range ? TEXT("범위") : TEXT("일반"))
 	}
-	
-	UE_LOG(LogTemp, Log, TEXT("차지 %s 공격 해제"), Range ? TEXT("범위") : TEXT("일반"))
+	else
+	{
+		AttackAction(Value, InputName, Range);
+	}
 }
 
 void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputName InputName)

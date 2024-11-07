@@ -365,7 +365,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 					}
 
 					// 피의 역병 이누리아
-					if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION) && ASC->HasMatchingGameplayTag(TAG_GAS_STATUS_BLEEDING) && !bBleedingTransmissionTargetDamaged)
+					if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION) && !bBleedingTransmissionTargetDamaged)
 					{
 						bBleedingTransmissionTargetDamaged = true;
 						OtherMonster->SetBleedingStack(OtherMonster->GetBleedingStack() + Player->GetBleedingTransmissionStack() - 1);
@@ -540,14 +540,6 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 	
 	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-		
-		// 넘치는 힘 이누리아
-		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_FASTER_KNOCK_BACK))
-		{
-			CustomTimeDilation = 1 + Player->GetFasterKnockBackSpeedRateIncrease();
-		}
-		
 		FGameplayEventData PayloadData;
 		TArray<TWeakObjectPtr<AActor>> NewActors;
 		NewActors.Emplace(this);

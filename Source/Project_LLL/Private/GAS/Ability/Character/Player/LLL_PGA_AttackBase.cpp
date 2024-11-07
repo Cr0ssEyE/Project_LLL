@@ -43,10 +43,7 @@ void ULLL_PGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 #endif
 
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
-	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-	
-	// 과충전 이누리아
-	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered())
+	if (Player->CheckChargeTriggered())
 	{
 		ChargeAttack();
 	}
@@ -127,29 +124,48 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		bIsCanPlayNextAction = true;
 	}
 
-	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
-	// 과충전 이누리아
-	if ((PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) || Player->CheckChargeTriggered()) && !bStopCharge)
+	if (Player->CheckChargeTriggered() && !bStopCharge)
 	{
 		bStopCharge = true;
 
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance());
 		
-		if (!bFullCharged && bOnlyFullCharge)
+		if (!bFullCharged)
 		{
 			PlayerAnimInstance->StopAllMontages(0.3f);
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 			return;
 		}
 
-		const float MontagePosition = PlayerAnimInstance->Montage_GetPosition(ChargeAttackAnimMontage);
-		const float StartTimeSeconds = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
-		const float ChargeRate = (MontagePosition - StartTimeSeconds) / GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange());
-		UE_LOG(LogTemp, Log, TEXT("차지 비율 : %f"), ChargeRate);
-		Player->SetChargeAttackChargeRate(ChargeRate);
-		
 		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+		TSubclassOf<UGameplayEffect> UseManaEffect;
+		float ManaValue;
+		if (!Player->CheckAttackIsRange())
+		{
+			UseManaEffect = PlayerDataAsset->UseManaEffect1;
+			ManaValue = PlayerAttributeSet->GetChargeAttack1ManaCost();
+		}
+		else
+		{
+			UseManaEffect = PlayerDataAsset->UseManaEffect2;
+			ManaValue = PlayerAttributeSet->GetChargeAttack2ManaCost();
+		}
+
+		FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(Player);
+		EffectContextHandle.AddInstigator(Player, Player);
+		const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(UseManaEffect, Player->GetAbilityLevel(), EffectContextHandle);
+		if (EffectSpecHandle.IsValid())
+		{
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_TEMP_CALLER, ManaValue * -1.0f);
+			PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+
+		const float StartTimeSeconds = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
+		
 		float AttackSpeed = PlayerAttributeSet->GetAttackSpeed();
 		AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 
@@ -161,8 +177,7 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		if (!Player->CheckAttackIsRange())
 		{
 			FVector Location = Player->GetActorLocation();
-			const float OffsetAttackRange = PlayerAttributeSet->GetMaxChargeAttackRange() - PlayerAttributeSet->GetMinChargeAttackRange();
-			float Distance = PlayerAttributeSet->GetMinChargeAttackRange() + Player->GetChargeAttackChargeRate() * OffsetAttackRange;
+			float Distance = PlayerAttributeSet->GetMaxChargeAttackRange();
 			Location += Player->GetActorForwardVector() * Distance;
 
 			FHitResult StaticResult;
@@ -203,11 +218,6 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 						Location = StaticResult.Location;
 						Distance = StaticDistance / Distance;
 					}
-					else if (MonsterDistance < PlayerAttributeSet->GetMinChargeAttackRange())
-					{
-						Location = SweepStartLocation + Player->GetActorForwardVector() * PlayerAttributeSet->GetMinChargeAttackRange();
-						Distance = PlayerAttributeSet->GetMinChargeAttackRange() / Distance;
-					}
 					else
 					{
 						Location = MonsterResult.Location;
@@ -223,20 +233,11 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 			else if (MonsterResult.GetActor())
 			{
 				const float MonsterDistance = Player->GetDistanceTo(MonsterResult.GetActor());
-				if (MonsterDistance < PlayerAttributeSet->GetMinChargeAttackRange())
-				{
-					Location = SweepStartLocation + Player->GetActorForwardVector() * PlayerAttributeSet->GetMinChargeAttackRange();
-					Distance = PlayerAttributeSet->GetMinChargeAttackRange() / Distance;
-				}
-				else
-				{
-					Location = MonsterResult.Location;
-					Distance = MonsterDistance / Distance;
-				}
+				Location = MonsterResult.Location;
+				Distance = MonsterDistance / Distance;
 			}
 
-			const float OffsetDuration = PlayerAttributeSet->GetMaxChargeAttackDuration() - PlayerAttributeSet->GetMinChargeAttackDuration();
-			const float Duration = PlayerAttributeSet->GetMinChargeAttackDuration() + Player->GetChargeAttackChargeRate() * OffsetDuration * Distance;
+			const float Duration = PlayerAttributeSet->GetMaxChargeAttackDuration() * Distance;
 		
 			UAbilityTask_MoveToLocation* MoveTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Move"), Location, Duration, nullptr, nullptr);
 			MoveTask->ReadyForActivation();
@@ -363,11 +364,11 @@ void ULLL_PGA_AttackBase::ChargeAttack()
 
 	ChargeRotate(Player);
 
-	float AttackSpeed = GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) / PlayerAttributeSet->GetMaxChargeAttackChargingTime();
+	float AttackSpeed = (GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) + Player->GetChargeAttackChargeTimeMinus()) / PlayerAttributeSet->GetMaxChargeAttackChargingTime();
 	AttackSpeed *= PlayerAttributeSet->GetAttackSpeed();
 	AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
 
-	const FName Section = *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, Player->CheckAttackIsRange() ? 2 : 0);
+	const FName Section = *FString::Printf(TEXT("%s%d"), SECTION_ATTACK, Player->CheckAttackIsRange() ? 2 : 1);
 	Player->PlayAnimMontage(ChargeAttackAnimMontage, AttackSpeed, Section);
 	Player->GetCharacterMovement()->SetMovementMode(MOVE_None);
 

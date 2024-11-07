@@ -100,27 +100,30 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	{
 		FVector Direction = (Other->GetActorLocation() - Player->GetActorLocation()).GetSafeNormal2D();
 		
-		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 
 		// 맹렬한 공세 이누리아
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_QUADRUPLE_HIT))
 		{
 			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 			
 			float HitCount = 4;
 			float HitOffsetTime = 0.01f;
 			for (int i = 0; i < HitCount; i++)
 			{
 				FTimerHandle QuadrupleHitTimerHandle;
-				GetWorld()->GetTimerManager().SetTimer(QuadrupleHitTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, i, HitCount, Other, AbilitySystemInterface, Player, Direction]{
+				GetWorld()->GetTimerManager().SetTimer(QuadrupleHitTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, i, HitCount, Other, AbilitySystemInterface, Player, Direction, PlayerDataAsset, PlayerASC, PlayerAttributeSet]{
 					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 					EffectContextHandle.AddSourceObject(this);
 					EffectContextHandle.AddInstigator(Player, this);
-					const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
-					if (EffectSpecHandle.IsValid())
+					const FGameplayEffectSpecHandle EffectSpecHandle1 = ASC->MakeOutgoingSpec(ThrownObjectDataAsset->DamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
+					const FGameplayEffectSpecHandle EffectSpecHandle2 = ASC->MakeOutgoingSpec(PlayerDataAsset->RecoveryManaByFeatherRecoveryManaEffect, Player->GetAbilityLevel(), EffectContextHandle);
+					if (EffectSpecHandle1.IsValid() && EffectSpecHandle2.IsValid())
 					{
 						UE_LOG(LogTemp, Log, TEXT("%s에게 %f만큼 데미지 : %d"), *Other->GetName(), OffencePower, i + 2)
-						EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+						EffectSpecHandle1.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, OffencePower);
+						EffectSpecHandle2.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, PlayerAttributeSet->GetFeatherManaRecoveryValue());
 						
 						if (i == 0)
 						{
@@ -128,7 +131,8 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 						}
 						else
 						{
-							ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, AbilitySystemInterface->GetAbilitySystemComponent());
+							ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle1, AbilitySystemInterface->GetAbilitySystemComponent());
+							ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle2, PlayerASC);
 						}
 						
 						if (i == HitCount - 1)
@@ -143,6 +147,30 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 
 				HitOffsetTime += PlayerDataAsset->QuadrupleHitHitOffsetTime;
 			}
+		}
+	}
+}
+
+void ALLL_ThrownFeather::DamageTo(AActor* OtherActor)
+{
+	Super::DamageTo(OtherActor);
+
+	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(GetOwner());
+	const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor);
+	if (IsValid(Player) && AbilitySystemInterface && OtherActor != GetOwner())
+	{
+		UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+			
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		EffectContextHandle.AddInstigator(GetOwner(), this);
+		const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->RecoveryManaByFeatherRecoveryManaEffect, AbilityLevel, EffectContextHandle);
+		if(EffectSpecHandle.IsValid())
+		{
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, PlayerAttributeSet->GetFeatherManaRecoveryValue());
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, PlayerASC);
 		}
 	}
 }

@@ -99,7 +99,7 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
-	ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(ApplyEffect.GetDefaultObject());
+	ULLL_ExtendedGameplayEffect* Effect = CastChecked<ULLL_ExtendedGameplayEffect>(ApplyEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ApplyEffect, GetAbilityLevel());
 
 	const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);

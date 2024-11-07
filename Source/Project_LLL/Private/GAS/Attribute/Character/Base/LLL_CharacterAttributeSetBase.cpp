@@ -61,6 +61,7 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 		FGameplayEventData PayloadData;
 		ALLL_BaseCharacter* Attacker = CastChecked<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
 		PayloadData.Instigator = Attacker;
+		Attacker->UpdateWidgetDelegate.Broadcast();
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
 		
 		SetReceiveDamage(0.f);
