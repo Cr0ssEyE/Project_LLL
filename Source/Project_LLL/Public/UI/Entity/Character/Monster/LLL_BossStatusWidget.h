@@ -13,5 +13,8 @@ UCLASS()
 class PROJECT_LLL_API ULLL_BossStatusWidget : public ULLL_CharacterStatusWidget
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) override;
 	
 };
