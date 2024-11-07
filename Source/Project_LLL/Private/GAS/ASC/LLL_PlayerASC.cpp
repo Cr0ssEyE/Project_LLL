@@ -78,6 +78,10 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		{
 			Player->SetIncreaseKnockBackDamageDamageRateIncrease(Value1);
 		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_BLEEDING))
+		{
+			Player->SetBleedingTriggerMaxCount(Value1);
+		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_VAMPIRE))
 		{
 			Player->SetVampireRecoveryRate(Value1);

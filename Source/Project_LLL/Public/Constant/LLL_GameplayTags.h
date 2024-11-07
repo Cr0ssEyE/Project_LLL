@@ -72,6 +72,7 @@
 #define TAG_GAS_HAVE_DEFLECT_BY_WALL FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.DeflectByWall"))
 #define TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.KnockBackTransmission"))
 #define TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.IncreaseKnockBackDamage"))
+#define TAG_GAS_HAVE_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.Bleeding"))
 #define TAG_GAS_HAVE_VAMPIRE FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.Vampire"))
 #define TAG_GAS_HAVE_BLEEDING_TRANSMISSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.BleedingTransmission"))
 #define TAG_GAS_HAVE_EXCESSIVE_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.ExcessiveBleeding"))

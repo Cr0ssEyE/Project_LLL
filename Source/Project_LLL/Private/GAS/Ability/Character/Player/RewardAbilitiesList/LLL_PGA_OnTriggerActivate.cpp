@@ -138,12 +138,12 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 			{
 				if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
 				{
-					if (!Monster->GetBleedingTrigger())
+					if (!Monster->CheckBleedingTrigger())
 					{
-						Monster->ToggleBleedingTrigger();
+						Monster->IncreaseBleedingTrigger();
 						continue;
 					}
-					Monster->ToggleBleedingTrigger();
+					Monster->ResetBleedingTrigger();
 					
 					if (FLLL_AbilityDataHelper::CheckBleedingExplosion(Player, Monster, Player))
 					{

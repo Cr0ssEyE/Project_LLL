@@ -369,6 +369,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 					{
 						bBleedingTransmissionTargetDamaged = true;
 						OtherMonster->SetBleedingStack(OtherMonster->GetBleedingStack() + Player->GetBleedingTransmissionStack() - 1);
+						const ULLL_AbnormalStatusAttributeSet* AbnormalStatusAttributeSet = Cast<ULLL_AbnormalStatusAttributeSet>(PlayerASC->GetAttributeSet(ULLL_AbnormalStatusAttributeSet::StaticClass()));
 					
 						FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 						EffectContextHandle.AddSourceObject(this);
@@ -376,7 +377,7 @@ void ALLL_MonsterBase::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPr
 						const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(PlayerDataAsset->BleedingTransmissionDamageEffect, Player->GetAbilityLevel(), EffectContextHandle);
 						if (EffectSpecHandle.IsValid())
 						{
-							EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, BleedingTransmissionOffencePower);
+							EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_OFFENCE_POWER, AbnormalStatusAttributeSet->GetBleedingStatusDamage());
 							FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, CastChecked<ULLL_ExtendedGameplayEffect>(PlayerDataAsset->BleedingTransmissionDamageEffect.GetDefaultObject()));
 							if (!FLLL_AbilityDataHelper::CheckBleedingExplosion(Player, OtherMonster, this))
 							{
@@ -782,9 +783,28 @@ void ALLL_MonsterBase::ShowDamageValue(const float Damage) const
 	FloatingDamage->SetWidgetText(Damage);
 }
 
-void ALLL_MonsterBase::ToggleBleedingTrigger()
+bool ALLL_MonsterBase::CheckBleedingTrigger()
 {
-	bBleedingTrigger = !bBleedingTrigger;
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+	if (BleedingTriggerCount == Player->GetBleedingTriggerMaxCount() - 1)
+	{
+		return true;
+	}
+	return false;
+}
+
+void ALLL_MonsterBase::IncreaseBleedingTrigger()
+{
+	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+	if (BleedingTriggerCount < Player->GetBleedingTriggerMaxCount() - 1)
+	{
+		BleedingTriggerCount++;
+	}
+}
+
+void ALLL_MonsterBase::ResetBleedingTrigger()
+{
+	BleedingTriggerCount = 0;
 }
 
 void ALLL_MonsterBase::ToggleAIHandle(bool value)

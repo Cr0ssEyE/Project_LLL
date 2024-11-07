@@ -4,6 +4,7 @@
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 
 ULLL_AbnormalStatusAttributeSet::ULLL_AbnormalStatusAttributeSet() :
+	BleedingStatusDamage(10.f),
 	BleedingStatusPeriod(1.f),
 	BleedingStatusDuration(3.f),
 	MaxBlowStackCount(10),

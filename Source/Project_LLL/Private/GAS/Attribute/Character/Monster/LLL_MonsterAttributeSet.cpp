@@ -106,12 +106,8 @@ void ULLL_MonsterAttributeSet::CheckAbnormalStatus(const FGameplayEffectModCallb
 			return;
 		}
 		
-		ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
+		const ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetOwningActor());
 		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
-		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_BLEEDING_TRANSMISSION))
-		{
-			Monster->SetBleedingTransmissionOffencePower(Data.EvaluatedData.Magnitude);
-		}
 		
 		float Damage = Data.EvaluatedData.Magnitude;
 		Damage *= Monster->GetBleedingStack();

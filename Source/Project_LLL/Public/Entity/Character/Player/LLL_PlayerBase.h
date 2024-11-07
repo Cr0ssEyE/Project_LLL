@@ -102,6 +102,7 @@ public:
 	FORCEINLINE float GetQuadrupleHitKnockBackPower() const { return QuadrupleHitKnockBackPower; }
 	FORCEINLINE float GetIncreaseKnockBackDamageDamageRateIncrease() const { return IncreaseKnockBackDamageDamageRateIncrease; }
 	FORCEINLINE float GetRangeKnockBackKnockBackPower() const { return RangeKnockBackKnockBackPower; }
+	FORCEINLINE int32 GetBleedingTriggerMaxCount() const { return BleedingTriggerMaxCount; }
 	FORCEINLINE int32 GetBleedingTransmissionStack() const { return BleedingTransmissionStack; }
 	FORCEINLINE float GetExcessiveBleedingOffencePowerPlus() const { return ExcessiveBleedingOffencePowerPlus; }
 	FORCEINLINE float GetExcessiveBleedingPeriod() const { return ExcessiveBleedingPeriod; }
@@ -126,6 +127,7 @@ public:
 	FORCEINLINE void SetQuadrupleHitKnockBackPower(const float InQuadrupleHitKnockBackPower) { QuadrupleHitKnockBackPower = InQuadrupleHitKnockBackPower; }
 	FORCEINLINE void SetIncreaseKnockBackDamageDamageRateIncrease(const float InIncreaseKnockBackDamageDamageRateIncrease) { IncreaseKnockBackDamageDamageRateIncrease = InIncreaseKnockBackDamageDamageRateIncrease; }
 	FORCEINLINE void SetRangeKnockBackKnockBackPower(const float InRangeKnockBackKnockBackPower) { RangeKnockBackKnockBackPower = InRangeKnockBackKnockBackPower; }
+	FORCEINLINE void SetBleedingTriggerMaxCount(const int32 InBleedingTriggerMaxCount) { BleedingTriggerMaxCount = InBleedingTriggerMaxCount; }
 	FORCEINLINE void SetVampireRecoveryRate(const float InVampireRecoveryRate) { VampireRecoveryRate = InVampireRecoveryRate; }
 	FORCEINLINE void SetBleedingTransmissionStack(const int32 InBleedingTransmissionStack) { BleedingTransmissionStack = InBleedingTransmissionStack; }
 	FORCEINLINE void SetExcessiveBleedingOffencePowerPlus(const float InExcessiveBleedingOffencePowerPlus) { ExcessiveBleedingOffencePowerPlus = InExcessiveBleedingOffencePowerPlus; }
@@ -241,6 +243,7 @@ private:
 	float FasterKnockBackSpeedRateIncrease;
 	float IncreaseKnockBackDamageDamageRateIncrease;
 	float RangeKnockBackKnockBackPower;
+	int32 BleedingTriggerMaxCount;
 	float VampireRecoveryRate;
 	int32 BleedingTransmissionStack;
 	float ExcessiveBleedingOffencePowerPlus;
