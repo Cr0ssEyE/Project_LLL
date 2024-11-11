@@ -35,8 +35,8 @@ FeatherManaRecoveryValue(0.0f)
 //임시
 ,MaxMana(100),
 CurrentMana(0),
-ChargeAttack1ManaCost(30),
-ChargeAttack2ManaCost(70),
+ChargeAttack1ManaCost(1),
+ChargeAttack2ManaCost(1),
 OffencePowerRate1(2),
 OffencePowerRate2(2),
 OffencePowerRate3(2),

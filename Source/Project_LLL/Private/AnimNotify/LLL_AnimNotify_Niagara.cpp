@@ -29,8 +29,8 @@ UFXSystemComponent* ULLL_AnimNotify_Niagara::SpawnEffect(USkeletalMeshComponent*
 		}
 		else
 		{
-			const FTransform SocketTransform = MeshComp->GetSocketTransform(SocketName);
-			FXSystemComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(MeshComp->GetWorld(), Template, SocketTransform.TransformPosition(LocationOffset), (SocketTransform.GetRotation() * RotationOffsetQuat).Rotator(), FVector::OneVector, true);
+			const FTransform SocketTransform = SocketName.IsValid() ? MeshComp->GetSocketTransform(SocketName) : MeshComp->GetComponentTransform();
+			FXSystemComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(MeshComp->GetWorld(), Template, SocketTransform.TransformPosition(LocationOffset), SocketTransform.GetRotation().Rotator() + RotationOffsetQuat.Rotator(), FVector::OneVector, true);
 			if (ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(MeshComp->GetOwner()))
 			{
 				NiagaraInterface->AddNiagaraComponent(CastChecked<UNiagaraComponent>(FXSystemComponent));
