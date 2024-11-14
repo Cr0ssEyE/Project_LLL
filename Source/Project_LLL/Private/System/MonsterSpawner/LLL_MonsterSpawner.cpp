@@ -115,7 +115,7 @@ void ALLL_MonsterSpawner::SpawnMonster()
 			}
 
 			FTimerHandle MonsterSpawnTimerHandle;
-			GetWorldTimerManager().SetTimer(MonsterSpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, MonsterSpawnData, SpawnPoint, SpawnPointNum]
+			GetWorldTimerManager().SetTimer(MonsterSpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]
 			{
 				ALLL_MonsterBase* Monster = GetWorld()->SpawnActorDeferred<ALLL_MonsterBase>(MonsterSpawnData.MonsterClass, SpawnPoint->GetComponentTransform());
 				if (!IsValid(Monster))
