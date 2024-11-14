@@ -236,9 +236,13 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 				Location = MonsterResult.Location;
 				Distance = MonsterDistance / Distance;
 			}
+			else
+			{
+				Distance = 1.0f;
+			}
 
 			const float Duration = PlayerAttributeSet->GetMaxChargeAttackDuration() * Distance;
-		
+
 			UAbilityTask_MoveToLocation* MoveTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Move"), Location, Duration, nullptr, nullptr);
 			MoveTask->ReadyForActivation();
 		}

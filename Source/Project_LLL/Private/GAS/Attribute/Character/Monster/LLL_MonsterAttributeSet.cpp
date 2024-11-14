@@ -6,10 +6,12 @@
 #include "GameplayEffectExtension.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Boss/Base/LLL_BossMonster.h"
 #include "Entity/Character/Monster/DPSTester/LLL_DPSTester.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
 #include "Game/LLL_DebugGameInstance.h"
+#include "Game/LLL_FallOutSubsytem.h"
 #include "GAS/Attribute/Character/Player/LLL_AbnormalStatusAttributeSet.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
@@ -75,11 +77,30 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 					Damaged = true;
 				}
 			}
-		}
 
-		if (Data.EffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_STUN_HARD) && Damaged)
-		{
-			Monster->Stun();
+			if (Data.EffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_STUN_HARD) && Damaged)
+			{
+				if (Cast<ALLL_BossMonster>(Monster))
+				{
+					Monster->Stun();
+				}
+				else
+				{
+					FVector HitNormal = (Monster->GetActorLocation() - Attacker->GetActorLocation()).GetSafeNormal2D();
+					if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Attacker))
+					{
+						if (!Player->CheckAttackIsRange())
+						{
+							HitNormal = Player->GetKnockBackDirection();
+							GetWorld()->GetGameInstance()->GetSubsystem<ULLL_FallOutSubsystem>()->FallOutBegin(Monster, HitNormal, Monster->GetActorLocation());
+						}
+					}
+					else
+					{
+						GetWorld()->GetGameInstance()->GetSubsystem<ULLL_FallOutSubsystem>()->FallOutBegin(Monster, HitNormal, Monster->GetActorLocation());
+					}
+				}
+			}
 		}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
