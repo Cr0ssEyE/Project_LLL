@@ -227,6 +227,8 @@ private:
 	uint8 bAttackIsRange : 1;
 	uint8 bChargeTriggered : 1;
 	FVector KnockBackDirection;
+	float SphereHeight;
+	uint8 bChargeCanceled : 1;
 
 	// 이누리아 관련 변수
 private:

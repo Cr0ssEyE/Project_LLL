@@ -531,6 +531,11 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 		{
 			MonsterAIController->StopLogic("Monster Is Fallable");
 		}
+
+		FTimerHandle DeadHandle;
+		GetWorldTimerManager().SetTimer(DeadHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+			Dead();
+		}), 1.0f, false);
 		return;
 	}
 
