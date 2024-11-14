@@ -81,8 +81,18 @@ void ULLL_MGA_Explode::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		DebugColor =  FColor::Green;
 	}
 
-	DrawDebugSphere(GetWorld(), BombSkull->GetActorLocation(), ExplodeRadius, 16, DebugColor, false, 2.0f);
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (DebugGameInstance->CheckMonsterAttackDebug())
+		{
+			DrawDebugSphere(GetWorld(), BombSkull->GetActorLocation(), ExplodeRadius, 16, DebugColor, false, 2.0f);
+		}
+	}
+#endif
 	
-	GetAvatarActorFromActorInfo()->Destroy();
+	BombSkull->GetMesh()->SetHiddenInGame(true);
+	BombSkull->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BombSkull->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
