@@ -29,6 +29,9 @@ protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 public:
+	FORCEINLINE virtual void SetDashing(const bool IsDashing) override { bIsDashing = IsDashing; }
+	FORCEINLINE virtual bool IsDashing() const override { return bIsDashing; }
+	
 	virtual float GetMaxDashDistance() const override;
 	virtual float GetMinDashDistance() const override;
 	virtual float GetDashSpeed() const override;

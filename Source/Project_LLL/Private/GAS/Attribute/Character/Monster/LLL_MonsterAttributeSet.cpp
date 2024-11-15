@@ -70,6 +70,7 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 				if (GetCurrentHealth() == 0)
 				{
 					Monster->Dead();
+					Damaged = true;
 				}
 				else
 				{
