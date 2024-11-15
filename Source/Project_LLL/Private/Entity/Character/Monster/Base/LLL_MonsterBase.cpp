@@ -534,6 +534,7 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 
 		FTimerHandle DeadHandle;
 		GetWorldTimerManager().SetTimer(DeadHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
+			Dead();
 			Destroy();
 		}), 1.0f, false);
 		return;

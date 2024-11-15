@@ -25,8 +25,7 @@ ALLL_RewardObject::ALLL_RewardObject()
 {
 	RewardObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_RewardObjectDataAsset>(PATH_REWARD_OBJECT_TEST_DATA, EAssertionLevel::Check);
 
-	RewardTextureMesh = RewardObjectDataAsset->RewardTextureMesh;
-	BaseMesh->SetStaticMesh(RewardTextureMesh);
+	BaseMesh->SetStaticMesh(RewardObjectDataAsset->RewardTextureMesh);
 	BaseMesh->SetMaterial(0, RewardObjectDataAsset->TextureMaterialInst);
 	BaseMesh->SetCollisionProfileName(CP_OVERLAP_ALL);
 
@@ -81,22 +80,22 @@ void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data, const uint3
 	{
 			// 능력
 		case 1:
-			TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->AbilityTexture);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->AbilityTexture);
 			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(MAT_PARAM_COLOR, FLinearColor::Green);
 		break;
 			// 재화
 		case 2:
-			TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->GoldTexture);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->GoldTexture);
 			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(MAT_PARAM_COLOR, FLinearColor::Yellow);
 		break;
 			// 최대 체력
 		case 3:
-			TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->MaxHPTexture);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->MaxHPTexture);
 			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(MAT_PARAM_COLOR, FLinearColor::Red);
 		break;
 			// 능력 강화
 		case 4:
-			TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->EnhanceTexture);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->EnhanceTexture);
 			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(MAT_PARAM_COLOR, FLinearColor::Blue);
 			break;
 	default:
