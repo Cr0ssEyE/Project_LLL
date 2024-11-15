@@ -77,7 +77,7 @@ void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data, const uint3
 	RewardData = Data;
 	RewardIndex = Index;
 	
-	switch (RewardData->ID)
+	/*switch (RewardData->ID)
 	{
 			// 능력
 		case 1:
@@ -101,7 +101,7 @@ void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data, const uint3
 			break;
 	default:
 		checkNoEntry();
-	}
+	}*/
 }
 
 void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
