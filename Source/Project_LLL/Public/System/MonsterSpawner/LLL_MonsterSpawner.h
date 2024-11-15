@@ -40,6 +40,7 @@ public:
 	
 private:
 	bool CheckNextWaveCanSpawnByOwnerMonsterHealth() const;
+	ALLL_MonsterBase* SpawnedMonster(const TSubclassOf<ALLL_MonsterBase>& MonsterClass, bool IsElite, const FTransform& Transform) const;
 	
 	UFUNCTION()
 	void MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter);
