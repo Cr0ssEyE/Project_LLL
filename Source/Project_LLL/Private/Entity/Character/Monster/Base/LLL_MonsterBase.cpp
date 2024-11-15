@@ -850,7 +850,7 @@ void ALLL_MonsterBase::UpdateStackVFX(uint8 NewCount, uint8 MaxCount)
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("표식 값 갱신: %d"), NewCount));
+	UE_LOG(LogTemp, Log, TEXT("표식 값 갱신: %d"), NewCount);
 
 	StackVFXComponent->SetFloatParameter(NS_MARK_COUNT, FMath::Max(NewCount - 1.f, 0.f));
 	

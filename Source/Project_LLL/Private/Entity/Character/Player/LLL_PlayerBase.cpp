@@ -527,11 +527,11 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 {
 	if (!bCanSkill)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 쿨타임이 끝나지 않음")));
+		UE_LOG(LogTemp, Log, TEXT("스킬 쿨타임이 끝나지 않음"));
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 사용")));
+	UE_LOG(LogTemp, Log, TEXT("스킬 사용"));
 	const int32 InputID = static_cast<int32>(InputName);
 	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
@@ -547,7 +547,7 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 			bCanSkill = false;
 			GetWorldTimerManager().SetTimer(SkillCoolTimeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 				bCanSkill = true;
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 쿨타임 완료")));
+				UE_LOG(LogTemp, Log, TEXT("스킬 쿨타임 완료"));
 			}), SkillCoolTime, false);
 		}
 	}
@@ -651,15 +651,15 @@ EAnimalType ALLL_PlayerBase::GetSkillEnuriaAnimalType() const
 void ALLL_PlayerBase::StartChargeFeather(float Timer)
 {
 	ChargedFeatherCount = 0;
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
+	UE_LOG(LogTemp, Log, TEXT("충전 깃털 수 : %d"), ChargedFeatherCount);
 	GetWorldTimerManager().ClearTimer(ChargeFeatherTimerHandle);
 	GetWorldTimerManager().SetTimer(ChargeFeatherTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		ChargedFeatherCount++;
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
+		UE_LOG(LogTemp, Log, TEXT("충전 깃털 수 : %d"), ChargedFeatherCount);
 		if (ChargedFeatherCount == 10)
 		{
 			GetWorldTimerManager().PauseTimer(ChargeFeatherTimerHandle);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 완료")));
+			UE_LOG(LogTemp, Log, TEXT("깃털 충전 완료"));
 		}
 	}), Timer, true);
 }
