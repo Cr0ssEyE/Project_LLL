@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Components/WidgetComponent.h"
@@ -24,18 +25,10 @@ ALLL_RewardObject::ALLL_RewardObject()
 {
 	RewardObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_RewardObjectDataAsset>(PATH_REWARD_OBJECT_TEST_DATA, EAssertionLevel::Check);
 
-	RewardMesh = RewardObjectDataAsset->StaticMesh;
-	BaseMesh->SetStaticMesh(RewardMesh);
-	BaseMesh->SetMaterial(0, RewardObjectDataAsset->MainMaterialInst);
-	BaseMesh->SetCollisionProfileName(CP_OVERLAP_ALL);
-
-	TextureMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TextureMashComponent"));
-	TextureMeshComponent->SetupAttachment(RootComponent);
-	TextureMeshComponent->SetRelativeLocation(FVector(0, 0, RewardObjectDataAsset->TextureHeight));
-	TextureMeshComponent->SetMaterial(0, RewardObjectDataAsset->TextureMaterialInst);
-
 	RewardTextureMesh = RewardObjectDataAsset->RewardTextureMesh;
-	TextureMeshComponent->SetStaticMesh(RewardTextureMesh);
+	BaseMesh->SetStaticMesh(RewardTextureMesh);
+	BaseMesh->SetMaterial(0, RewardObjectDataAsset->TextureMaterialInst);
+	BaseMesh->SetCollisionProfileName(CP_OVERLAP_ALL);
 
 	PriceWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("PriceWidgetComponent");
 	PriceWidgetComponent->SetupAttachment(RootComponent);
@@ -61,6 +54,13 @@ void ALLL_RewardObject::BeginPlay()
 
 	PriceWidget->SetVisibility(ESlateVisibility::Hidden);
 	PriceWidget->SetIsEnabled(false);
+
+	SetActorScale3D(FVector(2.0f,2.0f,2.0f));
+
+	if (IsValid(RewardObjectDataAsset->Particle))
+	{
+		AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,RewardObjectDataAsset->Particle, GetActorLocation() + RewardObjectDataAsset->ParticleLocation, GetActorRotation(), RewardObjectDataAsset->ParticleScale, false, false));
+	}
 }
 
 void ALLL_RewardObject::ApplyProductEvent()
@@ -134,15 +134,15 @@ void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 		RewardData = RewardDataArray[Index];
 	}
 
-	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
-	switch (RewardData->ID)
+	//ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
+	/*switch (RewardData->ID)
 	{
 		// 능력
 	case 1:
 		InteractionDelegate.Broadcast(this);
 		/*SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 		SelectRewardWidget->SetIsEnabled(true);
-		SelectRewardWidget->FocusToUI();*/
+		SelectRewardWidget->FocusToUI();#1#
 		break;
 		// 재화
 	case 2:
@@ -170,7 +170,5 @@ void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 #endif
 		break;
 	default:;
-	}
-
-	Destroy();
+	}*/
 }

@@ -77,7 +77,7 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	SpringArm->bInheritYaw = false;
 	SpringArm->bInheritRoll = false;
 	SpringArm->SetUsingAbsoluteRotation(true);
-	// SpringArm->SetupAttachment(RootComponent);
+	//SpringArm->SetupAttachment(RootComponent);
 
 	LastCheckedMouseLocation = FVector::Zero();
 	bIsLowHP = false;
@@ -462,6 +462,11 @@ void ALLL_PlayerBase::ChargeAttackAction(const FInputActionValue& Value, EAbilit
 		return;
 	}
 
+	if (bChargeCanceled)
+	{
+		return;
+	}
+
 	bChargeTriggered = true;
 	bAttackIsRange = Range;
 
@@ -486,6 +491,12 @@ void ALLL_PlayerBase::ChargeAttackActionCompleted(const FInputActionValue& Value
 {
 	if (bAttackIsRange != Range)
 	{
+		return;
+	}
+
+	if (bChargeCanceled)
+	{
+		bChargeCanceled = false;
 		return;
 	}
 	
@@ -729,7 +740,16 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	}
 	else
 	{
-		SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
+		float Z = 0.0f;
+		if (bChargeTriggered && bAttackIsRange)
+		{
+			Z = GetMesh()->GetSocketLocation(TEXT("Sphere")).Z - SphereHeight;
+		}
+		else
+		{
+			SphereHeight = GetMesh()->GetSocketLocation(TEXT("Sphere")).Z;
+		}
+		SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, Z) + GetActorLocation());
 	}
 	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::MoveCameraToMouseCursor);
@@ -759,6 +779,8 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 	{
 		LastAttackerMonsterId = Monster->GetId();
 	}
+
+	bChargeCanceled = true;
 }
 
 void ALLL_PlayerBase::Dead()

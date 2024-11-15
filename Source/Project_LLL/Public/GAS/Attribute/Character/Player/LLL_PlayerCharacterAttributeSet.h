@@ -13,8 +13,8 @@ struct FPlayerCharacterStatusData
 
 public:
 	FPlayerCharacterStatusData():
-	MaxHealth(0),
-	CurrentHealth(0),
+	MaxHealth(10000),
+	CurrentHealth(10000),
 	OffencePower(0),
 	MoveSpeed(0),
 	AttackSpeed(0),
