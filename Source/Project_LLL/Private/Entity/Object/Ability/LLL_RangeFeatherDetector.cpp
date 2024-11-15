@@ -33,7 +33,7 @@ void ALLL_RangeFeatherDetector::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	// 이펙트가 나오기 전까지 디버그 유지
-	DrawDebugSphere(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius(), 16, FColor::Green, false, AbilityObjectAttributeSet->GetDestroyTimer());
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius(), 16, FColor::Green, false, AbilityObjectAttributeSet->GetDestroyTimer());
 }
 
 void ALLL_RangeFeatherDetector::NotifyActorBeginOverlap(AActor* OtherActor)
