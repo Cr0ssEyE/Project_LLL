@@ -16,4 +16,7 @@ class PROJECT_LLL_API ULLL_AnimNotify_Niagara : public UAnimNotify_PlayNiagaraEf
 
 protected:
 	virtual UFXSystemComponent* SpawnEffect(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+
+	UPROPERTY(EditAnywhere, DisplayName = "이펙트 제거")
+	uint8 bRemoveEffect : 1;
 };

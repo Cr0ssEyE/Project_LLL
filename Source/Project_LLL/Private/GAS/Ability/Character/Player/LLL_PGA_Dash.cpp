@@ -170,8 +170,17 @@ void ULLL_PGA_Dash::DashActionEvent()
 		WaitTagTask->ReadyForActivation();
 		
 		// 애님 몽타주 처음부터 다시 실행하거나 특정 시간부터 실행 시키도록 하는게 상당히 귀찮아서 땜빵 처리
+
 		Player->StopAnimMontage(DashAnimMontage);
-		Player->PlayAnimMontage(DashAnimMontage);
+		Player->StopAnimMontage(DoubleDashAnimMontage);
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DOUBLE_DASH))
+		{
+			Player->PlayAnimMontage(DashAnimMontage);
+		}
+		else
+		{
+			Player->PlayAnimMontage(DoubleDashAnimMontage);
+		}
 
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance());
 		PlayerAnimInstance->SetDash(true);
