@@ -175,11 +175,11 @@ void ULLL_PGA_Dash::DashActionEvent()
 		Player->StopAnimMontage(DoubleDashAnimMontage);
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_DOUBLE_DASH))
 		{
-			Player->PlayAnimMontage(DashAnimMontage);
+			Player->PlayAnimMontage(DoubleDashAnimMontage);
 		}
 		else
 		{
-			Player->PlayAnimMontage(DoubleDashAnimMontage);
+			Player->PlayAnimMontage(DashAnimMontage);
 		}
 
 		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance());

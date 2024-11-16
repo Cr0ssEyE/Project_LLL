@@ -11,53 +11,36 @@
 UFXSystemComponent* ULLL_AnimNotify_Niagara::SpawnEffect(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
 	UFXSystemComponent* FXSystemComponent = nullptr;
-
-	if (!bRemoveEffect)
+	
+	if (Template)
 	{
-		if (Template)
+		if (Template->IsLooping())
 		{
-			if (Template->IsLooping())
-			{
-				return FXSystemComponent;
-			}
+			return FXSystemComponent;
+		}
 
-			if (Attached)
+		if (Attached)
+		{
+			FXSystemComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(Template, MeshComp, SocketName, LocationOffset, RotationOffset, EAttachLocation::KeepRelativeOffset, true);
+			if (ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(MeshComp->GetOwner()))
 			{
-				FXSystemComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(Template, MeshComp, SocketName, LocationOffset, RotationOffset, EAttachLocation::KeepRelativeOffset, true);
-				if (ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(MeshComp->GetOwner()))
-				{
-					NiagaraInterface->AddNiagaraComponent(CastChecked<UNiagaraComponent>(FXSystemComponent));
-				}
-			}
-			else
-			{
-				const FTransform SocketTransform = SocketName.IsValid() ? MeshComp->GetSocketTransform(SocketName) : MeshComp->GetComponentTransform();
-				FXSystemComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(MeshComp->GetWorld(), Template, SocketTransform.TransformPosition(LocationOffset), SocketTransform.GetRotation().Rotator() + RotationOffsetQuat.Rotator(), FVector::OneVector, true);
-				if (ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(MeshComp->GetOwner()))
-				{
-					NiagaraInterface->AddNiagaraComponent(CastChecked<UNiagaraComponent>(FXSystemComponent));
-				}
-			}
-
-			if (IsValid(FXSystemComponent))
-			{
-				FXSystemComponent->SetUsingAbsoluteScale(bAbsoluteScale);
-				FXSystemComponent->SetRelativeScale3D_Direct(Scale);
+				NiagaraInterface->AddNiagaraComponent(CastChecked<UNiagaraComponent>(FXSystemComponent));
 			}
 		}
-	}
-	else
-	{
-		if (ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(MeshComp->GetOwner()))
+		else
 		{
-			for (UNiagaraComponent* NiagaraComponent : NiagaraInterface->GetNiagaraComponents())
+			const FTransform SocketTransform = SocketName.IsValid() ? MeshComp->GetSocketTransform(SocketName) : MeshComp->GetComponentTransform();
+			FXSystemComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(MeshComp->GetWorld(), Template, SocketTransform.TransformPosition(LocationOffset), SocketTransform.GetRotation().Rotator() + RotationOffsetQuat.Rotator(), FVector::OneVector, true);
+			if (ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(MeshComp->GetOwner()))
 			{
-				if (NiagaraComponent->GetAsset() == Template)
-				{
-					NiagaraComponent->Deactivate();
-					NiagaraInterface->GetNiagaraComponents().Remove(NiagaraComponent);
-				}
+				NiagaraInterface->AddNiagaraComponent(CastChecked<UNiagaraComponent>(FXSystemComponent));
 			}
+		}
+
+		if (IsValid(FXSystemComponent))
+		{
+			FXSystemComponent->SetUsingAbsoluteScale(bAbsoluteScale);
+			FXSystemComponent->SetRelativeScale3D_Direct(Scale);
 		}
 	}
 

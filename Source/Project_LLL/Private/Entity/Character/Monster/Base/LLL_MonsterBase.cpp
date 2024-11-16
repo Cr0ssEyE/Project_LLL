@@ -489,6 +489,7 @@ void ALLL_MonsterBase::Dead()
 		}
 		
 		TempNiagaraComponent->Deactivate();
+		TempNiagaraComponent->SetVisibility(false);
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 	BleedingVFXComponent1->SetHiddenInGame(true);
@@ -768,6 +769,7 @@ void ALLL_MonsterBase::Stun()
 		}
 		
 		TempNiagaraComponent->Deactivate();
+		TempNiagaraComponent->SetVisibility(false);
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 
@@ -874,10 +876,12 @@ void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)
 		if (BleedingStack < MaxBleedingStack)
 		{
 			BleedingVFXComponent1->ActivateSystem();
+			BleedingVFXComponent1->SetVisibility(true);
 		}
 		else
 		{
 			BleedingVFXComponent2->ActivateSystem();
+			BleedingVFXComponent2->SetVisibility(true);
 		}
 			
 	}
@@ -889,6 +893,8 @@ void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)
 		}
 		BleedingVFXComponent1->Deactivate();
 		BleedingVFXComponent2->Deactivate();
+		BleedingVFXComponent1->SetVisibility(false);
+		BleedingVFXComponent2->SetVisibility(false);
 	}
 }
 

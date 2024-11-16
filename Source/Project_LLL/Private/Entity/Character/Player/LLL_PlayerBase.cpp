@@ -12,6 +12,7 @@
 #include "LevelSequenceActor.h"
 #include "MovieSceneSequencePlaybackSettings.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_AnimRelationNames.h"
@@ -543,6 +544,7 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 		else
 		{
 			ASC->TryActivateAbility(SkillSpec->Handle);
+			bSkillTriggered = true;
 
 			bCanSkill = false;
 			GetWorldTimerManager().SetTimer(SkillCoolTimeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
@@ -615,6 +617,35 @@ void ALLL_PlayerBase::PauseCameraMoveToCursor() const
 void ALLL_PlayerBase::ReadyToUseSkill()
 {
 	bCanSkill = true;
+}
+
+void ALLL_PlayerBase::ParticleDurationActivate(UNiagaraSystem* NiagaraSystem, float Timer)
+{
+	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(NiagaraSystem, GetMesh(), TEXT("Hips"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
+	NiagaraComponents.Emplace(NiagaraComponent);
+	
+	FTimerHandle MoveFasterTimerHandle;
+	GetWorldTimerManager().SetTimer(MoveFasterTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this] {
+		NiagaraComponent->Deactivate();
+		NiagaraComponent->SetVisibility(false);
+		NiagaraComponents.Remove(NiagaraComponent);
+	}), Timer, false);
+}
+
+void ALLL_PlayerBase::ParticleDeactivate(const UNiagaraSystem* NiagaraSystem)
+{
+	for (UNiagaraComponent* NiagaraComponent : NiagaraComponents)
+	{
+		if (IsValid(NiagaraComponent) && NiagaraComponent->GetAsset()->IsValid())
+		{
+			if (NiagaraComponent->GetAsset() == NiagaraSystem)
+			{
+				NiagaraComponent->Deactivate();
+				NiagaraComponent->SetVisibility(false);
+				NiagaraComponents.Remove(NiagaraComponent);
+			}
+		}
+	}
 }
 
 int32 ALLL_PlayerBase::GetEnuriaCount(EAnimalType AnimalType) const

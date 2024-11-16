@@ -47,6 +47,9 @@ void ULLL_PGA_Skill::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 		ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 		Player->ReadyToUseSkill();
 	}
+
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	Player->SetSkillTriggered(false);
 }
 
 void ULLL_PGA_Skill::SkillCompleteCallBack(FGameplayEventData Payload)

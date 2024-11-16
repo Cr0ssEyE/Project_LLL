@@ -5,10 +5,13 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_GraphicParameterNames.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
@@ -103,13 +106,14 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	PayloadData.TargetData = TargetDataHandle;
 	PayloadData.EventMagnitude = CurrentEventData.EventMagnitude;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
-	/*if (UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent())
+	if (UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent())
 	{
 		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_MOVE_FASTER))
 		{
-			PlayerASC->ExecuteGameplayCue(TAG_GAS_CUE_MOVE_FASTER);
+			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+			Player->ParticleDurationActivate(PlayerDataAsset->MoveFasterParticle, Player->GetMoveFasterTimer());
 		}
-	}*/
+	}
 	
 	for (auto TargetActor : TargetDataHandle.Data[0]->GetActors())
 	{
