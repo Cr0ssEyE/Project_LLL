@@ -36,6 +36,8 @@ public:
 	FORCEINLINE bool IsKnockBacking() const { return bIsKnockBacking; }
 	FORCEINLINE float GetLastKnockBackPower() const { return LastKnockBackPower; }
 
+	FORCEINLINE void ReInitAttributeSet() { InitAttributeSet(); }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -97,6 +99,8 @@ protected:
 	TObjectPtr<ALLL_MonsterBase> KnockBackSender;
 	uint8 bKnockBackTargetDamaged : 1;
 	uint8 bKnockBackCauserDamaged : 1;
+
+	UPROPERTY(VisibleAnywhere)
 	uint8 bIsElite : 1;
 
 	// 이누리아 관련
