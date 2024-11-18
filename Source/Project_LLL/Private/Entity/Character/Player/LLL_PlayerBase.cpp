@@ -634,15 +634,16 @@ void ALLL_PlayerBase::ParticleDurationActivate(UNiagaraSystem* NiagaraSystem, fl
 
 void ALLL_PlayerBase::ParticleDeactivate(const UNiagaraSystem* NiagaraSystem)
 {
-	for (UNiagaraComponent* NiagaraComponent : NiagaraComponents)
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
-		if (IsValid(NiagaraComponent) && NiagaraComponent->GetAsset()->IsValid())
+		if (IsValid(TempNiagaraComponent) && TempNiagaraComponent->GetAsset()->IsValid())
 		{
-			if (NiagaraComponent->GetAsset() == NiagaraSystem)
+			if (TempNiagaraComponent->GetAsset() == NiagaraSystem)
 			{
-				NiagaraComponent->Deactivate();
-				NiagaraComponent->SetVisibility(false);
-				NiagaraComponents.Remove(NiagaraComponent);
+				TempNiagaraComponent->Deactivate();
+				TempNiagaraComponent->SetVisibility(false);
+				NiagaraComponents.Remove(TempNiagaraComponent);
 			}
 		}
 	}
