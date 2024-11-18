@@ -164,21 +164,13 @@ bool ALLL_MonsterSpawner::CheckNextWaveCanSpawnByOwnerMonsterHealth() const
 
 ALLL_MonsterBase* ALLL_MonsterSpawner::SpawnedMonster(const TSubclassOf<ALLL_MonsterBase>& MonsterClass, const bool IsElite, const FTransform& Transform) const
 {
-	//ALLL_MonsterBase* Monster = GetWorld()->SpawnActorDeferred<ALLL_MonsterBase>(MonsterClass, Transform);
-	/*if (!IsValid(Monster))
-	{
-		return nullptr;
-	}
-	Monster->SetIsElite(IsElite);
-	Monster->FinishSpawning(Transform);*/
-
-	ALLL_MonsterBase* Monster = GetWorld()->SpawnActor<ALLL_MonsterBase>(MonsterClass, Transform);
+	ALLL_MonsterBase* Monster = GetWorld()->SpawnActorDeferred<ALLL_MonsterBase>(MonsterClass, Transform);
 	if (!IsValid(Monster))
 	{
 		return nullptr;
 	}
 	Monster->SetIsElite(IsElite);
-	Monster->ReInitAttributeSet();
+	Monster->FinishSpawning(Transform);
 
 	return Monster;
 }

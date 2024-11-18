@@ -36,8 +36,6 @@ public:
 	FORCEINLINE bool IsKnockBacking() const { return bIsKnockBacking; }
 	FORCEINLINE float GetLastKnockBackPower() const { return LastKnockBackPower; }
 
-	FORCEINLINE void ReInitAttributeSet() { InitAttributeSet(); }
-
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
