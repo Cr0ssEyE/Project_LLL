@@ -775,11 +775,11 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 		float Z = 0.0f;
 		if (bChargeTriggered && bAttackIsRange)
 		{
-			Z = GetMesh()->GetSocketLocation(TEXT("Sphere")).Z - SphereHeight;
+			Z = GetMesh()->GetSocketLocation(TEXT("Hips")).Z - SphereHeight;
 		}
 		else
 		{
-			SphereHeight = GetMesh()->GetSocketLocation(TEXT("Sphere")).Z;
+			SphereHeight = GetMesh()->GetSocketLocation(TEXT("Hips")).Z;
 		}
 		SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, Z) + GetActorLocation());
 	}
