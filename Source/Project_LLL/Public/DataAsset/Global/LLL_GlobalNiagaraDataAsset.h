@@ -35,4 +35,10 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "몬스터 출혈 이펙트 2")
 	TObjectPtr<UNiagaraSystem> BleedingNiagaraSystem2;
+	
+	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "조각상 파괴 이펙트")
+	TObjectPtr<UNiagaraSystem> StatueDestroyNiagaraSystem;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "조각상 파괴 에너지 이펙트")
+	TObjectPtr<UNiagaraSystem> StatueDestroyWithEnergyNiagaraSystem;
 };
