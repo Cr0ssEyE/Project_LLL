@@ -147,7 +147,7 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		bool bIsEvasion = static_cast<bool>(GetEvasionFlag());
 		RecalculateEvasion(GetEvasionRate());
 		
-		if (Player->GetCapsuleComponent()->GetCollisionProfileName() == CP_PLAYER_EVADE || Player->CheckChargeTriggered() || Player->CheckSkillTriggered())
+		if (Player->GetCapsuleComponent()->GetCollisionProfileName() == CP_PLAYER_EVADE)
 		{
 			bIsEvasion = true;
 		}
