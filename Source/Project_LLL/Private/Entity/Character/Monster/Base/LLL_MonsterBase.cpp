@@ -121,9 +121,6 @@ void ALLL_MonsterBase::BeginPlay()
 		BleedingVFXComponent2->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
 	}
 	
-	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
-	MonsterBaseAIController->StopLogic("Before Initialize");
-	
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 	if (ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 	{
@@ -214,9 +211,6 @@ void ALLL_MonsterBase::InitAttributeSet()
 		Data += 100;
 	}
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, AttributeInitId, Data, true);
-
-	const ALLL_MonsterBaseAIController* MonsterBaseAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
-	MonsterBaseAIController->StartLogic();
 }
 
 void ALLL_MonsterBase::SetFModParameter(EFModParameter FModParameter)
@@ -489,6 +483,7 @@ void ALLL_MonsterBase::Dead()
 		}
 		
 		TempNiagaraComponent->Deactivate();
+		TempNiagaraComponent->SetVisibility(false);
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 	BleedingVFXComponent1->SetHiddenInGame(true);
@@ -768,6 +763,7 @@ void ALLL_MonsterBase::Stun()
 		}
 		
 		TempNiagaraComponent->Deactivate();
+		TempNiagaraComponent->SetVisibility(false);
 		NiagaraComponents.Remove(TempNiagaraComponent);
 	}
 
@@ -850,7 +846,7 @@ void ALLL_MonsterBase::UpdateStackVFX(uint8 NewCount, uint8 MaxCount)
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("표식 값 갱신: %d"), NewCount));
+	UE_LOG(LogTemp, Log, TEXT("표식 값 갱신: %d"), NewCount);
 
 	StackVFXComponent->SetFloatParameter(NS_MARK_COUNT, FMath::Max(NewCount - 1.f, 0.f));
 	
@@ -874,10 +870,12 @@ void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)
 		if (BleedingStack < MaxBleedingStack)
 		{
 			BleedingVFXComponent1->ActivateSystem();
+			BleedingVFXComponent1->SetVisibility(true);
 		}
 		else
 		{
 			BleedingVFXComponent2->ActivateSystem();
+			BleedingVFXComponent2->SetVisibility(true);
 		}
 			
 	}
@@ -889,6 +887,8 @@ void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)
 		}
 		BleedingVFXComponent1->Deactivate();
 		BleedingVFXComponent2->Deactivate();
+		BleedingVFXComponent1->SetVisibility(false);
+		BleedingVFXComponent2->SetVisibility(false);
 	}
 }
 

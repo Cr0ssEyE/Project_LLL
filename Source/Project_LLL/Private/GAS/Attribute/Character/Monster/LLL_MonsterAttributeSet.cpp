@@ -83,7 +83,10 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 			{
 				if (Cast<ALLL_BossMonster>(Monster))
 				{
-					Monster->Stun();
+					if (GetCurrentHealth() != 0)
+					{
+						Monster->Stun();
+					}
 				}
 				else
 				{

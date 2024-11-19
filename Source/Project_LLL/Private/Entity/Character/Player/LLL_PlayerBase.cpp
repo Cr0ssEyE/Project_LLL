@@ -12,6 +12,7 @@
 #include "LevelSequenceActor.h"
 #include "MovieSceneSequencePlaybackSettings.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_AnimRelationNames.h"
@@ -527,11 +528,11 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 {
 	if (!bCanSkill)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 쿨타임이 끝나지 않음")));
+		UE_LOG(LogTemp, Log, TEXT("스킬 쿨타임이 끝나지 않음"));
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 사용")));
+	UE_LOG(LogTemp, Log, TEXT("스킬 사용"));
 	const int32 InputID = static_cast<int32>(InputName);
 	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
@@ -543,11 +544,12 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 		else
 		{
 			ASC->TryActivateAbility(SkillSpec->Handle);
+			bSkillTriggered = true;
 
 			bCanSkill = false;
 			GetWorldTimerManager().SetTimer(SkillCoolTimeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 				bCanSkill = true;
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 쿨타임 완료")));
+				UE_LOG(LogTemp, Log, TEXT("스킬 쿨타임 완료"));
 			}), SkillCoolTime, false);
 		}
 	}
@@ -617,6 +619,36 @@ void ALLL_PlayerBase::ReadyToUseSkill()
 	bCanSkill = true;
 }
 
+void ALLL_PlayerBase::ParticleDurationActivate(UNiagaraSystem* NiagaraSystem, float Timer)
+{
+	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(NiagaraSystem, GetMesh(), TEXT("Hips"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
+	NiagaraComponents.Emplace(NiagaraComponent);
+	
+	FTimerHandle MoveFasterTimerHandle;
+	GetWorldTimerManager().SetTimer(MoveFasterTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this] {
+		NiagaraComponent->Deactivate();
+		NiagaraComponent->SetVisibility(false);
+		NiagaraComponents.Remove(NiagaraComponent);
+	}), Timer, false);
+}
+
+void ALLL_PlayerBase::ParticleDeactivate(const UNiagaraSystem* NiagaraSystem)
+{
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
+	{
+		if (IsValid(TempNiagaraComponent) && TempNiagaraComponent->GetAsset()->IsValid())
+		{
+			if (TempNiagaraComponent->GetAsset() == NiagaraSystem)
+			{
+				TempNiagaraComponent->Deactivate();
+				TempNiagaraComponent->SetVisibility(false);
+				NiagaraComponents.Remove(TempNiagaraComponent);
+			}
+		}
+	}
+}
+
 int32 ALLL_PlayerBase::GetEnuriaCount(EAnimalType AnimalType) const
 {
 	if (AnimalType == EAnimalType::None)
@@ -651,15 +683,15 @@ EAnimalType ALLL_PlayerBase::GetSkillEnuriaAnimalType() const
 void ALLL_PlayerBase::StartChargeFeather(float Timer)
 {
 	ChargedFeatherCount = 0;
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
+	UE_LOG(LogTemp, Log, TEXT("충전 깃털 수 : %d"), ChargedFeatherCount);
 	GetWorldTimerManager().ClearTimer(ChargeFeatherTimerHandle);
 	GetWorldTimerManager().SetTimer(ChargeFeatherTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		ChargedFeatherCount++;
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
+		UE_LOG(LogTemp, Log, TEXT("충전 깃털 수 : %d"), ChargedFeatherCount);
 		if (ChargedFeatherCount == 10)
 		{
 			GetWorldTimerManager().PauseTimer(ChargeFeatherTimerHandle);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 완료")));
+			UE_LOG(LogTemp, Log, TEXT("깃털 충전 완료"));
 		}
 	}), Timer, true);
 }
@@ -743,11 +775,11 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 		float Z = 0.0f;
 		if (bChargeTriggered && bAttackIsRange)
 		{
-			Z = GetMesh()->GetSocketLocation(TEXT("Sphere")).Z - SphereHeight;
+			Z = GetMesh()->GetSocketLocation(TEXT("Hips")).Z - SphereHeight;
 		}
 		else
 		{
-			SphereHeight = GetMesh()->GetSocketLocation(TEXT("Sphere")).Z;
+			SphereHeight = GetMesh()->GetSocketLocation(TEXT("Hips")).Z;
 		}
 		SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, Z) + GetActorLocation());
 	}
@@ -759,12 +791,12 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
 	Super::Damaged(Attacker, IsDOT, Damage);
 	
-	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
-	ASC->CancelAbilities(nullptr, &WithOutTags);
-	
-	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT)
+	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT && !bChargeTriggered && !bSkillTriggered)
 	{
+		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+		ASC->CancelAbilities(nullptr, &WithOutTags);
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
+		bChargeCanceled = true;
 	}
 
 	ActivatePPLowHP();
@@ -779,8 +811,6 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 	{
 		LastAttackerMonsterId = Monster->GetId();
 	}
-
-	bChargeCanceled = true;
 }
 
 void ALLL_PlayerBase::Dead()

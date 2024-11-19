@@ -41,6 +41,7 @@ void ALLL_MonsterSpawner::BeginPlay()
 		TempSpawnData.Group = LoadSpawnData->Group;
 		TempSpawnData.SpawnPoint = LoadSpawnData->SpawnPoint;
 		TempSpawnData.MonsterClass = LoadSpawnData->MonsterClass;
+		TempSpawnData.bIsElite = LoadSpawnData->bIsElite;
 		MonsterSpawnDataArray.Emplace(TempSpawnData);
 
 		RowNum++;
@@ -117,26 +118,22 @@ void ALLL_MonsterSpawner::SpawnMonster()
 			FTimerHandle MonsterSpawnTimerHandle;
 			GetWorldTimerManager().SetTimer(MonsterSpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]
 			{
-				ALLL_MonsterBase* Monster = GetWorld()->SpawnActorDeferred<ALLL_MonsterBase>(MonsterSpawnData.MonsterClass, SpawnPoint->GetComponentTransform());
-				if (!IsValid(Monster))
+				ALLL_MonsterBase* Monster = SpawnedMonster(MonsterSpawnData.MonsterClass, MonsterSpawnData.bIsElite, SpawnPoint->GetComponentTransform());
+				if (IsValid(Monster))
 				{
-					return;
-				}
-				Monster->SetIsElite(MonsterSpawnData.bIsElite);
-				Monster->FinishSpawning(SpawnPoint->GetComponentTransform());
-
-				Monster->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::MonsterDeadHandle);
-				Monsters.Emplace(Monster);
+					Monster->CharacterDeadDelegate.AddDynamic(this, &ALLL_MonsterSpawner::MonsterDeadHandle);
+					Monsters.Emplace(Monster);
 						
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-				if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
-				{
-					if (DebugGameInstance->CheckMonsterSpawnDataDebug())
+	#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+					if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 					{
-						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 스폰 (웨이브 : %d, 그룹 : %d, 스폰 포인트 : %d)"), *GetName(), CurrentWave, CurrentGroup, SpawnPointNum));
+						if (DebugGameInstance->CheckMonsterSpawnDataDebug())
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%s 스폰 (웨이브 : %d, 그룹 : %d, 스폰 포인트 : %d)"), *GetName(), CurrentWave, CurrentGroup, SpawnPointNum));
+						}
 					}
+	#endif
 				}
-#endif
 			}), MonsterSpawnerDataAsset->SpawnTimer, false);
 
 			FTimerHandle SpawnParticleTimerHandle;
@@ -163,6 +160,19 @@ bool ALLL_MonsterSpawner::CheckNextWaveCanSpawnByOwnerMonsterHealth() const
 
 	const float TriggerHealthRate = SpawnStartHealthRate - CurrentWave * HealthRateSpawnOffset;
 	return HealthRate <= TriggerHealthRate && CurrentWave < MaxWave;
+}
+
+ALLL_MonsterBase* ALLL_MonsterSpawner::SpawnedMonster(const TSubclassOf<ALLL_MonsterBase>& MonsterClass, const bool IsElite, const FTransform& Transform) const
+{
+	ALLL_MonsterBase* Monster = GetWorld()->SpawnActorDeferred<ALLL_MonsterBase>(MonsterClass, Transform);
+	if (!IsValid(Monster))
+	{
+		return nullptr;
+	}
+	Monster->SetIsElite(IsElite);
+	Monster->FinishSpawning(Transform);
+
+	return Monster;
 }
 
 void ALLL_MonsterSpawner::MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter)

@@ -97,6 +97,8 @@ protected:
 	TObjectPtr<ALLL_MonsterBase> KnockBackSender;
 	uint8 bKnockBackTargetDamaged : 1;
 	uint8 bKnockBackCauserDamaged : 1;
+
+	UPROPERTY(VisibleAnywhere)
 	uint8 bIsElite : 1;
 
 	// 이누리아 관련

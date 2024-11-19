@@ -3,6 +3,7 @@
 
 #include "Entity/Object/Thrown/LLL_ThrownFeather.h"
 
+#include "NiagaraFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
@@ -113,7 +114,7 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 			for (int i = 0; i < HitCount; i++)
 			{
 				FTimerHandle QuadrupleHitTimerHandle;
-				GetWorld()->GetTimerManager().SetTimer(QuadrupleHitTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, i, HitCount, Other, AbilitySystemInterface, Player, Direction, PlayerDataAsset, PlayerASC, PlayerAttributeSet]{
+				GetWorld()->GetTimerManager().SetTimer(QuadrupleHitTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]{
 					FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 					EffectContextHandle.AddSourceObject(this);
 					EffectContextHandle.AddInstigator(Player, this);
@@ -127,7 +128,7 @@ void ALLL_ThrownFeather::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 						
 						if (i == 0)
 						{
-							ASC->ExecuteGameplayCue(TAG_GAS_CUE_QUADRUPLE_HIT, EffectContextHandle);
+							UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), PlayerDataAsset->QuadrupleHitParticle, Other->GetActorLocation(), FRotator::ZeroRotator, FVector::OneVector, true);
 						}
 						else
 						{

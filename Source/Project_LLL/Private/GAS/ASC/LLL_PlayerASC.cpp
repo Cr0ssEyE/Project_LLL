@@ -96,6 +96,10 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 			Player->SetExcessiveBleedingPeriod(Value2);
 			Player->SetExcessiveBleedingWolfEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
 		}
+		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_MOVE_FASTER))
+		{
+			Player->SetMoveFasterTimer(Value1);
+		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_DOUBLE_DASH))
 		{
 			Player->SetDoubleDashDashRate(Value1);
@@ -104,6 +108,7 @@ FActiveGameplayEffectHandle ULLL_PlayerASC::ApplyGameplayEffectSpecToSelf(const 
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_EVASION_DASH))
 		{
 			Player->SetEvasionDashHorseEnuriaCheckCount(Effect->GetAbilityData()->RequireSynergy);
+			Player->SetEvasionDashTimer(Value1);
 		}
 		else if (Effect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGE_ATTACK))
 		{

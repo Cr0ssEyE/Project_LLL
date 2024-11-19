@@ -84,6 +84,36 @@ void ULLL_PlayerCharacterAttributeSet::InitializeSavedStatusData(const FPlayerCh
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }
 
+void ULLL_PlayerCharacterAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetEvasionRateAttribute())
+	{
+		RecalculateEvasion(NewValue);
+	}
+
+	if (Attribute == GetEvasionFlagAttribute())
+	{
+		ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
+		if (const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent())
+		{
+			if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EVASION_DASH))
+			{
+				const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+				if (NewValue)
+				{
+					Player->ParticleDurationActivate(PlayerDataAsset->EvasionDashParticle, Player->GetEvasionDashTimer());
+				}
+				else
+				{
+					Player->ParticleDeactivate(PlayerDataAsset->EvasionDashParticle);
+				}
+			}
+		}
+	}
+}
+
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
@@ -114,12 +144,9 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 		}
 #endif
 		
-		bool bIsEvasion = false;
-		if (GetEvasionRate() != 0.0f)
-		{
-			bIsEvasion = FMath::RandRange(0.0f, 1.0f) <= GetEvasionRate();
-		}
-
+		bool bIsEvasion = static_cast<bool>(GetEvasionFlag());
+		RecalculateEvasion(GetEvasionRate());
+		
 		if (Player->GetCapsuleComponent()->GetCollisionProfileName() == CP_PLAYER_EVADE)
 		{
 			bIsEvasion = true;
@@ -170,4 +197,16 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 	}
 	
 	Super::PostGameplayEffectExecute(Data);
+}
+
+void ULLL_PlayerCharacterAttributeSet::RecalculateEvasion(const float EvasionRateValue)
+{
+	if (EvasionRateValue != 0.0f)
+	{
+		SetEvasionFlag(FMath::RandRange(0.0f, 1.0f) <= EvasionRateValue);
+	}
+	else
+	{
+		SetEvasionFlag(false);
+	}
 }

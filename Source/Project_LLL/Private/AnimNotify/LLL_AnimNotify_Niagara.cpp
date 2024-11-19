@@ -11,7 +11,7 @@
 UFXSystemComponent* ULLL_AnimNotify_Niagara::SpawnEffect(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
 	UFXSystemComponent* FXSystemComponent = nullptr;
-
+	
 	if (Template)
 	{
 		if (Template->IsLooping())

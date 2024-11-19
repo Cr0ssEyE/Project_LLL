@@ -27,4 +27,13 @@ void ULLL_PlayerStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetB
 	const float MaxMana = PlayerAttributeSet->GetMaxMana();
 	const float CurrentMana = PlayerAttributeSet->GetCurrentMana();
 	ChargeGaugeBar->SetPercent(CurrentMana / MaxMana);
+
+	if(MaxMana)
+	{
+		ManaTextBlock->SetText(FText::FromString(FString::FromInt(CurrentMana).Append(TEXT(" / ")).Append(FString::FromInt(MaxMana))));
+	}
+	else
+	{
+		ManaTextBlock->SetText(FText::FromString(TEXT("!!! MAX MANA ERROR !!!")));
+	}
 }

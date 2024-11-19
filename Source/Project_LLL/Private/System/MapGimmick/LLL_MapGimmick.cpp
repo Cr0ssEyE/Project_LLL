@@ -466,7 +466,7 @@ void ALLL_MapGimmick::RewardSpawn()
 		RewardObject->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::RewardDestroyed);
 	}
 	
-	FHitResult Result;
+	/*FHitResult Result;
 	GetWorld()->SweepSingleByChannel
 	(Result,
 	Player->GetActorLocation(),
@@ -480,7 +480,7 @@ void ALLL_MapGimmick::RewardSpawn()
 	{
 		RewardTransform.SetLocation(FVector::Zero() + FVector(0.f, 0.f, 300.f));
 	}
-	RewardObject->FinishSpawning(RewardTransform);
+	RewardObject->FinishSpawning(RewardTransform);*/
 
 	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
 	if (bIsFirstLoad && GameProgressSubSystem->GetCurrentSaveGameData()->StageInfoData.RewardPosition != FVector::Zero())

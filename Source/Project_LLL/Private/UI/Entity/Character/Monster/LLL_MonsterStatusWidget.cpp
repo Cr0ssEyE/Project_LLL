@@ -30,3 +30,8 @@ void ULLL_MonsterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSet
 		ShieldGaugeBar->SetPercent(0.f);
 	}
 }
+
+void ULLL_MonsterStatusWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}

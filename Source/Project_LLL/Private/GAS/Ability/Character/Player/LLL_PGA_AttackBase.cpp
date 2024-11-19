@@ -5,10 +5,13 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AnimNotify_PlayNiagaraEffect.h"
+#include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
 #include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "AnimNotify/LLL_AnimNotify_GameplayTag.h"
+#include "AnimNotify/LLL_AnimNotify_Niagara.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_AnimRelationNames.h"
 #include "Constant/LLL_CollisionChannel.h"
@@ -123,129 +126,10 @@ void ULLL_PGA_AttackBase::InputPressed(const FGameplayAbilitySpecHandle Handle, 
 		Player->CheckMouseLocation();
 		bIsCanPlayNextAction = true;
 	}
-
-	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
 	if (Player->CheckChargeTriggered() && !bStopCharge)
 	{
-		bStopCharge = true;
-
-		ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance());
-		
-		if (!bFullCharged)
-		{
-			PlayerAnimInstance->StopAllMontages(0.3f);
-			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-			return;
-		}
-
-		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
-		const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
-		TSubclassOf<UGameplayEffect> UseManaEffect;
-		float ManaValue;
-		if (!Player->CheckAttackIsRange())
-		{
-			UseManaEffect = PlayerDataAsset->UseManaEffect1;
-			ManaValue = PlayerAttributeSet->GetChargeAttack1ManaCost();
-		}
-		else
-		{
-			UseManaEffect = PlayerDataAsset->UseManaEffect2;
-			ManaValue = PlayerAttributeSet->GetChargeAttack2ManaCost();
-		}
-
-		FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
-		EffectContextHandle.AddSourceObject(Player);
-		EffectContextHandle.AddInstigator(Player, Player);
-		const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(UseManaEffect, Player->GetAbilityLevel(), EffectContextHandle);
-		if (EffectSpecHandle.IsValid())
-		{
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_TEMP_CALLER, ManaValue * -1.0f);
-			PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-		}
-
-		const float StartTimeSeconds = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
-		
-		float AttackSpeed = PlayerAttributeSet->GetAttackSpeed();
-		AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
-
-		UAbilityTask_PlayMontageAndWait* ChargeMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ChargeAttackMontage"), ChargeAttackAnimMontage, AttackSpeed, NAME_None, true, 1, GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) + StartTimeSeconds);
-		ChargeMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
-		ChargeMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
-		ChargeMontageTask->ReadyForActivation();
-
-		if (!Player->CheckAttackIsRange())
-		{
-			FVector Location = Player->GetActorLocation();
-			float Distance = PlayerAttributeSet->GetMaxChargeAttackRange();
-			Location += Player->GetActorForwardVector() * Distance;
-
-			FHitResult StaticResult;
-			FHitResult MonsterResult;
-			const FVector SweepStartLocation = Player->GetActorLocation();
-			const FVector SweepEndLocation = Location;
-			const FQuat SweepQuat = Player->GetActorQuat();
-			constexpr ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
-			constexpr ECollisionChannel MonsterTraceChannel = ECC_ENEMY_HIT;
-
-			const UCapsuleComponent* Capsule = Player->GetCapsuleComponent();
-			const FCollisionShape TraceShape = FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius(), Capsule->GetScaledCapsuleHalfHeight() / 2.0f);
-		
-			GetWorld()->SweepSingleByChannel(
-				StaticResult,
-				SweepStartLocation,
-				SweepEndLocation,
-				SweepQuat,
-				StaticTraceChannel,
-				TraceShape);
-	
-			GetWorld()->SweepSingleByChannel(
-				MonsterResult,
-				SweepStartLocation,
-				SweepEndLocation,
-				SweepQuat,
-				MonsterTraceChannel,
-				TraceShape);
-
-			if (StaticResult.GetActor())
-			{
-				const float StaticDistance = Player->GetDistanceTo(StaticResult.GetActor());
-				if (MonsterResult.GetActor())
-				{
-					const float MonsterDistance = Player->GetDistanceTo(MonsterResult.GetActor());
-					if (StaticDistance <= MonsterDistance)
-					{
-						Location = StaticResult.Location;
-						Distance = StaticDistance / Distance;
-					}
-					else
-					{
-						Location = MonsterResult.Location;
-						Distance = MonsterDistance / Distance;
-					}
-				}
-				else
-				{
-					Location = StaticResult.Location;
-					Distance = StaticDistance / Distance;
-				}
-			}
-			else if (MonsterResult.GetActor())
-			{
-				const float MonsterDistance = Player->GetDistanceTo(MonsterResult.GetActor());
-				Location = MonsterResult.Location;
-				Distance = MonsterDistance / Distance;
-			}
-			else
-			{
-				Distance = 1.0f;
-			}
-
-			const float Duration = PlayerAttributeSet->GetMaxChargeAttackDuration() * Distance;
-
-			UAbilityTask_MoveToLocation* MoveTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Move"), Location, Duration, nullptr, nullptr);
-			MoveTask->ReadyForActivation();
-		}
+		ChargeEnd();
 	}
 }
 
@@ -379,6 +263,11 @@ void ULLL_PGA_AttackBase::ChargeAttack()
 	UAbilityTask_WaitGameplayEvent* WaitChargeTagTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TAG_GAS_FULL_CHARGE_CHECK, nullptr, true);
 	WaitChargeTagTask->EventReceived.AddDynamic(this, &ULLL_PGA_AttackBase::CheckFullCharge);
 	WaitChargeTagTask->ReadyForActivation();
+
+	FTimerHandle ChargeTimeLimitHandle;
+	GetWorld()->GetTimerManager().SetTimer(ChargeTimeLimitHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]{
+		ChargeEnd();
+	}), 3.0f, false);
 }
 
 void ULLL_PGA_AttackBase::ChargeRotate(ALLL_PlayerBase* Player)
@@ -422,4 +311,144 @@ float ULLL_PGA_AttackBase::GetFullChargeNotifyTriggerTime(bool Range) const
 	}
 
 	return 0;
+}
+
+void ULLL_PGA_AttackBase::ChargeEnd()
+{
+	bStopCharge = true;
+	
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+	ULLL_PlayerAnimInstance* PlayerAnimInstance = CastChecked<ULLL_PlayerAnimInstance>(Player->GetCharacterAnimInstance());
+
+	if (ILLL_NiagaraInterface* NiagaraInterface = Cast<ILLL_NiagaraInterface>(Player))
+	{
+		for (UNiagaraComponent* NiagaraComponent : NiagaraInterface->GetNiagaraComponents())
+		{
+			if (IsValid(NiagaraComponent) && NiagaraComponent->GetAsset()->IsValid())
+			{
+				if (NiagaraComponent->GetAsset() == ChargeParticle1 || NiagaraComponent->GetAsset() == ChargeParticle2)
+				{
+					NiagaraComponent->Deactivate();
+					NiagaraComponent->SetVisibility(false);
+					NiagaraInterface->GetNiagaraComponents().Remove(NiagaraComponent);
+				}
+			}
+		}
+	}
+		
+	if (!bFullCharged)
+	{
+		PlayerAnimInstance->StopAllMontages(0.3f);
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+		return;
+	}
+
+	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+	const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+	TSubclassOf<UGameplayEffect> UseManaEffect;
+	float ManaValue;
+	if (!Player->CheckAttackIsRange())
+	{
+		UseManaEffect = PlayerDataAsset->UseManaEffect1;
+		ManaValue = PlayerAttributeSet->GetChargeAttack1ManaCost();
+	}
+	else
+	{
+		UseManaEffect = PlayerDataAsset->UseManaEffect2;
+		ManaValue = PlayerAttributeSet->GetChargeAttack2ManaCost();
+	}
+
+	FGameplayEffectContextHandle EffectContextHandle = PlayerASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(Player);
+	EffectContextHandle.AddInstigator(Player, Player);
+	const FGameplayEffectSpecHandle EffectSpecHandle = PlayerASC->MakeOutgoingSpec(UseManaEffect, Player->GetAbilityLevel(), EffectContextHandle);
+	if (EffectSpecHandle.IsValid())
+	{
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_TEMP_CALLER, ManaValue * -1.0f);
+		PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+	}
+
+	const float StartTimeSeconds = Player->CheckAttackIsRange() ? ChargeAttackAnimMontage->GetSectionLength(0) : 0;
+		
+	float AttackSpeed = PlayerAttributeSet->GetAttackSpeed();
+	AttackSpeed *= PlayerAttributeSet->GetFasterAttackAttackSpeedRate();
+
+	UAbilityTask_PlayMontageAndWait* ChargeMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("ChargeAttackMontage"), ChargeAttackAnimMontage, AttackSpeed, NAME_None, true, 1, GetFullChargeNotifyTriggerTime(Player->CheckAttackIsRange()) + StartTimeSeconds);
+	ChargeMontageTask->OnCompleted.AddDynamic(this, &ULLL_PGA_AttackBase::OnCompleteCallBack);
+	ChargeMontageTask->OnInterrupted.AddDynamic(this, &ULLL_PGA_AttackBase::OnInterruptedCallBack);
+	ChargeMontageTask->ReadyForActivation();
+
+	if (!Player->CheckAttackIsRange())
+	{
+		FVector Location = Player->GetActorLocation();
+		float Distance = PlayerAttributeSet->GetMaxChargeAttackRange();
+		Location += Player->GetActorForwardVector() * Distance;
+
+		FHitResult StaticResult;
+		FHitResult MonsterResult;
+		const FVector SweepStartLocation = Player->GetActorLocation();
+		const FVector SweepEndLocation = Location;
+		const FQuat SweepQuat = Player->GetActorQuat();
+		constexpr ECollisionChannel StaticTraceChannel = ECC_WALL_ONLY;
+		constexpr ECollisionChannel MonsterTraceChannel = ECC_ENEMY_HIT;
+
+		const UCapsuleComponent* Capsule = Player->GetCapsuleComponent();
+		const FCollisionShape TraceShape = FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius(), Capsule->GetScaledCapsuleHalfHeight() / 2.0f);
+		
+		GetWorld()->SweepSingleByChannel(
+			StaticResult,
+			SweepStartLocation,
+			SweepEndLocation,
+			SweepQuat,
+			StaticTraceChannel,
+			TraceShape);
+	
+		GetWorld()->SweepSingleByChannel(
+			MonsterResult,
+			SweepStartLocation,
+			SweepEndLocation,
+			SweepQuat,
+			MonsterTraceChannel,
+			TraceShape);
+
+		if (StaticResult.GetActor())
+		{
+			const float StaticDistance = Player->GetDistanceTo(StaticResult.GetActor());
+			if (MonsterResult.GetActor())
+			{
+				const float MonsterDistance = Player->GetDistanceTo(MonsterResult.GetActor());
+				if (StaticDistance <= MonsterDistance)
+				{
+					Location = StaticResult.Location;
+					Distance = StaticDistance / Distance;
+				}
+				else
+				{
+					Location = MonsterResult.Location;
+					Distance = MonsterDistance / Distance;
+				}
+			}
+			else
+			{
+				Location = StaticResult.Location;
+				Distance = StaticDistance / Distance;
+			}
+		}
+		else if (MonsterResult.GetActor())
+		{
+			const float MonsterDistance = Player->GetDistanceTo(MonsterResult.GetActor());
+			Location = MonsterResult.Location;
+			Distance = MonsterDistance / Distance;
+		}
+		else
+		{
+			Distance = 1.0f;
+		}
+
+		const float Duration = PlayerAttributeSet->GetMaxChargeAttackDuration() * Distance;
+
+		UAbilityTask_MoveToLocation* MoveTask = UAbilityTask_MoveToLocation::MoveToLocation(this, FName("Move"), Location, Duration, nullptr, nullptr);
+		MoveTask->ReadyForActivation();
+	}
 }

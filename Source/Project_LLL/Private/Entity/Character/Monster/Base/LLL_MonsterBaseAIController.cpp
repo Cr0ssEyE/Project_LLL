@@ -24,7 +24,7 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	UBlackboardComponent* NewBlackboardComponent = GetBlackboardComponent();
 	if (UseBlackboard(MonsterDataAsset->BlackBoard, NewBlackboardComponent))
 	{
-		check(RunBehaviorTree(MonsterDataAsset->BehaviorTree));
+		RunBehaviorTree(MonsterDataAsset->BehaviorTree);
 		BlackboardComponent = NewBlackboardComponent;
 	}
 
@@ -41,15 +41,21 @@ void ALLL_MonsterBaseAIController::SetPlayer(ALLL_PlayerBase* Player) const
 
 void ALLL_MonsterBaseAIController::StopLogic(const FString& Reason) const
 {
-	BrainComponent->StopLogic(Reason);
+	if (IsValid(BrainComponent))
+	{
+		BrainComponent->StopLogic(Reason);
 	
-	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
-	Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
+		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+		Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
+	}
 }
 
 void ALLL_MonsterBaseAIController::StartLogic() const
 {
-	BrainComponent->StartLogic();
+	if (IsValid(BrainComponent))
+	{
+		BrainComponent->StartLogic();
+	}
 }
 
 void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)

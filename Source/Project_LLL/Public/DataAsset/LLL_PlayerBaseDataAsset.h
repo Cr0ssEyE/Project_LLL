@@ -31,6 +31,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "허리 부착 파티클")
 	TObjectPtr<UNiagaraSystem> SpineParticle;
 	
+	UPROPERTY(EditAnywhere, Category = "Niagara", DisplayName = "맹렬한 공세 이펙트")
+	TObjectPtr<UNiagaraSystem> QuadrupleHitParticle;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara", DisplayName = "우레걸음 이펙트")
+	TObjectPtr<UNiagaraSystem> MoveFasterParticle;
+	
+	UPROPERTY(EditAnywhere, Category = "Niagara", DisplayName = "우레걸음 이펙트")
+	TObjectPtr<UNiagaraSystem> EvasionDashParticle;
+	
 	// UI 관련 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "일시정지 UI")

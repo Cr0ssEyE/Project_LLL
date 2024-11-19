@@ -6,6 +6,7 @@
 #include "GAS/Ability/Character/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_AttackBase.generated.h"
 
+class UNiagaraSystem;
 class ALLL_PlayerBase;
 class UAbilityTask_WaitGameplayEvent;
 class UAbilityTask_WaitGameplayTagAdded;
@@ -38,6 +39,7 @@ protected:
 	void ChargeAttack();
 	void ChargeRotate(ALLL_PlayerBase* Player);
 	float GetFullChargeNotifyTriggerTime(bool Range) const;
+	void ChargeEnd();
 
 protected:
 	UPROPERTY()
@@ -49,6 +51,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, DisplayName = "충전 공격 애님 몽타주")
 	TObjectPtr<UAnimMontage> ChargeAttackAnimMontage;
+
+	UPROPERTY(EditAnywhere, DisplayName = "제거할 차징 이펙트 1")
+	TObjectPtr<UNiagaraSystem> ChargeParticle1;
+	
+	UPROPERTY(EditAnywhere, DisplayName = "제거할 차징 이펙트 1")
+	TObjectPtr<UNiagaraSystem> ChargeParticle2;
 
 	uint32 CurrentComboAction;
 	uint32 MaxAttackAction;

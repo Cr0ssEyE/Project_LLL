@@ -42,6 +42,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, DisplayName = "대쉬 애님 몽타주")
 	TObjectPtr<UAnimMontage> DashAnimMontage;
+	
+	UPROPERTY(EditAnywhere, DisplayName = "다중 번개 애님 몽타주")
+	TObjectPtr<UAnimMontage> DoubleDashAnimMontage;
 
 protected:
 	UPROPERTY()

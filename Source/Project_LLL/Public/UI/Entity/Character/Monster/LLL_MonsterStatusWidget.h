@@ -16,6 +16,7 @@ class PROJECT_LLL_API ULLL_MonsterStatusWidget : public ULLL_CharacterStatusWidg
 public:
 	virtual void UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet) override;
 protected:
+	virtual void NativeConstruct() override;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UProgressBar> ShieldGaugeBar;
 };
