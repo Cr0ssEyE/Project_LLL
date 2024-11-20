@@ -37,6 +37,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float StunRadius;
 	
-	//UPROPERTY(EditAnywhere)
-	//TObjectPtr<UTexture> DestroyedTexture;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UTexture> DestroyedTexture;
 };

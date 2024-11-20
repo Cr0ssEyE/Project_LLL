@@ -21,8 +21,10 @@ ALLL_BreakableObjectBase::ALLL_BreakableObjectBase()
 	
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
 	CapsuleComponent->SetCollisionProfileName(CP_MONSTER);
-	SetRootComponent(CapsuleComponent);
+	//SetRootComponent(CapsuleComponent);
+	CapsuleComponent->SetupAttachment(RootComponent);
 
+	//BaseMesh->SetupAttachment(RootComponent);
 	FModAudioComponent->SetupAttachment(RootComponent);
 
 	Crack = 0;
@@ -32,8 +34,8 @@ void ALLL_BreakableObjectBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	CapsuleComponent->SetCollisionProfileName(CP_MONSTER);
-	SetRootComponent(CapsuleComponent);
+	//CapsuleComponent->SetCollisionProfileName(CP_MONSTER);
+	//SetRootComponent(CapsuleComponent);
 }
 
 void ALLL_BreakableObjectBase::ReceivePlayerAttackOrKnockBackedMonster()
@@ -80,15 +82,18 @@ void ALLL_BreakableObjectBase::ReceivePlayerAttackOrKnockBackedMonster()
 			UE_LOG(LogTemp, Log, TEXT("%d"), CapsuleComponent->GetAttachChildren().Num())
 			const UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ChildComponent);
 			if (IsValid(StaticMeshComponent))
-			{
-				UMaterialInstanceDynamic* Material = Cast<UMaterialInstanceDynamic>(StaticMeshComponent->GetStaticMesh()->GetMaterial(0));
-				if (!IsValid(Material))
+			{*/
+				UStaticMesh* StaticMesh = BaseMesh->GetStaticMesh();
+				UMaterialInstanceDynamic* Material = UMaterialInstanceDynamic::Create(StaticMesh->GetMaterial(0), this);
+				if (IsValid(Material))
 				{
+					StaticMesh->SetMaterial(0, Material);
+					UE_LOG(LogTemp, Log, TEXT("%s"), *Material->GetName())
 					Material->SetTextureParameterValue(TEXT("Albedo"), DestroyedTexture);
 					Material->SetTextureParameterValue(TEXT("Opacity Mask"), DestroyedTexture);
 				}
-			}
-		}*/
+			//}
+		//}
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
