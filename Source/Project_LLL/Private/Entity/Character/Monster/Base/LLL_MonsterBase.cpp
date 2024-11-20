@@ -651,18 +651,18 @@ void ALLL_MonsterBase::ShowHitEffect()
 {
 	if (!IsValid(HitEffectOverlayMaterialInstance))
 	{
-		HitEffectOverlayMaterialInstance = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
-		GetMesh()->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
+		HitEffectOverlayMaterialInstance = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
+		GetMesh()->SetMaterial(0, HitEffectOverlayMaterialInstance);
 		for (auto ChildComponent : GetMesh()->GetAttachChildren())
 		{
 			if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ChildComponent))
 			{
-				StaticMeshComponent->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
+				StaticMeshComponent->SetMaterial(0, HitEffectOverlayMaterialInstance);
 			}
 		}
 	}
 
-	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 0.1f);
+	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 1.0f);
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
 }
 
