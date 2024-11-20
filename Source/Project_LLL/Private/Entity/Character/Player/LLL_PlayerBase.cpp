@@ -775,11 +775,11 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 		float Z = 0.0f;
 		if (bChargeTriggered && bAttackIsRange)
 		{
-			Z = GetMesh()->GetSocketLocation(TEXT("Sphere")).Z - SphereHeight;
+			Z = GetMesh()->GetSocketLocation(TEXT("Hips")).Z - SphereHeight;
 		}
 		else
 		{
-			SphereHeight = GetMesh()->GetSocketLocation(TEXT("Sphere")).Z;
+			SphereHeight = GetMesh()->GetSocketLocation(TEXT("Hips")).Z;
 		}
 		SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, Z) + GetActorLocation());
 	}
@@ -791,12 +791,12 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
 	Super::Damaged(Attacker, IsDOT, Damage);
 	
-	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
-	ASC->CancelAbilities(nullptr, &WithOutTags);
-	
-	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT)
+	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT && !bChargeTriggered && !bSkillTriggered)
 	{
+		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+		ASC->CancelAbilities(nullptr, &WithOutTags);
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
+		bChargeCanceled = true;
 	}
 
 	ActivatePPLowHP();
@@ -811,8 +811,6 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 	{
 		LastAttackerMonsterId = Monster->GetId();
 	}
-
-	bChargeCanceled = true;
 }
 
 void ALLL_PlayerBase::Dead()
