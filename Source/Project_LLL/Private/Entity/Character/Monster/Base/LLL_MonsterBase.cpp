@@ -209,6 +209,7 @@ void ALLL_MonsterBase::InitAttributeSet()
 	if (bIsElite)
 	{
 		Data += 100;
+		SetOutline();
 	}
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(ASC, AttributeInitId, Data, true);
 }
@@ -649,20 +650,20 @@ void ALLL_MonsterBase::RecognizePlayerToAroundMonster() const
 
 void ALLL_MonsterBase::ShowHitEffect()
 {
-	if (!IsValid(HitEffectOverlayMaterialInstance))
+	if (!IsValid(HitEffectMaterialInstance))
 	{
-		HitEffectOverlayMaterialInstance = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
-		GetMesh()->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
+		HitEffectMaterialInstance = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
+		GetMesh()->SetMaterial(0, HitEffectMaterialInstance);
 		for (auto ChildComponent : GetMesh()->GetAttachChildren())
 		{
 			if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ChildComponent))
 			{
-				StaticMeshComponent->SetOverlayMaterial(HitEffectOverlayMaterialInstance);
+				StaticMeshComponent->SetMaterial(0, HitEffectMaterialInstance);
 			}
 		}
 	}
 
-	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 0.1f);
+	HitEffectMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 0.9f);
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
 }
 
@@ -785,6 +786,16 @@ void ALLL_MonsterBase::ShowDamageValue(const float Damage) const
 	FloatingDamage->SetWidgetText(Damage);
 }
 
+void ALLL_MonsterBase::SetOutline()
+{
+	UMaterialInstanceDynamic* OverlayMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
+	if(IsValid(OverlayMaterial))
+	{
+		GetMesh()->SetOverlayMaterial(OverlayMaterial);
+		OverlayMaterial->SetScalarParameterValue(TEXT("Thickness"), 0.2f);
+	}
+}
+
 bool ALLL_MonsterBase::CheckBleedingTrigger()
 {
 	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
@@ -894,14 +905,14 @@ void ALLL_MonsterBase::UpdateBleedingVFX(bool ActiveState)
 
 void ALLL_MonsterBase::UpdateMonsterHitVFX()
 {
-	float CurrentOpacity = HitEffectOverlayMaterialInstance->K2_GetScalarParameterValue(MAT_PARAM_OPACITY);
+	float CurrentOpacity = HitEffectMaterialInstance->K2_GetScalarParameterValue(MAT_PARAM_OPACITY);
 	if (CurrentOpacity <= 0.f)
 	{
-		HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 0.f);
+		HitEffectMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, 0.f);
 		return;
 	}
 	
-	HitEffectOverlayMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, CurrentOpacity - 0.005f);
+	HitEffectMaterialInstance->SetScalarParameterValue(MAT_PARAM_OPACITY, CurrentOpacity - 0.005f);
 	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_MonsterBase::UpdateMonsterHitVFX);
 }

@@ -60,6 +60,7 @@ public:
 	void DamageKnockBackCauser(ALLL_PlayerBase* Player, AActor* Other);
 	void Stun();
 	void ShowDamageValue(const float Damage) const;
+	void SetOutline();
 
 	// 이누리아 관련
 public:
@@ -133,7 +134,7 @@ protected:
 	TObjectPtr<UNiagaraComponent> BleedingVFXComponent2;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UMaterialInstanceDynamic> HitEffectOverlayMaterialInstance;
+	TObjectPtr<UMaterialInstanceDynamic> HitEffectMaterialInstance;
 	
 //gold section
 public:
