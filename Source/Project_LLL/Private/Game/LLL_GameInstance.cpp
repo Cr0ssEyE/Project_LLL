@@ -39,10 +39,10 @@ void ULLL_GameInstance::Init()
 	GetWorld()->AddParameterCollectionInstance(PostProcessMPC, true);
 	
 	GetSubsystem<ULLL_MapSoundSubsystem>()->SetFModParameterDataArray(FModParameterData);
-	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]
+	/*GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]
 	{
 		GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
-	}));
+	}));*/
 
 	GetSubsystem<ULLL_RewardGimmickSubsystem>()->PlayerInitialize();
 }
