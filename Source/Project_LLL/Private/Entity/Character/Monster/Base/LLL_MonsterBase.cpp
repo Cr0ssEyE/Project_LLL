@@ -440,6 +440,12 @@ void ALLL_MonsterBase::Dead()
 {
 	Super::Dead();
 	
+	if (!Cast<ALLL_BombSkull>(this))
+	{
+		GetMesh()->SetCollisionResponseToChannel(ECC_ENEMY_HIT, ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_ENEMY_HIT, ECR_Ignore);
+	}
+	
 	CharacterAnimInstance->StopAllMontages(1.0f);
 	//GetMesh()->SetCustomDepthStencilValue(0);
 	
