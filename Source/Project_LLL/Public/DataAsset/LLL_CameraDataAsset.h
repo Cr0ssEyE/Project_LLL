@@ -36,8 +36,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리(직교 너비)", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
 	float CameraDistance;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 거리(직교 너비)", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "보스 카메라 거리(직교 너비)", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
 	float CameraDistanceWhenBossExist;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "보스 카메라 줌인아웃 속도", meta=(EditCondition = "ProjectionType == ECameraProjectionMode::Orthographic", EditConditionHides))
+	float CameraOrthoChangeSpeed;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", DisplayName = "카메라 회전값")
 	FRotator SpringArmAngle;

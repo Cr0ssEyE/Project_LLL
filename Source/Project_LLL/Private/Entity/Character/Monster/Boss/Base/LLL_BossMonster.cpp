@@ -52,18 +52,18 @@ void ALLL_BossMonster::Dead()
 	Super::Dead();
 }
 
-void ALLL_BossMonster::ChangePlayerOrthoWidth(float OrthoWidth) const
+void ALLL_BossMonster::ChangePlayerOrthoWidth(const float OrthoWidth) const
 {
 	ALLL_MonsterBaseAIController* MonsterAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(MonsterAIController->GetBlackboardComponent()->GetValueAsObject(BBKEY_PLAYER));
 
-	if (FMath::IsNearlyEqual(Player->GetCamera()->OrthoWidth, OrthoWidth, 5.f))
+	if (FMath::IsNearlyEqual(Player->GetCamera()->OrthoWidth, OrthoWidth, Player->GetCameraDataAsset()->CameraOrthoChangeSpeed))
 	{
 		Player->GetCamera()->SetOrthoWidth(OrthoWidth);
 		return;
 	}
 
-	Player->GetCamera()->SetOrthoWidth(Player->GetCamera()->OrthoWidth + (Player->GetCamera()->OrthoWidth > OrthoWidth ? -5.f : 5.f));
+	Player->GetCamera()->SetOrthoWidth(Player->GetCamera()->OrthoWidth + (Player->GetCamera()->OrthoWidth > OrthoWidth ? -Player->GetCameraDataAsset()->CameraOrthoChangeSpeed : Player->GetCameraDataAsset()->CameraOrthoChangeSpeed));
 	
 	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [=, this]{
 		ChangePlayerOrthoWidth(OrthoWidth);

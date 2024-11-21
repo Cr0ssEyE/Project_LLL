@@ -30,7 +30,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Dead() override;
 	
-	void ChangePlayerOrthoWidth(float OrthoWidth) const;
+	void ChangePlayerOrthoWidth(const float OrthoWidth) const;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BossMonsterDataAsset> BossMonsterDataAsset;
