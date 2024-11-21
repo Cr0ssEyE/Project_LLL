@@ -10,10 +10,12 @@
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GeneralConstants.h"
+#include "Constant/LLL_LevelNames.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 #include "Entity/Character/Monster/Boss/Base/LLL_BossMonsterAIController.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/Entity/Character/Monster/LLL_BossStatusWidget.h"
 
 ALLL_BossMonster::ALLL_BossMonster()
@@ -79,5 +81,5 @@ void ALLL_BossMonster::ChangePlayerOrthoWidth(const float OrthoWidth) const
 
 void ALLL_BossMonster::GotoNextLevel()
 {
-	UE_LOG(LogTemp, Log, TEXT("레벨 이동"))
+	UGameplayStatics::OpenLevel(this, LEVEL_CREDIT);
 }

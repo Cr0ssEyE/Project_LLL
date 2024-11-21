@@ -24,6 +24,7 @@ public:
 	void IncreaseMoney(const float InMoney);
 	void DecreaseMoney(const float OutMoney);
 	FORCEINLINE float GetMoney() const { return Money; }
+	FORCEINLINE void SetMoney(float data) { Money = data; }
 	void SetGoldWidgetVisibility(bool Value);
 
 protected:
