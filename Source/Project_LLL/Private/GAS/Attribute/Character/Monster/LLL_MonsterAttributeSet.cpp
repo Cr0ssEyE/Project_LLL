@@ -45,7 +45,7 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		ALLL_BaseCharacter* Attacker = CastChecked<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
 		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
 
-		bool Damaged = false;
+		bool Damaged;
 
 		SetReceiveDamage(GetReceiveDamage() * GetReceiveDamageRate());
 		SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
@@ -97,6 +97,10 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 						{
 							HitNormal = Player->GetKnockBackDirection();
 							GetWorld()->GetGameInstance()->GetSubsystem<ULLL_FallOutSubsystem>()->FallOutBegin(Monster, HitNormal, Monster->GetActorLocation());
+						}
+						else
+						{
+							Monster->Stun();
 						}
 					}
 					else

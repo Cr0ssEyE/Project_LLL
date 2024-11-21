@@ -4,6 +4,7 @@
 #include "Entity/Character/Monster/Boss/Base/LLL_BossMonsterAIController.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Entity/Character/Monster/Boss/Base/LLL_BossMonster.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
@@ -19,6 +20,8 @@ void ALLL_BossMonsterAIController::OnPossess(APawn* InPawn)
 		SetPlayer(Player);
 
 		ALLL_BossMonster* BossMonster = CastChecked<ALLL_BossMonster>(InPawn);
+		BossMonster->SetOriginPlayerOrthoWidth(Player->GetCamera()->OrthoWidth);
+		
 		TArray<EBossMonsterPattern> CurrentHavePatterns = BossMonster->GetCurrentHavePatterns();
 		if (CurrentHavePatterns.Num() > 0)
 		{
@@ -31,4 +34,11 @@ void ALLL_BossMonsterAIController::OnPossess(APawn* InPawn)
 			UE_LOG(LogTemp, Warning, TEXT("패턴이 존재하지 않습니다"))
 		}
 	}));
+
+	StopLogic(TEXT("Stay"));
+
+	FTimerHandle StartLogicTimerHandle;
+	GetWorldTimerManager().SetTimer(StartLogicTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]{
+		StartLogic();
+	}), 3.0f, false);
 }

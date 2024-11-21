@@ -9,7 +9,7 @@ ULLL_SaveGameData::ULLL_SaveGameData() :
 SaveFileName(DEFAULT_FILE_NAME),
 SaveFileIndex(DEFAULT_FILE_INDEX),
 StoryProgress(STORY_BEGIN),
-LastPlayedLevelName(LEVEL_INTRO)
+LastPlayedLevelName(LEVEL_PROLOGUE)
 {
 	
 }

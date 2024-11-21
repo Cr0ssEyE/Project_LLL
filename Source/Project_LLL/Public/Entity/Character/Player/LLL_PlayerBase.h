@@ -61,6 +61,8 @@ public:
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
 	void CharacterUnDissolveBegin();
+	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
+	FORCEINLINE const ULLL_CameraDataAsset* GetCameraDataAsset() const { return CameraDataAsset; }
 
 public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
