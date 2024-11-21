@@ -3,6 +3,7 @@
 
 #include "Entity/Character/Monster/Boss/Base/LLL_BossMonsterAIController.h"
 
+#include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Entity/Character/Monster/Boss/Base/LLL_BossMonster.h"
@@ -31,4 +32,11 @@ void ALLL_BossMonsterAIController::OnPossess(APawn* InPawn)
 			UE_LOG(LogTemp, Warning, TEXT("패턴이 존재하지 않습니다"))
 		}
 	}));
+
+	StopLogic(TEXT("Stay"));
+
+	FTimerHandle StartLogicTimerHandle;
+	GetWorldTimerManager().SetTimer(StartLogicTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]{
+		StartLogic();
+	}), 3.0f, false);
 }

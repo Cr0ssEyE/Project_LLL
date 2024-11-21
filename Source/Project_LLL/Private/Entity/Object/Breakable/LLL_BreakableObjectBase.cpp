@@ -40,7 +40,7 @@ void ALLL_BreakableObjectBase::BeginPlay()
 
 void ALLL_BreakableObjectBase::ReceivePlayerAttackOrKnockBackedMonster()
 {
-	if (Crack < 2)
+	/*if (Crack < 2)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), GlobalNiagaraDataAsset->StatueDestroyNiagaraSystem, GetActorLocation());
 		
@@ -77,23 +77,15 @@ void ALLL_BreakableObjectBase::ReceivePlayerAttackOrKnockBackedMonster()
 			}
 		}
 
-		/*for (USceneComponent* ChildComponent : CapsuleComponent->GetAttachChildren())
+		UStaticMesh* StaticMesh = BaseMesh->GetStaticMesh();
+		UMaterialInstanceDynamic* Material = UMaterialInstanceDynamic::Create(StaticMesh->GetMaterial(0), this);
+		if (IsValid(Material))
 		{
-			UE_LOG(LogTemp, Log, TEXT("%d"), CapsuleComponent->GetAttachChildren().Num())
-			const UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ChildComponent);
-			if (IsValid(StaticMeshComponent))
-			{*/
-				UStaticMesh* StaticMesh = BaseMesh->GetStaticMesh();
-				UMaterialInstanceDynamic* Material = UMaterialInstanceDynamic::Create(StaticMesh->GetMaterial(0), this);
-				if (IsValid(Material))
-				{
-					StaticMesh->SetMaterial(0, Material);
-					UE_LOG(LogTemp, Log, TEXT("%s"), *Material->GetName())
-					Material->SetTextureParameterValue(TEXT("Albedo"), DestroyedTexture);
-					Material->SetTextureParameterValue(TEXT("Opacity Mask"), DestroyedTexture);
-				}
-			//}
-		//}
+			StaticMesh->SetMaterial(0, Material);
+			UE_LOG(LogTemp, Log, TEXT("%s"), *Material->GetName())
+			Material->SetTextureParameterValue(TEXT("Albedo"), DestroyedTexture);
+			Material->SetTextureParameterValue(TEXT("Opacity Mask"), DestroyedTexture);
+		}
 		
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
@@ -111,5 +103,5 @@ void ALLL_BreakableObjectBase::ReceivePlayerAttackOrKnockBackedMonster()
 	else
 	{
 		UE_LOG(LogTemp, Log, TEXT("조각상 다 때림"))
-	}
+	}*/
 }
