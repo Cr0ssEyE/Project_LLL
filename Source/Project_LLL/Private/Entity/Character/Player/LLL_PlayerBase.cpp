@@ -185,7 +185,7 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SetMoveInputPressed, true);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::SetMoveInputPressed, false);
-	
+
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Canceled, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack, false);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->RangeAttackInputAction, ETriggerEvent::Canceled, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack, true);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::ChargeAttackAction, EAbilityInputName::Attack, false);
@@ -796,7 +796,6 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
 		ASC->CancelAbilities(nullptr, &WithOutTags);
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
-		bChargeCanceled = true;
 	}
 
 	ActivatePPLowHP();
