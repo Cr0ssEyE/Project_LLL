@@ -3,8 +3,8 @@
 
 #include "Entity/Character/Monster/Boss/Base/LLL_BossMonsterAIController.h"
 
-#include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Constant/LLL_BlackBoardKeyNames.h"
 #include "Entity/Character/Monster/Boss/Base/LLL_BossMonster.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
@@ -20,6 +20,8 @@ void ALLL_BossMonsterAIController::OnPossess(APawn* InPawn)
 		SetPlayer(Player);
 
 		ALLL_BossMonster* BossMonster = CastChecked<ALLL_BossMonster>(InPawn);
+		BossMonster->SetOriginPlayerOrthoWidth(Player->GetCamera()->OrthoWidth);
+		
 		TArray<EBossMonsterPattern> CurrentHavePatterns = BossMonster->GetCurrentHavePatterns();
 		if (CurrentHavePatterns.Num() > 0)
 		{
