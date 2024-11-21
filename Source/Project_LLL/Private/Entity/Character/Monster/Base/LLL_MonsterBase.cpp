@@ -159,7 +159,7 @@ void ALLL_MonsterBase::Tick(float DeltaSeconds)
 			IsMoving = CastChecked<ALLL_MonsterBaseAIController>(GetController())->GetPathFollowingComponent()->GetStatus() == EPathFollowingStatus::Moving;
 		}
 		
-		if ((VelocityWithKnockBack == FVector::ZeroVector || IsMoving) && bStartKnockBackVelocity && !CharacterAnimInstance->Montage_IsPlaying(MonsterBaseDataAsset->DamagedAnimMontage))
+		if ((VelocityWithKnockBack == FVector::ZeroVector || IsMoving) && bStartKnockBackVelocity && (Cast<ALLL_DPSTester>(this) || !CharacterAnimInstance->Montage_IsPlaying(MonsterBaseDataAsset->DamagedAnimMontage)))
 		{
 			CustomTimeDilation = 1.f;
 			UE_LOG(LogTemp, Log, TEXT("%s가 넉백 끝"), *GetName())
