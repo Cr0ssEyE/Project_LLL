@@ -52,6 +52,13 @@ void ALLL_BossMonster::Dead()
 	Super::Dead();
 }
 
+void ALLL_BossMonster::Destroyed()
+{
+	GotoNextLevel();
+	
+	Super::Destroyed();
+}
+
 void ALLL_BossMonster::ChangePlayerOrthoWidth(const float OrthoWidth) const
 {
 	ALLL_MonsterBaseAIController* MonsterAIController = CastChecked<ALLL_MonsterBaseAIController>(GetController());
@@ -68,4 +75,9 @@ void ALLL_BossMonster::ChangePlayerOrthoWidth(const float OrthoWidth) const
 	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [=, this]{
 		ChangePlayerOrthoWidth(OrthoWidth);
 	}));
+}
+
+void ALLL_BossMonster::GotoNextLevel()
+{
+	UE_LOG(LogTemp, Log, TEXT("레벨 이동"))
 }

@@ -29,8 +29,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Dead() override;
+	virtual void Destroyed() override;
 	
 	void ChangePlayerOrthoWidth(const float OrthoWidth) const;
+	void GotoNextLevel();
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BossMonsterDataAsset> BossMonsterDataAsset;
