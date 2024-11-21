@@ -125,16 +125,15 @@ void ULLL_TitleScreenWidget::OpenIntroLevel()
 {
 	if (bIsLoadTestLevel)
 	{
-		UGameplayStatics::OpenLevel(this, LEVEL_LOBBY);
+		UGameplayStatics::OpenLevel(this, LEVEL_PROLOGUE);
 		return;
 	}
-	UGameplayStatics::OpenLevel(this, LEVEL_LOBBY);
+	UGameplayStatics::OpenLevel(this, LEVEL_PROLOGUE);
 }
 
 void ULLL_TitleScreenWidget::OpenSavedLevel()
 {
 	const FName LastPlayedLevelName = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetLastPlayedLevelName();
-	UE_LOG(LogTemp, Log, TEXT("레벨 이동: %s"), *LastPlayedLevelName.ToString());
 	UGameplayStatics::OpenLevel(this, LastPlayedLevelName);
 }
 

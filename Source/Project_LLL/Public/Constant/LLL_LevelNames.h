@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #define LEVEL_TITLE TEXT("LV_Title")
-#define LEVEL_INTRO TEXT("LV_Intro")
+#define LEVEL_PROLOGUE TEXT("LV_Prologue")
 #define LEVEL_CREDIT TEXT("LV_Credit")
 #define LEVEL_LOBBY TEXT("LV_Lobby")
 #define LEVEL_MAIN TEXT("LV_Main")
