@@ -40,5 +40,5 @@ void ALLL_BossMonsterAIController::OnPossess(APawn* InPawn)
 	FTimerHandle StartLogicTimerHandle;
 	GetWorldTimerManager().SetTimer(StartLogicTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]{
 		StartLogic();
-	}), 3.0f, false);
+	}), 5.0f, false);
 }
