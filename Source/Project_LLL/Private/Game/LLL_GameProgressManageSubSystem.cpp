@@ -371,7 +371,7 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 
 	Player->InitAttributeSetBySave(&CurrentSaveGameData->PlayerCharacterStatusData);
 	Player->GetGoldComponent()->SetMoney(CurrentSaveGameData->PlayerPlayProgressData.CurrentGoldAmount);
-	
+	Player->GetGoldComponent()->LoadGoldData();
 	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
 	TArray<int32> PlayerAcquiredEnuriasID = CurrentSaveGameData->PlayerPlayProgressData.AcquiredEnuriasID;
 
