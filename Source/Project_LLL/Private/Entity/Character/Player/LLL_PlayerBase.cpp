@@ -883,7 +883,7 @@ void ALLL_PlayerBase::Dead()
 	{
 		CharacterDissolveActor->SetActorTransform(DissolveStartTransform);
 	}
-	
+	CharacterDissolveActor->SetActorRotation(FQuat(0, 0, 0, 0));
 	DeadSequenceActor->FinishSpawning(FTransform::Identity);
 	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
@@ -899,6 +899,7 @@ void ALLL_PlayerBase::DropDissolveActor()
 	}
 	
 	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
+	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
 }
 
@@ -924,7 +925,7 @@ void ALLL_PlayerBase::PullUpDissolveActor()
 void ALLL_PlayerBase::DeadMotionEndedHandle()
 {
 	PlayerUIManager->SetAllWidgetVisibility(true);
-	PlayerUIManager->TogglePauseWidget(bIsDead);
+	UGameplayStatics::OpenLevel(this, LEVEL_CREDIT);
 }
 
 void ALLL_PlayerBase::DeactivatePPLowHP()
