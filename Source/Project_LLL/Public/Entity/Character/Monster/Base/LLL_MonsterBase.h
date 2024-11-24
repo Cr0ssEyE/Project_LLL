@@ -60,6 +60,7 @@ public:
 	void DamageKnockBackCauser(ALLL_PlayerBase* Player, AActor* Other);
 	void Stun();
 	void ShowDamageValue(const float Damage) const;
+	void SetOutline();
 
 	// 이누리아 관련
 public:
@@ -97,6 +98,8 @@ protected:
 	TObjectPtr<ALLL_MonsterBase> KnockBackSender;
 	uint8 bKnockBackTargetDamaged : 1;
 	uint8 bKnockBackCauserDamaged : 1;
+
+	UPROPERTY(VisibleAnywhere)
 	uint8 bIsElite : 1;
 
 	// 이누리아 관련
@@ -131,7 +134,7 @@ protected:
 	TObjectPtr<UNiagaraComponent> BleedingVFXComponent2;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UMaterialInstanceDynamic> HitEffectOverlayMaterialInstance;
+	TObjectPtr<UMaterialInstanceDynamic> HitEffectMaterialInstance;
 	
 //gold section
 public:

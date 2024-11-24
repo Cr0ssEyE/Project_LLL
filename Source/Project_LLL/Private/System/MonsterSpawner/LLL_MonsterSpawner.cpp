@@ -12,6 +12,8 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AnimNotify/LLL_AnimNotify_GameplayTag.h"
+#include "Entity/Character/Monster/Melee/BombSkull/LLL_BombSkull.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "System/MonsterSpawner/LLL_MonsterSpawnPointComponent.h"
 #include "Util/LLL_ConstructorHelper.h"
@@ -41,6 +43,7 @@ void ALLL_MonsterSpawner::BeginPlay()
 		TempSpawnData.Group = LoadSpawnData->Group;
 		TempSpawnData.SpawnPoint = LoadSpawnData->SpawnPoint;
 		TempSpawnData.MonsterClass = LoadSpawnData->MonsterClass;
+		TempSpawnData.bIsElite = LoadSpawnData->bIsElite;
 		MonsterSpawnDataArray.Emplace(TempSpawnData);
 
 		RowNum++;
@@ -188,7 +191,27 @@ void ALLL_MonsterSpawner::MonsterDeadHandle(ALLL_BaseCharacter* BaseCharacter)
 		{
 			if (!bSpawnByOwnerMonsterHealth)
 			{
-				SpawnMonster();
+				if (ALLL_BombSkull* BombSkull = Cast<ALLL_BombSkull>(Monster))
+				{
+					const ULLL_BombSkullDataAsset* BombSkullDataAsset = CastChecked<ULLL_BombSkullDataAsset>(BombSkull->GetCharacterDataAsset());
+					UAnimMontage* DeadAnimMontage = BombSkullDataAsset->DeadAnimMontage;
+
+					for (const FAnimNotifyEvent& NotifyEvent : DeadAnimMontage->Notifies)
+					{
+						const ULLL_AnimNotify_GameplayTag* AnimNotify_GameplayTag = Cast<ULLL_AnimNotify_GameplayTag>(NotifyEvent.Notify);
+						if (IsValid(AnimNotify_GameplayTag))
+						{
+							FTimerHandle SpawnTimerHandle;
+							GetWorldTimerManager().SetTimer(SpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this]{
+								SpawnMonster();
+							}), NotifyEvent.GetTriggerTime(), false);
+						}
+					}
+				}
+				else
+				{
+					SpawnMonster();
+				}
 			}
 		}
 		else

@@ -21,14 +21,18 @@ public:
 
 	FORCEINLINE void SetChargeMontageKey(const EBossMonsterPattern InChargeMontageKey) { ChargeMontageKey = InChargeMontageKey; }
 	FORCEINLINE void SetCurrentHavePatterns(const TArray<EBossMonsterPattern>& InCurrentHavePatterns) { CurrentHavePatterns = InCurrentHavePatterns; }
+	FORCEINLINE void SetOriginPlayerOrthoWidth(const float InPlayerOrthoWidth) { OriginPlayerOrthoWidth = InPlayerOrthoWidth; }
 	
 	FORCEINLINE EBossMonsterPattern GetChargeMontageKey() const { return ChargeMontageKey; }
 	FORCEINLINE TArray<EBossMonsterPattern> GetCurrentHavePatterns() const { return CurrentHavePatterns; }
 
 protected:
 	virtual void BeginPlay() override;
-
 	virtual void Dead() override;
+	virtual void Destroyed() override;
+	
+	void ChangePlayerOrthoWidth(const float OrthoWidth) const;
+	void GotoNextLevel();
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<const ULLL_BossMonsterDataAsset> BossMonsterDataAsset;
@@ -38,4 +42,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TArray<EBossMonsterPattern> CurrentHavePatterns;
+
+	float OriginPlayerOrthoWidth;
 };

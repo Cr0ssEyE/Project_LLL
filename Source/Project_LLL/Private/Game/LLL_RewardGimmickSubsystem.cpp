@@ -152,6 +152,30 @@ void ULLL_RewardGimmickSubsystem::SetRewardButtons()
 		return;
 	}
 
+	if (UGameplayStatics::GetCurrentLevelName(GetWorld()) == LEVEL_STAGE1_02)
+	{
+		const int32 ID1 = 10005 + FMath::RandRange(1, 3) * 1000.0f;
+		const int32 ID2 = 20012 + FMath::RandRange(1, 3) * 1000.0f;
+		const int32 ID3 = 30017 + FMath::RandRange(1, 3) * 1000.0f;
+		
+		for (auto Data : AbilityData)
+		{
+			if (Data->ID == ID1 || Data->ID == ID2 || Data->ID == ID3)
+			{
+				ButtonAbilityDataArray.Emplace(Data);
+			}
+		}
+		
+		ButtonAbilityData1 = ButtonAbilityDataArray[0];
+		ButtonAbilityData2 = ButtonAbilityDataArray[1];
+		ButtonAbilityData3 = ButtonAbilityDataArray[2];
+		
+		RewardWidget->SetWidgetInfo(ButtonAbilityDataArray);
+		
+		ButtonAbilityDataArray.Empty();
+		return;
+	}
+
 	if (NormalizedWeightRewardArray.IsEmpty())
 	{
 		SetRewardWeight();

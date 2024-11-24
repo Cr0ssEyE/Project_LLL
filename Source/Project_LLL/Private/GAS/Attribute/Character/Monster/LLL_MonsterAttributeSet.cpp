@@ -42,80 +42,87 @@ void ULLL_MonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 			return;
 		}
 		
-		ALLL_BaseCharacter* Attacker = CastChecked<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
-		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
-
-		bool Damaged = false;
-
-		SetReceiveDamage(GetReceiveDamage() * GetReceiveDamageRate());
-		SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
-		if (Cast<ALLL_DPSTester>(Monster))
+		ALLL_BaseCharacter* Attacker = Cast<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
+		if (IsValid(Attacker))
 		{
-			Monster->Damaged(Attacker, DOT, GetReceiveDamage());
-			Damaged = true;
-		}
-		else
-		{
-			if (GetCurrentShield() > 0)
+			const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
+
+			bool Damaged;
+
+			SetReceiveDamage(GetReceiveDamage() * GetReceiveDamageRate());
+			SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
+			if (Cast<ALLL_DPSTester>(Monster))
 			{
-				SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
-		
 				Monster->Damaged(Attacker, DOT, GetReceiveDamage());
 				Damaged = true;
 			}
 			else
 			{
-				SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-
-				if (GetCurrentHealth() == 0)
+				if (GetCurrentShield() > 0)
 				{
-					Monster->Dead();
-					Damaged = true;
-				}
-				else
-				{
+					SetCurrentShield(FMath::Clamp(GetCurrentShield() - GetReceiveDamage(), 0.f, GetMaxShield()));
+		
 					Monster->Damaged(Attacker, DOT, GetReceiveDamage());
 					Damaged = true;
 				}
-			}
-
-			if (Data.EffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_STUN_HARD) && Damaged)
-			{
-				if (Cast<ALLL_BossMonster>(Monster))
-				{
-					if (GetCurrentHealth() != 0)
-					{
-						Monster->Stun();
-					}
-				}
 				else
 				{
-					FVector HitNormal = (Monster->GetActorLocation() - Attacker->GetActorLocation()).GetSafeNormal2D();
-					if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Attacker))
+					SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+
+					if (GetCurrentHealth() == 0)
 					{
-						if (!Player->CheckAttackIsRange())
+						Monster->Dead();
+						Damaged = true;
+					}
+					else
+					{
+						Monster->Damaged(Attacker, DOT, GetReceiveDamage());
+						Damaged = true;
+					}
+				}
+
+				if (Data.EffectSpec.Def->GetAssetTags().HasTag(TAG_GAS_STUN_HARD) && Damaged)
+				{
+					if (Cast<ALLL_BossMonster>(Monster))
+					{
+						if (GetCurrentHealth() != 0)
 						{
-							HitNormal = Player->GetKnockBackDirection();
-							GetWorld()->GetGameInstance()->GetSubsystem<ULLL_FallOutSubsystem>()->FallOutBegin(Monster, HitNormal, Monster->GetActorLocation());
+							Monster->Stun();
 						}
 					}
 					else
 					{
-						GetWorld()->GetGameInstance()->GetSubsystem<ULLL_FallOutSubsystem>()->FallOutBegin(Monster, HitNormal, Monster->GetActorLocation());
+						FVector HitNormal = (Monster->GetActorLocation() - Attacker->GetActorLocation()).GetSafeNormal2D();
+						if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Attacker))
+						{
+							if (!Player->CheckAttackIsRange())
+							{
+								HitNormal = Player->GetKnockBackDirection();
+								GetWorld()->GetGameInstance()->GetSubsystem<ULLL_FallOutSubsystem>()->FallOutBegin(Monster, HitNormal, Monster->GetActorLocation());
+							}
+							else
+							{
+								Monster->Stun();
+							}
+						}
+						else
+						{
+							GetWorld()->GetGameInstance()->GetSubsystem<ULLL_FallOutSubsystem>()->FallOutBegin(Monster, HitNormal, Monster->GetActorLocation());
+						}
 					}
 				}
 			}
-		}
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
-		{
-			if (ProtoGameInstance->CheckMonsterHitCheckDebug() && Cast<ALLL_MonsterBase>(GetOwningActor()) && Damaged)
+			if (const ULLL_DebugGameInstance* ProtoGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%s가 데미지 입음: %f"), *Monster->GetName(), Data.EvaluatedData.Magnitude));
+				if (ProtoGameInstance->CheckMonsterHitCheckDebug() && Cast<ALLL_MonsterBase>(GetOwningActor()) && Damaged)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%s가 데미지 입음: %f"), *Monster->GetName(), Data.EvaluatedData.Magnitude));
+				}
 			}
-		}
 #endif
+		}
 	}
 	
 	Super::PostGameplayEffectExecute(Data);

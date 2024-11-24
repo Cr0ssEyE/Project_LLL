@@ -185,7 +185,7 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SetMoveInputPressed, true);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::SetMoveInputPressed, false);
-	
+
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Canceled, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack, false);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->RangeAttackInputAction, ETriggerEvent::Canceled, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack, true);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::ChargeAttackAction, EAbilityInputName::Attack, false);
@@ -634,15 +634,16 @@ void ALLL_PlayerBase::ParticleDurationActivate(UNiagaraSystem* NiagaraSystem, fl
 
 void ALLL_PlayerBase::ParticleDeactivate(const UNiagaraSystem* NiagaraSystem)
 {
-	for (UNiagaraComponent* NiagaraComponent : NiagaraComponents)
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
 	{
-		if (IsValid(NiagaraComponent) && NiagaraComponent->GetAsset()->IsValid())
+		if (IsValid(TempNiagaraComponent) && TempNiagaraComponent->GetAsset()->IsValid())
 		{
-			if (NiagaraComponent->GetAsset() == NiagaraSystem)
+			if (TempNiagaraComponent->GetAsset() == NiagaraSystem)
 			{
-				NiagaraComponent->Deactivate();
-				NiagaraComponent->SetVisibility(false);
-				NiagaraComponents.Remove(NiagaraComponent);
+				TempNiagaraComponent->Deactivate();
+				TempNiagaraComponent->SetVisibility(false);
+				NiagaraComponents.Remove(TempNiagaraComponent);
 			}
 		}
 	}
@@ -774,11 +775,11 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 		float Z = 0.0f;
 		if (bChargeTriggered && bAttackIsRange)
 		{
-			Z = GetMesh()->GetSocketLocation(TEXT("Sphere")).Z - SphereHeight;
+			Z = GetMesh()->GetSocketLocation(TEXT("Hips")).Z - SphereHeight;
 		}
 		else
 		{
-			SphereHeight = GetMesh()->GetSocketLocation(TEXT("Sphere")).Z;
+			SphereHeight = GetMesh()->GetSocketLocation(TEXT("Hips")).Z;
 		}
 		SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, Z) + GetActorLocation());
 	}
@@ -790,11 +791,10 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
 	Super::Damaged(Attacker, IsDOT, Damage);
 	
-	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
-	ASC->CancelAbilities(nullptr, &WithOutTags);
-	
-	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT)
+	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT && !bChargeTriggered && !bSkillTriggered)
 	{
+		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+		ASC->CancelAbilities(nullptr, &WithOutTags);
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
 	}
 
@@ -810,8 +810,6 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 	{
 		LastAttackerMonsterId = Monster->GetId();
 	}
-
-	bChargeCanceled = true;
 }
 
 void ALLL_PlayerBase::Dead()
@@ -885,7 +883,7 @@ void ALLL_PlayerBase::Dead()
 	{
 		CharacterDissolveActor->SetActorTransform(DissolveStartTransform);
 	}
-	
+	CharacterDissolveActor->SetActorRotation(FQuat(0, 0, 0, 0));
 	DeadSequenceActor->FinishSpawning(FTransform::Identity);
 	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
@@ -901,6 +899,7 @@ void ALLL_PlayerBase::DropDissolveActor()
 	}
 	
 	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
+	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
 }
 
@@ -926,7 +925,7 @@ void ALLL_PlayerBase::PullUpDissolveActor()
 void ALLL_PlayerBase::DeadMotionEndedHandle()
 {
 	PlayerUIManager->SetAllWidgetVisibility(true);
-	PlayerUIManager->TogglePauseWidget(bIsDead);
+	UGameplayStatics::OpenLevel(this, LEVEL_CREDIT);
 }
 
 void ALLL_PlayerBase::DeactivatePPLowHP()
