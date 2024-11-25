@@ -77,6 +77,11 @@ void ULLL_MapSoundSubsystem::PlayBGM()
 		BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), MapSoundSubsystemDataAsset->BGMStage1, true);
 		return;
 	}
+	if(Name == LEVEL_SHOP)
+	{
+		BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), MapSoundSubsystemDataAsset->BGMShop, true);
+		return;
+	}
 	if(Name == LEVEL_STAGE1_BOSS)
 	{
 		BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), MapSoundSubsystemDataAsset->BGMStage1Boss, true);

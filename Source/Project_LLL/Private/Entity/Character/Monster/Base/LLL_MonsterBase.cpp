@@ -83,6 +83,7 @@ void ALLL_MonsterBase::BeginPlay()
 	Super::BeginPlay();
 	
 	MonsterBaseDataAsset = Cast<ULLL_MonsterBaseDataAsset>(CharacterDataAsset);
+	GetMesh()->SetReceivesDecals(false);
 
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
