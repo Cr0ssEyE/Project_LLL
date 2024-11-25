@@ -17,7 +17,10 @@ class PROJECT_LLL_API ULLL_AnimNotify_FMod : public UFMODAnimNotifyPlay
 
 protected:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
-	
+
 	UPROPERTY(EditAnywhere, Category = "FMOD Anim Notify")
+	uint8 bStop : 1;
+	
+	UPROPERTY(EditAnywhere, Category = "FMOD Anim Notify", meta=(EditCondition = "bStop == false", EditConditionHides))
 	EFModParameter Parameter;
 };

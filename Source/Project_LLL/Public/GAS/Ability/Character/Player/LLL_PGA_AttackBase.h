@@ -6,6 +6,7 @@
 #include "GAS/Ability/Character/Player/LLL_PlayerGameplayAbilityBase.h"
 #include "LLL_PGA_AttackBase.generated.h"
 
+class UFMODEvent;
 class UNiagaraSystem;
 class ALLL_PlayerBase;
 class UAbilityTask_WaitGameplayEvent;
@@ -57,6 +58,12 @@ protected:
 	
 	UPROPERTY(EditAnywhere, DisplayName = "제거할 차징 이펙트 1")
 	TObjectPtr<UNiagaraSystem> ChargeParticle2;
+
+	UPROPERTY(EditAnywhere, DisplayName = "차징 1 FMode")
+	TObjectPtr<UFMODEvent> ChargeAttack1FModEvent;
+
+	UPROPERTY(EditAnywhere, DisplayName = "차징 2 FMod")
+	TObjectPtr<UFMODEvent> ChargeAttack2FModEvent;
 
 	uint32 CurrentComboAction;
 	uint32 MaxAttackAction;
