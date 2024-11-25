@@ -43,8 +43,6 @@ void ULLL_SettingWidget::CloseSettingWidget()
 void ULLL_SettingWidget::HideMainWidget()
 {
 	SettingWidgetSwitcher->SetVisibility(ESlateVisibility::Visible);
-	MainCanvasPanel->SetVisibility(ESlateVisibility::Hidden);
-	MainCanvasPanel->SetRenderScale(FVector2d::Zero());
 }
 
 void ULLL_SettingWidget::ShowMainWidget()

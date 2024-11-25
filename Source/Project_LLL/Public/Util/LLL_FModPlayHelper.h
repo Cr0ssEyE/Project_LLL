@@ -24,7 +24,22 @@ public:
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s : GAS 컴포넌트가 없습니다"), *SourceActor->GetName())
+			UE_LOG(LogTemp, Warning, TEXT("%s : FMod 컴포넌트가 없습니다"), *SourceActor->GetName())
+		}
+	}
+	
+	static void StopFModEvent(AActor* SourceActor, const FFModInfo& FModInfo)
+	{
+		if (ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(SourceActor))
+		{
+			UFMODAudioComponent* FModAudioComponent = FModInterface->GetFModAudioComponent();
+			FModAudioComponent->SetEvent(FModInfo.FModEvent);
+			FModAudioComponent->Stop();
+			FModAudioComponent->Release();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s : FMod 컴포넌트가 없습니다"), *SourceActor->GetName())
 		}
 	}
 };

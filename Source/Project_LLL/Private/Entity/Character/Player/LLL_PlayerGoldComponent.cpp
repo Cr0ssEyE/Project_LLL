@@ -65,6 +65,7 @@ void ULLL_PlayerGoldComponent::DecreaseMoney(const float OutMoney)
 void ULLL_PlayerGoldComponent::LoadGoldData()
 {
 	GoldWidget->UpdateGoldWidget(GetMoney());
+	BeforeMoneyData = GetMoney();
 }
 
 void ULLL_PlayerGoldComponent::SetGoldWidgetVisibility(bool Value)

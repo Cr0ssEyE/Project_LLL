@@ -70,8 +70,8 @@ void ULLL_TitleScreenWidget::NativeConstruct()
 
 void ULLL_TitleScreenWidget::NewGameStartButtonEvent()
 {
+	GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->CreateDefaultSaveSlot();
 	DisableWidgetActivation();
-	
 }
 
 void ULLL_TitleScreenWidget::LoadGameButtonEvent()
