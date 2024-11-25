@@ -26,6 +26,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "BGM", DisplayName = "1스테이지 보스")
 	TObjectPtr<UFMODEvent> BGMStage1Boss;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "BGM", DisplayName = "상점")
+	TObjectPtr<UFMODEvent> BGMShop;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "BGM", DisplayName = "사슴")
 	TObjectPtr<UFMODEvent> BGMDeer;
 

@@ -7,6 +7,7 @@
 #define LEVEL_CREDIT TEXT("LV_Credit")
 #define LEVEL_LOBBY TEXT("LV_Lobby")
 #define LEVEL_MAIN TEXT("LV_Main")
+#define LEVEL_SHOP TEXT("LV_Shop")
 
 #define LEVEL_STAGE1_01 TEXT("LV_Stage1_LD01")
 #define LEVEL_STAGE1_02 TEXT("LV_Stage1_LD02")
