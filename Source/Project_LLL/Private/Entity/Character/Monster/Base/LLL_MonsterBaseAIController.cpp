@@ -24,7 +24,7 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 	UBlackboardComponent* NewBlackboardComponent = GetBlackboardComponent();
 	if (UseBlackboard(MonsterDataAsset->BlackBoard, NewBlackboardComponent))
 	{
-		check(RunBehaviorTree(MonsterDataAsset->BehaviorTree));
+		RunBehaviorTree(MonsterDataAsset->BehaviorTree);
 		BlackboardComponent = NewBlackboardComponent;
 	}
 
@@ -36,21 +36,26 @@ void ALLL_MonsterBaseAIController::OnPossess(APawn* InPawn)
 
 void ALLL_MonsterBaseAIController::SetPlayer(ALLL_PlayerBase* Player) const
 {
-	if (IsValid(Player) && !IsValid(BlackboardComponent->GetValueAsObject(BBKEY_PLAYER)))
-	{
-		if (IsValid(Player))
-		{
-			BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
-		}
-	}
+	BlackboardComponent->SetValueAsObject(BBKEY_PLAYER, Player);
 }
 
 void ALLL_MonsterBaseAIController::StopLogic(const FString& Reason) const
 {
-	BrainComponent->StopLogic(Reason);
+	if (IsValid(BrainComponent))
+	{
+		BrainComponent->StopLogic(Reason);
 	
-	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
-	Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
+		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+		Monster->GetAbilitySystemComponent()->CancelAbilities(nullptr, &WithOutTags);
+	}
+}
+
+void ALLL_MonsterBaseAIController::StartLogic() const
+{
+	if (IsValid(BrainComponent))
+	{
+		BrainComponent->StartLogic();
+	}
 }
 
 void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
@@ -63,7 +68,7 @@ void ALLL_MonsterBaseAIController::StartDamagedHandle(UAnimMontage* Montage)
 
 void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (Montage == MonsterDataAsset->DamagedAnimMontage)
+	if (Montage == MonsterDataAsset->DamagedAnimMontage && !Monster->IsKnockBacking())
 	{
 		if (Monster->CheckCharacterIsDead())
 		{
@@ -72,7 +77,7 @@ void ALLL_MonsterBaseAIController::EndDamagedHandle(UAnimMontage* Montage, bool 
 
 		BrainComponent->StartLogic();
 
-		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetCharacter());
+		ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		SetPlayer(Player);
 	}
 }

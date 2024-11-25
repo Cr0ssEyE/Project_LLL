@@ -8,7 +8,7 @@
 #define UI_RARITY_COLOR TEXT("RarityColor")
 #define UI_ERURIA_ICON TEXT("EruriaIcon")
 
-#define PP_PLAYER_LOWHP_RADIUS TEXT("PP_PlayerLowHP_Radius")
+#define PP_PLAYER_LOW_HP_RADIUS TEXT("PP_PlayerLowHP_Radius")
 
 // 범용 파라미터 이름
 #define MAT_PARAM_TEXTURE TEXT("Texture")
@@ -17,7 +17,11 @@
 
 // 나이아가라 파라미터 이름
 #define NS_MARK_COUNT TEXT("MarkCount")
+#define NS_WAVE_RADIUS TEXT("WaveRadius")
+#define NS_LIFE_TIME TEXT("LifeTime")
 
+// 플레이어 관련
+#define PLAYER_CHARACTER_DISSOLVE TEXT("PlayerCharacterDissolve")
 
 /* 커스텀 스텐실 값
  * 툰 셰이딩이 적용 되는 대상: 2의 배수

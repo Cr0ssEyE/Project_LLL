@@ -40,11 +40,11 @@ public:
 	FORCEINLINE ULLL_BaseCharacterAnimInstance* GetCharacterAnimInstance() const { return CharacterAnimInstance; }
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 	FORCEINLINE virtual UFMODAudioComponent* GetFModAudioComponent() const override { return FModAudioComponent; }
-	FORCEINLINE virtual TArray<UNiagaraComponent*> GetNiagaraComponents() const { return NiagaraComponents; }
+	FORCEINLINE virtual TArray<UNiagaraComponent*> GetNiagaraComponents() const override { return NiagaraComponents; }
 	
 	FORCEINLINE void SetAttacking(bool IsAttacking) { bIsAttacking = IsAttacking; }
 	FORCEINLINE bool IsAttacking() const { return bIsAttacking; }
-	FORCEINLINE float GetCharacterLevel() const { return Level; }
+	FORCEINLINE float GetAbilityLevel() const { return AbilityLevel; }
 	FORCEINLINE FVector GetLastCollideLocation() const { return LastCollideLocation; }
 	
 protected:
@@ -64,7 +64,7 @@ protected:
 	
 	// 캐릭터 상태 설정
 public:
-	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false) {}
+	virtual void Damaged(AActor* Attacker = nullptr, bool IsDOT = false, float Damage = 0) {}
 	virtual void Dead();
 
 	void SetOnceParameterByTupleValue(EFModParameter FModParameter, float value) const;
@@ -97,7 +97,7 @@ protected:
 	uint8 bIsAttacking : 1;
 
 	UPROPERTY(EditAnywhere)
-	int32 Level;
+	int32 AbilityLevel;
 
 	// 이동 관련 변수
 protected:

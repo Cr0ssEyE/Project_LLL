@@ -16,13 +16,9 @@ class PROJECT_LLL_API ULLL_AbilityObjectAttributeSet : public ULLL_ObjectAttribu
 	GENERATED_BODY()
 
 public:
-	ATTRIBUTE_ACCESSORS(ULLL_AbilityObjectAttributeSet, OffensePower);
 	ATTRIBUTE_ACCESSORS(ULLL_AbilityObjectAttributeSet, DestroyTimer);
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData OffensePower;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData DestroyTimer;
 };

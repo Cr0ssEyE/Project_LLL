@@ -4,11 +4,14 @@
 #include "Entity/Character/Player/LLL_PlayerController.h"
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
+#include "Game/LLL_MapSoundSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 
-ALLL_PlayerController::ALLL_PlayerController()
+ALLL_PlayerController::ALLL_PlayerController():
+	bIsCharacterInitialized(false),
+	bIsWidgetInitialized(false)
 {
-	
 }
 
 void ALLL_PlayerController::BeginPlay()
@@ -17,6 +20,13 @@ void ALLL_PlayerController::BeginPlay()
 	
 	UGameplayStatics::SetViewportMouseCaptureMode(this, EMouseCaptureMode::CapturePermanently_IncludingInitialMouseDown);
 	SetGameInputMode();
+	FString Name = GetWorld()->GetName();
+	if (Name == LEVEL_STAGE1_02_2 || Name == LEVEL_STAGE1_04 || Name == LEVEL_STAGE1_04_2)
+	{
+		return;
+	}
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->StopBGM();
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
 }
 
 void ALLL_PlayerController::OnPossess(APawn* InPawn)
@@ -27,6 +37,7 @@ void ALLL_PlayerController::OnPossess(APawn* InPawn)
 	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->StartCameraMoveToCursor(this);
+		WaitPlayerCharacterInitialize();
 	}
 }
 
@@ -49,4 +60,20 @@ void ALLL_PlayerController::SetUIInputMode(const TSharedPtr<SWidget>& FocusWidge
 	
 	DisableInput(this);
 	SetInputMode(UIOnlyInputMode);
+}
+
+void ALLL_PlayerController::WaitPlayerCharacterInitialize()
+{
+	if (bIsCharacterInitialized && bIsWidgetInitialized)
+	{
+		PlayerInitializedDelegate.Broadcast();
+		PlayerInitializedDelegate.Clear();
+
+		if (GetWorld()->GetName() != LEVEL_PROTOTYPE)
+		{
+			GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->LoadLastSessionPlayerData();
+		}
+		return;
+	}
+	GetWorldTimerManager().SetTimerForNextTick(this ,&ALLL_PlayerController::WaitPlayerCharacterInitialize);
 }

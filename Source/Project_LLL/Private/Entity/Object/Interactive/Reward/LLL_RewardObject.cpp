@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Util/LLL_ConstructorHelper.h"
 #include "Components/WidgetComponent.h"
@@ -16,6 +17,7 @@
 #include "Game/LLL_DebugGameInstance.h"
 #include "UI/Object/LLL_ProductObjectPriceWidget.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
+#include "Game/LLL_GameProgressManageSubSystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 
@@ -23,18 +25,9 @@ ALLL_RewardObject::ALLL_RewardObject()
 {
 	RewardObjectDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_RewardObjectDataAsset>(PATH_REWARD_OBJECT_TEST_DATA, EAssertionLevel::Check);
 
-	RewardMesh = RewardObjectDataAsset->StaticMesh;
-	BaseMesh->SetStaticMesh(RewardMesh);
-	BaseMesh->SetMaterial(0, RewardObjectDataAsset->MainMaterialInst);
+	BaseMesh->SetStaticMesh(RewardObjectDataAsset->RewardTextureMesh);
+	BaseMesh->SetMaterial(0, RewardObjectDataAsset->TextureMaterialInst);
 	BaseMesh->SetCollisionProfileName(CP_OVERLAP_ALL);
-
-	TextureMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TextureMashComponent"));
-	TextureMeshComponent->SetupAttachment(RootComponent);
-	TextureMeshComponent->SetRelativeLocation(FVector(0, 0, RewardObjectDataAsset->TextureHeight));
-	TextureMeshComponent->SetMaterial(0, RewardObjectDataAsset->TextureMaterialInst);
-
-	RewardTextureMesh = RewardObjectDataAsset->RewardTextureMesh;
-	TextureMeshComponent->SetStaticMesh(RewardTextureMesh);
 
 	PriceWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("PriceWidgetComponent");
 	PriceWidgetComponent->SetupAttachment(RootComponent);
@@ -60,56 +53,70 @@ void ALLL_RewardObject::BeginPlay()
 
 	PriceWidget->SetVisibility(ESlateVisibility::Hidden);
 	PriceWidget->SetIsEnabled(false);
+
+	if (bIsProduct)
+	{
+		ApplyProductEvent();
+	}
+	SetActorScale3D(FVector(2.0f,2.0f,2.0f));
+
+	if (IsValid(RewardObjectDataAsset->Particle))
+	{
+		AddNiagaraComponent(UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld() ,RewardObjectDataAsset->Particle, GetActorLocation() + RewardObjectDataAsset->ParticleLocation, GetActorRotation(), RewardObjectDataAsset->ParticleScale, false, false));
+	}
 }
 
 void ALLL_RewardObject::ApplyProductEvent()
 {
-	bIsProduct = 1;
+	bIsProduct = true;
 
 	PriceWidget->SetVisibility(ESlateVisibility::Visible);
 	PriceWidget->SetIsEnabled(true);
 	PriceWidget->SetPrice(Price);
 }
 
-void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data)
+void ALLL_RewardObject::SetInformation(const FRewardDataTable* Data, const uint32 Index)
 {
 	RewardData = Data;
-
-	switch (RewardData->ID)
+	RewardIndex = Index;
+	
+	/*switch (RewardData->ID)
 	{
 			// 능력
 		case 1:
-			TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->AbilityTexture);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->AbilityTexture);
 			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(MAT_PARAM_COLOR, FLinearColor::Green);
 		break;
 			// 재화
 		case 2:
-			TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->GoldTexture);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->GoldTexture);
 			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(MAT_PARAM_COLOR, FLinearColor::Yellow);
 		break;
 			// 최대 체력
 		case 3:
-			TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->MaxHPTexture);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->MaxHPTexture);
 			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(MAT_PARAM_COLOR, FLinearColor::Red);
 		break;
 			// 능력 강화
 		case 4:
-			TextureMeshComponent->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->EnhanceTexture);
+			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetTextureParameterValue(MAT_PARAM_TEXTURE, RewardObjectDataAsset->EnhanceTexture);
 			BaseMesh->CreateAndSetMaterialInstanceDynamic(0)->SetVectorParameterValue(MAT_PARAM_COLOR, FLinearColor::Blue);
 			break;
 	default:
 		checkNoEntry();
-	}
+	}*/
 }
 
-void ALLL_RewardObject::InteractiveEvent()
+void ALLL_RewardObject::InteractiveEvent(AActor* InteractedActor)
 {
-	Super::InteractiveEvent();
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
+	Super::InteractiveEvent(InteractedActor);
+	
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(InteractedActor);
 	ULLL_PlayerGoldComponent* PlayerGoldComponent = Player->GetGoldComponent();
 	
 	FGameplayEffectContextHandle EffectContextHandle = Player->GetAbilitySystemComponent()->MakeEffectContext();
-	EffectContextHandle.AddSourceObject(Player);
+	EffectContextHandle.AddSourceObject(this);
+	EffectContextHandle.AddInstigator(this, this);
 	const FGameplayEffectSpecHandle EffectSpecHandle = Player->GetAbilitySystemComponent()->MakeOutgoingSpec(RewardObjectDataAsset->MaxHPEffect, 1.0, EffectContextHandle);
 	
 	if (bIsProduct && PlayerGoldComponent->GetMoney() < Price)
@@ -130,15 +137,15 @@ void ALLL_RewardObject::InteractiveEvent()
 		RewardData = RewardDataArray[Index];
 	}
 
-	ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
-	switch (RewardData->ID)
+	//ULLL_SelectRewardWidget* SelectRewardWidget = Player->GetPlayerUIManager()->GetSelectRewardWidget();
+	/*switch (RewardData->ID)
 	{
 		// 능력
 	case 1:
-		InteractionDelegate.Broadcast();
-		SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
+		InteractionDelegate.Broadcast(this);
+		/*SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 		SelectRewardWidget->SetIsEnabled(true);
-		SelectRewardWidget->FocusToUI();
+		SelectRewardWidget->FocusToUI();#1#
 		break;
 		// 재화
 	case 2:
@@ -148,7 +155,8 @@ void ALLL_RewardObject::InteractiveEvent()
 	case 3:
 		if(EffectSpecHandle.IsValid())
 		{
-			Player->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+			ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());
+			GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->PlayerPlayProgressData.AcquiredGoldAppleCount++;
 		}
 
 		break;
@@ -165,7 +173,5 @@ void ALLL_RewardObject::InteractiveEvent()
 #endif
 		break;
 	default:;
-	}
-	
-	Destroy();
+	}*/
 }

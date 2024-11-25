@@ -5,10 +5,20 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Components/CapsuleComponent.h"
+#include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_GraphicParameterNames.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Breakable/LLL_BreakableObjectBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
+#include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
 #include "GAS/Task/LLL_AT_Trace.h"
 
 ULLL_PGA_AttackHitCheck::ULLL_PGA_AttackHitCheck()
@@ -65,7 +75,7 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 				continue;
 			}
 			HitCountEffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ATTACK_HIT_COUNT, Magnitude);
-			K2_ApplyGameplayEffectSpecToOwner(HitCountEffectSpecHandle);
+			BP_ApplyGameplayEffectToOwner(HitCountEffect);
 		}
 	}
 
@@ -96,6 +106,45 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	PayloadData.TargetData = TargetDataHandle;
 	PayloadData.EventMagnitude = CurrentEventData.EventMagnitude;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
+	if (UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent())
+	{
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_MOVE_FASTER))
+		{
+			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+			Player->ParticleDurationActivate(PlayerDataAsset->MoveFasterParticle, Player->GetMoveFasterTimer());
+		}
+	}
+	
+	for (auto TargetActor : TargetDataHandle.Data[0]->GetActors())
+	{
+		// 날아온 몬스터 받아치기
+		if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(TargetActor))
+		{
+			ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(Monster->GetOwner());
+			UCharacterMovementComponent* MonsterMovement = Monster->GetCharacterMovement();
+			if (IsValid(ManOfStrength) && MonsterMovement->MovementMode == MOVE_Flying)
+			{
+				UE_LOG(LogTemp, Log, TEXT("%s가 %s에게 받아치기"), *Player->GetName(), *ManOfStrength->GetName())
+				Monster->GetMesh()->SetCollisionProfileName(CP_THREW_MONSTER_BY_PLAYER);
+				Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_THREW_MONSTER_BY_PLAYER);
+				Monster->SetOwner(Player);
+
+				const UAbilitySystemComponent* ManOfStrengthASC = ManOfStrength->GetAbilitySystemComponent();
+				const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(ManOfStrengthASC->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
+
+				const float Speed = MonsterAttributeSet->GetManOfStrengthThrowSpeed();
+				const FVector Direction = (ManOfStrength->GetActorLocation() - Monster->GetActorLocation()).GetSafeNormal();
+				MonsterMovement->Deactivate();
+				MonsterMovement->Activate();
+				MonsterMovement->Velocity = Direction * Speed * 2.0f;
+			}
+		}
+
+		if (ALLL_BreakableObjectBase* BreakableObject = Cast<ALLL_BreakableObjectBase>(TargetActor))
+		{
+			BreakableObject->ReceivePlayerAttackOrKnockBackedMonster();
+		}
+	}
 }
 
 void ULLL_PGA_AttackHitCheck::OnTraceEndCallBack(FGameplayEventData EventData)

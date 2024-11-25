@@ -25,6 +25,7 @@ protected:
 public:
 	void SetPlayer(ALLL_PlayerBase* Player) const;
 	void StopLogic(const FString& Reason) const;
+	void StartLogic() const;
 
 protected:
 	UFUNCTION()

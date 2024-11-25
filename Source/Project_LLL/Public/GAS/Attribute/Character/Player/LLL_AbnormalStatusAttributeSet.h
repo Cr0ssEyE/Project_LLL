@@ -24,45 +24,33 @@ class PROJECT_LLL_API ULLL_AbnormalStatusAttributeSet : public UAttributeSet
 public:
 	ULLL_AbnormalStatusAttributeSet();
 
-	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, MaxMarkStack);
-	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, MarkStatusDamageAmplifyPerStack);
-	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, MarkStatusDuration);
-
-	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, TargetingStatusDamageAmplifyByNormal);
-	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, TargetingStatusDamageAmplifyByBoss);
-	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, TargetingStatusDuration);
-
+	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, BleedingStatusDamage);
 	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, BleedingStatusPeriod);
 	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, BleedingStatusDuration);
-	
-	// 표식
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MaxMarkStack;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MarkStatusDamageAmplifyPerStack;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MarkStatusDuration;
-	
-	// 표적
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData TargetingStatusDamageAmplifyByNormal;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData TargetingStatusDamageAmplifyByBoss;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData TargetingStatusDuration;
+	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, MaxBleedingStatusCount);
+	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, MaxBlowStackCount);
+	ATTRIBUTE_ACCESSORS(ULLL_AbnormalStatusAttributeSet, OffensePowerPerBlowStack);
 	
 	// 출혈
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData BleedingStatusDamage;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData BleedingStatusPeriod;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData BleedingStatusDuration;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MaxBleedingStatusCount;
+
+	// 일격
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MaxBlowStackCount;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData OffensePowerPerBlowStack;
 	
 };

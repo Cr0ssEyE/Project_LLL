@@ -8,6 +8,7 @@
 #include "LLL_AbilityRewardObject.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnAbilityRewardInteractionDelegate, EAbilityCategory);
+class UNiagaraComponent;
 /**
  * 
  */
@@ -17,16 +18,18 @@ class PROJECT_LLL_API ALLL_AbilityRewardObject : public ALLL_RewardObject
 	GENERATED_BODY()
 
 public:
-	virtual void SetInformation(const FRewardDataTable* Data) override;
-	virtual void InteractiveEvent() override;
+	virtual void SetInformation(const FRewardDataTable* Data, const uint32 Index = 0) override;
+	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 
 	void SetAbilityCategory(EAbilityCategory AbilityData);
-	
+	UFUNCTION()
+	void ActiveUI(UNiagaraComponent* PSystem);
 	FOnAbilityRewardInteractionDelegate* AbilityRewardInteractionDelegate;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	EAbilityCategory AbilityCategory;
 
-	
+	UPROPERTY(EditAnywhere)
+	int32 Num;
 };

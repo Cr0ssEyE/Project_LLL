@@ -16,10 +16,16 @@ void ULLL_PGA_RewardAbilityBase::PreActivate(const FGameplayAbilitySpecHandle Ha
 		if (IsValid(Effect) && ActivateEffect.Value == EEffectApplyTarget::Self)
 		{
 			const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(Effect->GetClass(), GetAbilityLevel());
-			const float MagnitudeValue = AbilityData->AbilityValue + AbilityData->ChangeValue * (GetAbilityLevel() - 1) / static_cast<uint32>(AbilityData->AbilityValueType);
-			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, MagnitudeValue);
+			const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
+			const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
+			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
+			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
+			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_1, MagnitudeValue1 * 100.0f);
+			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_2, MagnitudeValue2 * 100.0f);
+			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_MINUS_VALUE_1, MagnitudeValue1 * -1.0f);
+			EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_MINUS_VALUE_2, MagnitudeValue2 * -1.0f);
 
- 			K2_ApplyGameplayEffectSpecToOwner(EffectHandle);
+ 			BP_ApplyGameplayEffectToOwner(ActivateEffect.Key);
 		}
 	}
 }
@@ -28,5 +34,5 @@ void ULLL_PGA_RewardAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandl
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	UE_LOG(LogTemp, Log, TEXT("보상 어빌리티 발동 : %s, 등급 : %s"), *GetName(), *StaticEnum<EAbilityRank>()->GetNameStringByValue(static_cast<int64>(AbilityData->AbilityRank)));
+	UE_LOG(LogTemp, Log, TEXT("보상 어빌리티 발동 : %s"), *GetName());
 }

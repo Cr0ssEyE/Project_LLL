@@ -3,20 +3,18 @@
 
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 
-#include "Components/WidgetComponent.h"
+#include "AbilitySystemComponent.h"
 #include "Constant/LLL_GeneralConstants.h"
 #include "DataAsset/LLL_PlayerBaseDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Character/Player/LLL_PlayerController.h"
 #include "Entity/Object/Interactive/Base/LLL_InteractiveObject.h"
 #include "GAS/Attribute/Character/Player/LLL_PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/Entity/Character/Player/LLL_InteractionWidget.h"
 #include "UI/Entity/Character/Player/LLL_InventoryWidget.h"
 #include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
-#include "UI/Entity/Character/Player/LLL_PlayerChaseActionWidget.h"
-#include "UI/Entity/Character/Player/LLL_PlayerComboWidget.h"
 #include "UI/Entity/Character/Player/LLL_PlayerStatusWidget.h"
-#include "UI/Entity/Character/Player/LLL_SkillWidget.h"
 #include "UI/System/LLL_GamePauseWidget.h"
 #include "UI/System/LLL_SelectRewardWidget.h"
 
@@ -38,9 +36,7 @@ void ULLL_PlayerUIManager::BeginPlay()
 	InventoryWidgetClass = PlayerBaseDataAsset->InventoryWidgetClass;
 	InteractionWidgetClass = PlayerBaseDataAsset->InteractionWidgetClass;
 	SelectRewardWidgetClass = PlayerBaseDataAsset->SelectRewardWidgetClass;
-	ChaseActionWidgetClass = PlayerBaseDataAsset->ChaseActionWidgetClass;
-	ComboWidgetClass = PlayerBaseDataAsset->ComboWidgetClass;
-	MainEruriaInfoWidgetClass = PlayerBaseDataAsset->MainEruriaInfoWidgetClass;
+	//MainEnuriaInfoWidgetClass = PlayerBaseDataAsset->MainEruriaInfoWidgetClass;
 
 	if(IsValid(SelectRewardWidgetClass))
 	{
@@ -56,11 +52,11 @@ void ULLL_PlayerUIManager::BeginPlay()
 		CharacterStatusWidget->AddToViewport(UI_LAYER_THIRD);
 	}
 
-	if (IsValid(MainEruriaInfoWidgetClass))
+	/*if (IsValid(MainEnuriaInfoWidgetClass))
 	{
-		MainEruriaInfoWidget = CastChecked<ULLL_MainEruriaInfoWidget>(CreateWidget(GetWorld(), MainEruriaInfoWidgetClass));
-		MainEruriaInfoWidget->AddToViewport(UI_LAYER_THIRD);
-	}
+		MainEnuriaInfoWidget = CastChecked<ULLL_MainEruriaInfoWidget>(CreateWidget(GetWorld(), MainEnuriaInfoWidgetClass));
+		MainEnuriaInfoWidget->AddToViewport(UI_LAYER_THIRD);
+	}*/
 	
 	if(IsValid(InventoryWidgetClass))
 	{
@@ -76,13 +72,6 @@ void ULLL_PlayerUIManager::BeginPlay()
 		InteractionWidget->SetIsEnabled(false);
 	}
 	
-	if(IsValid(ComboWidgetClass))
-	{
-		ComboWidget = CastChecked<ULLL_PlayerComboWidget>(CreateWidget(GetWorld(), ComboWidgetClass));
-		ComboWidget->AddToViewport(UI_LAYER_FIRST);
-		ComboWidget->SetComboText(0);
-	}
-
 	if(IsValid(GamePauseWidgetClass))
 	{
 		GamePauseWidget = CastChecked<ULLL_GamePauseWidget>(CreateWidget(GetWorld(), GamePauseWidgetClass));
@@ -91,21 +80,16 @@ void ULLL_PlayerUIManager::BeginPlay()
 		GamePauseWidget->SetIsEnabled(false);
 	}
 
-	if(IsValid(ChaseActionWidgetClass))
-	{
-		ChaseActionWidget = CastChecked<ULLL_PlayerChaseActionWidget>(CreateWidget(GetWorld(), ChaseActionWidgetClass));
-	}
-}
-
-void ULLL_PlayerUIManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwner());
-	ChaseActionWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
+	Cast<ALLL_PlayerController>(PlayerCharacter->GetController())->SetWidgetInitialized();
 }
 
 void ULLL_PlayerUIManager::TogglePauseWidget(bool IsDead) const
 {
+	if (IsValid(FocusedWidget) && !Cast<ULLL_GamePauseWidget>(FocusedWidget))
+	{
+		return;
+	}
+	
 	if(GamePauseWidget->GetIsEnabled())
 	{
 		bool IsUniquePopup = SelectRewardWidget->GetIsEnabled();
@@ -159,7 +143,15 @@ void ULLL_PlayerUIManager::DisableInteractionWidget() const
 void ULLL_PlayerUIManager::UpdateInteractionWidget(const ALLL_InteractiveObject* CurrentObject, int Num) const
 {
 	// InteractionWidget->RenderNextInteractionPanel(static_cast<bool>(Num));
-	InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
+	if (CurrentObject->CheckUseCustomDisplayText())
+	{
+		InteractionWidget->SetInfoText(CurrentObject->GetCustomDisplayText());
+	}
+	else
+	{
+		InteractionWidget->SetInfoText(TEXT(""));
+		// InteractionWidget->SetInfoText(CurrentObject->GetActorNameOrLabel());
+	}
 }
 
 void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
@@ -170,9 +162,7 @@ void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
 		InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
 		CharacterStatusWidget->SetVisibility(ESlateVisibility::Hidden);
 		InteractionWidget->SetVisibility(ESlateVisibility::Hidden);
-		MainEruriaInfoWidget->SetVisibility(ESlateVisibility::Hidden);
-		ComboWidget->SetVisibility(ESlateVisibility::Hidden);
-		ChaseActionWidget->SetVisibility(ESlateVisibility::Hidden);
+		//MainEnuriaInfoWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
@@ -180,17 +170,31 @@ void ULLL_PlayerUIManager::SetAllWidgetVisibility(const bool Visible) const
 		InventoryWidget->SetVisibility(ESlateVisibility::Visible);
 		CharacterStatusWidget->SetVisibility(ESlateVisibility::Visible);
 		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
-		MainEruriaInfoWidget->SetVisibility(ESlateVisibility::Visible);
-		ComboWidget->SetVisibility(ESlateVisibility::Visible);
-		ChaseActionWidget->SetVisibility(ESlateVisibility::Visible);
+		//MainEnuriaInfoWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
 void ULLL_PlayerUIManager::UpdateWidget()
 {
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwner());
-	const ULLL_PlayerStatusWidget* PlayerStatusWidget = CastChecked<ULLL_PlayerStatusWidget>(CharacterStatusWidget);
-	PlayerStatusWidget->UpdateWidgetView(Player->GetAbilitySystemComponent());
+	ULLL_PlayerStatusWidget* PlayerStatusWidget = CastChecked<ULLL_PlayerStatusWidget>(CharacterStatusWidget);
+	PlayerStatusWidget->UpdateWidgetView(Cast<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass())));
 	Super::UpdateWidget();
+}
+
+void ULLL_PlayerUIManager::ManageOnWidgetAdded(UWidget* Widget, ULocalPlayer* Player)
+{
+	if (Cast<ILLL_FocusWidgetInterface>(Widget))
+	{
+		FocusedWidget = Widget;
+	}
+}
+
+void ULLL_PlayerUIManager::ManageOnWidgetRemoved(UWidget* Widget)
+{
+	if (Cast<ILLL_FocusWidgetInterface>(Widget))
+	{
+		FocusedWidget = nullptr;
+	}
 }
 

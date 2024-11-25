@@ -7,25 +7,24 @@
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_GameplayTags.h"
 #include "DataTable/LLL_AbilityDataTable.h"
+#include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Ability/Base/LLL_AbilityObject.h"
 #include "Entity/Object/Thrown/LLL_ThrownFeather.h"
 #include "Enumeration/LLL_AbilitySystemEnumHelper.h"
-#include "GAS/Ability/Character/Player/RewardAbilitiesList/LLL_PGA_OnSkillActivate.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
+#include "GAS/Effect/LLL_GE_GiveAbilityComponent.h"
 #include "GAS/Task/LLL_AT_WaitTargetData.h"
 #include "System/ObjectPooling/LLL_ObjectPoolingComponent.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
 ULLL_PGA_OnTriggerActivate::ULLL_PGA_OnTriggerActivate() :
-	bUseOnAttackHitEffect(false),
+	bUseApplyEffect(false),
 	bUseSpawnAbilityObject(false),
 	AbilityObjectLocationTarget(EEffectApplyTarget::Target),
 	bUseSpawnThrownObject(false),
 	ThrowSpeed(0.f),
-	SpawnOffsetTime(0.f),
-	bUseOnAttackHitGrantTag(false),
-	bAdditiveOrSubtract(true)
+	SpawnOffsetTime(0.f)
 {
 }
 
@@ -54,6 +53,12 @@ void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandl
 	if (!UAbilitySystemBlueprintLibrary::TargetDataHasActor(CurrentEventData.TargetData, 0))
 	{
 		bool Valid = false;
+		if (bUseApplyEffect && IsValid(ApplyEffect))
+		{
+			Valid = true;
+			ApplyEffectWhenHit();
+		}
+		
 		if (bUseSpawnAbilityObject && IsValid(AbilityObjectClass) && AbilityObjectLocationTarget == EEffectApplyTarget::Self)
 		{
 			Valid = true;
@@ -73,7 +78,7 @@ void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandl
 		return;
 	}
 
-	if (bUseOnAttackHitEffect && IsValid(OnAttackHitEffect))
+	if (bUseApplyEffect && IsValid(ApplyEffect))
 	{
 		ApplyEffectWhenHit();
 	}
@@ -87,36 +92,67 @@ void ULLL_PGA_OnTriggerActivate::ActivateAbility(const FGameplayAbilitySpecHandl
 	{
 		SpawnThrownObject();
 	}
-
-	if (bUseOnAttackHitGrantTag && GrantTagContainer.IsValid())
-	{
-		GrantTagWhenHit();
-	}
 }
 
 void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 {
-	const ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(OnAttackHitEffect.GetDefaultObject());
-	const FGameplayEffectSpecHandle EffectHandle = MakeOutgoingGameplayEffectSpec(OnAttackHitEffect, GetAbilityLevel());
-
-	const float ChangeableValue = (AbilityData->AbilityValue + AbilityData->ChangeValue * (GetAbilityLevel() - 1)) / static_cast<uint32>(AbilityData->AbilityValueType);
-	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_CHANGEABLE_VALUE, ChangeableValue);
-
-	const float UnChangeableValue = AbilityData->UnchangeableValue;
-	EffectHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_UNCHANGEABLE_VALUE, UnChangeableValue);
+	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
+	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
-	if (AbilityTags.HasTag(TAG_GAS_ABNORMAL_STATUS))
+	ULLL_ExtendedGameplayEffect* Effect = CastChecked<ULLL_ExtendedGameplayEffect>(ApplyEffect.GetDefaultObject());
+	const FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ApplyEffect, GetAbilityLevel());
+
+	const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
+	const float MagnitudeValue2 = AbilityData->AbilityValue2 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value2Type);
+	
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_1, MagnitudeValue1);
+
+	// 재빠른 몸놀림 이누리아
+	if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EVASION_DASH) && AbilityTags.HasTag(TAG_GAS_EVASION) && Player->GetEnuriaCount(EAnimalType::Horse) >= Player->GetEvasionDashHorseEnuriaCheckCount())
 	{
-		FLLL_AbilityDataHelper::SetAbnormalStatusAbilityDuration(this, EffectHandle.Data);
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, 1.0f);
+	}
+	else
+	{
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_VALUE_2, MagnitudeValue2);
+	}
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_1, MagnitudeValue1 * 100.0f);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_HUNDRED_VALUE_2, MagnitudeValue2 * 100.0f);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_MINUS_VALUE_1, MagnitudeValue1 * -1.0f);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(TAG_GAS_ABILITY_MINUS_VALUE_2, MagnitudeValue2 * -1.0f);
+	
+	if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
+	{
+		FLLL_AbilityDataHelper::SetBleedingPeriodValue(Player, Effect);
 	}
 	
 	if (Effect->GetEffectApplyTarget() == EEffectApplyTarget::Self)
 	{
-		K2_ApplyGameplayEffectSpecToOwner(EffectHandle);
+		PlayerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}
 	else
 	{
-		K2_ApplyGameplayEffectSpecToTarget(EffectHandle, CurrentEventData.TargetData);
+		for (auto Target : CurrentEventData.TargetData.Data[0]->GetActors())
+		{
+			if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(Target.Get()))
+			{
+				if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
+				{
+					if (!Monster->CheckBleedingTrigger())
+					{
+						Monster->IncreaseBleedingTrigger();
+						continue;
+					}
+					Monster->ResetBleedingTrigger();
+					
+					if (FLLL_AbilityDataHelper::CheckBleedingExplosion(Player, Monster, Player))
+					{
+						continue;
+					}
+				}
+				PlayerASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Monster->GetAbilitySystemComponent());
+			}
+		}
 	}
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
@@ -124,7 +160,7 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 
 void ULLL_PGA_OnTriggerActivate::SpawnAbilityObject()
 {
-	FLLL_AbilityDataHelper::SpawnAbilityObject(this, AbilityObjectClass, CurrentEventData, AbilityObjectLocationTarget);
+	FLLL_AbilityDataHelper::SpawnAbilityObject(this, AbilityObjectClass, CurrentEventData, AbilityObjectLocationTarget, AbilityObjectOffsetLocation, AbilityObjectOffsetRotation);
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
@@ -133,11 +169,17 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 
-	int32 SpawnCount = AbilityData->UnchangeableValue == 0 ? 1 : AbilityData->UnchangeableValue;
+	int32 SpawnCount = 1;
+	bool ThrowCircular = false;
+	bool Straight = true;
+	float KnockBackPower = 0.0f;
 	if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
 	{
+		SpawnCount = AbilityData->AbilityValue1 == 0 ? 1 : AbilityData->AbilityValue1;
+		Straight = false;
+		
 		const UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
-		TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_PART_COMMON));
+		TArray<FActiveGameplayEffectHandle> EffectHandles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_DENY));
 		for (const auto EffectHandle : EffectHandles)
 		{
 			const ULLL_ExtendedGameplayEffect* ActiveEffect = Cast<ULLL_ExtendedGameplayEffect>(ASC->GetActiveGameplayEffect(EffectHandle)->Spec.Def);
@@ -146,33 +188,112 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 				continue;
 			}
 
-			if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_FEATHER_AMPLIFICATION))
+			const ULLL_GE_GiveAbilityComponent* GiveAbilityComponent = CastChecked<ULLL_GE_GiveAbilityComponent>(ActiveEffect->FindComponent(ULLL_GE_GiveAbilityComponent::StaticClass()));
+			for (auto AbilitySpecConfig : const_cast<ULLL_GE_GiveAbilityComponent*>(GiveAbilityComponent)->GetAbilitySpecConfigs())
 			{
-				SpawnCount += ActiveEffect->GetAbilityData()->AbilityValue;
+				if (FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(AbilitySpecConfig.Ability))
+				{
+					if (CastChecked<ULLL_PGA_RewardAbilityBase>(Spec->GetPrimaryInstance()) != this)
+					{
+						continue;
+					}
+
+					// 깃털 연발 이누리아
+					if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CHARGED_FEATHER))
+					{
+						SpawnCount = Player->GetChargedFeatherCount();
+						if (SpawnCount >= 1)
+						{
+							Player->StartChargeFeather(AbilityData->AbilityValue1);
+						}
+					}
+					// 화려한 등장 이누리아
+					else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_RANGED_FEATHER))
+					{
+						SpawnCount = 1;
+					}
+					// 접근 금지 이누리아
+					else if (ActiveEffect->GetGrantedTags().HasTag(TAG_GAS_HAVE_CIRCULAR_FEATHER))
+					{
+						SpawnCount = AbilityData->AbilityValue1;
+						ThrowCircular = true;
+						Straight = true;
+						KnockBackPower = AbilityData->KnockBackPower;
+					}
+				}
 			}
 		}
 	}
 
-	float TempSpawnOffsetTime = 0.01f;
+	float ThrowCircularAngle = 0.0f;
+	float TempSpawnOffsetTime = Player->GetFeatherSpawnStartTime();
+
+	if (SpawnCount == 0)
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
+	}
+	
 	for (int i = 0; i < SpawnCount; i++)
 	{
-		const AActor* Target = Cast<ALLL_PlayerBase>(CurrentEventData.Instigator) ? CurrentEventData.TargetData.Data[0]->GetActors()[0].Get() : CurrentEventData.Instigator;
-		
-		FTimerHandle SpawnTimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, Player, Target, i, SpawnCount]{
-			FVector Location = Player->GetActorLocation();
-			FRotator Rotator = FRotationMatrix::MakeFromX(Target->GetActorLocation() - Player->GetActorLocation()).Rotator();
-
-			if (ThrownObjectClass->IsChildOf(ALLL_ThrownFeather::StaticClass()))
+		TArray<AActor*> Targets = Player->GetRangeFeatherTargetsAndClear();
+		const AActor* TargetByAttack = Cast<ALLL_PlayerBase>(CurrentEventData.Instigator) ? CurrentEventData.TargetData.Data[0]->GetActors()[0].Get() : CurrentEventData.Instigator;
+		Targets.Emplace(const_cast<AActor*>(TargetByAttack));
+		if (Targets.Num() == 0)
+		{
+			if (Straight)
 			{
-				Location -= Rotator.Vector() * Player->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f;
-				Rotator += FRotator(0.0f, 180.0f + FEATHER_THROW_ANGLE * (FMath::RandBool() ? 1.0f : -1.0f), 0.0f);
+				Targets.Emplace(nullptr);
 			}
-			
-			ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(Player->GetObjectPoolingComponent()->GetActor(ThrownObjectClass));
-			ThrownObject->SetActorLocationAndRotation(Location, Rotator);
-			ThrownObject->SetAbilityInfo(AbilityData, GetAbilityLevel());
-			ThrownObject->Throw(Player, const_cast<AActor*>(Target), ThrowSpeed);
+			else
+			{
+				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+				return;
+			}
+		}
+
+		FTimerHandle SpawnTimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&, Player, Targets, i, SpawnCount, ThrowCircularAngle, ThrowCircular, Straight, KnockBackPower]{
+			for (const auto Target : Targets)
+			{
+				if (!Straight && !Cast<ALLL_MonsterBase>(Target))
+				{
+					continue;
+				}
+				
+				FVector Location = Player->GetActorLocation();
+				FRotator Rotator;
+
+				if (!Straight)
+				{
+					Rotator = FRotationMatrix::MakeFromX(Target->GetActorLocation() - Player->GetActorLocation()).Rotator();
+				}
+				else
+				{
+					Rotator = FRotationMatrix::MakeFromX(Player->GetActorForwardVector()).Rotator();
+				}
+
+				ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(Player->GetObjectPoolingComponent()->GetActor(ThrownObjectClass));
+				if (ThrowCircular)
+				{
+					Rotator += FRotator(0.0f, ThrowCircularAngle, 0.0f);
+				}
+				else
+				{
+					if (const ALLL_ThrownFeather* ThrownFeather = Cast<ALLL_ThrownFeather>(ThrownObject))
+					{
+						const float Offset = ThrownFeather->GetChaseFeatherThrowAngleOffset();
+						const int32 Multiply = ThrownFeather->GetChaseFeatherThrowAngleRandomMultiply();
+						
+						Location -= Rotator.Vector() * Player->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f;
+						Rotator += FRotator(0.0f, 180.0f + Offset * (FMath::RandBool() ? 1.0f : -1.0f) * FMath::RandRange(0, Multiply), 0.0f);
+					}
+				}
+				
+				ThrownObject->SetActorLocationAndRotation(Location, Rotator);
+				ThrownObject->SetAbilityInfo(AbilityData, GetAbilityLevel());
+				ThrownObject->Throw(Player, Target, ThrowSpeed, Straight, KnockBackPower);
+			}
 
 			if (i == SpawnCount - 1)
 			{
@@ -181,41 +302,6 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 		}), TempSpawnOffsetTime, false);
 
 		TempSpawnOffsetTime += SpawnOffsetTime;
+		ThrowCircularAngle += 360.0f / SpawnCount;
 	}
-}
-
-void ULLL_PGA_OnTriggerActivate::GrantTagWhenHit()
-{
-	float GrantNum = 1.f;
-	if (TagGrantNumTag == TAG_GAS_ABILITY_CHANGEABLE_VALUE)
-	{
-		GrantNum = AbilityData->AbilityValue + AbilityData->ChangeValue * (GetAbilityLevel() - 1);
-	}
-	else // TagGrantNumTag == TAG_GAS_ABILITY_UNCHANGEABLE_VALUE
-	{
-		GrantNum = AbilityData->UnchangeableValue;
-	}
-	
-	if (bAdditiveOrSubtract) // Add
-	{
-		for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
-		{
-			if (const IAbilitySystemInterface* ASC = Cast<IAbilitySystemInterface>(Actor))
-			{
-				ASC->GetAbilitySystemComponent()->AddLooseGameplayTags(GrantTagContainer, GrantNum);
-			}
-		}
-	}
-	else // Subtract
-	{
-		for (auto Actor : CurrentEventData.TargetData.Data[0]->GetActors())
-		{
-			if (IAbilitySystemInterface* ASC = Cast<IAbilitySystemInterface>(Actor))
-			{
-				ASC->GetAbilitySystemComponent()->RemoveLooseGameplayTags(GrantTagContainer, GrantNum);
-			}
-		}
-	}
-	
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

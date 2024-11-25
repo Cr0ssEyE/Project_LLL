@@ -28,7 +28,7 @@ ALLL_BaseCharacter::ALLL_BaseCharacter()
 	FModAudioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FModAudioComponent"));
 	FModAudioComponent->SetupAttachment(RootComponent);
 
-	Level = 1;
+	AbilityLevel = 1;
 }
 
 void ALLL_BaseCharacter::PostLoad()
@@ -115,7 +115,7 @@ void ALLL_BaseCharacter::BeginPlay()
 		UpdateWidgetDelegate.Broadcast();
 	}
 
-	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [&]{
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [=, this]{
 		InitAttributeSet();
 		const ULLL_CharacterAttributeSetBase* CharacterAttributeSetBase = CastChecked<ULLL_CharacterAttributeSetBase>(ASC->GetAttributeSet(ULLL_CharacterAttributeSetBase::StaticClass()));
 		GetCharacterMovement()->MaxAcceleration = CharacterAttributeSetBase->GetAccelerateSpeed();
@@ -162,7 +162,6 @@ void ALLL_BaseCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 	{
 		FGameplayEventData PayloadData;
 		PayloadData.Instigator = Other;
-		
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, TAG_GAS_COLLIDE_WALL, PayloadData);
 	}
 }

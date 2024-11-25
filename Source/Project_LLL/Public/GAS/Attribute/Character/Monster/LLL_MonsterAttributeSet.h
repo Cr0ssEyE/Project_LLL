@@ -6,6 +6,12 @@
 #include "GAS/Attribute/Character/Base/LLL_CharacterAttributeSetBase.h"
 #include "LLL_MonsterAttributeSet.generated.h"
 
+#define GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(MonsterName, DataName, PropertyName) \
+	FORCEINLINE float Get##MonsterName##DataName() const \
+	{ \
+		return PropertyName.GetCurrentValue(); \
+	}
+
 /**
  * 
  */
@@ -15,6 +21,8 @@ class PROJECT_LLL_API ULLL_MonsterAttributeSet : public ULLL_CharacterAttributeS
 	GENERATED_BODY()
 	
 public:
+	ULLL_MonsterAttributeSet();
+	
 	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
@@ -27,14 +35,34 @@ public:
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, ChargeTimer);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, AttackCoolDown);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FieldOfView);
+	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, Weight);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, FindPatrolPosRadius);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, DestroyTimer);
 	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, ClusterRecognizeRadius);
-	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData1);
-	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData2);
-	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData3);
-	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData4);
-	ATTRIBUTE_ACCESSORS(ULLL_MonsterAttributeSet, MonsterData5);
+
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ClawBasic, ThrowSpeed, MonsterData1);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ClawBasic, PredictionRate, MonsterData2);
+	
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(SwordDash, MaxDashDistance, MonsterData1);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(SwordDash, MinDashDistance, MonsterData2);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(SwordDash, DashDamageRange, MonsterData4);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(SwordDash, DashSpeed, MonsterData6);
+
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(BombSkull, ExplodeRadius, MonsterData1);
+	
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashPunchDashDistance, MonsterData1);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashPunchDashSpeed, MonsterData2);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, DashPunchDashDamageRange, MonsterData3);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ShockwaveChargeTimer, MonsterData4);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ShockwaveOffencePower, MonsterData5);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaDashDistance, MonsterData7);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaDashSpeed, MonsterData8);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaAttackCount, MonsterData9);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, AttackInApneaChargeTimer, MonsterData11);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ThrowSpeed, MonsterData12);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, OtherMonsterDetectRange, MonsterData13);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, PredictionRate, MonsterData14);
+	GAMEPLAYATTRIBUTE_CUSTOM_VALUE_GETTER(ManOfStrength, ThrowOffencePower, MonsterData15);
 
 protected:
 	virtual void CheckAbnormalStatus(const FGameplayEffectModCallbackData& Data);
@@ -65,6 +93,9 @@ protected:
 	FGameplayAttributeData FieldOfView;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData Weight;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData FindPatrolPosRadius;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
@@ -73,6 +104,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData ClusterRecognizeRadius;
 
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MonsterData1;
 	
@@ -87,4 +119,34 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MonsterData5;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData6;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData7;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData8;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData9;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData10;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData11;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData12;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData13;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData14;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData MonsterData15;
 };

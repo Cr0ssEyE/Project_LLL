@@ -28,21 +28,41 @@ public:
 
 	static FVector CalculateLaunchVelocity(const FVector& Direction, const float Multiply)
 	{
-		const FVector CalculateResult = Direction * Multiply * 10.f;
+		const FVector CalculateResult = Direction.GetSafeNormal2D() * Multiply * 10.f;
 		return CalculateResult;
 	}
 
-	static FVector GetPredictedLocation(const AActor* Owner, const AActor* Target, float TargetSpeed, float PredictionRate)
+	static FVector GetPredictedLocation(const AActor* ThrownActor, const AActor* Target, const FVector& Velocity, float TargetSpeed, float PredictionRate)
 	{
-		if (!IsValid(Owner) || !IsValid(Target))
+		if (!IsValid(ThrownActor) || !IsValid(Target))
 		{
 			return FVector::Zero();
 		}
 		
-		const float Distance = Owner->GetDistanceTo(Target);
-		const FVector PredictedMove = Target->GetVelocity() * (Distance / TargetSpeed);
+		const float Distance = ThrownActor->GetDistanceTo(Target);
+		const FVector PredictedMove = Velocity * (Distance / TargetSpeed);
 		const FVector PredictedLocation = Target->GetActorLocation() + PredictedMove * PredictionRate;
 		return PredictedLocation;
+	}
+
+	static FVector CalculatePredictedDirection(const AActor* Thrower, FVector PredictedDirection)
+	{
+		const FVector ThrowerForward = Thrower->GetActorForwardVector();
+		const float Cos = FMath::Cos(FMath::DegreesToRadians(45.0f));
+		if (FVector::DotProduct(ThrowerForward, PredictedDirection) < Cos)
+		{
+			const FVector RightVector = FVector::CrossProduct(ThrowerForward, FVector::UpVector);
+			if (FVector::DotProduct(RightVector, PredictedDirection) > 0.0f)
+			{
+				PredictedDirection = FRotationMatrix::MakeFromX(ThrowerForward).TransformVector(FVector(Cos, FMath::Sqrt(1 - FMath::Square(Cos)) * -1.0f, 0));
+			}
+			else
+			{
+				PredictedDirection = FRotationMatrix::MakeFromX(ThrowerForward).TransformVector(FVector(Cos, FMath::Sqrt(1 - FMath::Square(Cos)), 0));
+			}
+		}
+
+		return PredictedDirection;
 	}
 
 	static bool IsInFieldOfView(const AActor* Owner, const AActor* Target, float Distance, float FieldOfView, const FRotator& Rotation = FRotator::ZeroRotator)
@@ -92,29 +112,29 @@ public:
 	static bool CheckFallableKnockBackPower(const UWorld* World, float KnockBackPower)
 	{
 		if (!IsValid(World))
-		{
+	{
 			return false;
 		}
 		
-		float FallableCheckPower = 500.f;
+		float FallableCheckPower = 100.f;
 		ACharacter* Character = UGameplayStatics::GetPlayerCharacter(World, 0);
 		if (!IsValid(Character))
 		{
 			return false;
 		}
 		
-		if (const ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(Character))
+		if (const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(Character))
 		{
-			const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(PlayerCharacter->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
+			const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = Cast<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
-			FallableCheckPower = PlayerCharacterAttributeSet->GetFalloutablePower();
+			FallableCheckPower = PlayerAttributeSet->GetFalloutablePower();
 		}
 		else
 		{
 			ensure(false);
 		}
 		
-		if (KnockBackPower > FallableCheckPower)
+		if (KnockBackPower >= FallableCheckPower)
 		{
 			return true;
 		}
@@ -130,21 +150,13 @@ public:
 		return CalculateResult;
 	}
 
-	static float CalculateKnockBackPower(const ULLL_PlayerCharacterAttributeSet* PlayerCharacterAttributeSet, const float ActionAmplify = 1.f)
+	static float CalculateCriticalDamage(const float OffensePower, const ALLL_PlayerBase* Player)
 	{
-		if (!IsValid(PlayerCharacterAttributeSet))
-		{
-			return 0.f;
-		}
-		
-		const float CalculateResult = (PlayerCharacterAttributeSet->GetKnockBackPower() + PlayerCharacterAttributeSet->GetOffensePower() * PlayerCharacterAttributeSet->GetKnockBackOffensePowerRate()) * ActionAmplify;
-		return CalculateResult;
-	}
+		const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+		const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(PlayerASC->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
-	static float CalculateCriticalDamage(const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet, const float OffensePower)
-	{
-		const float CriticalChance = PlayerAttributeSet->GetCriticalChance();
-		const float CriticalAmplify = PlayerAttributeSet->GetCriticalAmplify();
+		float CriticalChance = PlayerAttributeSet->GetCriticalChance();
+		CriticalChance += PlayerAttributeSet->GetCriticalChancePlus();
 	
 		bool bIsChance = false;
 		if (CriticalChance != 0.0f)
@@ -157,7 +169,7 @@ public:
 			UE_LOG(LogTemp, Log, TEXT("치명타 발동 (확률 : %.2f%%)"), CriticalChance * 100.0f)
 		}
 		
-		return OffensePower + (bIsChance ? CriticalAmplify * OffensePower : 0);
+		return bIsChance ? OffensePower * PlayerAttributeSet->GetCriticalAmplify() : OffensePower;
 	}
 	
 	static FVector CalculatePlayerLaunchableLocation(const UWorld* World, const ACharacter* Owner, const float LaunchDistance , const float CorrectionDistance, const FVector& LaunchDirection)

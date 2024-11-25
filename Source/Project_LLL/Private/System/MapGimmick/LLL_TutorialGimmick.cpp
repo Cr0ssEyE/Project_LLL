@@ -26,7 +26,6 @@ ALLL_TutorialGimmick::ALLL_TutorialGimmick()
 	TutorialDataAsset = FLLL_ConstructorHelper::FindAndGetObject<ULLL_TutorialMapDataAsset>(PATH_TUTORIAL_MAP_DATA, EAssertionLevel::Check);
 	bIsActiveSkill = false; 
 	bIsActiveDash = false;
-	ChargeSkillGaugeEffect = FLLL_ConstructorHelper::FindAndGetClass<UGameplayEffect>(PATH_SKILL_GAUGE_EFFECT, EAssertionLevel::Check);
 }
 
 void ALLL_TutorialGimmick::BeginPlay()
@@ -92,7 +91,6 @@ void ALLL_TutorialGimmick::BeginOverlapAttackTutorial(AActor* OverlappedActor, A
 
 void ALLL_TutorialGimmick::FinalMapSpawn(AActor* DestroyedActor)
 {
-	TutorialWidget->SetChaseTutorial();
 	AActor* StageActor = GetWorld()->SpawnActor<AActor>(TutorialDataAsset->BPMap, TutorialDataAsset->FinalStageLocation, RootComponent->GetComponentRotation());
 	StageActors.Emplace(StageActor);
 	for (USceneComponent* ChildComponent : StageActor->GetRootComponent()->GetAttachChildren())
@@ -112,14 +110,6 @@ void ALLL_TutorialGimmick::FinalMapSpawn(AActor* DestroyedActor)
 
 void ALLL_TutorialGimmick::FinalMonsterSpawn(AActor* DestroyedActor)
 {
-	TutorialWidget->SetSkillTutorial();
-
-	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
-	FGameplayEffectContextHandle EffectContextHandle = Player->GetAbilitySystemComponent()->MakeEffectContext();
-	EffectContextHandle.AddSourceObject(Player);
-	const FGameplayEffectSpecHandle EffectSpecHandle = Player->GetAbilitySystemComponent()->MakeOutgoingSpec(ChargeSkillGaugeEffect, 1.0, EffectContextHandle);
-	Player->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-
 	FVector Vector = TutorialDataAsset->FinalStageLocation;
 	
 	Vector.Z += 150;
@@ -136,11 +126,6 @@ void ALLL_TutorialGimmick::FinalMonsterSpawn(AActor* DestroyedActor)
 		Monster->OnDestroyed.AddDynamic(this, &ALLL_TutorialGimmick::MonsterDestroyed);
 		Monsters.Emplace(Monster);
 	}
-
-	FTimerHandle SetTutorialTimerHandle;
-	GetWorldTimerManager().SetTimer(SetTutorialTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&] {
-		TutorialWidget->SetSkillChargeTutorial();
-	}), 3.0f, false);
 }
 
 void ALLL_TutorialGimmick::MonsterDestroyed(AActor* DestroyedActor)
@@ -176,6 +161,6 @@ void ALLL_TutorialGimmick::LoadLevel(UNiagaraComponent* InNiagaraComponent)
 {
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	Player->SetActorHiddenInGame(true);
-	UGameplayStatics::OpenLevel(this, LEVEL_TEST);
+	UGameplayStatics::OpenLevel(this, LEVEL_LOBBY);
 }
 

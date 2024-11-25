@@ -79,14 +79,14 @@ void ALLL_GateObject::SetActivate()
 	TextureMeshComponent->SetVisibility(true);
 }
 
-void ALLL_GateObject::InteractiveEvent()
+void ALLL_GateObject::InteractiveEvent(AActor* InteractedActor)
 {
 	if(!bIsGateEnabled)
 	{
 		return;
 	}
 	
-	Super::InteractiveEvent();
+	Super::InteractiveEvent(InteractedActor);
 	
 	OpenGate();
 }
@@ -96,6 +96,32 @@ void ALLL_GateObject::BeginPlay()
 	Super::BeginPlay();
 	
 	InteractOnlyCollisionBox->SetBoxExtent(FVector(InteractiveObjectDataAsset->InteractOnlyCollisionBoxExtent));
+}
+
+void ALLL_GateObject::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::Super::NotifyActorBeginOverlap(OtherActor);
+
+	if (ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor))
+	{
+		if (bIsGateEnabled)
+		{
+			PlayerCharacter->AddInteractiveObject(this);
+		}
+	}
+}
+
+void ALLL_GateObject::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	Super::Super::NotifyActorEndOverlap(OtherActor);
+	
+	if (ALLL_PlayerBase* PlayerCharacter = Cast<ALLL_PlayerBase>(OtherActor))
+	{
+		if (bIsGateEnabled)
+		{
+			PlayerCharacter->RemoveInteractiveObject(this);
+		}
+	}
 }
 
 void ALLL_GateObject::OpenGate()

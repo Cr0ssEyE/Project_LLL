@@ -28,12 +28,17 @@ public:
 	float FallExplosionDelayTime;
 	
 	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "몬스터 표식 이펙트")
-	TObjectPtr<UNiagaraSystem> MarkCountNiagaraSystem;
+	TObjectPtr<UNiagaraSystem> StackCountNiagaraSystem;
 
-	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "몬스터 출혈 이펙트")
-	TObjectPtr<UNiagaraSystem> BleedingNiagaraSystem;
+	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "몬스터 출혈 이펙트 1")
+	TObjectPtr<UNiagaraSystem> BleedingNiagaraSystem1;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "몬스터 출혈 이펙트 2")
+	TObjectPtr<UNiagaraSystem> BleedingNiagaraSystem2;
 	
-	UPROPERTY(EditAnywhere, Category = "Niagara|Param", DisplayName = "몬스터 표식 파라미터 컬렉션")
-	TObjectPtr<UNiagaraParameterCollection> MarkCountNiagaraParameterCollection;
-	
+	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "조각상 파괴 이펙트")
+	TObjectPtr<UNiagaraSystem> StatueDestroyNiagaraSystem;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara|System", DisplayName = "조각상 파괴 에너지 이펙트")
+	TObjectPtr<UNiagaraSystem> StatueDestroyWithEnergyNiagaraSystem;
 };

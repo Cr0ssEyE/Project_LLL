@@ -16,8 +16,6 @@ void UPlayerDebugWidget::NativeConstruct()
 	
 	PlayerMovementCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerMovementCheckBoxEvent);
 	PlayerDashCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerDashCheckBoxEvent);
-	PlayerChaseActionCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent);
-	PlayerSkillCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerSkillCheckBoxEvent);
 
 	PlayerFillHealthButton->OnClicked.AddDynamic(this, &UPlayerDebugWidget::PlayerFillHealthButtonEvent);
 	PlayerInvincibleCheckBox->OnCheckStateChanged.AddDynamic(this, &UPlayerDebugWidget::PlayerInvincibleCheckBoxEvent);
@@ -31,16 +29,6 @@ void UPlayerDebugWidget::PlayerMovementCheckBoxEvent(bool value)
 void UPlayerDebugWidget::PlayerDashCheckBoxEvent(bool value)
 {
 	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerDashDebug(PlayerDashCheckBox->IsChecked());
-}
-
-void UPlayerDebugWidget::PlayerChaseActionCheckBoxEvent(bool value)
-{
-	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerChaseActionDebug(PlayerChaseActionCheckBox->IsChecked());
-}
-
-void UPlayerDebugWidget::PlayerSkillCheckBoxEvent(bool value)
-{
-	GetWorld()->GetGameInstanceChecked<ULLL_DebugGameInstance>()->SetPlayerSkillDebug(PlayerSkillCheckBox->IsChecked());
 }
 
 void UPlayerDebugWidget::CharacterHitCheckCheckBoxEvent(bool value)
@@ -61,7 +49,7 @@ void UPlayerDebugWidget::CharacterCollisionCheckBoxEvent(bool value)
 void UPlayerDebugWidget::PlayerFillHealthButtonEvent()
 {
 	// TODO: 플레이어 클래스 만들고 처리
-	const ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if(!IsValid(Player))
 	{
 		return;
@@ -75,6 +63,7 @@ void UPlayerDebugWidget::PlayerFillHealthButtonEvent()
 	
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
+	EffectContextHandle.AddInstigator(Player, Player);
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(FillHealthEffect, 1.0, EffectContextHandle);
 	if(EffectSpecHandle.IsValid())
 	{

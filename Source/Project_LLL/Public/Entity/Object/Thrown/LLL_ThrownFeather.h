@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DataAsset/LLL_ThrownFeatherDataAsset.h"
-#include "Entity/Character/Base/LLL_BaseCharacter.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "LLL_ThrownFeather.generated.h"
 
@@ -21,15 +20,18 @@ class PROJECT_LLL_API ALLL_ThrownFeather : public ALLL_ThrownObject
 public:
 	ALLL_ThrownFeather();
 
+	FORCEINLINE float GetChaseFeatherThrowAngleOffset() const { return ChaseFeatherThrowAngleOffset; }
+	FORCEINLINE int32 GetChaseFeatherThrowAngleRandomMultiply() const { return ChaseFeatherThrowAngleRandomMultiply; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void Activate() override;
 	virtual void Deactivate() override;
-	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed) override;
-
-	UFUNCTION()
-	void TargetDeadHandle(ALLL_BaseCharacter* Character);
+	
+	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower) override;
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+	virtual void DamageTo(AActor* OtherActor) override;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UBoxComponent> HitCollisionBox;
@@ -39,19 +41,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ULLL_ThrownFeatherAttributeSet> ThrownFeatherAttributeSet;
-
-	UPROPERTY(VisibleAnywhere)
-	float CurveSpeed;
-
-	UPROPERTY(VisibleAnywhere)
-	float CurveSize;
-
-	UPROPERTY(VisibleAnywhere)
-	float TargetCapsuleRadius;
-
-	UPROPERTY(VisibleAnywhere)
-	FVector TargetDeadLocation;
-
-	UPROPERTY(VisibleAnywhere)
-	uint8 bTargetIsDead : 1;
+	
+	float ChaseFeatherThrowAngleOffset;
+	int32 ChaseFeatherThrowAngleRandomMultiply;
 };

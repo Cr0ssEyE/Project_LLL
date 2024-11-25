@@ -34,7 +34,7 @@ void ULLL_CheckAttackRange_BTService::TickNode(UBehaviorTreeComponent& OwnerComp
 			if (DebugGameInstance->CheckMonsterAttackDebug())
 			{
 				const FColor DebugColor = OwnerComp.GetBlackboardComponent()->GetValueAsBool(BBKEY_IS_IN_FIELD_OF_VIEW) ? FColor::Green : FColor::Yellow;
-				DrawDebugLine(GetWorld(), Monster->GetActorLocation(), Player->GetActorLocation(), DebugColor, false, 0.1f);
+				DrawDebugLine(GetWorld(), Monster->GetActorLocation(), Player->GetActorLocation(), DebugColor, false, DeltaSeconds);
 			}
 		}
 #endif

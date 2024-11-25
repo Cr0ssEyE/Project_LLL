@@ -25,13 +25,9 @@ protected:
 protected:
 	bool CheckFallable(FVector HitNormal, FVector HitLocation);
 	
-	void FallOutBegin(AActor* Actor, FVector HitNormal, FVector HitLocation);
-	void FallOutStart(AActor* Actor, FVector HitNormal);
-	void SpawnFallExplosionVFX(ALLL_MonsterBase* Monster);
-	
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMeshComponent> Wall;
 
-	float WorldTimeDilationDuration;
+	float FallRequiredVelocityLength;
 };

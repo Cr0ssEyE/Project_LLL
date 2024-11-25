@@ -31,8 +31,11 @@ public:
 	void SetActivate();
 	
 protected:
-	virtual void InteractiveEvent() override;
+	virtual void InteractiveEvent(AActor* InteractedActor = nullptr) override;
 	virtual void BeginPlay() override;
+
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 	
 protected:
 	void OpenGate();
@@ -54,5 +57,5 @@ protected:
 	
 	const FRewardDataTable* RewardData;
 
-	EAbilityType AbilityType;
+	EAnimalType AbilityType;
 };

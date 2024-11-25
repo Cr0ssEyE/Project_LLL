@@ -22,7 +22,7 @@ class PROJECT_LLL_API ULLL_InventoryWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	void SetEruriaInfo(const FAbilityDataTable* AbilityData);
+	void SetEnuriaInfo(const FAbilityDataTable* AbilityData);
 	
 public:
 	FORCEINLINE void PlayOpenAnimation() { PlayAnimation(OpenInventory); }
@@ -68,6 +68,6 @@ protected:
 	UPROPERTY()
 	TArray<FAbilityDataTable> CommonEruriaDataTables;
 	
-	uint32 CurrentEmptyEruriaSlotIndex;
+	int32 CurrentEmptyEruriaSlotIndex;
 };
 

@@ -6,26 +6,18 @@
 #include "LLL_BaseCharacterDataAsset.h"
 #include "LLL_PlayerBaseDataAsset.generated.h"
 
-class ULevelSequence;
 enum class EPlayerDamagedTypeParameter : uint8;
-enum class EMonsterId : uint8;
-class ULLL_MainEruriaInfoWidget;
 enum class EPlayerWalkMaterialParameter : uint8;
-enum class EPlayerFootstepsSurface : uint8;
-class ULLL_SkillWidget;
-class ULLL_PlayerChaseHandDataAsset;
 enum class EAbilityInputName : uint8;
-class ULLL_InteractionWidget;
-class ULLL_InventoryWidget;
-class ULLL_PlayerStatusWidget;
-class ULLL_GamePauseWidget;
-class ULLL_PlayerAnimInstance;
-class ULLL_SelectRewardWidget;
+class UNiagaraSystem;
 class UInputAction;
 class UInputMappingContext;
-class UNiagaraSystem;
-class ULLL_PlayerChaseActionWidget;
-class ULLL_PlayerComboWidget;
+class ULevelSequence;
+class ULLL_MainEruriaInfoWidget;
+class ULLL_SelectRewardWidget;
+class ULLL_InteractionWidget;
+class ULLL_InventoryWidget;
+class ULLL_GamePauseWidget;
 
 /**
  * 
@@ -34,6 +26,19 @@ UCLASS()
 class PROJECT_LLL_API ULLL_PlayerBaseDataAsset : public ULLL_BaseCharacterDataAsset
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "허리 부착 파티클")
+	TObjectPtr<UNiagaraSystem> SpineParticle;
+	
+	UPROPERTY(EditAnywhere, Category = "Niagara", DisplayName = "맹렬한 공세 이펙트")
+	TObjectPtr<UNiagaraSystem> QuadrupleHitParticle;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara", DisplayName = "우레걸음 이펙트")
+	TObjectPtr<UNiagaraSystem> MoveFasterParticle;
+	
+	UPROPERTY(EditAnywhere, Category = "Niagara", DisplayName = "우레걸음 이펙트")
+	TObjectPtr<UNiagaraSystem> EvasionDashParticle;
 	
 	// UI 관련 
 public:
@@ -49,31 +54,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "보상 선택 UI")
 	TSubclassOf<ULLL_SelectRewardWidget> SelectRewardWidgetClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "콤보 UI")
-	TSubclassOf<ULLL_PlayerComboWidget> ComboWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "추격 쿨타임 UI")
-	TSubclassOf<ULLL_PlayerChaseActionWidget> ChaseActionWidgetClass;
-
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "메인 이누리아 UI")
 	TSubclassOf<ULLL_MainEruriaInfoWidget> MainEruriaInfoWidgetClass;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "추격 쿨타임 UI 위치")
-	FVector ChaseActionGaugeLocation;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "추격 쿨타임 UI 크기")
-	FVector2D ChaseActionGaugeSize;
-	
 	// 애니메이션 관련
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 애님 몽타주")
-	TObjectPtr<UAnimMontage> DeadAnimMontage;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 연출 시퀀서")
 	TObjectPtr<ULevelSequence> DeadSequencer;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "캐릭터 사망 연출용 디졸브 액터")
-	TSubclassOf<AActor> DeadSequenceDissolveActor;
+	TSubclassOf<AActor> CharacterDissolveActor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character", DisplayName = "디졸브 액터 낙하 속도")
 	float DissolveActorFallSpeed;
@@ -97,14 +87,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "돌진 입력 키")
 	TObjectPtr<UInputAction> DashInputAction;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "기본 공격 입력 키")
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "공격 입력 키")
 	TObjectPtr<UInputAction> AttackInputAction;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "추격 액션 입력 키")
-	TObjectPtr<UInputAction> ControlChaseInputAction;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "스킬 입력 키")
-	TObjectPtr<UInputAction> SkillInputAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "범위 공격 입력 키")
+	TObjectPtr<UInputAction> RangeAttackInputAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "상호작용 입력 키")
 	TObjectPtr<UInputAction> InteractionInputAction;
@@ -114,6 +101,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "일시정지 입력 키")
 	TObjectPtr<UInputAction> PauseInputAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "스킬 입력 키")
+	TObjectPtr<UInputAction> SkillInputAction;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "FMod", DisplayName = "발걸음 이벤트 파라미터 속성")
@@ -128,4 +118,37 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "PP", DisplayName = "PP HPLow 파라미터 최소값")
 	float HPLowScalarLowValue;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "넉백된 대상이 받는 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> KnockBackCauserDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "넉백된 대상과 충돌한 대상이 받는 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> KnockBackTargetDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "마나 사용 이펙트")
+	TSubclassOf<UGameplayEffect> UseManaEffect1;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "마나 사용 이펙트")
+	TSubclassOf<UGameplayEffect> UseManaEffect2;
+
+	// 이누리아 관련
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "지원 강화 이누리아 마나 회복 이펙트")
+	TSubclassOf<UGameplayEffect> RecoveryManaByFeatherRecoveryManaEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "연쇄 작용 이누리아 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> KnockBackTransmissionDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "맹렬한 공세 이누리아 데미지 타임 오프셋")
+	float QuadrupleHitHitOffsetTime;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "피의 갈증 이누리아 회복 이펙트")
+	TSubclassOf<UGameplayEffect> VampireRecoveryEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "피의 역병 이누리아 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> BleedingTransmissionDamageEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "혈우병 이누리아 데미지 이펙트")
+	TSubclassOf<UGameplayEffect> BleedingExplosionDamageEffect;
 };

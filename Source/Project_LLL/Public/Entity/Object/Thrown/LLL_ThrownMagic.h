@@ -25,12 +25,14 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void Activate() override;
 	virtual void Deactivate() override;
+
+	virtual void Throw(AActor* NewOwner, AActor* NewTarget, float InSpeed, bool Straight, float InKnockBackPower) override;
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UBoxComponent> HitCollisionBox;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<const ULLL_ThrownMagicDataAsset> MagicDataAsset;
+	TObjectPtr<const ULLL_ThrownMagicDataAsset> ThrownMagicDataAsset;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<ULLL_ThrownMagicAttributeSet> ThrownMagicAttributeSet;

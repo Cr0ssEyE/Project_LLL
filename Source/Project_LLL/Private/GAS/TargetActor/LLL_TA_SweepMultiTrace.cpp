@@ -4,6 +4,7 @@
 #include "GAS/TargetActor/LLL_TA_SweepMultiTrace.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Constant/LLL_GameplayTags.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_DebugGameInstance.h"
@@ -40,8 +41,9 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 		}
 	}
 	
-	const FVector SweepStartLocation =  OriginLocation + SourceActor->GetActorForwardVector() * TraceStartLocation;
-	const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetActorForwardVector() * TraceEndLocation;
+	const FVector SweepStartLocation = OriginLocation + SourceActor->GetTransform().GetRotation().RotateVector(TraceStartLocation);
+	const FVector SweepEndLocation = SweepStartLocation + SourceActor->GetTransform().GetRotation().RotateVector(TraceEndLocation);
+	
 	FQuat SweepQuat = SourceActor->GetActorQuat();
 
 	if (TraceShape.ShapeType == ECollisionShape::Capsule)
@@ -96,9 +98,6 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 
 		if (Debug)
 		{
-			const FVector DistanceVector = SweepEndLocation - SweepStartLocation;
-			const FVector SweepCenter = SweepStartLocation + DistanceVector / 2.0f;
-			
 			FColor DebugColor = FColor::Blue;
 			for (auto HitActor : HitActors)
 			{
@@ -113,7 +112,8 @@ FGameplayAbilityTargetDataHandle ALLL_TA_SweepMultiTrace::TraceResult() const
 					break;
 				}
 			}
-			FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepCenter, DebugColor, 2.f, BoxExtents, CapsuleExtents, SphereRadius, ConeDistance, ConeFieldOfView, ConeRotation, SweepQuat);
+			FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepStartLocation, DebugColor, 2.f, BoxExtents, CapsuleExtents, SphereRadius, ConeDistance, ConeFieldOfView, ConeRotation, SweepQuat);
+			FLLL_DebugDrawHelper::DrawDebugShapes(GetWorld(), BaseShape, SweepEndLocation, DebugColor, 2.f, BoxExtents, CapsuleExtents, SphereRadius, ConeDistance, ConeFieldOfView, ConeRotation, SweepQuat);
 		}
 	}
 #endif

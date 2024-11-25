@@ -18,24 +18,30 @@ void ULLL_MGA_SpawnThrownObject::ActivateAbility(const FGameplayAbilitySpecHandl
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	ALLL_RangedMonster* RangedMonster = CastChecked<ALLL_RangedMonster>(GetAvatarActorFromActorInfo());
-	const ULLL_RangedMonsterDataAsset* RangedMonsterDataAsset = CastChecked<ULLL_RangedMonsterDataAsset>(RangedMonster->GetCharacterDataAsset());
 	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(RangedMonster->GetAbilitySystemComponent()->GetAttributeSet(ULLL_MonsterAttributeSet::StaticClass()));
 
-	ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(RangedMonster->GetObjectPoolingComponent()->GetActor(RangedMonsterDataAsset->ThrownObjectClass));
+	ALLL_ThrownObject* ThrownObject = CastChecked<ALLL_ThrownObject>(RangedMonster->GetObjectPoolingComponent()->GetActor(ThrownObjectClass));
 
 	ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
 	const ULLL_PlayerCharacterAttributeSet* PlayerAttributeSet = CastChecked<ULLL_PlayerCharacterAttributeSet>(Player->GetAbilitySystemComponent()->GetAttributeSet(ULLL_PlayerCharacterAttributeSet::StaticClass()));
 
 	if (IsValid(Player))
 	{
-		const FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(RangedMonster, Player, PlayerAttributeSet->GetMoveSpeed(), MonsterAttributeSet->GetMonsterData2());
+		FVector Velocity = Player->GetVelocity();
+		if (Player->GetCapsuleComponent()->GetCollisionProfileName() == CP_PLAYER_EVADE)
+		{
+			Velocity = Player->GetLastVelocityBeforeDash();
+		}
+		
+		const FVector PredictedLocation = FLLL_MathHelper::GetPredictedLocation(ThrownObject, Player, Velocity, PlayerAttributeSet->GetMoveSpeed(), MonsterAttributeSet->GetClawBasicPredictionRate());
 		const FVector StartLocation = RangedMonster->GetActorLocation();
-		const FVector PredictedDirection = (PredictedLocation - StartLocation).GetSafeNormal();
+		FVector PredictedDirection = (PredictedLocation - StartLocation).GetSafeNormal();
+		PredictedDirection = FLLL_MathHelper::CalculatePredictedDirection(RangedMonster, PredictedDirection);
 		const FRotator PredictedRotation = FRotationMatrix::MakeFromX(PredictedDirection).Rotator();
 	
 		ThrownObject->SetActorLocationAndRotation(StartLocation, PredictedRotation);
 		ThrownObject->CustomTimeDilation = RangedMonster->CustomTimeDilation;
-		ThrownObject->Throw(RangedMonster, Player, MonsterAttributeSet->GetMonsterData1());
+		ThrownObject->Throw(RangedMonster, Player, MonsterAttributeSet->GetClawBasicThrowSpeed(), true, 0.0f);
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))

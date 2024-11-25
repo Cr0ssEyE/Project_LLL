@@ -27,12 +27,6 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void PlayerDashCheckBoxEvent(bool value);
 
-	UFUNCTION(BlueprintCallable)
-	void PlayerChaseActionCheckBoxEvent(bool value);
-	
-	UFUNCTION(BlueprintCallable)
-	void PlayerSkillCheckBoxEvent(bool value);
-
 	virtual void CharacterHitCheckCheckBoxEvent(bool value) override;
 	virtual void CharacterAttackCheckBoxEvent(bool value) override;
 	virtual void CharacterCollisionCheckBoxEvent(bool value) override;
@@ -49,12 +43,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UCheckBox> PlayerDashCheckBox;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCheckBox> PlayerSkillCheckBox;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCheckBox> PlayerChaseActionCheckBox;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> PlayerFillHealthButton;

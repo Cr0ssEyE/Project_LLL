@@ -10,12 +10,13 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Constant/LLL_GameplayTags.h"
-#include "..\..\..\..\..\Public\Constant\LLL_GraphicParameterNames.h"
+#include "Constant/LLL_GraphicParameterNames.h"
 #include "DataTable/LLL_AbilityDataTable.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "GAS/Ability/Character/Player/RewardAbilitiesList/Base/LLL_PGA_RewardAbilityBase.h"
 #include "GAS/Effect/LLL_ExtendedGameplayEffect.h"
 #include "UI/Entity/Character/Player/LLL_MainEruriaInfoWidget.h"
+#include "Util/LLL_AbilityDataHelper.h"
 
 void ULLL_InventoryWidget::NativeConstruct()
 {
@@ -28,11 +29,14 @@ void ULLL_InventoryWidget::NativeConstruct()
 	CurrentEmptyEruriaSlotIndex = 0;
 }
 
-void ULLL_InventoryWidget::SetEruriaInfo(const FAbilityDataTable* AbilityData)
+void ULLL_InventoryWidget::SetEnuriaInfo(const FAbilityDataTable* AbilityData)
 {
-	if (SetEruriaImage(CommonEruriaImages[CurrentEmptyEruriaSlotIndex], CommonEruriaLevelTexts[CurrentEmptyEruriaSlotIndex], AbilityData))
+	if (CurrentEmptyEruriaSlotIndex < CommonEruriaImages.Num())
 	{
-		CurrentEmptyEruriaSlotIndex++;
+		if (SetEruriaImage(CommonEruriaImages[CurrentEmptyEruriaSlotIndex], CommonEruriaLevelTexts[CurrentEmptyEruriaSlotIndex], AbilityData))
+		{
+			CurrentEmptyEruriaSlotIndex++;
+		}
 	}
 }
 
@@ -75,8 +79,9 @@ void ULLL_InventoryWidget::RegisterInventoryLayout(const UVerticalBox* VerticalB
 bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, const FAbilityDataTable* AbilityData)
 {
 	const ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningPlayer()->GetCharacter());
+	const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	TArray<FGameplayAbilitySpecHandle> SpecHandles;
-	Player->GetAbilitySystemComponent()->FindAllAbilitiesWithTags(SpecHandles, FGameplayTagContainer(TAG_GAS_ABILITY_PART_COMMON));
+	PlayerASC->FindAllAbilitiesWithTags(SpecHandles, FGameplayTagContainer(TAG_GAS_ABILITY_NESTING_ALLOW));
 
 	float AbilityLevel = 0.f;
 	if (!SpecHandles.IsEmpty())
@@ -99,18 +104,17 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 	}
 	else
 	{
-		TArray<FActiveGameplayEffectHandle> EffectHandles = Player->GetAbilitySystemComponent()->GetActiveEffectsWithAllTags(FGameplayTagContainer(TAG_GAS_ABILITY_PART_COMMON));
-
+		TArray<FActiveGameplayEffectHandle> EffectHandles = FLLL_AbilityDataHelper::GottenAbilityArrayEffectHandles(GetWorld());
 		if (EffectHandles.IsEmpty())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("어빌리티 및 이펙트에서 보상 찾기 실패")));
-			//ensure(false);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, FString::Printf(TEXT("SetEruriaImage(): 어빌리티 및 이펙트에서 보상 찾기 실패")));
+			ensure(false);
 			return false;
 		}
 
 		for (auto EffectHandle : EffectHandles)
 		{
-			const FActiveGameplayEffect* ActiveGameplayEffect = Player->GetAbilitySystemComponent()->GetActiveGameplayEffect(EffectHandle);
+			const FActiveGameplayEffect* ActiveGameplayEffect = PlayerASC->GetActiveGameplayEffect(EffectHandle);
 			if (!ActiveGameplayEffect)
 			{
 				continue;
@@ -149,6 +153,6 @@ bool ULLL_InventoryWidget::SetEruriaImage(UImage* Image, UTextBlock* TextBlock, 
 	
 	TextBlock->SetText(FText::FromString(AbilityLevelDisplayHelper.DisplayText[static_cast<uint32>(AbilityLevel)]));
 	MaterialInstanceDynamic->SetVectorParameterValue(UI_RARITY_COLOR, EruriaRarityColor[static_cast<uint32>(AbilityData->AbilityRank)]);
-	MaterialInstanceDynamic->SetTextureParameterValue(UI_ERURIA_ICON, EruriaIConTextures[static_cast<uint32>(AbilityData->AbilityType)]);
+	MaterialInstanceDynamic->SetTextureParameterValue(UI_ERURIA_ICON, EruriaIConTextures[static_cast<uint32>(AbilityData->AnimalType)]);
 	return true;
 }

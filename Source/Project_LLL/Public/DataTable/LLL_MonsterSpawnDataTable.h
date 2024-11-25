@@ -19,7 +19,8 @@ struct FMonsterSpawnDataTable : public FTableRowBase
 	
 	FMonsterSpawnDataTable() :
 	Group(1),
-	SpawnPoint(1)
+	SpawnPoint(1),
+	bIsElite(false)
 	{
 		
 	}
@@ -32,6 +33,9 @@ struct FMonsterSpawnDataTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	TSubclassOf<ALLL_MonsterBase> MonsterClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	uint8 bIsElite : 1;
 };
 
 UCLASS()
