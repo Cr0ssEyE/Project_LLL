@@ -54,6 +54,10 @@ void ALLL_RewardObject::BeginPlay()
 	PriceWidget->SetVisibility(ESlateVisibility::Hidden);
 	PriceWidget->SetIsEnabled(false);
 
+	if (bIsProduct)
+	{
+		ApplyProductEvent();
+	}
 	SetActorScale3D(FVector(2.0f,2.0f,2.0f));
 
 	if (IsValid(RewardObjectDataAsset->Particle))
@@ -64,7 +68,7 @@ void ALLL_RewardObject::BeginPlay()
 
 void ALLL_RewardObject::ApplyProductEvent()
 {
-	bIsProduct = 1;
+	bIsProduct = true;
 
 	PriceWidget->SetVisibility(ESlateVisibility::Visible);
 	PriceWidget->SetIsEnabled(true);

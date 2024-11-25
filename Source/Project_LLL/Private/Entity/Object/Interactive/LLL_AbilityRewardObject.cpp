@@ -4,6 +4,7 @@
 #include "Entity/Object/Interactive/LLL_AbilityRewardObject.h"
 
 #include "NiagaraComponent.h"
+#include "Constant/LLL_LevelNames.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Character/Player/LLL_PlayerUIManager.h"
 #include "Game/LLL_GameInstance.h"
@@ -45,7 +46,10 @@ void ALLL_AbilityRewardObject::ActiveUI(UNiagaraComponent* PSystem)
 		SelectRewardWidget->Num = Num;
 		RewardGimmickSubsystem->SetRewardButtons();
 	}
-	
+	if (GetWorld()->GetName() == LEVEL_SHOP)
+	{
+		RewardGimmickSubsystem->SetRewardButtons();
+	}
 	SelectRewardWidget->SetVisibility(ESlateVisibility::Visible);
 	SelectRewardWidget->SetIsEnabled(true);
 	SelectRewardWidget->FocusToUI();

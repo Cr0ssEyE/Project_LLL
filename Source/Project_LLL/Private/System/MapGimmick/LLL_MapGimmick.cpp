@@ -144,6 +144,11 @@ void ALLL_MapGimmick::SetupLevel()
 		}
 		SetState(EStageState::READY);
 	}
+
+	if (GetWorld()->GetName() == LEVEL_SHOP)
+	{
+		SetState(EStageState::NEXT);
+	}
 }
 
 void ALLL_MapGimmick::LoadLastSessionMap(FStageInfoData StageInfoData)
@@ -257,7 +262,7 @@ void ALLL_MapGimmick::CreateMap()
 	if (bIsFirstLoad && bIsLoadedFromSave)
 	{
 		FStageInfoData LastInfoData = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->StageInfoData;
-		UE_LOG(LogTemp, Log, TEXT("불러온 맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(LastInfoData.LastStageState)));
+		
 		CurrentState = LastInfoData.LastStageState;
 		
 		if (CurrentState == EStageState::REWARD || (CurrentState == EStageState::NEXT && !IsValid(ShoppingMapComponent)))
@@ -429,7 +434,6 @@ void ALLL_MapGimmick::SetChooseReward()
 
 void ALLL_MapGimmick::SetChooseNext()
 {
-	SetRewardWidget();
 	EnableAllGates();
 }
 
