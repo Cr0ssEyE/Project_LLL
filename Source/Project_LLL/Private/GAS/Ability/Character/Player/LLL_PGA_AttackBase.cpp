@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AnimNotify_PlayNiagaraEffect.h"
+#include "FMODAudioComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
 #include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
@@ -340,6 +341,15 @@ void ULLL_PGA_AttackBase::ChargeEnd()
 	if (!bFullCharged)
 	{
 		PlayerAnimInstance->StopAllMontages(0.3f);
+		if (ILLL_FModInterface* FModInterface = Cast<ILLL_FModInterface>(Player))
+		{
+			UFMODAudioComponent* FModAudioComponent = FModInterface->GetFModAudioComponent();
+			FModAudioComponent->SetEvent(ChargeAttack1FModEvent);
+			FModAudioComponent->Stop();
+			FModAudioComponent->SetEvent(ChargeAttack2FModEvent);
+			FModAudioComponent->Stop();
+			FModAudioComponent->Release();
+		}
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		return;
 	}
