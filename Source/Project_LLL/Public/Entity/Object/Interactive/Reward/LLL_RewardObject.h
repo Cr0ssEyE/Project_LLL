@@ -36,8 +36,8 @@ public:
 	FORCEINLINE uint32 GetRewardDataID() const { return RewardData->ID; }
 	
 protected:
-	UPROPERTY(EditDefaultsOnly)
-	uint8 bIsProduct;
+	UPROPERTY(EditAnywhere)
+	uint8 bIsProduct : 1;
 
 	UPROPERTY(EditDefaultsOnly)
 	float Price;

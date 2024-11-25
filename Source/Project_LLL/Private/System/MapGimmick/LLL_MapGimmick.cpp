@@ -429,6 +429,7 @@ void ALLL_MapGimmick::SetChooseReward()
 
 void ALLL_MapGimmick::SetChooseNext()
 {
+	SetRewardWidget();
 	EnableAllGates();
 }
 
