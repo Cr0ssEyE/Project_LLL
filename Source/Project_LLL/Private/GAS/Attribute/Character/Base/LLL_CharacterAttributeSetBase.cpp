@@ -58,10 +58,14 @@ void ULLL_CharacterAttributeSetBase::PostGameplayEffectExecute(const FGameplayEf
 		Character->TakeDamageDelegate.Broadcast(DOT);
 
 		//어빌리티에게 피해를 입힌 대상을 전달하는 방법. TryActivate가 아닌 SendGameplayEvent라 Ability Triggers에 태그 할당 필요
-		FGameplayEventData PayloadData;
-		ALLL_BaseCharacter* Attacker = CastChecked<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
-		PayloadData.Instigator = Attacker;
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
+		ALLL_BaseCharacter* Attacker = Cast<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
+		if (IsValid(Attacker))
+		{
+			FGameplayEventData PayloadData;
+			PayloadData.Instigator = Attacker;
+			Attacker->UpdateWidgetDelegate.Broadcast();
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
+		}
 		
 		SetReceiveDamage(0.f);
 	}

@@ -11,6 +11,7 @@
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Entity/Object/Thrown/Base/LLL_ThrownObject.h"
 #include "Game/LLL_DebugGameInstance.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Util/LLL_AbilityDataHelper.h"
 
 ULLL_PlayerCharacterAttributeSet::ULLL_PlayerCharacterAttributeSet() :
@@ -28,7 +29,20 @@ MoveSpeedPlus(0.0f),
 BaseAttackKnockBackPowerPlus(0.0f),
 DashDistancePlus(0.0f),
 FasterAttackAttackSpeedRate(1.0f),
-BleedingExplosionOffencePower(0.0f)
+BleedingExplosionOffencePower(0.0f),
+CriticalChancePlus(0.0f),
+FeatherManaRecoveryValue(0.0f)
+
+//임시
+,MaxMana(100),
+CurrentMana(0),
+ChargeAttack1ManaCost(1),
+ChargeAttack2ManaCost(1),
+OffencePowerRate1(2),
+OffencePowerRate2(2),
+OffencePowerRate3(2),
+OffencePowerRate4(2),
+AttackManaRecoveryValue(5.0f)
 {
 	
 }
@@ -71,6 +85,42 @@ void ULLL_PlayerCharacterAttributeSet::InitializeSavedStatusData(const FPlayerCh
 	OwnerCharacter->UpdateWidgetDelegate.Broadcast();
 }
 
+void ULLL_PlayerCharacterAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetEvasionRateAttribute())
+	{
+		RecalculateEvasion(NewValue);
+	}
+
+	if (Attribute == GetEvasionFlagAttribute())
+	{
+		ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetOwningActor());
+		if (const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent())
+		{
+			if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_EVASION_DASH))
+			{
+				const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+				if (NewValue)
+				{
+					Player->ParticleDurationActivate(PlayerDataAsset->EvasionDashParticle, Player->GetEvasionDashTimer());
+				}
+				else
+				{
+					Player->ParticleDeactivate(PlayerDataAsset->EvasionDashParticle);
+				}
+			}
+		}
+	}
+	
+	if (Attribute == GetMoveSpeedAttribute() || Attribute == GetMoveSpeedPlusAttribute())
+	{
+		const ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwningActor());
+		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GetMoveSpeed() + GetMoveSpeedPlus();
+	}
+}
+
 void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	if (Data.EvaluatedData.Attribute == GetReceiveDamageAttribute())
@@ -81,67 +131,92 @@ void ULLL_PlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplay
 			return;
 		}
 		
-		ALLL_BaseCharacter* Attacker = CastChecked<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
-		const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
-
-#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
-		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+		ALLL_BaseCharacter* Attacker = Cast<ALLL_BaseCharacter>(Data.EffectSpec.GetEffectContext().Get()->GetInstigator());
+		if (IsValid(Attacker))
 		{
-			if (DebugGameInstance->CheckPlayerIsInvincible())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 무적 상태")));
-				Player->Damaged(Attacker, DOT);
-				Player->TakeDamageDelegate.Broadcast(DOT);
-
-				FGameplayEventData PayloadData;
-				PayloadData.Instigator = Attacker;
-				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
-				return;
-			}
-		}
-#endif
-		
-		bool bIsEvasion = false;
-		if (GetEvasionRate() != 0.0f)
-		{
-			bIsEvasion = FMath::RandRange(0.0f, 1.0f) <= GetEvasionRate();
-		}
-
-		if (Player->GetCapsuleComponent()->GetCollisionProfileName() == CP_PLAYER_EVADE)
-		{
-			bIsEvasion = true;
-		}
-		
-		if (!bIsEvasion)
-		{
-			SetReceiveDamage(GetReceiveDamage() * GetReceiveDamageRate());
-			SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
-			SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
-			if (GetCurrentHealth() == 0 && !Player->CheckCharacterIsDead())
-			{
-				Player->Dead();
-			}
-			else
-			{
-				Player->Damaged(Attacker, DOT);
-			}
+			const bool DOT = Data.EffectSpec.Def->DurationPolicy == EGameplayEffectDurationType::HasDuration;
 
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 			if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
 			{
-				if (DebugGameInstance->CheckPlayerHitDebug())
+				if (DebugGameInstance->CheckPlayerIsInvincible())
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 데미지 입음. : %f"), Data.EvaluatedData.Magnitude));
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 무적 상태")));
+					Player->Damaged(Attacker, DOT);
+					Player->TakeDamageDelegate.Broadcast(DOT);
+
+					FGameplayEventData PayloadData;
+					PayloadData.Instigator = Attacker;
+					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwningActor(), TAG_GAS_DAMAGED, PayloadData);
+					return;
 				}
 			}
 #endif
-		}
-		else
-		{
-			UE_LOG(LogTemp, Log, TEXT("%.2f 확률로 회피 발동"), GetEvasionRate() * 100.0f)
-			return;
+		
+			bool bIsEvasion = static_cast<bool>(GetEvasionFlag());
+			RecalculateEvasion(GetEvasionRate());
+		
+			if (Player->GetCapsuleComponent()->GetCollisionProfileName() == CP_PLAYER_EVADE)
+			{
+				bIsEvasion = true;
+			}
+		
+			if (!bIsEvasion)
+			{
+				SetReceiveDamage(GetReceiveDamage() * GetReceiveDamageRate());
+
+				// 과충전 이누리아
+				const UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+				if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK) && Player->CheckChargeTriggered())
+				{
+					SetReceiveDamage(GetReceiveDamage() * (1 - Player->GetChargeAttackReceiveDamageRateDecrease()));
+				}
+			
+				SetReceiveDamage(FMath::Floor(GetReceiveDamage()));
+				SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetReceiveDamage(), 0.f, GetMaxHealth()));
+				if (GetCurrentHealth() == 0 && !Player->CheckCharacterIsDead())
+				{
+					Player->Dead();
+				}
+				else
+				{
+					Player->Damaged(Attacker, DOT);
+				}
+
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+				if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+				{
+					if (DebugGameInstance->CheckPlayerHitDebug())
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("플레이어 데미지 입음. : %f"), Data.EvaluatedData.Magnitude));
+					}
+				}
+#endif
+			}
+			else
+			{
+				UE_LOG(LogTemp, Log, TEXT("%.2f 확률로 회피 발동"), GetEvasionRate() * 100.0f)
+				return;
+			}
 		}
 	}
 	
+	if (Data.EvaluatedData.Attribute == GetCurrentManaAttribute())
+	{
+		SetCurrentMana(FMath::Clamp(GetCurrentMana(), 0.f, GetMaxMana()));
+	}
+	
 	Super::PostGameplayEffectExecute(Data);
+}
+
+void ULLL_PlayerCharacterAttributeSet::RecalculateEvasion(const float EvasionRateValue)
+{
+	if (EvasionRateValue != 0.0f)
+	{
+		SetEvasionFlag(FMath::RandRange(0.0f, 1.0f) <= EvasionRateValue);
+	}
+	else
+	{
+		SetEvasionFlag(false);
+	}
 }

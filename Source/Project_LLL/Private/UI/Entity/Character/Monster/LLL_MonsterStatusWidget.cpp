@@ -8,12 +8,19 @@
 
 void ULLL_MonsterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSetBase* CharacterAttributeSet)
 {
-	Super::UpdateWidgetView(CharacterAttributeSet);
-
 	const ULLL_MonsterAttributeSet* MonsterAttributeSet = CastChecked<ULLL_MonsterAttributeSet>(CharacterAttributeSet);
 	const float MaxShield = MonsterAttributeSet->GetMaxShield();
 	const float CurrentShield = MonsterAttributeSet->GetCurrentShield();
-
+	const float MaxHealth = CharacterAttributeSet->GetMaxHealth();
+	const float CurrentHealth = CharacterAttributeSet->GetCurrentHealth();
+	if(MaxHealth)
+	{
+		HealthGaugeBar->SetPercent(CurrentHealth / MaxHealth);
+	}
+	else
+	{
+		HealthGaugeBar->SetPercent(0.f);
+	}
 	if(MaxShield)
 	{
 		ShieldGaugeBar->SetPercent(CurrentShield / MaxShield);
@@ -22,4 +29,9 @@ void ULLL_MonsterStatusWidget::UpdateWidgetView(const ULLL_CharacterAttributeSet
 	{
 		ShieldGaugeBar->SetPercent(0.f);
 	}
+}
+
+void ULLL_MonsterStatusWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
 }

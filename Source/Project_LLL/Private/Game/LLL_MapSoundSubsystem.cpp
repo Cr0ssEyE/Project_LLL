@@ -4,6 +4,7 @@
 #include "Game/LLL_MapSoundSubsystem.h"
 
 #include "Constant/LLL_FilePath.h"
+#include "Constant/LLL_LevelNames.h"
 #include "Game/LLL_GameInstance.h"
 #include "Util/LLL_ConstructorHelper.h"
 
@@ -65,7 +66,32 @@ void ULLL_MapSoundSubsystem::SetPauseParameter(float Value) const
 
 void ULLL_MapSoundSubsystem::PlayBGM()
 {
-	BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), MapSoundSubsystemDataAsset->BGM, true);
+	FString Name = GetWorld()->GetName();
+	if(Name == LEVEL_TITLE)
+	{
+		BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), MapSoundSubsystemDataAsset->BGMTitle, true);
+		return;
+	}
+	if(Name == LEVEL_STAGE1_02)
+	{
+		BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), MapSoundSubsystemDataAsset->BGMStage1, true);
+		return;
+	}
+	if(Name == LEVEL_SHOP)
+	{
+		BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), MapSoundSubsystemDataAsset->BGMShop, true);
+		return;
+	}
+	if(Name == LEVEL_STAGE1_BOSS)
+	{
+		BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), MapSoundSubsystemDataAsset->BGMStage1Boss, true);
+		return;
+	}
+	if(Name == LEVEL_CREDIT)
+	{
+		BGMWrapper = UFMODBlueprintStatics::PlayEvent2D(GetWorld(), MapSoundSubsystemDataAsset->BGMDeer, true);
+		return;
+	}
 }
 
 void ULLL_MapSoundSubsystem::PlayAMB()

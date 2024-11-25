@@ -28,6 +28,7 @@ public:
 	
 	FORCEINLINE void SetCharging(const bool IsCharging) { bIsCharging = IsCharging; }
 	FORCEINLINE void SetKnockBackSender(ALLL_MonsterBase* InKnockBackSender) { KnockBackSender = InKnockBackSender; }
+	FORCEINLINE void SetIsElite(const bool IsElite) { bIsElite = IsElite; }
 	
 	FORCEINLINE virtual float GetKnockBackedPower() const override { return bIsKnockBacking ? LastKnockBackPower : 0.0f; }
 	FORCEINLINE bool IsCharging() const { return bIsCharging; }
@@ -55,22 +56,23 @@ public:
 	void ShowHitEffect();
 	void ConnectOwnerDeadDelegate();
 	void DisconnectOwnerDeadDelegate();
-	void DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* Monster);
-	void DamageKnockBackCauser(ALLL_PlayerBase* Player);
+	void DamageKnockBackTarget(ALLL_PlayerBase* Player, const ALLL_MonsterBase* OtherMonster);
+	void DamageKnockBackCauser(ALLL_PlayerBase* Player, AActor* Other);
 	void Stun();
 	void ShowDamageValue(const float Damage) const;
+	void SetOutline();
 
 	// 이누리아 관련
 public:
 	FORCEINLINE void SetBleedingStack(const int32 InBleedingStack) { BleedingStack = InBleedingStack <= MaxBleedingStack ? InBleedingStack : MaxBleedingStack; }
 	FORCEINLINE void SetMaxBleedingStack(const int32 InMaxBleedingStack) { MaxBleedingStack = InMaxBleedingStack; }
-	FORCEINLINE void SetBleedingTransmissionOffencePower(const float InBleedingTransmissionOffencePower) { BleedingTransmissionOffencePower = InBleedingTransmissionOffencePower; }
 	
 	FORCEINLINE int32 GetBleedingStack() const { return BleedingStack; }
-	FORCEINLINE bool GetBleedingTrigger() const { return bBleedingTrigger; }
 	FORCEINLINE float GetMaxBleedingStack() const { return MaxBleedingStack; }
 
-	void ToggleBleedingTrigger();
+	bool CheckBleedingTrigger();
+	void IncreaseBleedingTrigger();
+	void ResetBleedingTrigger();
 	
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -97,12 +99,14 @@ protected:
 	uint8 bKnockBackTargetDamaged : 1;
 	uint8 bKnockBackCauserDamaged : 1;
 
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsElite : 1;
+
 	// 이누리아 관련
 protected:
 	int32 BleedingStack;
 	int32 MaxBleedingStack;
-	uint8 bBleedingTrigger : 1;
-	float BleedingTransmissionOffencePower;
+	int32 BleedingTriggerCount;
 	uint8 bBleedingTransmissionTargetDamaged: 1;
 	
 public:
@@ -124,10 +128,13 @@ protected:
 	TObjectPtr<UNiagaraComponent> StackVFXComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UNiagaraComponent> BleedingVFXComponent;
+	TObjectPtr<UNiagaraComponent> BleedingVFXComponent1;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UMaterialInstanceDynamic> HitEffectOverlayMaterialInstance;
+	TObjectPtr<UNiagaraComponent> BleedingVFXComponent2;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UMaterialInstanceDynamic> HitEffectMaterialInstance;
 	
 //gold section
 public:

@@ -96,9 +96,9 @@ void ULLL_MonsterASC::CheckAbnormalEffect(const FGameplayEffectSpec& GameplayEff
 			RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(TAG_GAS_STATUS_BLEEDING));
 
 			Monster->SetBleedingStack(0);
-			if (Monster->GetBleedingTrigger())
+			if (Monster->CheckBleedingTrigger())
 			{
-				Monster->ToggleBleedingTrigger();
+				Monster->ResetBleedingTrigger();
 			}
 
 			Monster->UpdateBleedingVFX(false);

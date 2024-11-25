@@ -20,6 +20,9 @@ class PROJECT_LLL_API ALLL_ManOfStrength : public ALLL_BossMonster, public ILLL_
 public:
 	ALLL_ManOfStrength();
 	
+	FORCEINLINE virtual void SetDashing(const bool IsDashing) override { bIsDashing = IsDashing; }
+	FORCEINLINE virtual bool IsDashing() const override { return bIsDashing; }
+	
 	virtual float GetMaxDashDistance() const override { return DashDistance; }
 	virtual float GetMinDashDistance() const override { return DashDistance; }
 	virtual float GetDashSpeed() const override { return DashSpeed; }

@@ -5,13 +5,17 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_GameplayTags.h"
+#include "Constant/LLL_GraphicParameterNames.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
 #include "Entity/Character/Monster/Boss/ManOfStrength/LLL_ManOfStrength.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Entity/Object/Breakable/LLL_BreakableObjectBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ASC/LLL_BaseASC.h"
 #include "GAS/Attribute/Character/Monster/LLL_MonsterAttributeSet.h"
@@ -102,10 +106,18 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 	PayloadData.TargetData = TargetDataHandle;
 	PayloadData.EventMagnitude = CurrentEventData.EventMagnitude;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, TAG_GAS_ATTACK_HIT_CHECK_SUCCESS, PayloadData);
-
-	// 날아온 몬스터 받아치기
+	if (UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent())
+	{
+		if (PlayerASC->HasMatchingGameplayTag(TAG_GAS_HAVE_MOVE_FASTER))
+		{
+			const ULLL_PlayerBaseDataAsset* PlayerDataAsset = CastChecked<ULLL_PlayerBaseDataAsset>(Player->GetCharacterDataAsset());
+			Player->ParticleDurationActivate(PlayerDataAsset->MoveFasterParticle, Player->GetMoveFasterTimer());
+		}
+	}
+	
 	for (auto TargetActor : TargetDataHandle.Data[0]->GetActors())
 	{
+		// 날아온 몬스터 받아치기
 		if (ALLL_MonsterBase* Monster = Cast<ALLL_MonsterBase>(TargetActor))
 		{
 			ALLL_ManOfStrength* ManOfStrength = Cast<ALLL_ManOfStrength>(Monster->GetOwner());
@@ -126,6 +138,11 @@ void ULLL_PGA_AttackHitCheck::OnTraceResultCallBack(const FGameplayAbilityTarget
 				MonsterMovement->Activate();
 				MonsterMovement->Velocity = Direction * Speed * 2.0f;
 			}
+		}
+
+		if (ALLL_BreakableObjectBase* BreakableObject = Cast<ALLL_BreakableObjectBase>(TargetActor))
+		{
+			BreakableObject->ReceivePlayerAttackOrKnockBackedMonster();
 		}
 	}
 }

@@ -31,6 +31,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Niagara", DisplayName = "허리 부착 파티클")
 	TObjectPtr<UNiagaraSystem> SpineParticle;
 	
+	UPROPERTY(EditAnywhere, Category = "Niagara", DisplayName = "맹렬한 공세 이펙트")
+	TObjectPtr<UNiagaraSystem> QuadrupleHitParticle;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara", DisplayName = "우레걸음 이펙트")
+	TObjectPtr<UNiagaraSystem> MoveFasterParticle;
+	
+	UPROPERTY(EditAnywhere, Category = "Niagara", DisplayName = "우레걸음 이펙트")
+	TObjectPtr<UNiagaraSystem> EvasionDashParticle;
+	
 	// UI 관련 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI", DisplayName = "일시정지 UI")
@@ -78,8 +87,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "돌진 입력 키")
 	TObjectPtr<UInputAction> DashInputAction;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "기본 공격 입력 키")
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "공격 입력 키")
 	TObjectPtr<UInputAction> AttackInputAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "범위 공격 입력 키")
+	TObjectPtr<UInputAction> RangeAttackInputAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input", DisplayName = "상호작용 입력 키")
 	TObjectPtr<UInputAction> InteractionInputAction;
@@ -114,8 +126,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "넉백된 대상과 충돌한 대상이 받는 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> KnockBackTargetDamageEffect;
 
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "마나 사용 이펙트")
+	TSubclassOf<UGameplayEffect> UseManaEffect1;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "마나 사용 이펙트")
+	TSubclassOf<UGameplayEffect> UseManaEffect2;
+
 	// 이누리아 관련
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "지원 강화 이누리아 마나 회복 이펙트")
+	TSubclassOf<UGameplayEffect> RecoveryManaByFeatherRecoveryManaEffect;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Enuria", DisplayName = "연쇄 작용 이누리아 데미지 이펙트")
 	TSubclassOf<UGameplayEffect> KnockBackTransmissionDamageEffect;
 

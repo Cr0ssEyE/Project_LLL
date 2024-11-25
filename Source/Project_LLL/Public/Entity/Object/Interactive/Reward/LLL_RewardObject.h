@@ -34,18 +34,10 @@ public:
 public:
 	FORCEINLINE uint32 GetRewardDataIndex() const { return RewardIndex; }
 	FORCEINLINE uint32 GetRewardDataID() const { return RewardData->ID; }
+	
 protected:
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UStaticMesh> RewardMesh;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UStaticMeshComponent> TextureMeshComponent;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UStaticMesh> RewardTextureMesh;
-
-	UPROPERTY(EditDefaultsOnly)
-	uint8 bIsProduct;
+	UPROPERTY(EditAnywhere)
+	uint8 bIsProduct : 1;
 
 	UPROPERTY(EditDefaultsOnly)
 	float Price;

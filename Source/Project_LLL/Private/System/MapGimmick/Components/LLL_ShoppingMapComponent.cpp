@@ -5,6 +5,7 @@
 #include "Entity/Object/Interactive/Reward/LLL_RewardObject.h"
 #include "Game/LLL_GameInstance.h"
 #include "Game/LLL_GameProgressManageSubSystem.h"
+#include "Game/LLL_RewardGimmickSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/MapGimmick/Components/LLL_ProductSpawnPointComponent.h"
 
@@ -57,6 +58,7 @@ void ULLL_ShoppingMapComponent::SetProducts()
 	{
 		SavedShoppingProductList = GameInstance->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->PlayerPlayProgressData.ShoppingProductList;
 	}
+	GameInstance->GetSubsystem<ULLL_RewardGimmickSubsystem>()->SetRewardButtons();
 
 	int32 ProductIndex = 0;
 	for (USceneComponent* ChildComponent : GetOwner()->GetRootComponent()->GetAttachChildren())
@@ -64,45 +66,7 @@ void ULLL_ShoppingMapComponent::SetProducts()
 		ULLL_ProductSpawnPointComponent* SpawnPoint = Cast<ULLL_ProductSpawnPointComponent>(ChildComponent);
 		if (IsValid(SpawnPoint))
 		{
-			/*switch (static_cast<ERewardCategory>(FMath::RandRange(2, 4)))
-			{
-			case ERewardCategory::Ability:
-				Product = GetWorld()->SpawnActor<ALLL_AbilityRewardObject>(ALLL_AbilityRewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
-				break;
-			case ERewardCategory::Enhance:
-				Product = GetWorld()->SpawnActor<ALLL_EnhanceRewardObject>(ALLL_EnhanceRewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
-				break;
-			case ERewardCategory::MaxHP:
-				Product = GetWorld()->SpawnActor<ALLL_MaxHPRewardObject>(ALLL_MaxHPRewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
-				break;
-			default: ;
-			}*/
-			const uint32 Index = FMath::RandRange(0, RewardData.Num() - 1);
-			const FRewardDataTable* ProductData = nullptr;
-			// ID != INT8_MAX. ID 값이 구조체 디폴트 값이 아닌 경우 -> 구매하지 않은 품목이 있는 경우
-			if (!SavedShoppingProductList.IsEmpty() && SavedShoppingProductList[ProductIndex] != INT8_MAX)
-			{
-				for (const auto SavedProductData : RewardData)
-				{
-					if (SavedShoppingProductList[ProductIndex] == SavedProductData->ID)
-					{
-						ProductData = SavedProductData;
-						break;
-					}
-				}
-			}
-			else if (SavedShoppingProductList.IsEmpty())
-			{
-				ProductData = RewardData[Index];
-			}
-			ProductIndex++;
-
-			if (!ProductData)
-			{
-				continue;
-			}
-
-			ALLL_RewardObject* Product = GetWorld()->SpawnActor<ALLL_RewardObject>(ALLL_RewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
+			/*ALLL_RewardObject* Product = GetWorld()->SpawnActor<ALLL_RewardObject>(ALLL_RewardObject::StaticClass(), SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation());
 			FVector Vector = Product->GetActorLocation();
 			Vector.Z += 150;
 			Product->SetActorLocation(Vector);
@@ -111,7 +75,7 @@ void ULLL_ShoppingMapComponent::SetProducts()
 			Product->InteractionDelegate.AddUObject(this, &ULLL_ShoppingMapComponent::SetDelegate);
 			Product->SetInformation(ProductData, Index);
 			Product->ApplyProductEvent();
-			ProductList.Add(Product);
+			ProductList.Add(Product);*/
 		}
 	}
 }

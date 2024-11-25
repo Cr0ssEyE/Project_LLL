@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "Constant/LLL_FilePath.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
+#include "Game/LLL_DebugGameInstance.h"
 #include "GAS/Attribute/Object/Ability/LLL_RangeFeatherDetectorAttributeSet.h"
 #include "Util/LLL_ConstructorHelper.h"
 
@@ -32,8 +33,15 @@ void ALLL_RangeFeatherDetector::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	// 이펙트가 나오기 전까지 디버그 유지
-	DrawDebugSphere(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius(), 16, FColor::Green, false, AbilityObjectAttributeSet->GetDestroyTimer());
+#if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
+	if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (DebugGameInstance->CheckPlayerAttackDebug())
+		{
+			DrawDebugSphere(GetWorld(), GetActorLocation(), OverlapCollisionSphere->GetScaledSphereRadius(), 16, FColor::Green, false, AbilityObjectAttributeSet->GetDestroyTimer());
+		}
+	}
+#endif
 }
 
 void ALLL_RangeFeatherDetector::NotifyActorBeginOverlap(AActor* OtherActor)

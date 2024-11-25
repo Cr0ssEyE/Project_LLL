@@ -12,11 +12,11 @@
 #include "LevelSequenceActor.h"
 #include "MovieSceneSequencePlaybackSettings.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Constant/LLL_AnimRelationNames.h"
 #include "Constant/LLL_AttributeInitializeGroupName.h"
-#include "Components/WidgetComponent.h"
 #include "Constant/LLL_CollisionChannel.h"
 #include "Constant/LLL_FilePath.h"
 #include "Constant/LLL_GameplayTags.h"
@@ -78,11 +78,12 @@ ALLL_PlayerBase::ALLL_PlayerBase()
 	SpringArm->bInheritYaw = false;
 	SpringArm->bInheritRoll = false;
 	SpringArm->SetUsingAbsoluteRotation(true);
-	// SpringArm->SetupAttachment(RootComponent);
+	//SpringArm->SetupAttachment(RootComponent);
 
 	LastCheckedMouseLocation = FVector::Zero();
 	bIsLowHP = false;
 	FeatherSpawnStartTime = 0.01f;
+	bChargeTriggered = false;
 }
 
 void ALLL_PlayerBase::BeginPlay()
@@ -184,8 +185,14 @@ void ALLL_PlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::SetMoveInputPressed, true);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::MoveAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->MoveInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::SetMoveInputPressed, false);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack);
-	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::AttackActionCompleted, EAbilityInputName::Attack);
+
+	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Canceled, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack, false);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->RangeAttackInputAction, ETriggerEvent::Canceled, this, &ALLL_PlayerBase::AttackAction, EAbilityInputName::Attack, true);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::ChargeAttackAction, EAbilityInputName::Attack, false);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->AttackInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::ChargeAttackActionCompleted, EAbilityInputName::Attack, false);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->RangeAttackInputAction, ETriggerEvent::Triggered, this, &ALLL_PlayerBase::ChargeAttackAction, EAbilityInputName::Attack, true);
+	EnhancedInputComponent->BindAction(PlayerDataAsset->RangeAttackInputAction, ETriggerEvent::Completed, this, &ALLL_PlayerBase::ChargeAttackActionCompleted, EAbilityInputName::Attack, true);
+	
 	EnhancedInputComponent->BindAction(PlayerDataAsset->DashInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::DashAction, EAbilityInputName::Dash);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InteractionInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InteractAction);
 	EnhancedInputComponent->BindAction(PlayerDataAsset->InventoryInputAction, ETriggerEvent::Started, this, &ALLL_PlayerBase::InventoryAction);
@@ -412,8 +419,16 @@ void ALLL_PlayerBase::DashAction(const FInputActionValue& Value, EAbilityInputNa
 	}
 }
 
-void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInputName InputName)
+void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range)
 {
+	if (bChargeTriggered)
+	{
+		return;
+	}
+	
+	bAttackIsRange = Range;
+	KnockBackDirection = (CheckMouseLocation() - GetActorLocation()).GetSafeNormal2D();
+	
 	const int32 InputID = static_cast<int32>(InputName);
 	if(FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
@@ -427,13 +442,70 @@ void ALLL_PlayerBase::AttackAction(const FInputActionValue& Value, EAbilityInput
 			ASC->TryActivateAbility(AttackSpec->Handle);
 		}
 	}
+
+	UE_LOG(LogTemp, Log, TEXT("%s 공격"), Range ? TEXT("범위") : TEXT("일반"))
 }
 
-void ALLL_PlayerBase::AttackActionCompleted(const FInputActionValue& Value, EAbilityInputName InputName)
+void ALLL_PlayerBase::ChargeAttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range)
 {
-	// 과충전 이누리아
-	if (ASC->HasMatchingGameplayTag(TAG_GAS_HAVE_CHARGE_ATTACK))
+	if (bChargeTriggered)
 	{
+		return;
+	}
+	
+	if (!Range && PlayerCharacterAttributeSet->GetCurrentMana() < PlayerCharacterAttributeSet->GetChargeAttack1ManaCost())
+	{
+		return;
+	}
+
+	if (Range && PlayerCharacterAttributeSet->GetCurrentMana() < PlayerCharacterAttributeSet->GetChargeAttack2ManaCost())
+	{
+		return;
+	}
+
+	if (bChargeCanceled)
+	{
+		return;
+	}
+
+	bChargeTriggered = true;
+	bAttackIsRange = Range;
+
+	const int32 InputID = static_cast<int32>(InputName);
+	if(FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID))
+	{
+		AttackSpec->InputPressed = true;
+		if (AttackSpec->IsActive())
+		{
+			ASC->AbilitySpecInputPressed(*AttackSpec);
+		}
+		else
+		{
+			ASC->TryActivateAbility(AttackSpec->Handle);
+		}
+	}
+	
+	UE_LOG(LogTemp, Log, TEXT("차지 %s 공격 충전"), Range ? TEXT("범위") : TEXT("일반"))
+}
+
+void ALLL_PlayerBase::ChargeAttackActionCompleted(const FInputActionValue& Value, EAbilityInputName InputName, bool Range)
+{
+	if (bAttackIsRange != Range)
+	{
+		return;
+	}
+
+	if (bChargeCanceled)
+	{
+		bChargeCanceled = false;
+		return;
+	}
+	
+	// 과충전 이누리아
+	if (bChargeTriggered)
+	{
+		KnockBackDirection = (CheckMouseLocation() - GetActorLocation()).GetSafeNormal2D();
+		
 		const int32 InputID = static_cast<int32>(InputName);
 		if(FGameplayAbilitySpec* AttackSpec = ASC->FindAbilitySpecFromInputID(InputID))
 		{
@@ -443,6 +515,12 @@ void ALLL_PlayerBase::AttackActionCompleted(const FInputActionValue& Value, EAbi
 				ASC->AbilitySpecInputPressed(*AttackSpec);
 			}
 		}
+		
+		UE_LOG(LogTemp, Log, TEXT("차지 %s 공격 해제"), Range ? TEXT("범위") : TEXT("일반"))
+	}
+	else
+	{
+		AttackAction(Value, InputName, Range);
 	}
 }
 
@@ -450,11 +528,11 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 {
 	if (!bCanSkill)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 쿨타임이 끝나지 않음")));
+		UE_LOG(LogTemp, Log, TEXT("스킬 쿨타임이 끝나지 않음"));
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 사용")));
+	UE_LOG(LogTemp, Log, TEXT("스킬 사용"));
 	const int32 InputID = static_cast<int32>(InputName);
 	if(FGameplayAbilitySpec* SkillSpec = ASC->FindAbilitySpecFromInputID(InputID))
 	{
@@ -466,11 +544,12 @@ void ALLL_PlayerBase::SkillAction(const FInputActionValue& Value, EAbilityInputN
 		else
 		{
 			ASC->TryActivateAbility(SkillSpec->Handle);
+			bSkillTriggered = true;
 
 			bCanSkill = false;
 			GetWorldTimerManager().SetTimer(SkillCoolTimeTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 				bCanSkill = true;
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("스킬 쿨타임 완료")));
+				UE_LOG(LogTemp, Log, TEXT("스킬 쿨타임 완료"));
 			}), SkillCoolTime, false);
 		}
 	}
@@ -540,6 +619,36 @@ void ALLL_PlayerBase::ReadyToUseSkill()
 	bCanSkill = true;
 }
 
+void ALLL_PlayerBase::ParticleDurationActivate(UNiagaraSystem* NiagaraSystem, float Timer)
+{
+	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(NiagaraSystem, GetMesh(), TEXT("Hips"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
+	NiagaraComponents.Emplace(NiagaraComponent);
+	
+	FTimerHandle MoveFasterTimerHandle;
+	GetWorldTimerManager().SetTimer(MoveFasterTimerHandle, FTimerDelegate::CreateWeakLambda(this, [=, this] {
+		NiagaraComponent->Deactivate();
+		NiagaraComponent->SetVisibility(false);
+		NiagaraComponents.Remove(NiagaraComponent);
+	}), Timer, false);
+}
+
+void ALLL_PlayerBase::ParticleDeactivate(const UNiagaraSystem* NiagaraSystem)
+{
+	const TArray<UNiagaraComponent*> TempNiagaraComponents = NiagaraComponents;
+	for (auto TempNiagaraComponent : TempNiagaraComponents)
+	{
+		if (IsValid(TempNiagaraComponent) && TempNiagaraComponent->GetAsset()->IsValid())
+		{
+			if (TempNiagaraComponent->GetAsset() == NiagaraSystem)
+			{
+				TempNiagaraComponent->Deactivate();
+				TempNiagaraComponent->SetVisibility(false);
+				NiagaraComponents.Remove(TempNiagaraComponent);
+			}
+		}
+	}
+}
+
 int32 ALLL_PlayerBase::GetEnuriaCount(EAnimalType AnimalType) const
 {
 	if (AnimalType == EAnimalType::None)
@@ -574,15 +683,15 @@ EAnimalType ALLL_PlayerBase::GetSkillEnuriaAnimalType() const
 void ALLL_PlayerBase::StartChargeFeather(float Timer)
 {
 	ChargedFeatherCount = 0;
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
+	UE_LOG(LogTemp, Log, TEXT("충전 깃털 수 : %d"), ChargedFeatherCount);
 	GetWorldTimerManager().ClearTimer(ChargeFeatherTimerHandle);
 	GetWorldTimerManager().SetTimer(ChargeFeatherTimerHandle, FTimerDelegate::CreateWeakLambda(this, [&]{
 		ChargedFeatherCount++;
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 깃털 수 : %d"), ChargedFeatherCount));
+		UE_LOG(LogTemp, Log, TEXT("충전 깃털 수 : %d"), ChargedFeatherCount);
 		if (ChargedFeatherCount == 10)
 		{
 			GetWorldTimerManager().PauseTimer(ChargeFeatherTimerHandle);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("충전 완료")));
+			UE_LOG(LogTemp, Log, TEXT("깃털 충전 완료"));
 		}
 	}), Timer, true);
 }
@@ -663,7 +772,16 @@ void ALLL_PlayerBase::MoveCameraToMouseCursor()
 	}
 	else
 	{
-		SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, 0.f) + GetActorLocation());
+		float Z = 0.0f;
+		if (bChargeTriggered && bAttackIsRange)
+		{
+			Z = GetMesh()->GetSocketLocation(TEXT("Hips")).Z - SphereHeight;
+		}
+		else
+		{
+			SphereHeight = GetMesh()->GetSocketLocation(TEXT("Hips")).Z;
+		}
+		SpringArm->SetRelativeLocation(FVector(CameraMoveVector.Y, CameraMoveVector.X, Z) + GetActorLocation());
 	}
 	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::MoveCameraToMouseCursor);
@@ -673,11 +791,10 @@ void ALLL_PlayerBase::Damaged(AActor* Attacker, bool IsDOT, float Damage)
 {
 	Super::Damaged(Attacker, IsDOT, Damage);
 	
-	const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
-	ASC->CancelAbilities(nullptr, &WithOutTags);
-	
-	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT)
+	if (IsValid(PlayerDataAsset->DamagedAnimMontage) && !IsDOT && !bChargeTriggered && !bSkillTriggered)
 	{
+		const FGameplayTagContainer WithOutTags = FGameplayTagContainer(TAG_GAS_ABILITY_NOT_CANCELABLE);
+		ASC->CancelAbilities(nullptr, &WithOutTags);
 		PlayerAnimInstance->Montage_Play(PlayerDataAsset->DamagedAnimMontage);
 	}
 
@@ -766,7 +883,7 @@ void ALLL_PlayerBase::Dead()
 	{
 		CharacterDissolveActor->SetActorTransform(DissolveStartTransform);
 	}
-	
+	CharacterDissolveActor->SetActorRotation(FQuat(0, 0, 0, 0));
 	DeadSequenceActor->FinishSpawning(FTransform::Identity);
 	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
@@ -782,6 +899,7 @@ void ALLL_PlayerBase::DropDissolveActor()
 	}
 	
 	CharacterDissolveActor->SetActorLocation(CharacterDissolveActor->GetActorLocation() - FVector(0.f, 0.f, PlayerDataAsset->DissolveActorFallSpeed));
+	
 	GetWorldTimerManager().SetTimerForNextTick(this, &ALLL_PlayerBase::DropDissolveActor);
 }
 
@@ -807,7 +925,7 @@ void ALLL_PlayerBase::PullUpDissolveActor()
 void ALLL_PlayerBase::DeadMotionEndedHandle()
 {
 	PlayerUIManager->SetAllWidgetVisibility(true);
-	PlayerUIManager->TogglePauseWidget(bIsDead);
+	UGameplayStatics::OpenLevel(this, LEVEL_CREDIT);
 }
 
 void ALLL_PlayerBase::DeactivatePPLowHP()

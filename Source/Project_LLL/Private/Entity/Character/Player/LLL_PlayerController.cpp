@@ -5,6 +5,7 @@
 
 #include "Entity/Character/Player/LLL_PlayerBase.h"
 #include "Game/LLL_GameProgressManageSubSystem.h"
+#include "Game/LLL_MapSoundSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 
 ALLL_PlayerController::ALLL_PlayerController():
@@ -19,6 +20,13 @@ void ALLL_PlayerController::BeginPlay()
 	
 	UGameplayStatics::SetViewportMouseCaptureMode(this, EMouseCaptureMode::CapturePermanently_IncludingInitialMouseDown);
 	SetGameInputMode();
+	FString Name = GetWorld()->GetName();
+	if (Name == LEVEL_STAGE1_02_2 || Name == LEVEL_STAGE1_04 || Name == LEVEL_STAGE1_04_2)
+	{
+		return;
+	}
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->StopBGM();
+	GetGameInstance()->GetSubsystem<ULLL_MapSoundSubsystem>()->PlayBGM();
 }
 
 void ALLL_PlayerController::OnPossess(APawn* InPawn)

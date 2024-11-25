@@ -54,11 +54,18 @@ void ALLL_DPSTester::BeginPlay()
 		StackVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_OVERHEAD);
 	}
 
-	UNiagaraSystem* BleedingNiagaraSystem = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->BleedingNiagaraSystem;
-	if (IsValid(BleedingNiagaraSystem))
+	UNiagaraSystem* BleedingNiagaraSystem1 = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->BleedingNiagaraSystem1;
+	if (IsValid(BleedingNiagaraSystem1))
 	{
-		BleedingVFXComponent->SetAsset(BleedingNiagaraSystem);
-		BleedingVFXComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
+		BleedingVFXComponent1->SetAsset(BleedingNiagaraSystem1);
+		BleedingVFXComponent1->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
+	}
+	
+	UNiagaraSystem* BleedingNiagaraSystem2 = GetWorld()->GetGameInstanceChecked<ULLL_GameInstance>()->GetGlobalNiagaraDataAsset()->BleedingNiagaraSystem2;
+	if (IsValid(BleedingNiagaraSystem2))
+	{
+		BleedingVFXComponent2->SetAsset(BleedingNiagaraSystem2);
+		BleedingVFXComponent2->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SOCKET_CHEST);
 	}
 }
 

@@ -3,6 +3,9 @@
 
 #include "Game/LLL_GameProgressManageSubSystem.h"
 
+#include "AbilitySystemGlobals.h"
+#include "GameplayAbilitiesModule.h"
+#include "Constant/LLL_AttributeInitializeGroupName.h"
 #include "Constant/LLL_GameplayInfo.h"
 #include "DataAsset/Global/LLL_GlobalParameterDataAsset.h"
 #include "Entity/Character/Player/LLL_PlayerBase.h"
@@ -161,7 +164,7 @@ void ULLL_GameProgressManageSubSystem::SaveGameProgressInfo()
 		{
 			if (PlayerCharacter->CheckCharacterIsDead())
 			{
-				CurrentSaveGameData->LastPlayedLevelName = LEVEL_LOBBY;
+				CurrentSaveGameData->LastPlayedLevelName = LEVEL_TITLE;
 			}
 		}
 		
@@ -367,8 +370,8 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 	}
 
 	Player->InitAttributeSetBySave(&CurrentSaveGameData->PlayerCharacterStatusData);
-	Player->GetGoldComponent()->IncreaseMoney(CurrentSaveGameData->PlayerPlayProgressData.CurrentGoldAmount);
-	
+	Player->GetGoldComponent()->SetMoney(CurrentSaveGameData->PlayerPlayProgressData.CurrentGoldAmount);
+	Player->GetGoldComponent()->LoadGoldData();
 	ULLL_AbilityManageSubSystem* AbilityManageSubSystem = GetGameInstance()->GetSubsystem<ULLL_AbilityManageSubSystem>();
 	TArray<int32> PlayerAcquiredEnuriasID = CurrentSaveGameData->PlayerPlayProgressData.AcquiredEnuriasID;
 

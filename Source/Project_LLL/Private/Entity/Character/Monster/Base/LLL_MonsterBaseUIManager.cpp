@@ -4,7 +4,9 @@
 #include "Entity/Character/Monster/Base/LLL_MonsterBaseUIManager.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Constant/LLL_GeneralConstants.h"
 #include "Entity/Character/Monster/Base/LLL_MonsterBase.h"
+#include "Entity/Character/Monster/Boss/Base/LLL_BossMonster.h"
 #include "UI/Entity/Character/Base/LLL_CharacterStatusWidget.h"
 
 // Sets default values for this component's properties

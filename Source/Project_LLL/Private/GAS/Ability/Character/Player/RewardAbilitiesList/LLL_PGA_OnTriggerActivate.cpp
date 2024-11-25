@@ -99,7 +99,7 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 	ALLL_PlayerBase* Player = CastChecked<ALLL_PlayerBase>(GetAvatarActorFromActorInfo());
 	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	
-	ULLL_ExtendedGameplayEffect* Effect = Cast<ULLL_ExtendedGameplayEffect>(ApplyEffect.GetDefaultObject());
+	ULLL_ExtendedGameplayEffect* Effect = CastChecked<ULLL_ExtendedGameplayEffect>(ApplyEffect.GetDefaultObject());
 	const FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ApplyEffect, GetAbilityLevel());
 
 	const float MagnitudeValue1 = AbilityData->AbilityValue1 * GetAbilityLevel() / static_cast<uint32>(AbilityData->Value1Type);
@@ -138,12 +138,12 @@ void ULLL_PGA_OnTriggerActivate::ApplyEffectWhenHit()
 			{
 				if (AbilityTags.HasTag(TAG_GAS_BLEEDING))
 				{
-					if (!Monster->GetBleedingTrigger())
+					if (!Monster->CheckBleedingTrigger())
 					{
-						Monster->ToggleBleedingTrigger();
+						Monster->IncreaseBleedingTrigger();
 						continue;
 					}
-					Monster->ToggleBleedingTrigger();
+					Monster->ResetBleedingTrigger();
 					
 					if (FLLL_AbilityDataHelper::CheckBleedingExplosion(Player, Monster, Player))
 					{
@@ -258,8 +258,7 @@ void ULLL_PGA_OnTriggerActivate::SpawnThrownObject()
 			{
 				if (!Straight && !Cast<ALLL_MonsterBase>(Target))
 				{
-					EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-					return;
+					continue;
 				}
 				
 				FVector Location = Player->GetActorLocation();

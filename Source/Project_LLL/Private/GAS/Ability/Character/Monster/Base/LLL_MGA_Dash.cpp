@@ -19,10 +19,12 @@ void ULLL_MGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	ALLL_MonsterBase* Monster = CastChecked<ALLL_MonsterBase>(GetAvatarActorFromActorInfo());
-	ILLL_DashMonsterInterface* DashMonster = CastChecked<ILLL_DashMonsterInterface>(Monster);
 	Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER_DASH);
 	Monster->GetMesh()->SetCollisionProfileName(CP_MONSTER_DASH);
 	Monster->GetMovementComponent()->Velocity = FVector::Zero();
+	
+	ILLL_DashMonsterInterface* DashMonster = CastChecked<ILLL_DashMonsterInterface>(Monster);
+	DashMonster->SetDashing(true);
 
 	FHitResult StaticResult;
 	FHitResult PlayerResult;
@@ -113,6 +115,9 @@ void ULLL_MGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 		Monster->GetCapsuleComponent()->SetCollisionProfileName(CP_MONSTER);
 		Monster->GetMesh()->SetCollisionProfileName(CP_MONSTER);
 	}
+
+	ILLL_DashMonsterInterface* DashMonster = CastChecked<ILLL_DashMonsterInterface>(Monster);
+	DashMonster->SetDashing(false);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

@@ -71,13 +71,14 @@
 #define TAG_GAS_HAVE_QUADRUPLE_HIT FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Crow.QuadrupleHit"))
 #define TAG_GAS_HAVE_DEFLECT_BY_WALL FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.DeflectByWall"))
 #define TAG_GAS_HAVE_KNOCK_BACK_TRANSMISSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.KnockBackTransmission"))
-#define TAG_GAS_HAVE_FASTER_KNOCK_BACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.FasterKnockBack"))
 #define TAG_GAS_HAVE_INCREASE_KNOCK_BACK_DAMAGE FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Deer.IncreaseKnockBackDamage"))
+#define TAG_GAS_HAVE_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.Bleeding"))
 #define TAG_GAS_HAVE_VAMPIRE FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.Vampire"))
 #define TAG_GAS_HAVE_BLEEDING_TRANSMISSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.BleedingTransmission"))
 #define TAG_GAS_HAVE_EXCESSIVE_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.ExcessiveBleeding"))
 #define TAG_GAS_HAVE_THROW_BLEEDING FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.ThrowBleeding"))
 #define TAG_GAS_HAVE_BLEEDING_EXPLOSION FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Wolf.BleedingExplosion"))
+#define TAG_GAS_HAVE_MOVE_FASTER FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.MoveFaster"))
 #define TAG_GAS_HAVE_DOUBLE_DASH FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.DoubleDash"))
 #define TAG_GAS_HAVE_FASTER_ATTACK FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.FasterAttack"))
 #define TAG_GAS_HAVE_EVASION_DASH FGameplayTag::RequestGameplayTag(FName("System.HaveAbility.Horse.EvasionDash"))
@@ -110,5 +111,6 @@
 #define TAG_SYSTEM_CAMERA_STATE_FOLLOW_CURSOR FGameplayTag::RequestGameplayTag(FName("System.User.Camera.State.FollowCursor"))
 #define TAG_SYSTEM_CAMERA_STATE_HOLD_TARGET FGameplayTag::RequestGameplayTag(FName("System.User.Camera.State.HoldToTarget"))
 
-// 큐 관련 태그
-#define TAG_GAS_CUE_QUADRUPLE_HIT FGameplayTag::RequestGameplayTag(FName("GameplayCue.Object.ThrownObject.ThrownFeather.QuadrupleHit"))
+// 기타 태그
+#define TAG_GAS_STUN_HARD FGameplayTag::RequestGameplayTag(FName("System.StunHard"))
+#define TAG_GAS_TEMP_CALLER FGameplayTag::RequestGameplayTag(FName("System.TempCaller"))

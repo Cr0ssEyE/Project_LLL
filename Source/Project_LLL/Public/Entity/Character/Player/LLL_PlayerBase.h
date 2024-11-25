@@ -61,6 +61,8 @@ public:
 	void RemoveInteractiveObject(ALLL_InteractiveObject* RemoveObject);
 
 	void CharacterUnDissolveBegin();
+	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
+	FORCEINLINE const ULLL_CameraDataAsset* GetCameraDataAsset() const { return CameraDataAsset; }
 
 public:
 	FORCEINLINE FVector GetMoveInputDirection() const { return MoveDirection; }
@@ -70,67 +72,82 @@ public:
 	FORCEINLINE ULLL_PlayerUIManager* GetPlayerUIManager() const { return PlayerUIManager; }
 	FORCEINLINE ULLL_PlayerGoldComponent* GetGoldComponent() const { return GoldComponent; }
 	FORCEINLINE ULLL_ObjectPoolingComponent* GetObjectPoolingComponent() const { return ObjectPoolingComponent; }
-	FORCEINLINE FVector GetLastCheckedMouseLocation() const { return LastCheckedMouseLocation; }
 	FORCEINLINE FVector GetLastVelocityBeforeDash() const { return LastVelocityBeforeDash; };
 	FORCEINLINE bool IsSkillRotateToMouseCursor() const { return bSkillRotateToMouseCursor; }
+	FORCEINLINE bool CheckAttackIsRange() const { return bAttackIsRange; }
+	FORCEINLINE bool CheckChargeTriggered() const { return bChargeTriggered; }
+	FORCEINLINE bool CheckSkillTriggered() const { return bSkillTriggered; }
+	FORCEINLINE FVector GetKnockBackDirection() const { return KnockBackDirection; }
 
 	FORCEINLINE void SetCurrentCombo(const int32 InCurrentCombo) { CurrentCombo = InCurrentCombo; }
 	FORCEINLINE void SetMoveInputPressed(const bool Press) { bIsMoveInputPressed = Press; }
 	FORCEINLINE void SetSkillCoolTime(const float InSkillCoolTime) { SkillCoolTime = InSkillCoolTime; }
 	FORCEINLINE void SetSkillRotateToMouseCursor(const bool SkillRotateToMouseCursor) { bSkillRotateToMouseCursor = SkillRotateToMouseCursor; }
+	FORCEINLINE void SetChargeTriggered(const bool ChargeTriggered) { bChargeTriggered = ChargeTriggered; }
+	FORCEINLINE void SetSkillTriggered(const bool SkillTriggered) { bSkillTriggered = SkillTriggered; }
 	
 	FVector CheckMouseLocation();
 	void RotateToMouseCursor(float RotationMultiplyValue = 1.f, bool UseLastLocation = false);
 	void StartCameraMoveToCursor(const ALLL_PlayerController* PlayerController = nullptr);
 	void PauseCameraMoveToCursor() const;
 	void ReadyToUseSkill();
+	void ParticleDurationActivate(UNiagaraSystem* NiagaraSystem, float Timer);
+	void ParticleDeactivate(const UNiagaraSystem* NiagaraSystem);
 	
 	int32 GetEnuriaCount(EAnimalType AnimalType = EAnimalType::None) const;
 	EAnimalType GetSkillEnuriaAnimalType() const;
 
 public:
 	// 이누리아 관련 함수
+	FORCEINLINE float GetRecoveryManaByFeatherRecoveryValue() const { return RecoveryManaByFeatherRecoveryValue; }
 	FORCEINLINE int32 GetChargedFeatherCount() const { return ChargedFeatherCount; }
 	FORCEINLINE float GetFeatherSpawnStartTime() const { return FeatherSpawnStartTime; }
 	FORCEINLINE int32 GetDeflectCount() const { return DeflectCount; }
 	FORCEINLINE float GetKnockBackTransmissionOffencePower() const { return KnockBackTransmissionOffencePower; }
 	FORCEINLINE float GetKnockBackTransmissionKnockBackPower() const { return KnockBackTransmissionKnockBackPower; }
 	FORCEINLINE float GetQuadrupleHitKnockBackPower() const { return QuadrupleHitKnockBackPower; }
-	FORCEINLINE float GetFasterKnockBackSpeedRateIncrease() const { return FasterKnockBackSpeedRateIncrease; }
 	FORCEINLINE float GetIncreaseKnockBackDamageDamageRateIncrease() const { return IncreaseKnockBackDamageDamageRateIncrease; }
 	FORCEINLINE float GetRangeKnockBackKnockBackPower() const { return RangeKnockBackKnockBackPower; }
+	FORCEINLINE int32 GetBleedingTriggerMaxCount() const { return BleedingTriggerMaxCount; }
 	FORCEINLINE int32 GetBleedingTransmissionStack() const { return BleedingTransmissionStack; }
 	FORCEINLINE float GetExcessiveBleedingOffencePowerPlus() const { return ExcessiveBleedingOffencePowerPlus; }
 	FORCEINLINE float GetExcessiveBleedingPeriod() const { return ExcessiveBleedingPeriod; }
 	FORCEINLINE int32 GetExcessiveBleedingWolfEnuriaCheckCount() const { return ExcessiveBleedingWolfEnuriaCheckCount; }
+	FORCEINLINE float GetMoveFasterTimer() const { return MoveFasterTimer; }
 	FORCEINLINE float GetDoubleDashDashRate() const { return DoubleDashDashRate; }
 	FORCEINLINE int32 GetDoubleDashHorseEnuriaCheckCount() const { return DoubleDashHorseEnuriaCheckCount; }
 	FORCEINLINE int32 GetEvasionDashHorseEnuriaCheckCount() const { return EvasionDashHorseEnuriaCheckCount; }
-	FORCEINLINE float GetChargeAttackChargeRate() const { return ChargeAttackChargeRate; }
+	FORCEINLINE float GetEvasionDashTimer() const { return EvasionDashTimer; }
+	FORCEINLINE float GetChargeAttackReceiveDamageRateDecrease() const { return ChargeAttackReceiveDamageRateDecrease; }
+	FORCEINLINE float GetChargeAttackChargeTimeMinus() const { return ChargeAttackChargeTimeMinus; }
 	FORCEINLINE float GetIncreaseKnockBackBothKnockBackPowerRate() const { return IncreaseKnockBackBothKnockBackPowerRate; }
 	FORCEINLINE float GetDashAttackOffencePowerPlus() const { return DashAttackOffencePowerPlus; }
 	FORCEINLINE bool CheckDashAttackCanAttack() const { return bDashAttackCanAttack; }
 	FORCEINLINE float GetAttackWeakeningOffencePowerRateIncrease() const { return AttackWeakeningOffencePowerRateIncrease; }
 	FORCEINLINE int32 GetAttackWeakeningWildBoarEnuriaCheckCount() const { return AttackWeakeningWildBoarEnuriaCheckCount; }
 	FORCEINLINE float GetCrisisAttackMaxOffencePowerRateIncrease() const { return CrisisAttackMaxOffencePowerRateIncrease; }
-	
+
+	FORCEINLINE void SetRecoveryManaByFeatherRecoveryValue(const float InRecoveryManaByFeatherRecoveryValue) { RecoveryManaByFeatherRecoveryValue = InRecoveryManaByFeatherRecoveryValue; }
 	FORCEINLINE void SetFeatherSpawnStartTime(const float InFeatherSpawnStartTime) { FeatherSpawnStartTime = InFeatherSpawnStartTime; }
 	FORCEINLINE void SetDeflectCount(const int32 InDeflectCount) { DeflectCount = InDeflectCount; }
 	FORCEINLINE void SetKnockBackTransmissionOffencePower(const float InKnockBackTransmissionOffencePower) { KnockBackTransmissionOffencePower = InKnockBackTransmissionOffencePower; }
 	FORCEINLINE void SetKnockBackTransmissionKnockBackPower(const float InKnockBackTransmissionKnockBackPower) { KnockBackTransmissionKnockBackPower = InKnockBackTransmissionKnockBackPower; }
 	FORCEINLINE void SetQuadrupleHitKnockBackPower(const float InQuadrupleHitKnockBackPower) { QuadrupleHitKnockBackPower = InQuadrupleHitKnockBackPower; }
-	FORCEINLINE void SetFasterKnockBackSpeedRateIncrease(const float InFasterKnockBackRateIncrease) { FasterKnockBackSpeedRateIncrease = InFasterKnockBackRateIncrease; }
 	FORCEINLINE void SetIncreaseKnockBackDamageDamageRateIncrease(const float InIncreaseKnockBackDamageDamageRateIncrease) { IncreaseKnockBackDamageDamageRateIncrease = InIncreaseKnockBackDamageDamageRateIncrease; }
 	FORCEINLINE void SetRangeKnockBackKnockBackPower(const float InRangeKnockBackKnockBackPower) { RangeKnockBackKnockBackPower = InRangeKnockBackKnockBackPower; }
+	FORCEINLINE void SetBleedingTriggerMaxCount(const int32 InBleedingTriggerMaxCount) { BleedingTriggerMaxCount = InBleedingTriggerMaxCount; }
 	FORCEINLINE void SetVampireRecoveryRate(const float InVampireRecoveryRate) { VampireRecoveryRate = InVampireRecoveryRate; }
 	FORCEINLINE void SetBleedingTransmissionStack(const int32 InBleedingTransmissionStack) { BleedingTransmissionStack = InBleedingTransmissionStack; }
 	FORCEINLINE void SetExcessiveBleedingOffencePowerPlus(const float InExcessiveBleedingOffencePowerPlus) { ExcessiveBleedingOffencePowerPlus = InExcessiveBleedingOffencePowerPlus; }
 	FORCEINLINE void SetExcessiveBleedingPeriod(const float InExcessiveBleedingPeriod) { ExcessiveBleedingPeriod = InExcessiveBleedingPeriod; }
 	FORCEINLINE void SetExcessiveBleedingWolfEnuriaCheckCount(const int32 InExcessiveBleedingWolfEnuriaCheckCount) { ExcessiveBleedingWolfEnuriaCheckCount = InExcessiveBleedingWolfEnuriaCheckCount; }
+	FORCEINLINE void SetMoveFasterTimer(const float InMoveFasterTimer) { MoveFasterTimer = InMoveFasterTimer; }
 	FORCEINLINE void SetDoubleDashDashRate(const float InDoubleDashDashRate) { DoubleDashDashRate = InDoubleDashDashRate; }
 	FORCEINLINE void SetDoubleDashHorseEnuriaCheckCount(const int32 InDoubleDashHorseEnuriaCheckCount) { DoubleDashHorseEnuriaCheckCount = InDoubleDashHorseEnuriaCheckCount; }
 	FORCEINLINE void SetEvasionDashHorseEnuriaCheckCount(const int32 InEvasionDashHorseEnuriaCheckCount) { EvasionDashHorseEnuriaCheckCount = InEvasionDashHorseEnuriaCheckCount; }
-	FORCEINLINE void SetChargeAttackChargeRate(const float InChargeAttackChargeRate) { ChargeAttackChargeRate = InChargeAttackChargeRate; }
+	FORCEINLINE void SetEvasionDashTimer(const float InEvasionDashTimer) { EvasionDashTimer = InEvasionDashTimer; }
+	FORCEINLINE void SetChargeAttackReceiveDamageRateDecrease(const float InChargeAttackReceiveDamageRateDecrease) { ChargeAttackReceiveDamageRateDecrease = InChargeAttackReceiveDamageRateDecrease; }
+	FORCEINLINE void SetChargeAttackChargeTimeMinus(const float InChargeAttackChargeSpeedMinus) { ChargeAttackChargeTimeMinus = InChargeAttackChargeSpeedMinus; }
 	FORCEINLINE void SetIncreaseKnockBackBothKnockBackPowerRate(const float InIncreaseKnockBackBothKnockBackPowerRate) { IncreaseKnockBackBothKnockBackPowerRate = InIncreaseKnockBackBothKnockBackPowerRate; }
 	FORCEINLINE void SetDashAttackOffencePowerPlus(const float InDashAttackOffencePowerPlus) { DashAttackOffencePowerPlus = InDashAttackOffencePowerPlus; }
 	FORCEINLINE void SetDashAttackCanAttack(const bool DashAttackCanAttack) { bDashAttackCanAttack = DashAttackCanAttack; }
@@ -179,8 +196,9 @@ protected:
 private:
 	void MoveAction(const FInputActionValue& Value);
 	void DashAction(const FInputActionValue& Value, EAbilityInputName InputName);
-	void AttackAction(const FInputActionValue& Value, EAbilityInputName InputName);
-	void AttackActionCompleted(const FInputActionValue& Value, EAbilityInputName InputName);
+	void AttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range);
+	void ChargeAttackAction(const FInputActionValue& Value, EAbilityInputName InputName, bool Range);
+	void ChargeAttackActionCompleted(const FInputActionValue& Value, EAbilityInputName InputName, bool Range);
 	void SkillAction(const FInputActionValue& Value, EAbilityInputName InputName);
 	void InteractAction(const FInputActionValue& Value);
 	void InventoryAction(const FInputActionValue& Value);
@@ -216,9 +234,16 @@ private:
 	uint8 bCanSkill : 1;
 	uint8 bSkillRotateToMouseCursor : 1;
 	FTimerHandle SkillCoolTimeTimerHandle;
+	uint8 bAttackIsRange : 1;
+	uint8 bChargeTriggered : 1;
+	FVector KnockBackDirection;
+	float SphereHeight;
+	uint8 bChargeCanceled : 1;
+	uint8 bSkillTriggered : 1;
 
 	// 이누리아 관련 변수
 private:
+	float RecoveryManaByFeatherRecoveryValue;
 	int32 ChargedFeatherCount;
 	FTimerHandle ChargeFeatherTimerHandle;
 	TArray<TObjectPtr<AActor>> RangeFeatherTargets;
@@ -231,15 +256,19 @@ private:
 	float FasterKnockBackSpeedRateIncrease;
 	float IncreaseKnockBackDamageDamageRateIncrease;
 	float RangeKnockBackKnockBackPower;
+	int32 BleedingTriggerMaxCount;
 	float VampireRecoveryRate;
 	int32 BleedingTransmissionStack;
 	float ExcessiveBleedingOffencePowerPlus;
 	float ExcessiveBleedingPeriod;
 	int32 ExcessiveBleedingWolfEnuriaCheckCount;
+	float MoveFasterTimer;
 	float DoubleDashDashRate;
 	int32 DoubleDashHorseEnuriaCheckCount;
 	int32 EvasionDashHorseEnuriaCheckCount;
-	float ChargeAttackChargeRate;
+	float EvasionDashTimer;
+	float ChargeAttackReceiveDamageRateDecrease;
+	float ChargeAttackChargeTimeMinus;
 	float IncreaseKnockBackBothKnockBackPowerRate;
 	float DashAttackOffencePowerPlus;
 	uint8 bDashAttackCanAttack : 1;

@@ -144,6 +144,11 @@ void ALLL_MapGimmick::SetupLevel()
 		}
 		SetState(EStageState::READY);
 	}
+
+	if (GetWorld()->GetName() == LEVEL_SHOP)
+	{
+		SetState(EStageState::NEXT);
+	}
 }
 
 void ALLL_MapGimmick::LoadLastSessionMap(FStageInfoData StageInfoData)
@@ -257,7 +262,7 @@ void ALLL_MapGimmick::CreateMap()
 	if (bIsFirstLoad && bIsLoadedFromSave)
 	{
 		FStageInfoData LastInfoData = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->StageInfoData;
-		UE_LOG(LogTemp, Log, TEXT("불러온 맵 상태 : %s"), *StaticEnum<EStageState>()->GetNameStringByValue(static_cast<int64>(LastInfoData.LastStageState)));
+		
 		CurrentState = LastInfoData.LastStageState;
 		
 		if (CurrentState == EStageState::REWARD || (CurrentState == EStageState::NEXT && !IsValid(ShoppingMapComponent)))
@@ -466,7 +471,7 @@ void ALLL_MapGimmick::RewardSpawn()
 		RewardObject->OnDestroyed.AddDynamic(this, &ALLL_MapGimmick::RewardDestroyed);
 	}
 	
-	FHitResult Result;
+	/*FHitResult Result;
 	GetWorld()->SweepSingleByChannel
 	(Result,
 	Player->GetActorLocation(),
@@ -480,7 +485,7 @@ void ALLL_MapGimmick::RewardSpawn()
 	{
 		RewardTransform.SetLocation(FVector::Zero() + FVector(0.f, 0.f, 300.f));
 	}
-	RewardObject->FinishSpawning(RewardTransform);
+	RewardObject->FinishSpawning(RewardTransform);*/
 
 	ULLL_GameProgressManageSubSystem* GameProgressSubSystem = GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>();
 	if (bIsFirstLoad && GameProgressSubSystem->GetCurrentSaveGameData()->StageInfoData.RewardPosition != FVector::Zero())

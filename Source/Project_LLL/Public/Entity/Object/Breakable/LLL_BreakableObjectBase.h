@@ -3,41 +3,40 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemInterface.h"
+#include "DataAsset/Global/LLL_GlobalNiagaraDataAsset.h"
 #include "Entity/Object/Base/LLL_BaseObject.h"
-#include "Interface/LLL_DropGoldInterface.h"
-#include "GAS/Attribute/DropGold/LLL_DropGoldAttributeSet.h"
 #include "GameFramework/Actor.h"
 #include "LLL_BreakableObjectBase.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnDropGoldDelegate)
+class UCapsuleComponent;
 
 UCLASS()
-class PROJECT_LLL_API ALLL_BreakableObjectBase : public ALLL_BaseObject, public ILLL_DropGoldInterface
+class PROJECT_LLL_API ALLL_BreakableObjectBase : public ALLL_BaseObject
 {
 	GENERATED_BODY()
 	
 public:
 	ALLL_BreakableObjectBase();
 
-	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
-	
 protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void DropGold(const FGameplayTag tag, int32 data) override;
-	FOnDropGoldDelegate GoldDelegate;
-
+	void ReceivePlayerAttackOrKnockBackedMonster();
+	
 protected:
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<class UCapsuleComponent> HitCollision;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<const ULLL_GlobalNiagaraDataAsset> GlobalNiagaraDataAsset;
+	
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UCapsuleComponent> CapsuleComponent;
 
-//GAS Part
-protected:
-	UPROPERTY(EditDefaultsOnly, Category = "GAS", DisplayName = "어트리뷰트 초기화 이펙트")
-	TSubclassOf<UGameplayEffect> InitEffect;
+	UPROPERTY(VisibleAnywhere)
+	int32 Crack;
 	
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULLL_DropGoldAttributeSet> DropGoldAttributeSet;
+	float StunRadius;
+	
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UTexture> DestroyedTexture;
 };

@@ -23,7 +23,13 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UTextBlock> HealthTextBlock;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UTextBlock> ManaTextBlock;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> LowHpAnimation;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UProgressBar> ChargeGaugeBar;
 };
