@@ -21,11 +21,16 @@ void ALLL_AbilityRewardObject::SetInformation(const FRewardDataTable* Data, cons
 void ALLL_AbilityRewardObject::InteractiveEvent(AActor* InteractedActor)
 {
 	Super::InteractiveEvent(InteractedActor);
+
+	if (bInteracted)
+	{
+		return;
+	}
 	
 	//AbilityRewardInteractionDelegate->Broadcast(AbilityCategory);
 	NiagaraComponents[0]->OnSystemFinished.AddDynamic(this, &ALLL_AbilityRewardObject::ActiveUI);
 	NiagaraComponents[0]->ActivateSystem();
-	
+	bInteracted = true;
 }
 
 void ALLL_AbilityRewardObject::SetAbilityCategory(EAbilityCategory Category)

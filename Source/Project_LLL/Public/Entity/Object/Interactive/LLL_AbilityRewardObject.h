@@ -32,4 +32,6 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	int32 Num;
+
+	uint8 bInteracted : 1;
 };

@@ -543,7 +543,7 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 		return;
 	}
 
-	if (CheckCharacterIsDead() && !Cast<ALLL_BombSkull>(this))
+	if ((CheckCharacterIsDead() && !Cast<ALLL_BombSkull>(this)) || bIsElite || Cast<ALLL_BossMonster>(this))
 	{
 		return;
 	}
