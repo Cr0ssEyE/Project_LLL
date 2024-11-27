@@ -510,10 +510,6 @@ void ALLL_MonsterBase::Dead()
 void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float KnockBackPower)
 {
 	ALLL_MonsterBaseAIController* MonsterAIController = Cast<ALLL_MonsterBaseAIController>(GetController());
-	if (IsValid(MonsterAIController))
-	{
-		MonsterAIController->PauseMove(FAIRequestID::AnyRequest);
-	}
 	
 	const float DecreaseVelocityByWeight = FMath::Max(0.f, (MonsterAttributeSet->GetWeight() - 1) * GetGameInstance<ULLL_GameInstance>()->GetGlobalParametersDataAsset()->DecreaseVelocityPerWeight);
 	KnockBackVelocity *= 1 - DecreaseVelocityByWeight;
@@ -546,6 +542,11 @@ void ALLL_MonsterBase::AddKnockBackVelocity(FVector& KnockBackVelocity, float Kn
 	if ((CheckCharacterIsDead() && !Cast<ALLL_BombSkull>(this)) || bIsElite || Cast<ALLL_BossMonster>(this))
 	{
 		return;
+	}
+
+	if (IsValid(MonsterAIController))
+	{
+		MonsterAIController->PauseMove(FAIRequestID::AnyRequest);
 	}
 	
 	if (ALLL_PlayerBase* Player = Cast<ALLL_PlayerBase>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
