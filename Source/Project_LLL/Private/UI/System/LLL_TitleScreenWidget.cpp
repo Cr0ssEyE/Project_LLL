@@ -64,7 +64,13 @@ void ULLL_TitleScreenWidget::NativeConstruct()
 			LobbyHoverVerticalBox->RemoveChildAt(1);
 		}
 	}
-	
+	LoadGameButton->SetVisibility(ESlateVisibility::Hidden);
+	LobbyButtonVerticalBox->RemoveChild(LoadGameButton);
+
+	if (LobbyHoverVerticalBox->HasAnyChildren())
+	{
+		LobbyHoverVerticalBox->RemoveChildAt(1);
+	}
 	// 인트로 애니메이션 재생은 BP에서 함
 }
 

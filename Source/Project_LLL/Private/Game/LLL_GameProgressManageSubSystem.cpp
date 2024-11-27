@@ -383,14 +383,14 @@ void ULLL_GameProgressManageSubSystem::LoadLastSessionPlayerData()
 	}
 
 	// 황금사과 관련 처리. 다만 적용 순서 등의 문제로 인해 여기서 사용하는 이펙트는 체력 회복은 해주지 않음
-	for (auto i = 0; i < CurrentSaveGameData->PlayerPlayProgressData.AcquiredGoldAppleCount; i++)
+	/*for (auto i = 0; i < CurrentSaveGameData->PlayerPlayProgressData.AcquiredGoldAppleCount; i++)
 	{
 		TSubclassOf<UGameplayEffect> IncreaseHpEffect = CastChecked<ULLL_GameInstance>(GetGameInstance())->GetGlobalParametersDataAsset()->GoldAppleIncreaseHpEffect;
 		FGameplayEffectContextHandle EffectContextHandle = Player->GetAbilitySystemComponent()->MakeEffectContext();
 		EffectContextHandle.AddInstigator(Player, Player);
 		const FGameplayEffectSpecHandle EffectSpecHandle = Player->GetAbilitySystemComponent()->MakeOutgoingSpec(IncreaseHpEffect, 1.0, EffectContextHandle);
 		Player->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-	}
+	}*/
 	OnLastSessionPlayerDataLoaded.Broadcast();
 }
 

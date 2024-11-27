@@ -68,7 +68,7 @@ void ALLL_PlayerController::WaitPlayerCharacterInitialize()
 	{
 		PlayerInitializedDelegate.Broadcast();
 		PlayerInitializedDelegate.Clear();
-
+		
 		if (GetWorld()->GetName() != LEVEL_PROTOTYPE)
 		{
 			GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->LoadLastSessionPlayerData();

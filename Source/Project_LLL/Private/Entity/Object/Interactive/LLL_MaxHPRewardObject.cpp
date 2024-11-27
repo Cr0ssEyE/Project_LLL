@@ -29,6 +29,7 @@ void ALLL_MaxHPRewardObject::InteractiveEvent(AActor* InteractedActor)
 	{
 		ASC->BP_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, Player->GetAbilitySystemComponent());
 		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->GetCurrentSaveGameData()->PlayerPlayProgressData.AcquiredGoldAppleCount++;
+		GetGameInstance()->GetSubsystem<ULLL_GameProgressManageSubSystem>()->BeginSaveGame();
 	}
 #if (WITH_EDITOR || UE_BUILD_DEVELOPMENT)
 		if (const ULLL_DebugGameInstance* DebugGameInstance = Cast<ULLL_DebugGameInstance>(GetWorld()->GetGameInstance()))
